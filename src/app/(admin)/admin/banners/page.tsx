@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { db } from '@/backend/database'
 import { formatDate } from '@/backend/utils'
+import { Pencil, Plus } from 'lucide-react'
 
-export const metadata = { title: 'Banners | Admin' }
+export const metadata = { title: 'Admin Banners' }
 
 export default async function AdminBannersPage() {
   const banners = await db.banner.findMany({
@@ -12,10 +13,17 @@ export default async function AdminBannersPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-xl font-bold">Banners</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Active promotional banners and hero placements.
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-xl font-bold">Banners</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Active promotional banners and hero placements.
+            </p>
+          </div>
+          <Link href="/admin/banners/new" className="btn-primary flex items-center gap-2 text-sm">
+            <Plus className="h-4 w-4" /> Add Banner
+          </Link>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -27,6 +35,7 @@ export default async function AdminBannersPage() {
               <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Link</th>
               <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Status</th>
               <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Updated</th>
+              <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -53,6 +62,11 @@ export default async function AdminBannersPage() {
                 </td>
                 <td className="px-4 py-3 text-right text-xs text-muted-foreground">
                   {formatDate(banner.updatedAt)}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link href={`/admin/banners/${banner.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                    <Pencil className="h-4 w-4 text-muted-foreground" />
+                  </Link>
                 </td>
               </tr>
             ))}

@@ -8,6 +8,14 @@ export async function GET(req: NextRequest) {
   const skip = (page - 1) * limit
 
   const where: any = { isActive: true }
+
+  // Wishlist / multi-ID lookup
+  const ids = sp.get('ids')
+  if (ids) {
+    const idList = ids.split(',').map((s) => s.trim()).filter(Boolean)
+    if (idList.length > 0) where.id = { in: idList }
+  }
+
   if (sp.get('q')) {
     where.OR = [
       { name: { contains: sp.get('q')!, mode: 'insensitive' } },

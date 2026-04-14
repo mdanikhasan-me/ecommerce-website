@@ -3,7 +3,7 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'New Arrivals | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin New Arrivals' }
 
 export default async function NewArrivalsPage() {
   const products = await db.product.findMany({

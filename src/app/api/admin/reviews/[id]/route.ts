@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { syncProductReviewStats } from '@/backend/reviews'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
   }
+  const { id } = await params
 
   const { status } = await req.json()
   if (!['APPROVED', 'REJECTED'].includes(status)) {
@@ -14,26 +16,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const review = await db.review.update({
-    where: { id: params.id },
-    data: { status: status as any },
-    include: { product: { select: { id: true, rating: true, reviewCount: true } } },
+    where: { id },
+    data: { status: status as 'APPROVED' | 'REJECTED' },
+    select: { id: true, productId: true, status: true },
   })
 
-  // Update product rating if approved
-  if (status === 'APPROVED') {
-    const allReviews = await db.review.findMany({
-      where: { productId: review.productId, status: 'APPROVED' },
-      select: { rating: true },
-    })
-    const avgRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
-    await db.product.update({
-      where: { id: review.productId },
-      data: {
-        rating: Math.round(avgRating * 10) / 10,
-        reviewCount: allReviews.length,
-      },
-    })
-  }
+  const stats = await syncProductReviewStats(review.productId)
 
-  return NextResponse.json({ success: true, review })
+  return NextResponse.json({ success: true, review, stats })
 }

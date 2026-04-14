@@ -58,6 +58,10 @@ const COMPANY_LINKS = [
   ['Shipping', '/shipping'],
 ]
 
+const FOOTER_EMAIL = 'anikhasan2@icloud.com'
+const FOOTER_PHONE = '01758409063'
+const INSTAGRAM_URL = 'https://www.instagram.com/boilabin?igsh=d2ZkNnN3ZmJvdWxj'
+
 export function StoreFooter() {
   return (
     <footer className="mt-24 border-t border-foreground/10 bg-foreground text-background">
@@ -79,13 +83,19 @@ export function StoreFooter() {
               </div>
 
               <div className="grid gap-3 text-sm text-background/75">
-                <a href="mailto:hello@boilabin.com" className="inline-flex items-center gap-2 hover:text-background">
+                <a
+                  href={`mailto:${FOOTER_EMAIL}`}
+                  className="inline-flex items-center gap-2 hover:text-background"
+                >
                   <Mail className="h-4 w-4" />
-                  hello@boilabin.com
+                  {FOOTER_EMAIL}
                 </a>
-                <a href="tel:+8801700000000" className="inline-flex items-center gap-2 hover:text-background">
+                <a
+                  href={`tel:${FOOTER_PHONE}`}
+                  className="inline-flex items-center gap-2 hover:text-background"
+                >
                   <Phone className="h-4 w-4" />
-                  +880 1700 000000
+                  {FOOTER_PHONE}
                 </a>
                 <span className="inline-flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
@@ -128,13 +138,20 @@ export function StoreFooter() {
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-background/45">Stay close</p>
             <div className="mt-4 flex items-center gap-3">
-              {[Facebook, Instagram, Twitter].map((Icon, index) => (
+              {[
+                { icon: Facebook, href: '#', label: 'Facebook' },
+                { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
+                { icon: Twitter, href: '#', label: 'Twitter' },
+              ].map((item) => (
                 <a
-                  key={index}
-                  href="#"
+                  key={item.label}
+                  href={item.href}
+                  target={item.href.startsWith('http') ? '_blank' : undefined}
+                  rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  aria-label={item.label}
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-background/70 transition-colors hover:text-background"
                 >
-                  <Icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" />
                 </a>
               ))}
             </div>

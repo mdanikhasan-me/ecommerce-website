@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { db } from '@/backend/database'
 import { formatDate } from '@/backend/utils'
+import { Pencil, Plus } from 'lucide-react'
 
-export const metadata = { title: 'Flash Sales | Admin' }
+export const metadata = { title: 'Admin Flash Sales' }
 
 function getFlashSaleStatus(startsAt: Date, endsAt: Date, isActive: boolean) {
   const now = new Date()
@@ -33,6 +34,9 @@ export default async function AdminFlashSalesPage() {
             Review live, scheduled, and ended flash sale campaigns.
           </p>
         </div>
+        <Link href="/admin/flash-sales/new" className="btn-primary flex items-center gap-2 text-sm">
+          <Plus className="h-4 w-4" /> Add Flash Sale
+        </Link>
       </div>
 
       {flashSales.length === 0 ? (
@@ -58,8 +62,13 @@ export default async function AdminFlashSalesPage() {
                       {formatDate(flashSale.startsAt)} to {formatDate(flashSale.endsAt)}
                     </p>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">{flashSale.items.length}</span> products in campaign
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>
+                      <span className="font-medium text-foreground">{flashSale.items.length}</span> products in campaign
+                    </span>
+                    <Link href={`/admin/flash-sales/${flashSale.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                      <Pencil className="h-4 w-4 text-muted-foreground" />
+                    </Link>
                   </div>
                 </div>
 

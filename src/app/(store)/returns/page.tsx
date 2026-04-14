@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { RefreshCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
-export const metadata: Metadata = { title: 'Returns & Refund Policy | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Returns and Refund Policy' }
 export default function ReturnsPage() {
   return (
     <div className="container-site py-12">

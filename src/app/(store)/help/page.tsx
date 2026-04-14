@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { HelpCircle, Package, CreditCard, RefreshCcw, Shield, Headphones, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Help Center | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Help Center' }
 
 const HELP_TOPICS = [
   {

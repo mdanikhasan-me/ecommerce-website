@@ -2,7 +2,7 @@ import { db } from '@/backend/database'
 import Link from 'next/link'
 import { Plus, Pencil } from 'lucide-react'
 
-export const metadata = { title: 'Categories | Admin' }
+export const metadata = { title: 'Admin Categories' }
 
 export default async function AdminCategoriesPage() {
   const categories = await db.category.findMany({

@@ -5,7 +5,7 @@ import { formatPrice } from '@/backend/utils'
 import { Package, ShoppingBag, Star, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'Seller Dashboard | Boilabin' }
+export const metadata = { title: 'Boilabin Seller Dashboard' }
 
 export default async function SellerDashboardPage() {
   const session = await auth()

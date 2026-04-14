@@ -1,0 +1,102 @@
+'use client'
+
+import { useRef, useState } from 'react'
+import { ImagePlus, Loader2, Trash2 } from 'lucide-react'
+import { readFileAsDataUrl } from './form-utils'
+
+interface AdminImageFieldProps {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  helperText?: string
+}
+
+export function AdminImageField({
+  label,
+  value,
+  onChange,
+  helperText,
+}: AdminImageFieldProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setError('')
+    setIsUploading(true)
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file)
+      onChange(dataUrl)
+    } catch (uploadError: any) {
+      setError(uploadError.message || 'Could not load image')
+    } finally {
+      setIsUploading(false)
+      event.target.value = ''
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="mb-1.5 block text-sm font-medium">{label}</label>
+        {helperText && <p className="text-xs text-muted-foreground">{helperText}</p>}
+      </div>
+
+      <div className="rounded-2xl border border-border bg-secondary/30 p-3">
+        <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border bg-card">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              No image selected
+            </div>
+          )}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="btn-outline gap-2 px-3 py-2 text-xs"
+          >
+            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            Upload image
+          </button>
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange('')}
+              className="btn-outline gap-2 px-3 py-2 text-xs text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+              Remove
+            </button>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+
+        <div className="mt-3">
+          <input
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            className="input-base text-sm"
+            placeholder="Paste image URL"
+          />
+        </div>
+
+        {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      </div>
+    </div>
+  )
+}

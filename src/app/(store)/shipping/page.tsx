@@ -1,7 +1,7 @@
 import { Truck, Clock, MapPin, CreditCard } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Shipping Info | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Shipping Information' }
 
 const ZONES = [
   { zone: 'Dhaka City', fee: '৳60', time: '1 to 2 days' },

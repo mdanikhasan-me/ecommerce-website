@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'About Us | Boilabin' }
+export const metadata: Metadata = { title: 'About Boilabin' }
 
 export default function AboutPage() {
   return (

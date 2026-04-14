@@ -5,7 +5,7 @@ import { ArrowLeft, Store, User, FileText, MapPin, Phone, Mail, Globe } from 'lu
 import Link from 'next/link'
 import { SellerApprovalActions } from '@/frontend/components/admin/SellerApprovalActions'
 
-export const metadata = { title: 'Seller Review | Admin' }
+export const metadata = { title: 'Admin Seller Review' }
 
 export default async function AdminSellerDetailPage({ params }: { params: { id: string } }) {
   const seller = await db.seller.findUnique({

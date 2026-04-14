@@ -2,7 +2,7 @@ import { db } from '@/backend/database'
 import { formatPrice, formatDate } from '@/backend/utils'
 import { TrendingUp, ShoppingBag, Users, Package } from 'lucide-react'
 
-export const metadata = { title: 'Analytics | Admin' }
+export const metadata = { title: 'Admin Analytics' }
 
 export default async function AdminReportsPage() {
   const now = new Date()

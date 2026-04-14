@@ -5,7 +5,7 @@ import { OrderStatusUpdater } from '@/frontend/components/admin/OrderStatusUpdat
 import Image from 'next/image'
 
 interface Props { params: { id: string } }
-export const metadata = { title: 'Order Detail | Admin' }
+export const metadata = { title: 'Admin Order Details' }
 
 export default async function AdminOrderDetailPage({ params }: Props) {
   const order = await db.order.findUnique({

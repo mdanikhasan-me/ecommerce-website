@@ -4,7 +4,7 @@ import { db } from '@/backend/database'
 import { ProfileForm } from '@/frontend/components/account/ProfileForm'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'My Profile | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Profile' }
 
 export default async function ProfilePage() {
   const session = await auth()

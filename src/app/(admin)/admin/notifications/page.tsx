@@ -1,7 +1,7 @@
 import { db } from '@/backend/database'
 import { formatDateRelative } from '@/backend/utils'
 
-export const metadata = { title: 'Notifications | Admin' }
+export const metadata = { title: 'Admin Notifications' }
 
 export default async function AdminNotificationsPage() {
   const notifications = await db.notification.findMany({

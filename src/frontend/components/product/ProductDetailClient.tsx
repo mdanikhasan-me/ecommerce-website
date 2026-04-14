@@ -32,6 +32,7 @@ export function ProductDetailClient({ product }: { product: any }) {
   const { label: stockLabel, color: stockColor, inStock } = getStockStatus(stock)
   const isWished = isHydrated && has(product.id)
   const isCompared = isHydrated && hasCompare(product.id)
+  const galleryImages = product.images
 
   useEffect(() => {
     setIsHydrated(true)
@@ -47,7 +48,7 @@ export function ProductDetailClient({ product }: { product: any }) {
       slug: product.slug,
       price,
       originalPrice,
-      image: product.images[selectedImage]?.url ?? '',
+      image: galleryImages[selectedImage]?.url ?? galleryImages[0]?.url ?? '',
       stockQuantity: stock,
       sku: selectedVariant?.sku ?? product.sku,
       variantName: selectedVariant?.name,
@@ -90,9 +91,9 @@ export function ProductDetailClient({ product }: { product: any }) {
           onMouseLeave={() => setIsZoomed(false)}
           onMouseMove={handleMouseMove}
         >
-          {product.images[selectedImage] && (
+          {galleryImages[selectedImage] && (
             <Image
-              src={product.images[selectedImage].url}
+              src={galleryImages[selectedImage].url}
               alt={product.name}
               fill
               priority
@@ -114,9 +115,9 @@ export function ProductDetailClient({ product }: { product: any }) {
         </div>
 
         {/* Thumbnails */}
-        {product.images.length > 1 && (
+        {galleryImages.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {product.images.map((img: any, i: number) => (
+            {galleryImages.map((img: any, i: number) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
@@ -125,7 +126,13 @@ export function ProductDetailClient({ product }: { product: any }) {
                   selectedImage === i ? 'border-primary' : 'border-border hover:border-primary/50'
                 )}
               >
-                <Image src={img.url} alt="" fill className="object-cover" sizes="64px" />
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
               </button>
             ))}
           </div>

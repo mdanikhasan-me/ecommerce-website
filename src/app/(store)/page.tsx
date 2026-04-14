@@ -5,7 +5,6 @@ import { FeaturedCategories } from '@/frontend/components/home/FeaturedCategorie
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { FlashSaleSection } from '@/frontend/components/home/FlashSaleSection'
 import { PromoSection } from '@/frontend/components/home/PromoSection'
-import { BrandHighlights } from '@/frontend/components/home/BrandHighlights'
 import { NewsletterSection } from '@/frontend/components/home/NewsletterSection'
 import { ProductCardSkeleton } from '@/frontend/components/product/ProductCard'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
@@ -35,7 +34,7 @@ export const metadata: Metadata = {
 export const revalidate = 300
 
 async function getHomeData() {
-  const [banners, categories, featured, bestSellers, newArrivals, brands, flashSale] =
+  const [banners, categories, featured, bestSellers, newArrivals, flashSale] =
     await Promise.all([
       db.banner.findMany({ where: { isActive: true, position: 'hero' }, orderBy: { sortOrder: 'asc' } }),
       db.category.findMany({
@@ -74,7 +73,6 @@ async function getHomeData() {
           category: { select: { name: true, slug: true } },
         },
       }),
-      db.brand.findMany({ where: { isActive: true, isFeatured: true }, orderBy: { sortOrder: 'asc' }, take: 8 }),
       db.flashSale.findFirst({
         where: { isActive: true, endsAt: { gt: new Date() }, startsAt: { lte: new Date() } },
         include: {
@@ -94,11 +92,11 @@ async function getHomeData() {
       }),
     ])
 
-  return { banners, categories, featured, bestSellers, newArrivals, brands, flashSale }
+  return { banners, categories, featured, bestSellers, newArrivals, flashSale }
 }
 
 export default async function HomePage() {
-  const { banners, categories, featured, bestSellers, newArrivals, brands, flashSale } =
+  const { banners, categories, featured, bestSellers, newArrivals, flashSale } =
     await getHomeData()
 
   return (
@@ -148,14 +146,6 @@ export default async function HomePage() {
             products={bestSellers}
             viewAllHref="/search?sort=popular"
           />
-        </section>
-      )}
-
-      {brands.length > 0 && (
-        <section className="bg-secondary py-10">
-          <div className="container-site">
-            <BrandHighlights brands={brands} />
-          </div>
         </section>
       )}
 

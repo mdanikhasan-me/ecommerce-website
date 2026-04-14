@@ -4,7 +4,7 @@ import { db } from '@/backend/database'
 import { AddressManager } from '@/frontend/components/account/AddressManager'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'My Addresses | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Addresses' }
 
 export default async function AddressesPage() {
   const session = await auth()

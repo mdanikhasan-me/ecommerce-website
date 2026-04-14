@@ -6,7 +6,7 @@ import { Package, Plus, Eye, Pencil, ToggleLeft, ToggleRight } from 'lucide-reac
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'My Products | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Products' }
 
 export default async function SellerProductsPage() {
   const session = await auth()

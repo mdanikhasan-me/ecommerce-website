@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProductForm } from '@/frontend/components/seller/ProductForm'
 
-export const metadata: Metadata = { title: 'Edit Product | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Edit Product' }
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
   const session = await auth()

@@ -8,7 +8,7 @@ interface Props {
   searchParams: { page?: string; q?: string; category?: string; status?: string }
 }
 
-export const metadata = { title: 'Products | Admin' }
+export const metadata = { title: 'Admin Products' }
 
 export default async function AdminProductsPage({ searchParams }: Props) {
   const page = Math.max(1, parseInt(searchParams.page ?? '1'))

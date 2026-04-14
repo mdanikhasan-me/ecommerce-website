@@ -4,7 +4,7 @@ import { Star } from 'lucide-react'
 import { ReviewModerationActions } from '@/frontend/components/admin/ReviewModerationActions'
 
 interface Props { searchParams: { status?: string; page?: string } }
-export const metadata = { title: 'Reviews | Admin' }
+export const metadata = { title: 'Admin Reviews' }
 
 export default async function AdminReviewsPage({ searchParams }: Props) {
   const page = Math.max(1, parseInt(searchParams.page ?? '1'))

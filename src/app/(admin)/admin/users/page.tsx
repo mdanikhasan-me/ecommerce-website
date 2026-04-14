@@ -3,7 +3,7 @@ import { formatDate } from '@/backend/utils'
 import { Users } from 'lucide-react'
 
 interface Props { searchParams: { page?: string; q?: string; role?: string } }
-export const metadata = { title: 'Customers | Admin' }
+export const metadata = { title: 'Admin Customers' }
 
 export default async function AdminUsersPage({ searchParams }: Props) {
   const page = Math.max(1, parseInt(searchParams.page ?? '1'))

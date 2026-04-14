@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const seller = await db.seller.findUnique({ where: { slug: params.slug }, select: { storeName: true, description: true } })
   if (!seller) return {}
   return {
-    title: `${seller.storeName} | Boilabin`,
+    title: `Boilabin ${seller.storeName}`,
     description: seller.description ?? `Shop from ${seller.storeName} on Boilabin`,
   }
 }

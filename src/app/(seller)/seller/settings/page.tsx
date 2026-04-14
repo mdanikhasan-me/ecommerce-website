@@ -4,7 +4,7 @@ import { db } from '@/backend/database'
 import { SellerSettingsForm } from '@/frontend/components/seller/SellerSettingsForm'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Store Settings | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Store Settings' }
 
 export default async function SellerSettingsPage() {
   const session = await auth()

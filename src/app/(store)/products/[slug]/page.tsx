@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { getApprovedReviewStats, type ReviewAccessState } from '@/backend/reviews'
 import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { ReviewSection } from '@/frontend/components/product/ReviewSection'
-import { generateProductMetadata, generateProductJsonLd, generateBreadcrumbJsonLd, JsonLd, SEO } from '@/backend/seo'
+import { generateProductMetadata, generateProductJsonLd, generateBreadcrumbJsonLd, JsonLd } from '@/backend/seo'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -32,11 +34,25 @@ async function getProduct(slug: string) {
   })
 }
 
+async function getReviewDistribution(productId: string) {
+  const grouped = await db.review.groupBy({
+    by: ['rating'],
+    where: { productId, status: 'APPROVED' },
+    _count: { _all: true },
+  })
+
+  return [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: grouped.find((entry) => entry.rating === star)?._count._all ?? 0,
+  }))
+}
+
 // ─── SEO: Dynamic Metadata (title, description, OG, Twitter, keywords) ──────
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await getProduct(slug)
   if (!product) return { title: 'Product Not Found' }
+  const reviewStats = await getApprovedReviewStats(product.id)
 
   return generateProductMetadata({
     name: product.name,
@@ -48,8 +64,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     images: product.images.map((i) => ({ url: i.url, isPrimary: i.isPrimary })),
     category: product.category,
     brand: product.brand,
-    rating: product.rating,
-    reviewCount: product.reviewCount,
+    rating: reviewStats.rating,
+    reviewCount: reviewStats.reviewCount,
     stockQuantity: product.stockQuantity,
     tags: product.tags,
   })
@@ -59,24 +75,62 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params
   const product = await getProduct(slug)
   if (!product) notFound()
+  const session = await auth()
 
   // Update view count (fire and forget)
   db.product.update({ where: { id: product.id }, data: { viewCount: { increment: 1 } } }).catch(() => {})
 
-  // Related products
-  const related = await db.product.findMany({
-    where: {
-      categoryId: product.categoryId,
-      id: { not: product.id },
-      isActive: true,
-    },
-    take: 4,
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      brand: { select: { name: true, slug: true } },
-      category: { select: { name: true, slug: true } },
-    },
-  })
+  const [related, reviewStats, reviewDistribution, reviewAccessData] = await Promise.all([
+    db.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        id: { not: product.id },
+        isActive: true,
+      },
+      take: 4,
+      include: {
+        images: { where: { isPrimary: true }, take: 1 },
+        brand: { select: { name: true, slug: true } },
+        category: { select: { name: true, slug: true } },
+      },
+    }),
+    getApprovedReviewStats(product.id),
+    getReviewDistribution(product.id),
+    session?.user
+      ? Promise.all([
+          db.order.findFirst({
+            where: {
+              userId: session.user.id,
+              status: 'DELIVERED',
+              items: { some: { productId: product.id } },
+            },
+            select: { id: true },
+          }),
+          db.review.findUnique({
+            where: { productId_userId: { productId: product.id, userId: session.user.id } },
+            select: { status: true },
+          }),
+        ]).then(([deliveredOrder, existingReview]) => ({ deliveredOrder, existingReview }))
+      : Promise.resolve(null),
+  ])
+
+  const reviewAccess: ReviewAccessState = reviewAccessData
+    ? {
+        canReview: Boolean(reviewAccessData.deliveredOrder && !reviewAccessData.existingReview),
+        hasDeliveredPurchase: Boolean(reviewAccessData.deliveredOrder),
+        existingReviewStatus: reviewAccessData.existingReview?.status ?? null,
+      }
+    : {
+        canReview: false,
+        hasDeliveredPurchase: false,
+        existingReviewStatus: null,
+      }
+
+  const productWithLiveReviewStats = {
+    ...product,
+    rating: reviewStats.rating,
+    reviewCount: reviewStats.reviewCount,
+  }
 
   // ─── SEO: JSON-LD Structured Data ──────────────────────────────────────
   const productJsonLd = generateProductJsonLd({
@@ -89,8 +143,8 @@ export default async function ProductPage({ params }: Props) {
     category: product.category,
     brand: product.brand,
     sku: product.sku,
-    rating: product.rating,
-    reviewCount: product.reviewCount,
+    rating: reviewStats.rating,
+    reviewCount: reviewStats.reviewCount,
     stockQuantity: product.stockQuantity,
     reviews: product.reviews.map((r) => ({
       rating: r.rating,
@@ -123,7 +177,7 @@ export default async function ProductPage({ params }: Props) {
       </nav>
 
       {/* Main Product */}
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={productWithLiveReviewStats} />
 
       {/* Specifications */}
       {product.specifications.length > 0 && (
@@ -143,7 +197,12 @@ export default async function ProductPage({ params }: Props) {
       )}
 
       {/* Reviews */}
-      <ReviewSection product={product} reviews={product.reviews} />
+      <ReviewSection
+        product={productWithLiveReviewStats}
+        reviews={product.reviews}
+        distribution={reviewDistribution}
+        reviewAccess={reviewAccess}
+      />
 
       {/* Related Products */}
       {related.length > 0 && (

@@ -3,7 +3,7 @@ import { formatDate } from '@/backend/utils'
 import { Store, Eye, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'Seller Management | Admin' }
+export const metadata = { title: 'Admin Seller Management' }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   PENDING: { label: 'Pending', color: 'bg-amber-50 text-amber-700', icon: Clock },

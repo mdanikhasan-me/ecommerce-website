@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
 import { Package, ChevronRight } from 'lucide-react'
 
-export const metadata = { title: 'My Orders | Boilabin' }
+export const metadata = { title: 'Boilabin Orders' }
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-amber-50 text-amber-700',

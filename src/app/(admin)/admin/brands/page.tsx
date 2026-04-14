@@ -1,9 +1,9 @@
 import { db } from '@/backend/database'
 import { formatDate } from '@/backend/utils'
-import { Tag, Plus, Globe, Eye, EyeOff } from 'lucide-react'
+import { Tag, Plus, Eye, EyeOff, Pencil } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata = { title: 'Brands | Admin' }
+export const metadata = { title: 'Admin Brands' }
 
 export default async function AdminBrandsPage() {
   const brands = await db.brand.findMany({
@@ -20,6 +20,9 @@ export default async function AdminBrandsPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">{brands.length} brands</p>
         </div>
+        <Link href="/admin/brands/new" className="btn-primary flex items-center gap-2 text-sm">
+          <Plus className="h-4 w-4" /> Add Brand
+        </Link>
       </div>
 
       <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -33,6 +36,7 @@ export default async function AdminBrandsPage() {
                 <th className="text-center font-medium text-muted-foreground px-4 py-3">Featured</th>
                 <th className="text-center font-medium text-muted-foreground px-4 py-3">Status</th>
                 <th className="text-left font-medium text-muted-foreground px-4 py-3">Created</th>
+                <th className="text-right font-medium text-muted-foreground px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -63,6 +67,11 @@ export default async function AdminBrandsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(brand.createdAt)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Link href={`/admin/brands/${brand.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                      <Pencil className="h-4 w-4 text-muted-foreground" />
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

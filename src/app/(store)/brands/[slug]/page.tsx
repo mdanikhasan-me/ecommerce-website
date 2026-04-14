@@ -9,7 +9,7 @@ interface Props { params: { slug: string }; searchParams: { page?: string; sort?
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const brand = await db.brand.findUnique({ where: { slug: params.slug } })
   if (!brand) return { title: 'Brand Not Found' }
-  return { title: `${brand.name} | Boilabin`, description: brand.description ?? `Shop ${brand.name} products` }
+  return { title: `Boilabin ${brand.name}`, description: brand.description ?? `Shop ${brand.name} products` }
 }
 
 export default async function BrandPage({ params, searchParams }: Props) {

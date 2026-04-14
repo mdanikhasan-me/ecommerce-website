@@ -1,44 +1,60 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
-import { AdminPlaceholderPanel } from '@/frontend/components/admin/AdminPlaceholderPanel'
+import { CategoryEditorForm } from '@/frontend/components/admin/CategoryEditorForm'
 
 interface Props {
   params: Promise<{ id: string }>
 }
 
-export const metadata = { title: 'Edit Category | Admin' }
+export const metadata = { title: 'Admin Edit Category' }
 
 export default async function AdminCategoryDetailPage({ params }: Props) {
   const { id } = await params
-  const category = await db.category.findUnique({
-    where: { id },
-    include: {
-      parent: { select: { name: true } },
-      children: { select: { id: true } },
-      _count: { select: { products: true } },
-    },
-  })
+  const [category, categories] = await Promise.all([
+    db.category.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        image: true,
+        icon: true,
+        isActive: true,
+        sortOrder: true,
+        parentId: true,
+      },
+    }),
+    db.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        parentId: true,
+      },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    }),
+  ])
 
   if (!category) notFound()
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <h1 className="font-display text-xl font-bold">{category.name}</h1>
-        <div className="mt-3 grid gap-3 text-sm text-muted-foreground md:grid-cols-2">
-          <p>Slug: <span className="font-medium text-foreground">{category.slug}</span></p>
-          <p>Parent: <span className="font-medium text-foreground">{category.parent?.name ?? 'Top level'}</span></p>
-          <p>Products: <span className="font-medium text-foreground">{category._count.products}</span></p>
-          <p>Subcategories: <span className="font-medium text-foreground">{category.children.length}</span></p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold">{category.name}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Update category details, imagery, order, and hierarchy.
+          </p>
         </div>
+        <Link href="/admin/categories" className="btn-outline">
+          Back to Categories
+        </Link>
       </div>
 
-      <AdminPlaceholderPanel
-        title="Category Editor"
-        description="This category route is now working, but the edit form has not been built yet."
-        backHref="/admin/categories"
-        backLabel="Back to Categories"
-      />
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <CategoryEditorForm categories={categories} category={category} />
+      </div>
     </div>
   )
 }

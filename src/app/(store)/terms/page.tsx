@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Terms of Service | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Terms of Service' }
 export default function TermsPage() {
   return (
     <div className="container-site py-12">

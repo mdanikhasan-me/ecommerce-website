@@ -2,11 +2,11 @@ import { auth } from '@/backend/auth'
 import { redirect, notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { formatPrice, formatDate } from '@/backend/utils'
-import { ArrowLeft, Package, MapPin, CreditCard, Clock, CheckCircle, Truck, XCircle } from 'lucide-react'
+import { ArrowLeft, Package, MapPin, CreditCard, Clock, CheckCircle, Truck, Star } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Order Detail | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Order Details' }
 
 const TIMELINE_STEPS = [
   { status: 'PENDING', label: 'Order Placed', icon: Clock },
@@ -16,17 +16,17 @@ const TIMELINE_STEPS = [
   { status: 'DELIVERED', label: 'Delivered', icon: CheckCircle },
 ]
 
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
+export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user) redirect('/auth/login')
+  const { id } = await params
 
-  const order = await db.order.findUnique({
-    where: { id: params.id, userId: session.user.id },
+  const order = await db.order.findFirst({
+    where: { id, userId: session.user.id },
     include: {
       items: {
         include: {
           product: { select: { name: true, slug: true, images: { where: { isPrimary: true }, take: 1 } } },
-          variant: { select: { name: true, value: true } },
         },
       },
       shippingAddress: true,
@@ -37,6 +37,16 @@ export default async function OrderDetailPage({ params }: { params: { id: string
 
   const isCancelled = order.status === 'CANCELLED'
   const statusIdx = TIMELINE_STEPS.findIndex((s) => s.status === order.status)
+  const reviewStatuses = order.status === 'DELIVERED' && order.items.length > 0
+    ? await db.review.findMany({
+        where: {
+          userId: session.user.id,
+          productId: { in: order.items.map((item) => item.productId) },
+        },
+        select: { productId: true, status: true },
+      })
+    : []
+  const reviewStatusByProductId = new Map(reviewStatuses.map((review) => [review.productId, review.status]))
 
   return (
     <div className="container-site py-8">
@@ -103,13 +113,35 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                       <Link href={`/products/${item.product.slug}`} className="font-medium text-sm hover:text-primary transition-colors">
                         {item.product.name}
                       </Link>
-                      {item.variant && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{item.variant.name}: {item.variant.value}</p>
+                      {item.variantName && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>
                       )}
                       <div className="flex items-center gap-3 mt-1 text-sm">
                         <span className="text-muted-foreground">Qty: {item.quantity}</span>
                         <span className="font-semibold">{formatPrice(item.total)}</span>
                       </div>
+                      {order.status === 'DELIVERED' && (
+                        <div className="mt-2">
+                          {reviewStatusByProductId.get(item.productId) === 'APPROVED' && (
+                            <span className="text-xs font-medium text-green-600">Review submitted</span>
+                          )}
+                          {reviewStatusByProductId.get(item.productId) === 'PENDING' && (
+                            <span className="text-xs font-medium text-amber-600">Review pending</span>
+                          )}
+                          {reviewStatusByProductId.get(item.productId) === 'REJECTED' && (
+                            <span className="text-xs font-medium text-red-600">Review unavailable</span>
+                          )}
+                          {!reviewStatusByProductId.has(item.productId) && (
+                            <Link
+                              href={`/products/${item.product.slug}#write-review`}
+                              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+                            >
+                              <Star className="size-3.5" />
+                              Leave a review
+                            </Link>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

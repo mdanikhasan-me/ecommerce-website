@@ -6,22 +6,45 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   Search, ShoppingCart, Heart, User, Menu, X, ChevronDown,
-  Package, LogOut, LayoutDashboard, MapPin, Zap
+  Package, LogOut, LayoutDashboard, MapPin, Zap, Tag
 } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
 import { cn } from '@/backend/utils'
 
 const NAV_CATEGORIES = [
-  { name: 'Electronics', slug: 'electronics', sub: ['Mobile Phones', 'Laptops', 'Audio', 'Wearables', 'Gaming'] },
-  { name: 'Fashion', slug: 'fashion', sub: ["Men's Fashion", "Women's Fashion", 'Accessories'] },
-  { name: 'Home & Appliances', slug: 'home-appliances', sub: ['Kitchen', 'Furniture', 'Decor'] },
-  { name: 'Beauty', slug: 'beauty-health', sub: ['Skincare', 'Haircare', 'Health'] },
-  { name: 'Sports', slug: 'sports-fitness', sub: ['Footwear', 'Equipment', 'Clothing'] },
+  {
+    name: 'Electronics',
+    slug: 'electronics',
+    sub: [
+      { name: 'Mobile Phones', slug: 'mobile-phones' },
+      { name: 'Laptops', slug: 'laptops' },
+      { name: 'Audio', slug: 'audio' },
+      { name: 'Wearables', slug: 'wearables' },
+    ],
+  },
+  {
+    name: 'Fashion',
+    slug: 'fashion',
+    sub: [
+      { name: "Men's Fashion", slug: 'mens-fashion' },
+      { name: "Women's Fashion", slug: 'womens-fashion' },
+    ],
+  },
+  {
+    name: 'Home & Appliances',
+    slug: 'home-appliances',
+    sub: [{ name: 'Kitchen', slug: 'kitchen' }],
+  },
+  { name: 'Beauty & Health', slug: 'beauty-health', sub: [] },
+  { name: 'Sports & Fitness', slug: 'sports-fitness', sub: [] },
 ]
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [suggestions, setSuggestions] = useState<{ name: string; slug: string }[]>([])
+  type Suggestion =
+    | { type: 'brand'; name: string; slug: string; href: string }
+    | { type: 'product'; name: string; slug: string; href: string; brandName: string | null }
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -126,13 +149,23 @@ export function Header() {
                 <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
                   {suggestions.map((s) => (
                     <Link
-                      key={s.slug}
-                      href={`/products/${s.slug}`}
+                      key={`${s.type}-${s.slug}`}
+                      href={s.href}
                       className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors text-sm"
                       onClick={() => setShowSuggestions(false)}
                     >
-                      <Search className="h-3.5 w-3.5 text-muted-foreground" />
-                      {s.name}
+                      {s.type === 'brand' ? (
+                        <Tag className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      ) : (
+                        <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      )}
+                      <span className="flex-1 min-w-0 truncate">{s.name}</span>
+                      {s.type === 'brand' && (
+                        <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full flex-shrink-0">Brand</span>
+                      )}
+                      {s.type === 'product' && s.brandName && (
+                        <span className="text-xs text-muted-foreground flex-shrink-0">{s.brandName}</span>
+                      )}
                     </Link>
                   ))}
                 </div>
@@ -242,7 +275,7 @@ export function Header() {
               <div
                 key={cat.slug}
                 className="relative group"
-                onMouseEnter={() => setHoveredCategory(cat.slug)}
+                onMouseEnter={() => cat.sub.length > 0 && setHoveredCategory(cat.slug)}
                 onMouseLeave={() => setHoveredCategory(null)}
               >
                 <Link
@@ -255,19 +288,19 @@ export function Header() {
                   )}
                 >
                   {cat.name}
-                  <ChevronDown className="h-3 w-3" />
+                  {cat.sub.length > 0 && <ChevronDown className="h-3 w-3" />}
                 </Link>
 
-                {hoveredCategory === cat.slug && (
+                {hoveredCategory === cat.slug && cat.sub.length > 0 && (
                   <div className="absolute left-0 top-full z-50 w-48 pt-2">
                     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
                       {cat.sub.map((sub) => (
                         <Link
-                          key={sub}
-                          href={`/category/${cat.slug}?sub=${encodeURIComponent(sub)}`}
+                          key={sub.slug}
+                          href={`/category/${sub.slug}`}
                           className="block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary transition-colors"
                         >
-                          {sub}
+                          {sub.name}
                         </Link>
                       ))}
                     </div>
@@ -306,7 +339,7 @@ export function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {cat.name}
-                <ChevronDown className="h-4 w-4" />
+                {cat.sub.length > 0 && <ChevronDown className="h-4 w-4" />}
               </Link>
             ))}
             <Link href="/deals" className="py-2.5 text-sm font-medium text-red-500 border-b border-border" onClick={() => setIsMobileMenuOpen(false)}>

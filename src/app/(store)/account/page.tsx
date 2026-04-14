@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Package, MapPin, Heart, Bell, Settings, ChevronRight } from 'lucide-react'
 import { formatDate, formatPrice } from '@/backend/utils'
 
-export const metadata = { title: 'My Account | Boilabin' }
+export const metadata = { title: 'Boilabin Account' }
 
 export default async function AccountPage() {
   const session = await auth()

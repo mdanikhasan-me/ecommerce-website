@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-export const metadata: Metadata = { title: 'Privacy Policy | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Privacy Policy' }
 export default function PrivacyPage() {
   return (
     <div className="container-site py-12">

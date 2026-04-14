@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Top Brands | Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Brands' }
 
 export default async function BrandsPage() {
   const brands = await db.brand.findMany({

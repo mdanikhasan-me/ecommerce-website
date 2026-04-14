@@ -1,0 +1,28 @@
+<svg width="640" height="640" viewBox="0 0 640 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="phoneBlueBody" x1="160" y1="102" x2="392" y2="494" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2D56E4"/>
+      <stop offset="1" stop-color="#16369D"/>
+    </linearGradient>
+    <linearGradient id="phoneBlueScreen" x1="210" y1="134" x2="365" y2="410" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9FBFF"/>
+      <stop offset="1" stop-color="#E8F0FF"/>
+    </linearGradient>
+    <filter id="phoneBlueShadow" x="86" y="76" width="442" height="476" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="30" stdDeviation="28" flood-color="#10245C" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="640" height="640" rx="44" fill="#F5F8FF"/>
+  <circle cx="484" cy="138" r="92" fill="#D9E6FF"/>
+  <circle cx="188" cy="510" r="122" fill="#DCE8FF"/>
+  <ellipse cx="322" cy="564" rx="164" ry="28" fill="#C9D8FF" fill-opacity="0.7"/>
+  <g filter="url(#phoneBlueShadow)">
+    <rect x="160" y="104" width="238" height="386" rx="54" fill="url(#phoneBlueBody)"/>
+    <rect x="184" y="132" width="190" height="310" rx="36" fill="url(#phoneBlueScreen)"/>
+    <rect x="250" y="456" width="58" height="10" rx="5" fill="#8EABFF"/>
+    <circle cx="279" cy="476" r="12" fill="#2748CC"/>
+    <rect x="418" y="174" width="54" height="172" rx="27" fill="#BFD3FF"/>
+    <rect x="438" y="334" width="14" height="50" rx="7" fill="#2748CC"/>
+    <path d="M420 392C428 404 440 410 452 410C464 410 476 404 484 392" stroke="#2748CC" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>

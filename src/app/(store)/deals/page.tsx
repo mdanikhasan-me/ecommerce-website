@@ -4,7 +4,7 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Flash Deals | Boilabin', description: 'Best deals and flash sales on Boilabin' }
+export const metadata: Metadata = { title: 'Boilabin Flash Deals', description: 'Best deals and flash sales on Boilabin' }
 
 export default async function DealsPage() {
   const [flashSale, saleProducts] = await Promise.all([

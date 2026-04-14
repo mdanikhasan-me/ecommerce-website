@@ -2,7 +2,7 @@ import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice } from '@/backend/utils'
 
-export const metadata = { title: 'Inventory | Admin' }
+export const metadata = { title: 'Admin Inventory' }
 
 export default async function AdminInventoryPage() {
   const products = await db.product.findMany({

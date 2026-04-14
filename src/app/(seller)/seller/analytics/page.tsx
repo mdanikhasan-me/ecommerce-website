@@ -5,7 +5,7 @@ import { formatPrice } from '@/backend/utils'
 import { TrendingUp, ShoppingBag, Package, Star, Eye, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Analytics | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Analytics' }
 
 export default async function SellerAnalyticsPage() {
   const session = await auth()

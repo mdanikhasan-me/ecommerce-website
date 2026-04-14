@@ -6,7 +6,7 @@ import { Package, Eye, Clock, CheckCircle, Truck, XCircle } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Orders | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Orders' }
 
 const STATUS_CONFIG: Record<string, { icon: any; color: string; bg: string }> = {
   PENDING: { icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },

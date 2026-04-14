@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { SellerOrderActions } from '@/frontend/components/seller/SellerOrderActions'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Order Detail | Boilabin Seller' }
+export const metadata: Metadata = { title: 'Seller Order Details' }
 
 export default async function SellerOrderDetailPage({ params }: { params: { id: string } }) {
   const session = await auth()

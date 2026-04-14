@@ -5,26 +5,37 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import type { Metadata } from 'next'
 
+type CategorySearchParams = {
+  sort?: string
+  brand?: string
+  minPrice?: string
+  maxPrice?: string
+  page?: string
+}
+
 interface Props {
-  params: { slug: string }
-  searchParams: { sort?: string; brand?: string; minPrice?: string; maxPrice?: string; page?: string }
+  params: Promise<{ slug: string }>
+  searchParams?: Promise<CategorySearchParams>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const category = await db.category.findUnique({ where: { slug: params.slug } })
+  const { slug } = await params
+  const category = await db.category.findUnique({ where: { slug } })
   if (!category) return { title: 'Category Not Found' }
-  return { title: `${category.name} | Boilabin`, description: category.description ?? `Shop ${category.name} products` }
+  return { title: `Boilabin ${category.name}`, description: category.description ?? `Shop ${category.name} products` }
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
+  const { slug } = await params
+  const resolvedSearchParams = (await searchParams) ?? {}
   const category = await db.category.findUnique({
-    where: { slug: params.slug, isActive: true },
+    where: { slug, isActive: true },
     include: { children: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } } },
   })
 
   if (!category) notFound()
 
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const page = Math.max(1, parseInt(resolvedSearchParams.page ?? '1'))
   const limit = 24
   const skip = (page - 1) * limit
 
@@ -32,15 +43,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const categoryIds = [category.id, ...category.children.map((c) => c.id)]
 
   const where: any = { isActive: true, categoryId: { in: categoryIds } }
-  if (searchParams.brand) where.brand = { slug: searchParams.brand }
-  if (searchParams.minPrice) where.basePrice = { ...where.basePrice, gte: parseFloat(searchParams.minPrice) }
-  if (searchParams.maxPrice) where.basePrice = { ...where.basePrice, lte: parseFloat(searchParams.maxPrice) }
+  if (resolvedSearchParams.brand) where.brand = { slug: resolvedSearchParams.brand }
+  if (resolvedSearchParams.minPrice) where.basePrice = { ...where.basePrice, gte: parseFloat(resolvedSearchParams.minPrice) }
+  if (resolvedSearchParams.maxPrice) where.basePrice = { ...where.basePrice, lte: parseFloat(resolvedSearchParams.maxPrice) }
 
   let orderBy: any = { soldCount: 'desc' }
-  if (searchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (searchParams.sort === 'price_asc') orderBy = { basePrice: 'asc' }
-  else if (searchParams.sort === 'price_desc') orderBy = { basePrice: 'desc' }
-  else if (searchParams.sort === 'rating') orderBy = { rating: 'desc' }
+  if (resolvedSearchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
+  else if (resolvedSearchParams.sort === 'price_asc') orderBy = { basePrice: 'asc' }
+  else if (resolvedSearchParams.sort === 'price_desc') orderBy = { basePrice: 'desc' }
+  else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
 
   const [products, total, brands] = await Promise.all([
     db.product.findMany({
@@ -82,7 +93,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {category.children.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
           <a
-            href={`/category/${params.slug}`}
+            href={`/category/${slug}`}
             className="flex-shrink-0 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium"
           >
             All
@@ -101,13 +112,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <SearchFiltersPanel brands={brands} categories={[]} searchParams={searchParams as Record<string, string>} />
+          <SearchFiltersPanel brands={brands} categories={[]} searchParams={resolvedSearchParams as Record<string, string>} />
         </aside>
 
         <div className="flex-1 min-w-0">
           {products.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-4xl mb-4">📦</p>
+              <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">Empty shelf</p>
               <h2 className="font-display text-xl font-semibold">No products found</h2>
               <p className="text-muted-foreground mt-2">Try adjusting your filters</p>
             </div>
@@ -122,7 +133,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <a
                       key={p}
-                      href={`/category/${params.slug}?page=${p}${searchParams.brand ? `&brand=${searchParams.brand}` : ''}`}
+                      href={`/category/${slug}?page=${p}${resolvedSearchParams.brand ? `&brand=${resolvedSearchParams.brand}` : ''}`}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'}`}
                     >
                       {p}

@@ -1,9 +1,9 @@
 import { db } from '@/backend/database'
 import Link from 'next/link'
-import { Plus, Ticket } from 'lucide-react'
+import { Plus, Ticket, Pencil } from 'lucide-react'
 import { formatDate, formatPrice } from '@/backend/utils'
 
-export const metadata = { title: 'Coupons | Admin' }
+export const metadata = { title: 'Admin Coupons' }
 
 export default async function AdminCouponsPage() {
   const coupons = await db.coupon.findMany({ orderBy: { createdAt: 'desc' } })
@@ -28,12 +28,13 @@ export default async function AdminCouponsPage() {
               <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Usage</th>
               <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
               <th className="text-right px-4 py-3 font-semibold text-muted-foreground hidden sm:table-cell">Expires</th>
+              <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {coupons.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-muted-foreground">
+                <td colSpan={8} className="py-12 text-center text-muted-foreground">
                   <Ticket className="h-8 w-8 mx-auto mb-3 opacity-30" />
                   No coupons created yet
                 </td>
@@ -57,6 +58,11 @@ export default async function AdminCouponsPage() {
                 </td>
                 <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell text-xs">
                   {coupon.expiresAt ? formatDate(coupon.expiresAt) : 'No expiry'}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link href={`/admin/coupons/${coupon.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                    <Pencil className="h-4 w-4 text-muted-foreground" />
+                  </Link>
                 </td>
               </tr>
             ))}

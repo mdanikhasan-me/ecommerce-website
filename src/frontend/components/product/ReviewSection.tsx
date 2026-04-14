@@ -1,21 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Star, ThumbsUp, Camera, CheckCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Star, CheckCircle } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { formatDateRelative, cn } from '@/backend/utils'
 import toast from 'react-hot-toast'
 
 interface Review {
   id: string; rating: number; title?: string | null; body: string; images: string[];
-  isVerifiedBuy: boolean; helpfulCount: number; createdAt: Date;
+  isVerifiedBuy: boolean; helpfulCount: number; createdAt: string | Date;
   user: { name?: string | null; image?: string | null }
+}
+
+interface ReviewAccess {
+  canReview: boolean
+  hasDeliveredPurchase: boolean
+  existingReviewStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | null
+}
+
+interface ReviewDistribution {
+  star: number
+  count: number
 }
 
 interface Props {
   product: { id: string; name: string; rating: number; reviewCount: number }
   reviews: Review[]
+  distribution: ReviewDistribution[]
+  reviewAccess: ReviewAccess
 }
 
 const RATING_LABELS = ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent']
@@ -34,18 +48,22 @@ function StarBar({ count, total, star }: { count: number; total: number; star: n
   )
 }
 
-export function ReviewSection({ product, reviews }: Props) {
+export function ReviewSection({ product, reviews, distribution, reviewAccess }: Props) {
+  const router = useRouter()
   const { data: session } = useSession()
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({ rating: 0, title: '', body: '', hoverRating: 0 })
   const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'lowest' | 'helpful'>('newest')
+  const canWriteReview = Boolean(session && reviewAccess.canReview)
+  const visibleReviewLabel = product.reviewCount > reviews.length
+    ? `Showing ${reviews.length} of ${product.reviewCount} reviews`
+    : `${product.reviewCount} reviews`
 
-  // Rating distribution
-  const dist = [5, 4, 3, 2, 1].map((s) => ({
-    star: s,
-    count: reviews.filter((r) => r.rating === s).length,
-  }))
+  useEffect(() => {
+    if (!canWriteReview || typeof window === 'undefined') return
+    if (window.location.hash === '#write-review') setShowForm(true)
+  }, [canWriteReview])
 
   const sorted = [...reviews].sort((a, b) => {
     if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -54,9 +72,23 @@ export function ReviewSection({ product, reviews }: Props) {
     return b.helpfulCount - a.helpfulCount
   })
 
+  const reviewStatusLabel = reviewAccess.existingReviewStatus === 'APPROVED'
+    ? 'Your review is live'
+    : reviewAccess.existingReviewStatus === 'PENDING'
+      ? 'Review pending'
+      : reviewAccess.existingReviewStatus === 'REJECTED'
+        ? 'Review unavailable'
+        : !reviewAccess.hasDeliveredPurchase && session
+          ? 'Review unlocks after delivery'
+          : null
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!session) { toast.error('Please sign in to leave a review'); return }
+    if (!canWriteReview) {
+      toast.error(reviewAccess.hasDeliveredPurchase ? 'You already reviewed this product' : 'Review unlocks after delivery')
+      return
+    }
     if (form.rating === 0) { toast.error('Please select a rating'); return }
     if (form.body.length < 20) { toast.error('Review must be at least 20 characters'); return }
 
@@ -67,12 +99,14 @@ export function ReviewSection({ product, reviews }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: product.id, ...form }),
       })
-      if (!res.ok) throw new Error()
-      toast.success('Review submitted! It will appear after moderation.')
+      const payload = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(payload?.error || 'Failed to submit review')
+      toast.success('Your review is live.')
       setShowForm(false)
       setForm({ rating: 0, title: '', body: '', hoverRating: 0 })
-    } catch {
-      toast.error('Failed to submit review')
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to submit review')
     } finally {
       setSubmitting(false)
     }
@@ -86,11 +120,16 @@ export function ReviewSection({ product, reviews }: Props) {
             Customer Reviews
             <span className="text-muted-foreground font-normal text-base ml-2">({product.reviewCount})</span>
           </h3>
-          {session && !showForm && (
-            <button onClick={() => setShowForm(true)} className="btn-primary py-2 text-sm">
-              Write a Review
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {reviewStatusLabel && (
+              <span className="text-xs font-medium text-muted-foreground">{reviewStatusLabel}</span>
+            )}
+            {canWriteReview && !showForm && (
+              <button onClick={() => setShowForm(true)} className="btn-primary py-2 text-sm">
+                Leave a Review
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="p-6">
@@ -106,7 +145,7 @@ export function ReviewSection({ product, reviews }: Props) {
               <span className="text-sm text-muted-foreground">{product.reviewCount} reviews</span>
             </div>
             <div className="flex-1 space-y-2">
-              {dist.map(({ star, count }) => (
+              {distribution.map(({ star, count }) => (
                 <StarBar key={star} count={count} total={product.reviewCount} star={star} />
               ))}
             </div>
@@ -161,10 +200,10 @@ export function ReviewSection({ product, reviews }: Props) {
 
           {/* Sort */}
           <div className="flex items-center justify-between mb-5">
-            <p className="text-sm font-medium">{reviews.length} reviews</p>
+            <p className="text-sm font-medium">{visibleReviewLabel}</p>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'newest' | 'highest' | 'lowest' | 'helpful')}
               className="text-sm border border-input rounded-lg px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="newest">Newest First</option>
@@ -178,10 +217,11 @@ export function ReviewSection({ product, reviews }: Props) {
           {sorted.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground">
               <Star className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p>No reviews yet. Be the first to review!</p>
-              {session && !showForm && (
-                <button onClick={() => setShowForm(true)} className="mt-3 btn-primary">Write a Review</button>
+              <p>No customer reviews yet.</p>
+              {canWriteReview && !showForm && (
+                <button onClick={() => setShowForm(true)} className="mt-3 btn-primary">Leave a Review</button>
               )}
+              {!canWriteReview && reviewStatusLabel && <p className="mt-3 text-sm">{reviewStatusLabel}</p>}
             </div>
           ) : (
             <div className="space-y-6">
@@ -229,10 +269,11 @@ export function ReviewSection({ product, reviews }: Props) {
                         </div>
                       )}
 
-                      <button className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                        <ThumbsUp className="h-3.5 w-3.5" />
-                        Helpful ({review.helpfulCount})
-                      </button>
+                      {review.helpfulCount > 0 && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {review.helpfulCount} {review.helpfulCount === 1 ? 'shopper found' : 'shoppers found'} this helpful
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

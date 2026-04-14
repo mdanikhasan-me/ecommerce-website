@@ -7,7 +7,7 @@ interface Props {
   searchParams: { page?: string; status?: string; q?: string }
 }
 
-export const metadata = { title: 'Orders | Admin' }
+export const metadata = { title: 'Admin Orders' }
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-amber-50 text-amber-700',
