@@ -10,13 +10,14 @@ import {
 import { cn } from '@/backend/utils'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Categories', href: '/admin/categories', icon: Grid3X3 },
   { label: 'Brands', href: '/admin/brands', icon: Tag },
   { label: 'Inventory', href: '/admin/inventory', icon: Warehouse },
   { label: 'Coupons', href: '/admin/coupons', icon: Ticket },
+  { label: 'Flash Sales', href: '/admin/flash-sales', icon: Zap },
   { label: 'Banners', href: '/admin/banners', icon: Image },
   { label: 'Reviews', href: '/admin/reviews', icon: Star },
   { label: 'Customers', href: '/admin/users', icon: Users },
@@ -38,7 +39,7 @@ export function AdminSidebar({ role }: { role: string }) {
     <aside className="w-60 bg-foreground text-background flex flex-col flex-shrink-0 overflow-y-auto">
       {/* Logo */}
       <div className="p-5 border-b border-white/10">
-        <Link href="/admin" className="flex items-center gap-2.5">
+        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-white font-display font-bold text-lg">B</span>
           </div>

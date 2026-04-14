@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
@@ -112,11 +113,11 @@ export default async function ProductPage({ params }: Props) {
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="/" className="hover:text-foreground transition-colors">Home</a>
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span>/</span>
-        <a href={`/category/${product.category.slug}`} className="hover:text-foreground transition-colors capitalize">
+        <Link href={`/category/${product.category.slug}`} className="hover:text-foreground transition-colors capitalize">
           {product.category.name}
-        </a>
+        </Link>
         <span>/</span>
         <span className="text-foreground truncate max-w-[200px]">{product.name}</span>
       </nav>

@@ -40,7 +40,7 @@ export default async function SellerDashboardPage() {
       <div className="max-w-5xl">
         <div className="mb-8">
           <h1 className="font-display text-2xl font-bold">Welcome, {seller.storeName}</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Here's your store overview</p>
+          <p className="text-muted-foreground text-sm mt-0.5">Here&apos;s your store overview</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

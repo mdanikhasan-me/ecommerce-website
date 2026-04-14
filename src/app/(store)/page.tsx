@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
 }
 
-export const revalidate = 300 // 5 minutes
+export const revalidate = 300
 
 async function getHomeData() {
   const [banners, categories, featured, bestSellers, newArrivals, brands, flashSale] =
@@ -103,22 +103,18 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* SEO: Organization + WebSite + OnlineStore structured data */}
       <JsonLd data={[
         generateOrganizationJsonLd(),
         generateWebsiteJsonLd(),
         generateLocalBusinessJsonLd(),
       ]} />
 
-      {/* Hero */}
       <HeroBanner banners={banners} />
 
-      {/* Categories */}
       <section className="container-site py-10">
         <FeaturedCategories categories={categories} />
       </section>
 
-      {/* Flash Sale */}
       {flashSale && flashSale.items.length > 0 && (
         <section className="bg-accent/5 border-y border-border py-10">
           <div className="container-site">
@@ -129,7 +125,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Featured Products */}
       {featured.length > 0 && (
         <section className="container-site py-10">
           <ProductGrid
@@ -141,12 +136,10 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Promo Banners */}
       <section className="container-site py-4">
         <PromoSection />
       </section>
 
-      {/* Best Sellers */}
       {bestSellers.length > 0 && (
         <section className="container-site py-10">
           <ProductGrid
@@ -158,7 +151,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Brand Highlights */}
       {brands.length > 0 && (
         <section className="bg-secondary py-10">
           <div className="container-site">
@@ -167,7 +159,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* New Arrivals */}
       {newArrivals.length > 0 && (
         <section className="container-site py-10">
           <ProductGrid
@@ -179,7 +170,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Newsletter */}
       <NewsletterSection />
     </div>
   )

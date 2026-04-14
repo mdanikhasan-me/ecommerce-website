@@ -6,7 +6,7 @@ import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Shield, Ref
 const TRUST_FEATURES = [
   { icon: Truck, title: 'Free Delivery', desc: 'On orders over ৳2,000' },
   { icon: Shield, title: 'Secure Payments', desc: '100% protected checkout' },
-  { icon: RefreshCw, title: 'Easy Returns', desc: '7-day return policy' },
+  { icon: RefreshCw, title: 'Easy Returns', desc: '7 day return policy' },
   { icon: CreditCard, title: 'Multiple Payments', desc: 'bKash, Nagad, Cards, COD' },
 ]
 
@@ -44,7 +44,7 @@ export function Footer() {
               <span className="font-display font-bold text-xl">Boilabin</span>
             </Link>
             <p className="text-sm text-white/60 leading-relaxed mb-5 max-w-sm">
-              Bangladesh's premium online store. Curated products, fast delivery, and a shopping experience you can trust.
+              Bangladesh&apos;s premium online store. Quality products, fast delivery, and a shopping experience you can trust.
             </p>
             <div className="flex flex-col gap-2 text-sm text-white/60">
               <a href="mailto:hello@boilabin.com" className="flex items-center gap-2 hover:text-primary transition-colors">

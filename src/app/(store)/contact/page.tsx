@@ -22,7 +22,7 @@ export default function ContactPage() {
     <div className="container-site py-12">
       <div className="max-w-4xl">
         <h1 className="font-display text-3xl font-bold mb-2">Contact Us</h1>
-        <p className="text-muted-foreground mb-10">We're here to help. Reach out any time.</p>
+        <p className="text-muted-foreground mb-10">We&apos;re here to help. Reach out any time.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Info */}

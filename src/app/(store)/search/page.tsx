@@ -97,7 +97,7 @@ export default async function SearchPage({ searchParams }: Props) {
       <div className="mb-6">
         {searchParams.q ? (
           <h1 className="font-display text-2xl font-bold">
-            Search results for <span className="text-primary">"{searchParams.q}"</span>
+            Search results for <span className="text-primary">&quot;{searchParams.q}&quot;</span>
             <span className="text-base font-normal text-muted-foreground ml-2">({total} products)</span>
           </h1>
         ) : (

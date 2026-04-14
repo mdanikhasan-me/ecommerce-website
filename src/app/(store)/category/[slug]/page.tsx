@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
@@ -64,7 +65,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <div className="container-site py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-        <a href="/">Home</a>
+        <Link href="/">Home</Link>
         <span>/</span>
         <span className="text-foreground">{category.name}</span>
       </nav>

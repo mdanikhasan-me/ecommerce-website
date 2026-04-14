@@ -8,10 +8,17 @@ import { useEffect, useState } from 'react'
 
 export default function WishlistPage() {
   const { items } = useWishlistStore()
+  const [isHydrated, setIsHydrated] = useState(false)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const visibleItems = isHydrated ? items : []
 
   useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isHydrated) return
     if (items.length === 0) { setLoading(false); return }
     const fetchProducts = async () => {
       const res = await fetch(`/api/products?ids=${items.join(',')}`)
@@ -20,16 +27,16 @@ export default function WishlistPage() {
       setLoading(false)
     }
     fetchProducts()
-  }, [items])
+  }, [isHydrated, items])
 
   return (
     <div className="container-site py-8">
       <h1 className="font-display text-2xl font-bold mb-6 flex items-center gap-2">
         <Heart className="h-6 w-6 text-primary" /> My Wishlist
-        <span className="text-muted-foreground font-normal text-base">({items.length} items)</span>
+        <span className="text-muted-foreground font-normal text-base">({visibleItems.length} items)</span>
       </h1>
 
-      {items.length === 0 ? (
+      {visibleItems.length === 0 ? (
         <div className="text-center py-20">
           <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
           <h2 className="font-display text-xl font-semibold">Your wishlist is empty</h2>
@@ -38,7 +45,7 @@ export default function WishlistPage() {
         </div>
       ) : loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {items.map((_, i) => (
+          {visibleItems.map((_, i) => (
             <div key={i} className="aspect-square bg-secondary animate-pulse rounded-2xl" />
           ))}
         </div>

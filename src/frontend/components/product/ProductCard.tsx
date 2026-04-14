@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, ShoppingCart, Star, Eye, BarChart2 } from 'lucide-react'
@@ -15,15 +16,21 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className, layout = 'grid' }: ProductCardProps) {
+  const [isHydrated, setIsHydrated] = useState(false)
   const { addItem, openCart } = useCartStore()
   const { toggle, has } = useWishlistStore()
   const { add: addCompare, has: hasCompare } = useCompareStore()
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
   const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
   const { label: stockLabel, color: stockColor, inStock } = getStockStatus(product.stockQuantity)
   const price = product.salePrice ?? product.basePrice
-  const isWished = has(product.id)
+  const isWished = isHydrated && has(product.id)
+  const isCompared = isHydrated && hasCompare(product.id)
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -47,8 +54,9 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    const currentlyWished = has(product.id)
     toggle(product.id)
-    toast.success(isWished ? 'Removed from wishlist' : 'Added to wishlist')
+    toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
   }
 
   if (layout === 'list') {
@@ -90,7 +98,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
       href={`/products/${product.slug}`}
       className={cn('product-card group block', className)}
     >
-      {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-muted rounded-t-xl">
         {primaryImage ? (
           <Image
@@ -106,14 +113,12 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           </div>
         )}
 
-        {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {discount > 0 && <span className="badge-sale">{discount}% off</span>}
           {product.isNew && <span className="badge-new">New</span>}
           {product.isBestSeller && <span className="badge-bestseller">Best Seller</span>}
         </div>
 
-        {/* Actions Overlay */}
         <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
         <div className="absolute top-2 right-2 flex flex-col gap-1.5 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
           <button
@@ -135,7 +140,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
             }}
             className={cn(
               'h-8 w-8 rounded-lg bg-background shadow-md flex items-center justify-center hover:bg-primary hover:text-white transition-colors',
-              hasCompare(product.id) && 'bg-primary/10 text-primary'
+              isCompared && 'bg-primary/10 text-primary'
             )}
             aria-label="Compare"
           >
@@ -143,7 +148,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           </button>
         </div>
 
-        {/* Add to Cart Overlay */}
         {inStock && (
           <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button
@@ -157,7 +161,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         )}
       </div>
 
-      {/* Info */}
       <div className="p-3">
         {product.brand && (
           <p className="text-xs text-muted-foreground mb-1">{product.brand.name}</p>
@@ -166,7 +169,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           {product.name}
         </h3>
 
-        {/* Rating */}
         <div className="flex items-center gap-1 mt-1.5">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
@@ -177,7 +179,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           <span className="text-xs text-muted-foreground ml-1">({product.reviewCount})</span>
         </div>
 
-        {/* Price */}
         <div className="flex items-baseline gap-2 mt-2">
           <span className="price-current">{formatPrice(price)}</span>
           {product.salePrice && (
@@ -185,14 +186,11 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           )}
         </div>
 
-        {/* Stock */}
         <p className={cn('text-xs mt-1', stockColor)}>{stockLabel}</p>
       </div>
     </Link>
   )
 }
-
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 export function ProductCardSkeleton() {
   return (

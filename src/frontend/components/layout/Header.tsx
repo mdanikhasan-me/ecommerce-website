@@ -176,37 +176,39 @@ export function Header() {
                     <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block" />
                   </button>
 
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-xl shadow-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <div className="p-3 border-b border-border">
-                      <p className="text-sm font-semibold truncate">{session.user.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
-                    </div>
-                    <div className="p-1">
-                      {(session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
-                        <Link href="/admin" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-primary font-medium">
-                          <LayoutDashboard className="h-4 w-4" />
-                          Admin Panel
+                  <div className="absolute right-0 top-full z-50 w-52 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+                      <div className="border-b border-border p-3">
+                        <p className="text-sm font-semibold truncate">{session.user.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
+                      </div>
+                      <div className="p-1">
+                        {(session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
+                          <Link href="/admin" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-primary font-medium">
+                            <LayoutDashboard className="h-4 w-4" />
+                            Admin Panel
+                          </Link>
+                        )}
+                        <Link href="/account" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                          <User className="h-4 w-4" />
+                          My Account
                         </Link>
-                      )}
-                      <Link href="/account" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
-                        <User className="h-4 w-4" />
-                        My Account
-                      </Link>
-                      <Link href="/account/orders" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
-                        <Package className="h-4 w-4" />
-                        My Orders
-                      </Link>
-                      <Link href="/account/addresses" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
-                        <MapPin className="h-4 w-4" />
-                        Addresses
-                      </Link>
-                      <button
-                        onClick={() => signOut({ callbackUrl: '/' })}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-destructive"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        Sign Out
-                      </button>
+                        <Link href="/account/orders" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                          <Package className="h-4 w-4" />
+                          My Orders
+                        </Link>
+                        <Link href="/account/addresses" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                          <MapPin className="h-4 w-4" />
+                          Addresses
+                        </Link>
+                        <button
+                          onClick={() => signOut({ callbackUrl: '/' })}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-destructive"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Sign Out
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -257,16 +259,18 @@ export function Header() {
                 </Link>
 
                 {hoveredCategory === cat.slug && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
-                    {cat.sub.map((sub) => (
-                      <Link
-                        key={sub}
-                        href={`/category/${cat.slug}?sub=${encodeURIComponent(sub)}`}
-                        className="block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary transition-colors"
-                      >
-                        {sub}
-                      </Link>
-                    ))}
+                  <div className="absolute left-0 top-full z-50 w-48 pt-2">
+                    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+                      {cat.sub.map((sub) => (
+                        <Link
+                          key={sub}
+                          href={`/category/${cat.slug}?sub=${encodeURIComponent(sub)}`}
+                          className="block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary transition-colors"
+                        >
+                          {sub}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

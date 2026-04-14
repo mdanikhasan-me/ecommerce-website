@@ -42,10 +42,10 @@ export default function ReturnsPage() {
 
           <h2 className="font-display text-xl font-semibold text-foreground">How to Return</h2>
           <ol className="list-decimal list-inside space-y-2">
-            <li>Go to My Account > Orders > Select Order</li>
-            <li>Click "Request Return" and select a reason</li>
+            <li>Go to My Account &gt; Orders &gt; Select Order</li>
+            <li>Click &quot;Request Return&quot; and select a reason</li>
             <li>Our team will review within 24 hours</li>
-            <li>If approved, we'll arrange pickup at no cost</li>
+            <li>If approved, we&apos;ll arrange pickup at no cost</li>
             <li>Refund is processed after item inspection</li>
           </ol>
 

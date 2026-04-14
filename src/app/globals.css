@@ -4,7 +4,6 @@
 
 @layer base {
   :root {
-    /* Refined palette: Deep plum + warm neutrals + sage accents */
     --background: 40 14% 97%;
     --foreground: 270 12% 10%;
 
@@ -87,7 +86,6 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  /* Scrollbar */
   * {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--border)) transparent;
@@ -98,14 +96,12 @@
 }
 
 @layer components {
-  /* Skeleton */
   .skeleton {
     @apply bg-gradient-to-r from-muted via-muted/60 to-muted;
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
 
-  /* Product Card */
   .product-card {
     @apply bg-card rounded-lg border border-border overflow-hidden transition-all duration-200;
   }
@@ -114,12 +110,10 @@
     border-color: hsl(var(--border) / 0.6);
   }
 
-  /* Section Title */
   .section-title {
     @apply font-display text-xl font-bold tracking-tight;
   }
 
-  /* Badges */
   .badge-sale {
     @apply bg-destructive/10 text-destructive text-[10px] font-semibold px-2 py-0.5 rounded;
   }
@@ -130,7 +124,6 @@
     @apply bg-warning/10 text-warning-foreground text-[10px] font-semibold px-2 py-0.5 rounded;
   }
 
-  /* Price */
   .price-current {
     @apply font-display text-lg font-bold text-foreground;
   }
@@ -138,7 +131,6 @@
     @apply text-sm text-muted-foreground line-through;
   }
 
-  /* Input */
   .input-base {
     @apply w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm ring-offset-background
     placeholder:text-muted-foreground
@@ -147,7 +139,6 @@
     transition-colors duration-150;
   }
 
-  /* Buttons */
   .btn-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90
     inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
@@ -170,12 +161,10 @@
     transition-all duration-150 active:scale-[0.98];
   }
 
-  /* Trust Badge */
   .trust-badge {
     @apply flex items-center gap-3 p-3 bg-secondary/60 rounded-lg text-sm text-muted-foreground;
   }
 
-  /* Container — full width with comfortable padding, never shrinks */
   .container-site {
     @apply w-full px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24;
   }

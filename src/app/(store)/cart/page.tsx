@@ -40,7 +40,7 @@ export default function CartPage() {
           <ShoppingBag className="h-12 w-12 text-muted-foreground" />
         </div>
         <h1 className="font-display text-2xl font-bold">Your cart is empty</h1>
-        <p className="text-muted-foreground mt-2 mb-6">Looks like you haven't added anything yet.</p>
+        <p className="text-muted-foreground mt-2 mb-6">Looks like you haven&apos;t added anything yet.</p>
         <Link href="/" className="btn-primary">Start Shopping</Link>
       </div>
     )

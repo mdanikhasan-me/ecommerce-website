@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
@@ -42,8 +43,8 @@ export default async function BrandPage({ params, searchParams }: Props) {
   return (
     <div className="container-site py-8">
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <a href="/">Home</a><span>/</span>
-        <a href="/brands">Brands</a><span>/</span>
+        <Link href="/">Home</Link><span>/</span>
+        <Link href="/brands">Brands</Link><span>/</span>
         <span className="text-foreground">{brand.name}</span>
       </nav>
 

@@ -104,7 +104,7 @@ export default async function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Welcome back! Here's what's happening today.</p>
+          <p className="text-muted-foreground text-sm mt-0.5">Welcome back! Here&apos;s what&apos;s happening today.</p>
         </div>
         <div className="flex items-center gap-2">
           {data.pendingOrders > 0 && (

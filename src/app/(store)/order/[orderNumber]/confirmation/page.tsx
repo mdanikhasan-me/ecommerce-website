@@ -27,7 +27,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
           </div>
           <h1 className="font-display text-3xl font-bold">Order Confirmed!</h1>
           <p className="text-muted-foreground mt-2">
-            Thank you for your order. We'll send you updates as it progresses.
+            Thank you for your order. We&apos;ll send you updates as it progresses.
           </p>
           <div className="mt-4 inline-flex items-center gap-2 bg-secondary rounded-xl px-5 py-2.5">
             <span className="text-sm text-muted-foreground">Order Number:</span>

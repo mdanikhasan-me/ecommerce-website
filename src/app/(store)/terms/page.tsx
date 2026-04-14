@@ -7,7 +7,7 @@ export default function TermsPage() {
       <div className="max-w-3xl prose prose-sm max-w-none">
         <h1 className="font-display text-3xl font-bold">Terms of Service</h1>
         <p className="text-muted-foreground">Last updated: January 2025</p>
-        <p>By accessing and using Boilabin ("the Platform"), you agree to these Terms of Service. Please read them carefully.</p>
+        <p>By accessing and using Boilabin (&quot;the Platform&quot;), you agree to these Terms of Service. Please read them carefully.</p>
         <h2 className="font-display text-xl font-semibold mt-8">1. Acceptance of Terms</h2>
         <p>By creating an account or placing an order on Boilabin, you agree to be bound by these terms and our Privacy Policy.</p>
         <h2 className="font-display text-xl font-semibold mt-6">2. Account Responsibility</h2>
@@ -23,7 +23,7 @@ export default function TermsPage() {
         <h2 className="font-display text-xl font-semibold mt-6">7. Limitation of Liability</h2>
         <p>Boilabin is not liable for indirect, incidental, or consequential damages arising from use of the platform, to the maximum extent permitted by Bangladeshi law.</p>
         <h2 className="font-display text-xl font-semibold mt-6">8. Governing Law</h2>
-        <p>These terms are governed by the laws of the People's Republic of Bangladesh.</p>
+          <p>These terms are governed by the laws of the People&apos;s Republic of Bangladesh.</p>
         <p className="text-muted-foreground">For questions about these terms, contact: legal@boilabin.com</p>
       </div>
     </div>

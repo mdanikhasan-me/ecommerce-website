@@ -26,11 +26,12 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'),
   title: {
-    default: 'BoilaBin | Shop Quality Products Online in Bangladesh',
-    template: '%s | BoilaBin',
+    default: 'BoilaBin, Shop Quality Products Online in Bangladesh',
+    template: '%s, BoilaBin',
   },
-  description: 'Shop electronics, fashion, home appliances & more at the best prices in Bangladesh. Free delivery on orders over ৳2,000. Cash on delivery, bKash & Nagad accepted.',
-  keywords: ['online shopping bangladesh', 'buy online bd', 'best price bangladesh', 'price in bd', 'boilabin', 'অনলাইন শপিং বাংলাদেশ'],
+  description:
+    'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery, bKash and Nagad accepted.',
+  keywords: ['online shopping bangladesh', 'buy online bd', 'best price bangladesh', 'price in bd', 'boilabin'],
   authors: [{ name: 'BoilaBin' }],
   creator: 'BoilaBin',
   publisher: 'BoilaBin',
@@ -39,14 +40,14 @@ export const metadata: Metadata = {
     locale: 'en_BD',
     url: process.env.NEXT_PUBLIC_SITE_URL,
     siteName: 'BoilaBin',
-    title: 'BoilaBin | Shop Quality Products Online in Bangladesh',
-    description: 'Shop electronics, fashion, home appliances & more at the best prices in Bangladesh.',
+    title: 'BoilaBin, Shop Quality Products Online in Bangladesh',
+    description: 'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh.',
   },
   twitter: {
     card: 'summary_large_image',
     site: '@boilabin',
-    title: 'BoilaBin | Shop Quality Products Online in Bangladesh',
-    description: 'Shop electronics, fashion, home appliances & more at the best prices in Bangladesh.',
+    title: 'BoilaBin, Shop Quality Products Online in Bangladesh',
+    description: 'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh.',
   },
   robots: {
     index: true,
@@ -59,11 +60,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    // Add your verification codes here when ready
-    // google: 'your-google-verification-code',
-    // yandex: 'your-yandex-verification-code',
-  },
+  verification: {},
 }
 
 export const viewport: Viewport = {

@@ -7,7 +7,7 @@ export default function PrivacyPage() {
         <h1 className="font-display text-3xl font-bold mb-2">Privacy Policy</h1>
         <p className="text-muted-foreground mb-8">Last updated: January 2025</p>
         <div className="space-y-6 text-muted-foreground leading-relaxed">
-          <p>Boilabin ("we", "our", "us") is committed to protecting your privacy. This policy describes how we collect, use, and safeguard your personal information.</p>
+          <p>Boilabin (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is committed to protecting your privacy. This policy describes how we collect, use, and safeguard your personal information.</p>
           <h2 className="font-display text-xl font-semibold text-foreground">Information We Collect</h2>
           <ul className="list-disc list-inside space-y-1">
             <li>Account information: name, email, phone, password (hashed)</li>

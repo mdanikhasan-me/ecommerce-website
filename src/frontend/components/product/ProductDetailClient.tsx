@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 
 export function ProductDetailClient({ product }: { product: any }) {
   const router = useRouter()
+  const [isHydrated, setIsHydrated] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<any>(null)
   const [quantity, setQuantity] = useState(1)
@@ -29,6 +30,12 @@ export function ProductDetailClient({ product }: { product: any }) {
   const stock = selectedVariant?.stockQuantity ?? product.stockQuantity
   const discount = calculateDiscount(originalPrice, price)
   const { label: stockLabel, color: stockColor, inStock } = getStockStatus(stock)
+  const isWished = isHydrated && has(product.id)
+  const isCompared = isHydrated && hasCompare(product.id)
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const handleAddToCart = () => {
     if (!inStock) return
@@ -245,21 +252,28 @@ export function ProductDetailClient({ product }: { product: any }) {
         {/* Secondary Actions */}
         <div className="flex gap-2">
           <button
-            onClick={() => { toggle(product.id); toast.success(has(product.id) ? 'Removed from wishlist' : 'Added to wishlist') }}
+            onClick={() => {
+              const currentlyWished = has(product.id)
+              toggle(product.id)
+              toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
+            }}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all',
-              has(product.id) ? 'border-red-200 text-red-500 bg-red-50' : 'border-border hover:border-red-200 hover:text-red-500'
+              isWished ? 'border-red-200 text-red-500 bg-red-50' : 'border-border hover:border-red-200 hover:text-red-500'
             )}
           >
-            <Heart className={cn('h-4 w-4', has(product.id) && 'fill-current')} />
-            {has(product.id) ? 'Wishlisted' : 'Wishlist'}
+            <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
+            {isWished ? 'Wishlisted' : 'Wishlist'}
           </button>
           <button
             onClick={() => {
               const ok = addCompare(product.id)
               toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium hover:border-primary/50 transition-all"
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all hover:border-primary/50',
+              isCompared ? 'border-primary/30 bg-primary/5 text-primary' : 'border-border'
+            )}
           >
             <BarChart2 className="h-4 w-4" />
             Compare
