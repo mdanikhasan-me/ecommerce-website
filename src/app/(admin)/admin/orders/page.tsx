@@ -4,7 +4,7 @@ import { formatPrice, formatDate } from '@/backend/utils'
 import { ShoppingBag } from 'lucide-react'
 
 interface Props {
-  searchParams: { page?: string; status?: string; q?: string }
+  searchParams: Promise<{ page?: string; status?: string; q?: string }>
 }
 
 export const metadata = { title: 'Admin Orders' }
@@ -21,17 +21,18 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default async function AdminOrdersPage({ searchParams }: Props) {
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const filters = await searchParams
+  const page = Math.max(1, parseInt(filters.page ?? '1'))
   const limit = 20
   const skip = (page - 1) * limit
 
   const where: any = {}
-  if (searchParams.status) where.status = searchParams.status
-  if (searchParams.q) {
+  if (filters.status) where.status = filters.status
+  if (filters.q) {
     where.OR = [
-      { orderNumber: { contains: searchParams.q, mode: 'insensitive' } },
-      { user: { email: { contains: searchParams.q, mode: 'insensitive' } } },
-      { guestEmail: { contains: searchParams.q, mode: 'insensitive' } },
+      { orderNumber: { contains: filters.q, mode: 'insensitive' } },
+      { user: { email: { contains: filters.q, mode: 'insensitive' } } },
+      { guestEmail: { contains: filters.q, mode: 'insensitive' } },
     ]
   }
 
@@ -63,8 +64,8 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       {/* Filters */}
       <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3 flex-1">
-          <input name="q" defaultValue={searchParams.q} placeholder="Search by order # or email..." className="input-base max-w-xs" />
-          <select name="status" defaultValue={searchParams.status} className="input-base w-44">
+          <input name="q" defaultValue={filters.q} placeholder="Search by order # or email..." className="input-base max-w-xs" />
+          <select name="status" defaultValue={filters.status} className="input-base w-44">
             <option value="">All Status</option>
             {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
@@ -134,8 +135,8 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
             <p className="text-muted-foreground">Showing {skip + 1}–{Math.min(skip + limit, total)} of {total}</p>
             <div className="flex gap-2">
-              {page > 1 && <Link href={`/admin/orders?page=${page - 1}${searchParams.status ? `&status=${searchParams.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
-              {page < totalPages && <Link href={`/admin/orders?page=${page + 1}${searchParams.status ? `&status=${searchParams.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
+              {page > 1 && <Link href={`/admin/orders?page=${page - 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
+              {page < totalPages && <Link href={`/admin/orders?page=${page + 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
             </div>
           </div>
         )}

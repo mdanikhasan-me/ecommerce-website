@@ -79,7 +79,8 @@
   }
 
   ::selection {
-    background-color: hsl(var(--accent) / 0.15);
+    background-color: hsl(var(--foreground) / 0.08);
+    color: inherit;
   }
 
   :focus-visible {
@@ -104,10 +105,12 @@
 
   .product-card {
     @apply bg-card rounded-lg border border-border overflow-hidden transition-all duration-200;
+    box-shadow: 0 1px 2px rgba(23, 18, 15, 0.04);
   }
   .product-card:hover {
-    @apply shadow-md;
-    border-color: hsl(var(--border) / 0.6);
+    box-shadow: 0 14px 28px rgba(23, 18, 15, 0.08);
+    border-color: hsl(var(--border) / 0.82);
+    transform: translateY(-2px);
   }
 
   .section-title {
@@ -115,20 +118,30 @@
   }
 
   .badge-sale {
-    @apply bg-destructive/10 text-destructive text-[10px] font-semibold px-2 py-0.5 rounded;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    background: hsl(var(--card) / 0.92);
+    border-color: hsl(var(--destructive) / 0.14);
+    color: hsl(var(--destructive));
   }
   .badge-new {
-    @apply bg-accent/10 text-accent-foreground text-[10px] font-semibold px-2 py-0.5 rounded;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    background: hsl(var(--card) / 0.92);
+    border-color: hsl(var(--primary) / 0.12);
+    color: hsl(var(--primary));
   }
   .badge-bestseller {
-    @apply bg-warning/10 text-warning-foreground text-[10px] font-semibold px-2 py-0.5 rounded;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    background: hsl(var(--card) / 0.94);
+    border-color: hsl(var(--warning) / 0.16);
+    color: hsl(36 72% 30%);
   }
 
   .price-current {
-    @apply font-display text-lg font-bold text-foreground;
+    @apply font-display text-[1.68rem] font-bold tracking-tight text-foreground;
   }
   .price-original {
-    @apply text-sm text-muted-foreground line-through;
+    @apply text-sm font-medium line-through;
+    color: hsl(var(--muted-foreground) / 0.9);
   }
 
   .input-base {
@@ -174,7 +187,7 @@
   .font-700 { font-weight: 700; }
 
   .star-filled { @apply text-amber-400 fill-amber-400; }
-  .star-empty { @apply text-gray-200 fill-gray-200; }
+  .star-empty { @apply text-amber-200 fill-amber-100; }
 
   .gradient-text {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;

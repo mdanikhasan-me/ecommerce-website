@@ -3,7 +3,14 @@ import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
+}
+
+type NormalizedFlashSaleItem = {
+  productId: string
+  discountType: 'PERCENTAGE' | 'FIXED'
+  discountValue: number
+  maxQuantity: number | null
 }
 
 function normalizeFlashSalePayload(payload: any) {
@@ -18,7 +25,7 @@ function normalizeFlashSalePayload(payload: any) {
   const items = Array.isArray(payload.items) ? payload.items : []
   if (!items.length) throw new Error('At least one flash sale product is required')
 
-  const normalizedItems = items.map((item: any) => {
+  const normalizedItems: NormalizedFlashSaleItem[] = items.map((item: any) => {
     if (!item.productId) throw new Error('Flash sale item product is required')
     if (!['PERCENTAGE', 'FIXED'].includes(item.discountType)) throw new Error('Discount type is invalid')
 
@@ -59,8 +66,9 @@ async function validateFlashSaleProducts(productIds: string[]) {
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingFlashSale = await db.flashSale.findUnique({ where: { id: params.id } })
+    const existingFlashSale = await db.flashSale.findUnique({ where: { id } })
     if (!existingFlashSale) {
       return NextResponse.json({ error: 'Flash sale not found' }, { status: 404 })
     }
@@ -95,8 +103,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingFlashSale = await db.flashSale.findUnique({ where: { id: params.id } })
+    const existingFlashSale = await db.flashSale.findUnique({ where: { id } })
     if (!existingFlashSale) {
       return NextResponse.json({ error: 'Flash sale not found' }, { status: 404 })
     }

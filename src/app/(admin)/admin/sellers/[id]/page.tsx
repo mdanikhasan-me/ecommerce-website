@@ -1,18 +1,19 @@
+import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ArrowLeft, BadgeCheck, FileBadge2, Landmark, Store, User, Wallet } from 'lucide-react'
 import { db } from '@/backend/database'
 import { formatDate, formatPrice } from '@/backend/utils'
-import { ArrowLeft, Store, User, FileText, MapPin, Phone, Mail, Globe } from 'lucide-react'
-import Link from 'next/link'
 import { SellerApprovalActions } from '@/frontend/components/admin/SellerApprovalActions'
 
 export const metadata = { title: 'Admin Seller Review' }
 
-export default async function AdminSellerDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminSellerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const seller = await db.seller.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       user: { select: { name: true, email: true, phone: true, createdAt: true } },
-      documents: true,
       _count: { select: { products: true } },
     },
   })
@@ -34,8 +35,10 @@ export default async function AdminSellerDetailPage({ params }: { params: { id: 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-            {seller.logo ? (
-              <img src={seller.logo} alt="" className="size-full rounded-2xl object-cover" />
+            {seller.storeLogo ? (
+              <div className="relative size-full overflow-hidden rounded-2xl">
+                <Image src={seller.storeLogo} alt={seller.storeName} fill className="object-cover" sizes="56px" />
+              </div>
             ) : (
               <Store className="size-6 text-primary" />
             )}
@@ -67,7 +70,7 @@ export default async function AdminSellerDetailPage({ params }: { params: { id: 
               </div>
               <div>
                 <p className="text-muted-foreground mb-0.5">Phone</p>
-                <p className="font-medium">{seller.phone || seller.user.phone || 'Not provided'}</p>
+                <p className="font-medium">{seller.user.phone || 'Not provided'}</p>
               </div>
               <div>
                 <p className="text-muted-foreground mb-0.5">Member Since</p>
@@ -88,48 +91,49 @@ export default async function AdminSellerDetailPage({ params }: { params: { id: 
                   <p>{seller.description}</p>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-muted-foreground mb-0.5">Store Slug</p>
-                  <p className="font-mono text-xs">/store/{seller.slug}</p>
+                  <p className="font-mono text-xs">/store/{seller.storeSlug}</p>
                 </div>
-                {seller.address && (
-                  <div>
-                    <p className="text-muted-foreground mb-0.5">Address</p>
-                    <p>{seller.address}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-muted-foreground mb-0.5">Business Type</p>
+                  <p>{seller.businessType || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground mb-0.5">Trade License</p>
+                  <p>{seller.tradeLicense || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground mb-0.5">National ID</p>
+                  <p>{seller.nidNumber || 'Not provided'}</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Documents */}
           <div className="bg-card rounded-xl border border-border p-5">
             <h2 className="font-display font-semibold mb-4 flex items-center gap-2">
-              <FileText className="size-4" /> Submitted Documents
+              <FileBadge2 className="size-4" /> Business and Banking
             </h2>
-            {seller.documents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No documents submitted</p>
-            ) : (
-              <div className="space-y-2">
-                {seller.documents.map((doc: any) => (
-                  <div key={doc.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <FileText className="size-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium">{doc.type}</p>
-                        <p className="text-xs text-muted-foreground">Uploaded {formatDate(doc.createdAt)}</p>
-                      </div>
-                    </div>
-                    {doc.url && (
-                      <a href={doc.url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">
-                        View
-                      </a>
-                    )}
-                  </div>
-                ))}
+            <div className="grid gap-4 text-sm sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+                  <Landmark className="size-4" />
+                  Bank
+                </div>
+                <p className="font-medium">{seller.bankName || 'Not provided'}</p>
+                <p className="mt-1 text-muted-foreground">{seller.bankAccount || 'No account number added'}</p>
               </div>
-            )}
+              <div className="rounded-xl border border-border bg-secondary/40 p-4">
+                <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+                  <Wallet className="size-4" />
+                  bKash
+                </div>
+                <p className="font-medium">{seller.bkashNumber || 'Not provided'}</p>
+                <p className="mt-1 text-muted-foreground">Direct payout reference</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -144,7 +148,7 @@ export default async function AdminSellerDetailPage({ params }: { params: { id: 
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Total Sales</span>
-                <span className="font-medium">{stats._count}</span>
+                <span className="font-medium">{stats._count.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Revenue</span>
@@ -177,6 +181,30 @@ export default async function AdminSellerDetailPage({ params }: { params: { id: 
                   <span>{formatDate(seller.verifiedAt)}</span>
                 </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">First party</span>
+                <span>{seller.isFirstParty ? 'Yes' : 'No'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Store reviews</span>
+                <span>{seller.reviewCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Recorded orders</span>
+                <span>{seller.totalOrders}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-xl border border-border p-5">
+            <h3 className="font-display font-semibold mb-3 flex items-center gap-2">
+              <BadgeCheck className="size-4" /> Store Routing
+            </h3>
+            <div className="space-y-2 text-sm">
+              <p className="text-muted-foreground">Live storefront path</p>
+              <Link href={`/store/${seller.storeSlug}`} target="_blank" className="font-medium text-primary hover:underline">
+                /store/{seller.storeSlug}
+              </Link>
             </div>
           </div>
         </div>

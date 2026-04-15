@@ -47,7 +47,7 @@ export default async function SellerAnalyticsPage() {
       where: { sellerId: seller.id, isActive: true },
       orderBy: { soldCount: 'desc' },
       take: 5,
-      select: { id: true, name: true, soldCount: true, price: true, salePrice: true, images: { where: { isPrimary: true }, take: 1 } },
+      select: { id: true, name: true, soldCount: true, basePrice: true, salePrice: true, images: { where: { isPrimary: true }, take: 1 } },
     }),
   ])
 
@@ -101,7 +101,7 @@ export default async function SellerAnalyticsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{product.name}</p>
-                  <p className="text-xs text-muted-foreground">{formatPrice(product.salePrice ?? product.price)}</p>
+                  <p className="text-xs text-muted-foreground">{formatPrice(product.salePrice ?? product.basePrice)}</p>
                 </div>
                 <span className="text-sm font-semibold">{product.soldCount} sold</span>
               </div>

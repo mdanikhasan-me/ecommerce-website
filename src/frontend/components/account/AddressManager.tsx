@@ -11,7 +11,8 @@ interface Address {
   addressLine1: string
   addressLine2: string | null
   city: string
-  area: string
+  district: string
+  division: string
   postalCode: string | null
   isDefault: boolean
 }
@@ -24,11 +25,11 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const [form, setForm] = useState({
-    fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', area: '', postalCode: '', isDefault: false,
+    fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false,
   })
 
   const resetForm = () => {
-    setForm({ fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', area: '', postalCode: '', isDefault: false })
+    setForm({ fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false })
     setEditing(null)
     setShowForm(false)
   }
@@ -36,7 +37,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const startEdit = (addr: Address) => {
     setForm({
       fullName: addr.fullName, phone: addr.phone, addressLine1: addr.addressLine1,
-      addressLine2: addr.addressLine2 ?? '', city: addr.city, area: addr.area,
+      addressLine2: addr.addressLine2 ?? '', city: addr.city, district: addr.district, division: addr.division,
       postalCode: addr.postalCode ?? '', isDefault: addr.isDefault,
     })
     setEditing(addr)
@@ -96,7 +97,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
                   </div>
                   <p className="text-sm text-muted-foreground">{addr.addressLine1}</p>
                   {addr.addressLine2 && <p className="text-sm text-muted-foreground">{addr.addressLine2}</p>}
-                  <p className="text-sm text-muted-foreground">{addr.city}, {addr.area} {addr.postalCode}</p>
+                  <p className="text-sm text-muted-foreground">{addr.city}, {addr.district}, {addr.division} {addr.postalCode}</p>
                   <p className="text-sm text-muted-foreground">{addr.phone}</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
@@ -142,14 +143,18 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
               <label className="text-sm font-medium mb-1.5 block">Address Line 2 (optional)</label>
               <input type="text" value={form.addressLine2} onChange={(e) => update('addressLine2', e.target.value)} className="input-base" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">City</label>
                 <input type="text" value={form.city} onChange={(e) => update('city', e.target.value)} className="input-base" required />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">Area</label>
-                <input type="text" value={form.area} onChange={(e) => update('area', e.target.value)} className="input-base" required />
+                <label className="text-sm font-medium mb-1.5 block">District</label>
+                <input type="text" value={form.district} onChange={(e) => update('district', e.target.value)} className="input-base" required />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Division</label>
+                <input type="text" value={form.division} onChange={(e) => update('division', e.target.value)} className="input-base" required />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Postal Code</label>

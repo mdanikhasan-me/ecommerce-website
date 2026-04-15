@@ -13,7 +13,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: SEO.defaultTitle,
   description: SEO.defaultDescription,
-  keywords: SEO.baseKeywords,
+  keywords: [...SEO.baseKeywords],
   alternates: { canonical: SEO.siteUrl },
   openGraph: {
     title: SEO.defaultTitle,
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     locale: SEO.locale,
     type: 'website',
-    images: SEO.og.images,
+    images: [...SEO.og.images],
   },
   twitter: {
     card: 'summary_large_image',
@@ -33,8 +33,13 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
+function getDiscountPercent(basePrice: number, salePrice?: number | null) {
+  if (!salePrice || salePrice >= basePrice) return 0
+  return Math.round(((basePrice - salePrice) / basePrice) * 100)
+}
+
 async function getHomeData() {
-  const [banners, categories, featured, bestSellers, newArrivals, flashSale] =
+  const [banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts] =
     await Promise.all([
       db.banner.findMany({ where: { isActive: true, position: 'hero' }, orderBy: { sortOrder: 'asc' } }),
       db.category.findMany({
@@ -90,14 +95,63 @@ async function getHomeData() {
           },
         },
       }),
+      db.product.findMany({
+        where: { isActive: true, salePrice: { not: null } },
+        take: 20,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          images: { where: { isPrimary: true }, take: 1 },
+          brand: { select: { name: true, slug: true } },
+          category: { select: { name: true, slug: true } },
+        },
+      }),
     ])
 
-  return { banners, categories, featured, bestSellers, newArrivals, flashSale }
+  return { banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts }
 }
 
 export default async function HomePage() {
-  const { banners, categories, featured, bestSellers, newArrivals, flashSale } =
+  const { banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts } =
     await getHomeData()
+
+  const topDiscountedProducts = [...saleProducts]
+    .filter((product) => getDiscountPercent(product.basePrice, product.salePrice) > 0)
+    .sort((left, right) => {
+      const discountGap =
+        getDiscountPercent(right.basePrice, right.salePrice) -
+        getDiscountPercent(left.basePrice, left.salePrice)
+
+      if (discountGap !== 0) return discountGap
+      return right.soldCount - left.soldCount
+    })
+
+  const flashDealPreviewProducts =
+    topDiscountedProducts.length > 0
+      ? topDiscountedProducts
+      : flashSale && flashSale.items.length > 0
+        ? flashSale.items.map((item) => item.product)
+        : saleProducts
+
+  const flashDealEndsAt =
+    flashSale?.endsAt ??
+    topDiscountedProducts
+      .map((product) => product.salePriceExpiry)
+      .filter((date): date is Date => Boolean(date))
+      .sort((left, right) => left.getTime() - right.getTime())[0] ??
+    null
+
+  const flashDealMaxDiscount =
+    topDiscountedProducts.length > 0
+      ? getDiscountPercent(topDiscountedProducts[0].basePrice, topDiscountedProducts[0].salePrice)
+      : flashSale && flashSale.items.length > 0
+        ? Math.max(
+            ...flashSale.items.map((item) =>
+              item.discountType === 'PERCENTAGE'
+                ? Math.round(item.discountValue)
+                : getDiscountPercent(item.product.basePrice, item.product.salePrice)
+            )
+          )
+        : 0
 
   return (
     <div className="min-h-screen">
@@ -135,7 +189,12 @@ export default async function HomePage() {
       )}
 
       <section className="container-site py-4">
-        <PromoSection />
+        <PromoSection
+          flashDealProducts={flashDealPreviewProducts}
+          newArrivalProducts={newArrivals}
+          flashDealEndsAt={flashDealEndsAt}
+          flashDealMaxDiscount={flashDealMaxDiscount}
+        />
       </section>
 
       {bestSellers.length > 0 && (

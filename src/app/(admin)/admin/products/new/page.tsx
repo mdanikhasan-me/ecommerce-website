@@ -5,7 +5,7 @@ import { ProductEditorForm } from '@/frontend/components/admin/ProductEditorForm
 export const metadata = { title: 'Admin Create Product' }
 
 export default async function AdminNewProductPage() {
-  const { categories, brands, sellers } = await getAdminProductEditorOptions()
+  const { categories, officialStoreName } = await getAdminProductEditorOptions()
 
   return (
     <div className="space-y-5">
@@ -22,7 +22,7 @@ export default async function AdminNewProductPage() {
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-5">
-        <ProductEditorForm categories={categories} brands={brands} sellers={sellers} />
+        <ProductEditorForm categories={categories} officialStoreName={officialStoreName} />
       </div>
     </div>
   )

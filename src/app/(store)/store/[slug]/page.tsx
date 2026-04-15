@@ -1,12 +1,21 @@
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
-import { formatPrice, formatDate } from '@/backend/utils'
+import { formatDate } from '@/backend/utils'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
-import { Store, Star, Calendar, MapPin, Package } from 'lucide-react'
+import { Store, Star, Calendar, Package } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const seller = await db.seller.findUnique({ where: { slug: params.slug }, select: { storeName: true, description: true } })
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const seller = await db.seller.findUnique({
+    where: { storeSlug: slug },
+    select: { storeName: true, description: true },
+  })
   if (!seller) return {}
   return {
     title: `Boilabin ${seller.storeName}`,
@@ -14,9 +23,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function StorePage({ params }: { params: { slug: string } }) {
-  const seller = await db.seller.findUnique({
-    where: { slug: params.slug, status: 'APPROVED' },
+export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const seller = await db.seller.findFirst({
+    where: { storeSlug: slug, status: 'APPROVED' },
     include: {
       products: {
         where: { isActive: true },
@@ -41,8 +51,8 @@ export default async function StorePage({ params }: { params: { slug: string } }
         <div className="container-site py-10">
           <div className="flex items-start gap-5">
             <div className="size-20 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              {seller.logo ? (
-                <img src={seller.logo} alt="" className="size-full rounded-2xl object-cover" />
+              {seller.storeLogo ? (
+                <Image src={seller.storeLogo} alt={seller.storeName} width={80} height={80} className="size-full rounded-2xl object-cover" />
               ) : (
                 <Store className="size-8 text-primary" />
               )}
@@ -63,11 +73,6 @@ export default async function StorePage({ params }: { params: { slug: string } }
                 <span className="flex items-center gap-1">
                   <Calendar className="size-3.5" /> Joined {formatDate(seller.createdAt)}
                 </span>
-                {seller.address && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="size-3.5" /> {seller.address}
-                  </span>
-                )}
               </div>
             </div>
           </div>

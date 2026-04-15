@@ -4,26 +4,32 @@ import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import type { Metadata } from 'next'
 
-interface Props { params: { slug: string }; searchParams: { page?: string; sort?: string } }
+interface Props {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string; sort?: string }>
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const brand = await db.brand.findUnique({ where: { slug: params.slug } })
+  const { slug } = await params
+  const brand = await db.brand.findUnique({ where: { slug } })
   if (!brand) return { title: 'Brand Not Found' }
   return { title: `Boilabin ${brand.name}`, description: brand.description ?? `Shop ${brand.name} products` }
 }
 
 export default async function BrandPage({ params, searchParams }: Props) {
-  const brand = await db.brand.findUnique({ where: { slug: params.slug, isActive: true } })
+  const { slug } = await params
+  const filters = await searchParams
+  const brand = await db.brand.findFirst({ where: { slug, isActive: true } })
   if (!brand) notFound()
 
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const page = Math.max(1, parseInt(filters.page ?? '1'))
   const limit = 24
   const skip = (page - 1) * limit
 
   let orderBy: any = { soldCount: 'desc' }
-  if (searchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (searchParams.sort === 'price_asc') orderBy = { basePrice: 'asc' }
-  else if (searchParams.sort === 'price_desc') orderBy = { basePrice: 'desc' }
+  if (filters.sort === 'newest') orderBy = { createdAt: 'desc' }
+  else if (filters.sort === 'price_asc') orderBy = { basePrice: 'asc' }
+  else if (filters.sort === 'price_desc') orderBy = { basePrice: 'desc' }
 
   const [products, total] = await Promise.all([
     db.product.findMany({
@@ -69,7 +75,7 @@ export default async function BrandPage({ params, searchParams }: Props) {
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <a key={p} href={`/brands/${params.slug}?page=${p}`}
+                <a key={p} href={`/brands/${slug}?page=${p}`}
                   className={`px-4 py-2 rounded-xl text-sm font-medium ${p === page ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'}`}>{p}</a>
               ))}
             </div>

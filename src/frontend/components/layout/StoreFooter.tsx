@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
@@ -13,6 +14,8 @@ import {
   Truck,
   Twitter,
 } from 'lucide-react'
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, INSTAGRAM_URL } from '@/shared/contact'
+import { PAYMENT_ASSETS } from '@/shared/assets'
 
 const TRUST_POINTS = [
   {
@@ -58,9 +61,25 @@ const COMPANY_LINKS = [
   ['Shipping', '/shipping'],
 ]
 
-const FOOTER_EMAIL = 'anikhasan2@icloud.com'
-const FOOTER_PHONE = '01758409063'
-const INSTAGRAM_URL = 'https://www.instagram.com/boilabin?igsh=d2ZkNnN3ZmJvdWxj'
+const STORE_FOOTER_PAYMENT_METHODS = [
+  PAYMENT_ASSETS.BKASH,
+  PAYMENT_ASSETS.NAGAD,
+  PAYMENT_ASSETS.CASH_ON_DELIVERY,
+  PAYMENT_ASSETS.VISA,
+  PAYMENT_ASSETS.MASTERCARD,
+]
+
+function getPaymentLogoClass(alt: string) {
+  if (alt === 'bKash' || alt === 'Nagad') {
+    return 'h-6 w-auto origin-center scale-[1.5] opacity-100'
+  }
+
+  if (alt === 'Cash on Delivery') {
+    return 'h-5.5 w-auto origin-center scale-[1.06] opacity-100'
+  }
+
+  return 'h-5 w-auto opacity-95'
+}
 
 export function StoreFooter() {
   return (
@@ -84,22 +103,22 @@ export function StoreFooter() {
 
               <div className="grid gap-3 text-sm text-background/75">
                 <a
-                  href={`mailto:${FOOTER_EMAIL}`}
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-2 hover:text-background"
                 >
                   <Mail className="h-4 w-4" />
-                  {FOOTER_EMAIL}
+                  {CONTACT_EMAIL}
                 </a>
                 <a
-                  href={`tel:${FOOTER_PHONE}`}
+                  href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-2 hover:text-background"
                 >
                   <Phone className="h-4 w-4" />
-                  {FOOTER_PHONE}
+                  {CONTACT_PHONE}
                 </a>
                 <span className="inline-flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Dhaka, Bangladesh
+                  {CONTACT_ADDRESS}
                 </span>
               </div>
             </div>
@@ -216,9 +235,19 @@ export function StoreFooter() {
           <p>Copyright {new Date().getFullYear()} Boilabin. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-3">
             <span>Payments:</span>
-            {['COD', 'bKash', 'Nagad', 'Visa', 'Mastercard'].map((method) => (
-              <span key={method} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-medium text-background/66">
-                {method}
+            {STORE_FOOTER_PAYMENT_METHODS.map((method) => (
+              <span
+                key={method.alt}
+                className="inline-flex min-w-[78px] items-center justify-center rounded-full border border-white/10 px-3 py-1.5 transition-colors hover:border-white/20"
+              >
+                <Image
+                  src={method.src}
+                  alt={method.alt}
+                  width={method.width}
+                  height={method.height}
+                  unoptimized
+                  className={getPaymentLogoClass(method.alt)}
+                />
               </span>
             ))}
           </div>

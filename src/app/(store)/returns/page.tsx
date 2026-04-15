@@ -1,72 +1,85 @@
 import type { Metadata } from 'next'
-import { RefreshCcw, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
+
 export const metadata: Metadata = { title: 'Boilabin Returns and Refund Policy' }
+
 export default function ReturnsPage() {
   return (
-    <div className="container-site py-12">
-      <div className="max-w-3xl">
-        <h1 className="font-display text-3xl font-bold mb-2">Returns & Refund Policy</h1>
-        <p className="text-muted-foreground mb-8">Simple, fair, and hassle-free.</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          {[
-            { icon: Clock, title: '7-Day Window', desc: 'Return within 7 days of delivery' },
-            { icon: CheckCircle, title: 'Easy Process', desc: 'Just raise a request online' },
-            { icon: RefreshCcw, title: 'Fast Refunds', desc: 'Processed within 3–5 business days' },
-          ].map((f) => (
-            <div key={f.title} className="bg-secondary rounded-2xl p-5 text-center">
-              <f.icon className="h-6 w-6 text-primary mx-auto mb-2" />
-              <p className="font-semibold text-sm">{f.title}</p>
-              <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="space-y-6 text-muted-foreground leading-relaxed">
-          <h2 className="font-display text-xl font-semibold text-foreground">Eligible for Return</h2>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Item received damaged or defective</li>
-            <li>Wrong item delivered</li>
-            <li>Item significantly different from description</li>
-            <li>Unopened/unused items in original packaging (within 7 days)</li>
-          </ul>
-
-          <h2 className="font-display text-xl font-semibold text-foreground">Not Eligible for Return</h2>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Items returned after 7 days of delivery</li>
-            <li>Items without original packaging or accessories</li>
-            <li>Items damaged by customer misuse</li>
-            <li>Perishable goods, software, and digital products</li>
-            <li>Undergarments and intimate apparel for hygiene reasons</li>
-          </ul>
-
-          <h2 className="font-display text-xl font-semibold text-foreground">How to Return</h2>
-          <ol className="list-decimal list-inside space-y-2">
-            <li>Go to My Account &gt; Orders &gt; Select Order</li>
-            <li>Click &quot;Request Return&quot; and select a reason</li>
-            <li>Our team will review within 24 hours</li>
-            <li>If approved, we&apos;ll arrange pickup at no cost</li>
-            <li>Refund is processed after item inspection</li>
-          </ol>
-
-          <h2 className="font-display text-xl font-semibold text-foreground">Refund Timeline</h2>
-          <div className="bg-secondary rounded-2xl p-5 space-y-2 text-sm">
-            {[
-              ['bKash / Nagad', '1–2 business days'],
-              ['Bank Transfer', '3–5 business days'],
-              ['Credit / Debit Card', '5–7 business days'],
-              ['Cash on Delivery', 'Bank transfer within 3–5 days'],
-            ].map(([method, time]) => (
-              <div key={method} className="flex justify-between">
-                <span>{method}</span>
-                <span className="font-medium text-foreground">{time}</span>
+    <ContentPageShell
+      eyebrow="Refund policy"
+      title="Simple return rules with a cleaner refund process."
+      description="This page explains which items can be returned, how the request flow works, and when customers should expect a refund after approval."
+      updatedAt="January 2025"
+      sections={[
+        {
+          id: 'eligible',
+          title: 'Eligible for return',
+          body: (
+            <ul>
+              <li>Items received damaged or defective</li>
+              <li>Wrong product delivered</li>
+              <li>Products that materially differ from the listing description</li>
+              <li>Unused items in original packaging submitted within the return window</li>
+            </ul>
+          ),
+        },
+        {
+          id: 'not-eligible',
+          title: 'Not eligible for return',
+          body: (
+            <ul>
+              <li>Items reported after the return window closes</li>
+              <li>Products missing original packaging or accessories</li>
+              <li>Damage caused by customer misuse</li>
+              <li>Perishable goods, software, or digital products</li>
+              <li>Undergarments and intimate apparel for hygiene reasons</li>
+            </ul>
+          ),
+        },
+        {
+          id: 'process',
+          title: 'How the process works',
+          body: (
+            <ol>
+              <li>Open your account order history and choose the relevant order.</li>
+              <li>Select the return request action and choose the reason.</li>
+              <li>Our team reviews the request, usually within 24 hours.</li>
+              <li>If approved, pickup or return instructions are shared with you.</li>
+              <li>The refund is released after item inspection is complete.</li>
+            </ol>
+          ),
+        },
+        {
+          id: 'timeline',
+          title: 'Refund timeline',
+          body: (
+            <>
+              <div className="grid gap-3 md:grid-cols-2">
+                {[
+                  ['bKash and Nagad', '1 to 2 business days'],
+                  ['Bank transfer', '3 to 5 business days'],
+                  ['Credit and debit card', '5 to 7 business days'],
+                  ['Cash on delivery', 'Bank transfer within 3 to 5 business days'],
+                ].map(([method, time]) => (
+                  <div
+                    key={method}
+                    className="rounded-[22px] border border-border/70 bg-background/70 px-4 py-4"
+                  >
+                    <p className="text-sm font-semibold text-foreground">{method}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{time}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <p className="text-sm">For return requests, contact: returns@boilabin.com or call +880 1700-000000</p>
-        </div>
-      </div>
-    </div>
+              <p>
+                For return requests, contact {CONTACT_EMAIL} or call {CONTACT_PHONE}.
+              </p>
+            </>
+          ),
+        },
+      ]}
+      supportTitle="Need help with a return?"
+      supportCopy="If something is unclear, our support team can guide you through the request and refund steps."
+    />
   )
 }

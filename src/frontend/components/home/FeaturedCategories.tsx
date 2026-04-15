@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { CATEGORY_CONFIG, getCategoryConfig } from '@/frontend/components/category/category-config'
+import { CATEGORY_CONFIG } from '@/frontend/components/category/category-config'
+import { getCategoryMediaPath } from '@/shared/category-media'
 
 interface Category {
   id: string
@@ -44,41 +45,47 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 }
 
 function CategoryTile({ category }: { category: Category }) {
-  const config = getCategoryConfig(category.slug)
-  const imageSrc = getCategoryImagePath(category.slug)
+  const config = CATEGORY_CONFIG[category.slug]
+  const imageSrc = getCategoryMediaPath(category)
 
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-square min-h-[196px] overflow-hidden rounded-[28px] border border-black/6 p-4 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.14)] transition-all hover:-translate-y-1"
-      style={{ background: `linear-gradient(180deg, #ffffff 0%, ${config.surface} 100%)` }}
+      className="group relative isolate flex aspect-square min-h-[196px] overflow-hidden rounded-[28px] border border-black/6 bg-[#f7f3eb] shadow-[0_18px_40px_-34px_rgba(15,23,42,0.16)] transition-all hover:-translate-y-1"
     >
-      <div
-        className="absolute inset-0 opacity-60"
-        style={{ background: `radial-gradient(circle at top right, ${config.accent}12 0%, transparent 48%)` }}
-      />
-
-      <div className="relative z-10 mt-auto max-w-[64%]">
-        <p className="text-[1.28rem] font-semibold leading-6 text-[#161616]">{category.name}</p>
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white/92 via-white/36 to-transparent" />
-
-      <div className="absolute bottom-0 right-0 h-[84%] w-[84%] transition-transform duration-300 group-hover:scale-105">
+      <div className="absolute inset-0">
         <Image
           src={imageSrc}
           alt={category.name}
           fill
-          className="object-contain object-right-bottom p-1"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
           sizes="(max-width: 640px) 40vw, (max-width: 1280px) 20vw, 16vw"
+          quality={84}
         />
+      </div>
+
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_0%,rgba(15,23,42,0.14)_52%,rgba(15,23,42,0.76)_100%)]" />
+
+      <div
+        className="absolute inset-x-0 top-0 h-24 opacity-60"
+        style={{
+          background: config
+            ? `radial-gradient(circle at top right, ${config.accent}22 0%, transparent 56%)`
+            : 'none',
+        }}
+      />
+
+      <div className="relative z-10 mt-auto flex items-end justify-between gap-3 p-4">
+        <p className="max-w-[72%] text-[1.22rem] font-semibold leading-6 text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+          {category.name}
+        </p>
+
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/92 text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
+          <ArrowRight className="h-4 w-4" />
+        </span>
       </div>
 
       <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-1 ring-black/5" />
     </Link>
   )
-}
-
-function getCategoryImagePath(slug: string) {
-  return CATEGORY_CONFIG[slug] ? `/images/categories/${slug}.svg` : '/images/categories/default.svg'
 }

@@ -29,7 +29,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           product: { select: { name: true, slug: true, images: { where: { isPrimary: true }, take: 1 } } },
         },
       },
-      shippingAddress: true,
+      address: true,
     },
   })
 
@@ -159,15 +159,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {order.shippingAddress && (
+            {order.address && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="font-display font-semibold mb-3 flex items-center gap-2"><MapPin className="size-4" /> Shipping</h3>
                 <div className="text-sm text-muted-foreground space-y-0.5">
-                  <p className="font-medium text-foreground">{order.shippingAddress.fullName}</p>
-                  <p>{order.shippingAddress.addressLine1}</p>
-                  {order.shippingAddress.addressLine2 && <p>{order.shippingAddress.addressLine2}</p>}
-                  <p>{order.shippingAddress.city}, {order.shippingAddress.area}</p>
-                  <p>{order.shippingAddress.phone}</p>
+                  <p className="font-medium text-foreground">{order.address.fullName}</p>
+                  <p>{order.address.addressLine1}</p>
+                  {order.address.addressLine2 && <p>{order.address.addressLine2}</p>}
+                  <p>{order.address.city}, {order.address.district}</p>
+                  <p>{order.address.phone}</p>
                 </div>
               </div>
             )}

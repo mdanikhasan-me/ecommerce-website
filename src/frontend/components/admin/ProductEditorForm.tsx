@@ -4,10 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ImagePlus, Loader2, Plus, Save, Trash2, Upload } from 'lucide-react'
 import type {
-  AdminBrandOption,
   AdminCategoryOption,
   AdminEditableProduct,
-  AdminSellerOption,
 } from '@/backend/admin/product-editor'
 
 interface ProductImageValue {
@@ -30,8 +28,7 @@ interface ProductVariantValue {
 
 interface ProductEditorFormProps {
   categories: AdminCategoryOption[]
-  brands: AdminBrandOption[]
-  sellers: AdminSellerOption[]
+  officialStoreName: string
   product?: AdminEditableProduct
   redirectTo?: string
 }
@@ -60,14 +57,13 @@ function readFileAsDataUrl(file: File) {
 
 export function ProductEditorForm({
   categories,
-  brands,
-  sellers,
+  officialStoreName,
   product,
   redirectTo = '/admin/products',
 }: ProductEditorFormProps) {
   const router = useRouter()
   const isEditing = Boolean(product)
-  const isSetupReady = categories.length > 0 && sellers.length > 0
+  const isSetupReady = categories.length > 0 && Boolean(officialStoreName)
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -88,8 +84,7 @@ export function ProductEditorForm({
     lowStockThreshold: product?.lowStockThreshold?.toString() ?? '5',
     weight: product?.weight?.toString() ?? '',
     categoryId: product?.categoryId ?? '',
-    brandId: product?.brandId ?? '',
-    sellerId: product?.sellerId ?? sellers[0]?.id ?? '',
+    brandName: product?.brandName ?? '',
     tags: Array.isArray(product?.tags) ? product.tags.join(', ') : '',
     metaTitle: product?.metaTitle ?? '',
     metaDescription: product?.metaDescription ?? '',
@@ -228,8 +223,7 @@ export function ProductEditorForm({
     lowStockThreshold: Number(form.lowStockThreshold || 5),
     weight: form.weight ? Number(form.weight) : null,
     categoryId: form.categoryId,
-    brandId: form.brandId || null,
-    sellerId: form.sellerId,
+    brandName: form.brandName.trim() || null,
     tags: form.tags
       .split(',')
       .map((tag) => tag.trim())
@@ -263,7 +257,11 @@ export function ProductEditorForm({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!isSetupReady) {
-      setError('Add at least one active category and one seller before saving products.')
+      setError('Add at least one active category and make sure the official store is configured before saving products.')
+      return
+    }
+    if (isEditing && !product?.id) {
+      setError('Product data is missing. Reload the page and try again.')
       return
     }
 
@@ -272,7 +270,7 @@ export function ProductEditorForm({
 
     try {
       const response = await fetch(
-        isEditing ? `/api/admin/products/${product.id}` : '/api/admin/products',
+        isEditing ? `/api/admin/products/${product?.id}` : '/api/admin/products',
         {
           method: isEditing ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -329,7 +327,7 @@ export function ProductEditorForm({
 
       {!isSetupReady && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          Products need at least one active category and one seller before they can be saved.
+          Products need at least one active category and the official store before they can be saved.
         </div>
       )}
 
@@ -669,36 +667,16 @@ export function ProductEditorForm({
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Brand</label>
-                <select
-                  value={form.brandId}
-                  onChange={(event) => updateField('brandId', event.target.value)}
+                <label className="mb-1.5 block text-sm font-medium">Brand name</label>
+                <input
+                  value={form.brandName}
+                  onChange={(event) => updateField('brandName', event.target.value)}
                   className="input-base"
-                >
-                  <option value="">No brand</option>
-                  {brands.map((brand) => (
-                    <option key={brand.id} value={brand.id}>
-                      {brand.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-sm font-medium">Seller</label>
-                <select
-                  value={form.sellerId}
-                  onChange={(event) => updateField('sellerId', event.target.value)}
-                  className="input-base"
-                  required
-                >
-                  <option value="">Select seller</option>
-                  {sellers.map((seller) => (
-                    <option key={seller.id} value={seller.id}>
-                      {seller.storeName}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Type brand name manually"
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Type the brand directly. A matching brand will be reused, or a new one will be created automatically.
+                </p>
               </div>
 
               <div>
@@ -744,7 +722,11 @@ export function ProductEditorForm({
                   value={form.metaTitle}
                   onChange={(event) => updateField('metaTitle', event.target.value)}
                   className="input-base"
+                  placeholder={`${form.name || 'Product name'} price in Bangladesh`}
                 />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Leave blank to generate this dynamically from the product name and current price.
+                </p>
               </div>
 
               <div>

@@ -1,29 +1,11 @@
-import { randomUUID } from 'crypto'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
+import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
 
 type SlugModel = 'category' | 'brand'
-
-function parseImageDataUrl(dataUrl: string) {
-  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/)
-  if (!match) return null
-
-  return {
-    mimeType: match[1],
-    buffer: Buffer.from(match[2], 'base64'),
-  }
-}
-
-function extensionForMime(mimeType: string) {
-  if (mimeType.includes('png')) return 'png'
-  if (mimeType.includes('jpeg') || mimeType.includes('jpg')) return 'jpg'
-  if (mimeType.includes('webp')) return 'webp'
-  if (mimeType.includes('gif')) return 'gif'
-  return 'png'
-}
 
 export async function requireAdminSession() {
   const session = await auth()
@@ -32,6 +14,26 @@ export async function requireAdminSession() {
   }
 
   return session
+}
+
+export async function logAdminAudit(input: {
+  userId?: string | null
+  action: string
+  entity: string
+  entityId?: string | null
+  oldValues?: unknown
+  newValues?: unknown
+}) {
+  await db.auditLog.create({
+    data: {
+      userId: input.userId ?? null,
+      action: input.action,
+      entity: input.entity,
+      entityId: input.entityId ?? null,
+      oldValues: input.oldValues as any,
+      newValues: input.newValues as any,
+    },
+  }).catch(() => {})
 }
 
 export async function ensureUniqueSlug(model: SlugModel, rawSlug: string, excludeId?: string) {
@@ -73,20 +75,13 @@ export async function persistAdminUpload(url: string | null | undefined, folder:
     return cleaned
   }
 
-  const parsed = parseImageDataUrl(cleaned)
-  if (!parsed) {
-    throw new Error('Invalid image upload payload')
-  }
-
-  const outputDir = path.join(process.cwd(), 'public', 'uploads', 'admin', folder)
-  await fs.mkdir(outputDir, { recursive: true })
-
-  const filename = `${folder}-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.${extensionForMime(parsed.mimeType)}`
-  const outputPath = path.join(outputDir, filename)
-
-  await fs.writeFile(outputPath, parsed.buffer)
-
-  return `/uploads/admin/${folder}/${filename}`
+  return persistOptimizedImageUpload({
+    dataUrl: cleaned,
+    directorySegments: ['uploads', 'admin', folder],
+    baseName: folder,
+    publicPathPrefix: `/uploads/admin/${folder}`,
+    profile: folder,
+  })
 }
 
 export async function deleteManagedAdminUpload(url: string | null | undefined) {

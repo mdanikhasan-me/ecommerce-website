@@ -14,7 +14,7 @@ export const metadata = { title: 'Admin Edit Product' }
 
 export default async function AdminProductDetailPage({ params }: Props) {
   const { id } = await params
-  const [{ categories, brands, sellers }, product] = await Promise.all([
+  const [{ categories, officialStoreName }, product] = await Promise.all([
     getAdminProductEditorOptions(),
     getAdminEditableProduct(id),
   ])
@@ -43,8 +43,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
       <div className="rounded-2xl border border-border bg-card p-5">
         <ProductEditorForm
           categories={categories}
-          brands={brands}
-          sellers={sellers}
+          officialStoreName={officialStoreName}
           product={product}
         />
       </div>

@@ -59,6 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     slug: product.slug,
     description: product.description,
     shortDescription: product.shortDescription,
+    metaTitle: product.metaTitle,
+    metaDescription: product.metaDescription,
     basePrice: product.basePrice,
     salePrice: product.salePrice,
     images: product.images.map((i) => ({ url: i.url, isPrimary: i.isPrimary })),

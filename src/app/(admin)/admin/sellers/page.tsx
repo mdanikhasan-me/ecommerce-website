@@ -12,11 +12,12 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }>
   SUSPENDED: { label: 'Suspended', color: 'bg-warning/10 text-warning', icon: AlertTriangle },
 }
 
-interface Props { searchParams: { status?: string } }
+interface Props { searchParams: Promise<{ status?: string }> }
 
 export default async function AdminSellersPage({ searchParams }: Props) {
+  const filters = await searchParams
   const where: any = {}
-  if (searchParams.status) where.status = searchParams.status
+  if (filters.status) where.status = filters.status
 
   const [sellers, counts] = await Promise.all([
     db.seller.findMany({
@@ -63,7 +64,7 @@ export default async function AdminSellersPage({ searchParams }: Props) {
             key={tab.status}
             href={tab.status ? `/admin/sellers?status=${tab.status}` : '/admin/sellers'}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              (searchParams.status ?? '') === tab.status
+              (filters.status ?? '') === tab.status
                 ? 'bg-primary text-white'
                 : 'bg-secondary hover:bg-secondary/80 text-muted-foreground'
             }`}

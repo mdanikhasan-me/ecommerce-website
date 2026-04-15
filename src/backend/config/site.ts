@@ -1,3 +1,4 @@
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 /**
  * Site Configuration
  *
@@ -14,10 +15,10 @@ export const siteConfig = {
   currencySymbol: '৳',
 
   contact: {
-    email: 'hello@boilabin.com',
-    support: 'support@boilabin.com',
-    phone: '+880 1700-000000',
-    address: 'Dhaka, Bangladesh',
+    email: CONTACT_EMAIL,
+    support: CONTACT_EMAIL,
+    phone: CONTACT_PHONE,
+    address: CONTACT_ADDRESS,
   },
 
   social: {

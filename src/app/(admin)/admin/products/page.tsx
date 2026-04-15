@@ -5,27 +5,28 @@ import { Plus, Pencil, Eye, Package } from 'lucide-react'
 import { formatPrice } from '@/backend/utils'
 
 interface Props {
-  searchParams: { page?: string; q?: string; category?: string; status?: string }
+  searchParams: Promise<{ page?: string; q?: string; category?: string; status?: string }>
 }
 
 export const metadata = { title: 'Admin Products' }
 
 export default async function AdminProductsPage({ searchParams }: Props) {
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const filters = await searchParams
+  const page = Math.max(1, parseInt(filters.page ?? '1'))
   const limit = 20
   const skip = (page - 1) * limit
 
   const where: any = {}
-  if (searchParams.q) {
+  if (filters.q) {
     where.OR = [
-      { name: { contains: searchParams.q, mode: 'insensitive' } },
-      { sku: { contains: searchParams.q, mode: 'insensitive' } },
+      { name: { contains: filters.q, mode: 'insensitive' } },
+      { sku: { contains: filters.q, mode: 'insensitive' } },
     ]
   }
-  if (searchParams.category) where.categoryId = searchParams.category
-  if (searchParams.status === 'active') where.isActive = true
-  if (searchParams.status === 'inactive') where.isActive = false
-  if (searchParams.status === 'low_stock') where.stockQuantity = { lte: 5 }
+  if (filters.category) where.categoryId = filters.category
+  if (filters.status === 'active') where.isActive = true
+  if (filters.status === 'inactive') where.isActive = false
+  if (filters.status === 'low_stock') where.stockQuantity = { lte: 5 }
 
   const [products, total, categories] = await Promise.all([
     db.product.findMany({
@@ -61,15 +62,15 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         <form className="flex flex-wrap gap-3 flex-1">
           <input
             name="q"
-            defaultValue={searchParams.q}
+            defaultValue={filters.q}
             placeholder="Search products..."
             className="input-base max-w-xs"
           />
-          <select name="category" defaultValue={searchParams.category} className="input-base max-w-xs">
+          <select name="category" defaultValue={filters.category} className="input-base max-w-xs">
             <option value="">All Categories</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <select name="status" defaultValue={searchParams.status} className="input-base w-40">
+          <select name="status" defaultValue={filters.status} className="input-base w-40">
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -158,10 +159,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
             <p className="text-muted-foreground">Showing {skip + 1}–{Math.min(skip + limit, total)} of {total}</p>
             <div className="flex gap-2">
               {page > 1 && (
-                <Link href={`/admin/products?page=${page - 1}${searchParams.q ? `&q=${searchParams.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>
+                <Link href={`/admin/products?page=${page - 1}${filters.q ? `&q=${filters.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>
               )}
               {page < totalPages && (
-                <Link href={`/admin/products?page=${page + 1}${searchParams.q ? `&q=${searchParams.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>
+                <Link href={`/admin/products?page=${page + 1}${filters.q ? `&q=${filters.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>
               )}
             </div>
           </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { HelpCircle, Package, CreditCard, RefreshCcw, Shield, Headphones, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/shared/contact'
 
 export const metadata: Metadata = { title: 'Boilabin Help Center' }
 
@@ -81,7 +82,7 @@ export default function HelpPage() {
           <h2 className="font-display text-xl font-semibold mb-1">Still need help?</h2>
           <p className="text-muted-foreground text-sm mb-4">Our support team typically responds within a few hours.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="mailto:hello@boilabin.com" className="btn-primary">Email Us</a>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="btn-primary">Email Us</a>
             <Link href="/contact" className="btn-outline">Contact Form</Link>
           </div>
         </div>

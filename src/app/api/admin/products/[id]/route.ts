@@ -15,15 +15,16 @@ import {
 } from '@/backend/admin/product-editor'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
     const existingProduct = await db.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         images: true,
       },
@@ -35,7 +36,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
     const payload = (await req.json()) as AdminProductPayload
     validateProductPayload(payload)
-    await validateProductRelations(payload)
+    const { brandId, sellerId } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name, existingProduct.id)
     const images = await normalizeProductImages(payload.images, slug)
@@ -61,8 +62,8 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
               shortDescription: payload.shortDescription?.trim() || null,
               sku: payload.sku.trim(),
               categoryId: payload.categoryId,
-              brandId: payload.brandId || null,
-              sellerId: payload.sellerId,
+              brandId,
+              sellerId,
               basePrice: payload.basePrice,
               salePrice: payload.salePrice ?? null,
               costPrice: payload.costPrice ?? null,
@@ -107,9 +108,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
     const existingProduct = await db.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { images: true },
     })
 

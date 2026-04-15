@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle, XCircle, Ban, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface Props {
   sellerId: string
@@ -17,12 +18,19 @@ export function SellerApprovalActions({ sellerId, currentStatus }: Props) {
     if (!confirm(`Are you sure you want to ${status.toLowerCase()} this seller?`)) return
     setLoading(status)
     try {
-      await fetch(`/api/admin/sellers/${sellerId}`, {
+      const response = await fetch(`/api/admin/sellers/${sellerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Could not update seller status')
+      }
+      toast.success(`Seller marked as ${status.toLowerCase()}`)
       router.refresh()
+    } catch (error: any) {
+      toast.error(error.message || 'Could not update seller status')
     } finally {
       setLoading(null)
     }

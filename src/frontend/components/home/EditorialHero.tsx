@@ -119,6 +119,7 @@ export function EditorialHero({ banners }: { banners: Banner[] }) {
                 alt={activeBanner.title}
                 fill
                 priority
+                quality={92}
                 className="object-cover transition-all duration-700"
                 sizes="(max-width: 1024px) 100vw, 44vw"
               />

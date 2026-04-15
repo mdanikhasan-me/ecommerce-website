@@ -17,7 +17,7 @@ const FAQS = [
   {
     category: 'Payments',
     items: [
-      { q: 'What payment methods do you accept?', a: 'We accept Cash on Delivery (COD), bKash, Nagad, and credit/debit cards via SSLCommerz. More methods coming soon.' },
+      { q: 'What payment methods do you accept?', a: 'We accept Cash on Delivery, bKash, and Nagad at checkout.' },
       { q: 'Is it safe to pay online on Boilabin?', a: 'Absolutely. All payments are encrypted with TLS/HTTPS. We never store card details. bKash and Nagad use OTP verification.' },
       { q: 'Do I get a digital receipt?', a: 'Yes, an order confirmation with full payment details is sent to your email immediately after checkout.' },
     ],
@@ -68,15 +68,17 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function FAQPage() {
   return (
-    <div className="container-site py-12"><div className="max-w-3xl">
-      <h1 className="font-display text-3xl font-bold mb-2">Frequently Asked Questions</h1>
-      <p className="text-muted-foreground mb-10">Everything you need to know about shopping on Boilabin.</p>
+    <div className="container-site py-12 lg:py-16"><div className="mx-auto max-w-4xl">
+      <div className="mx-auto mb-10 max-w-2xl text-center">
+        <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Frequently Asked Questions</h1>
+        <p className="text-muted-foreground">Everything you need to know about shopping on Boilabin.</p>
+      </div>
 
       <div className="space-y-8">
         {FAQS.map((section) => (
           <div key={section.category}>
-            <h2 className="font-display text-lg font-semibold mb-1 text-primary">{section.category}</h2>
-            <div className="bg-card border border-border rounded-2xl px-5">
+            <h2 className="mb-3 text-center font-display text-lg font-semibold text-foreground">{section.category}</h2>
+            <div className="rounded-[24px] border border-border/70 bg-card px-5 shadow-sm">
               {section.items.map((item) => (
                 <FAQItem key={item.q} q={item.q} a={item.a} />
               ))}
@@ -85,8 +87,8 @@ export default function FAQPage() {
         ))}
       </div>
 
-      <div className="mt-10 bg-secondary rounded-2xl p-6 text-center">
-        <p className="font-semibold mb-1">Still have questions?</p>
+      <div className="mt-10 rounded-[24px] border border-border/70 bg-secondary/55 p-6 text-center">
+        <p className="mb-1 font-semibold">Still have questions?</p>
         <p className="text-muted-foreground text-sm">Our team is ready to help.</p>
         <a href="/contact" className="btn-primary mt-4 inline-flex">Contact Support</a>
       </div>

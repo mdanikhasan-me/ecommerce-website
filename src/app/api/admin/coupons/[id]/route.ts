@@ -3,7 +3,7 @@ import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 async function validateCouponRelations(categoryIds: string[], productIds: string[]) {
@@ -64,8 +64,9 @@ function normalizeCouponPayload(payload: any) {
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingCoupon = await db.coupon.findUnique({ where: { id: params.id } })
+    const existingCoupon = await db.coupon.findUnique({ where: { id } })
     if (!existingCoupon) {
       return NextResponse.json({ error: 'Coupon not found' }, { status: 404 })
     }
@@ -90,8 +91,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingCoupon = await db.coupon.findUnique({ where: { id: params.id } })
+    const existingCoupon = await db.coupon.findUnique({ where: { id } })
     if (!existingCoupon) {
       return NextResponse.json({ error: 'Coupon not found' }, { status: 404 })
     }

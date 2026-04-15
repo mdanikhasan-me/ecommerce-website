@@ -1,23 +1,25 @@
 import { db } from '@/backend/database'
 import { formatDate } from '@/backend/utils'
 import { Users } from 'lucide-react'
+import Link from 'next/link'
 
-interface Props { searchParams: { page?: string; q?: string; role?: string } }
-export const metadata = { title: 'Admin Customers' }
+interface Props { searchParams: Promise<{ page?: string; q?: string; role?: string }> }
+export const metadata = { title: 'Admin Users' }
 
 export default async function AdminUsersPage({ searchParams }: Props) {
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const filters = await searchParams
+  const page = Math.max(1, parseInt(filters.page ?? '1'))
   const limit = 25
   const skip = (page - 1) * limit
 
   const where: any = {}
-  if (searchParams.q) {
+  if (filters.q) {
     where.OR = [
-      { name: { contains: searchParams.q, mode: 'insensitive' } },
-      { email: { contains: searchParams.q, mode: 'insensitive' } },
+      { name: { contains: filters.q, mode: 'insensitive' } },
+      { email: { contains: filters.q, mode: 'insensitive' } },
     ]
   }
-  if (searchParams.role) where.role = searchParams.role
+  if (filters.role) where.role = filters.role
 
   const [users, total] = await Promise.all([
     db.user.findMany({
@@ -39,15 +41,15 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-bold">Customers</h1>
+          <h1 className="font-display text-xl font-bold">Users</h1>
           <p className="text-sm text-muted-foreground">{total} registered users</p>
         </div>
       </div>
 
       <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3">
-          <input name="q" defaultValue={searchParams.q} placeholder="Search name or email..." className="input-base max-w-xs" />
-          <select name="role" defaultValue={searchParams.role} className="input-base w-40">
+          <input name="q" defaultValue={filters.q} placeholder="Search name or email..." className="input-base max-w-xs" />
+          <select name="role" defaultValue={filters.role} className="input-base w-40">
             <option value="">All Roles</option>
             <option value="CUSTOMER">Customer</option>
             <option value="SELLER">Seller</option>
@@ -67,12 +69,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               <th className="text-right px-4 py-3 font-semibold text-muted-foreground hidden sm:table-cell">Orders</th>
               <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
               <th className="text-right px-4 py-3 font-semibold text-muted-foreground hidden sm:table-cell">Joined</th>
+              <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Manage</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {users.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-12 text-center text-muted-foreground">
+                <td colSpan={7} className="py-12 text-center text-muted-foreground">
                   <Users className="h-8 w-8 mx-auto mb-3 opacity-30" />
                   No users found
                 </td>
@@ -102,6 +105,11 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 </td>
                 <td className="px-4 py-3 text-right text-muted-foreground text-xs hidden sm:table-cell">
                   {formatDate(user.createdAt)}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-primary hover:underline">
+                    Manage
+                  </Link>
                 </td>
               </tr>
             ))}

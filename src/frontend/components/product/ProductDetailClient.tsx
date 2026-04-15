@@ -97,6 +97,7 @@ export function ProductDetailClient({ product }: { product: any }) {
               alt={product.name}
               fill
               priority
+              quality={90}
               className="object-contain transition-transform duration-300"
               style={isZoomed ? {
                 transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
@@ -131,6 +132,7 @@ export function ProductDetailClient({ product }: { product: any }) {
                   alt=""
                   fill
                   className="object-cover"
+                  quality={82}
                   sizes="64px"
                 />
               </button>
@@ -274,6 +276,11 @@ export function ProductDetailClient({ product }: { product: any }) {
           </button>
           <button
             onClick={() => {
+              if (isCompared) {
+                router.push('/compare')
+                return
+              }
+
               const ok = addCompare(product.id)
               toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
             }}
@@ -283,7 +290,7 @@ export function ProductDetailClient({ product }: { product: any }) {
             )}
           >
             <BarChart2 className="h-4 w-4" />
-            Compare
+            {isCompared ? 'Open compare' : 'Compare'}
           </button>
           <button
             onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied!') }}
@@ -320,15 +327,13 @@ export function ProductDetailClient({ product }: { product: any }) {
           <div className="flex items-start gap-3 text-sm">
             <Store className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
             <div>
-              <span className="font-medium">Sold by </span>
-              <Link href={`/seller/${product.seller.storeSlug}`} className="font-semibold text-primary hover:underline">
-                {product.seller.storeName}
-              </Link>
-              {product.seller.isFirstParty && (
-                <span className="ml-1.5 inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
-                  <Check className="h-2.5 w-2.5" /> Official Store
-                </span>
-              )}
+              <span className="font-medium">Sold directly by </span>
+              <span className="font-semibold text-foreground">
+                {product.seller?.storeName || 'Boilabin Official Store'}
+              </span>
+              <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs text-primary">
+                <Check className="h-2.5 w-2.5" /> Official Store
+              </span>
             </div>
           </div>
         </div>

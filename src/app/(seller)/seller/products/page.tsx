@@ -90,9 +90,9 @@ export default async function SellerProductsPage() {
                       {product.category?.name}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <span className="font-semibold">{formatPrice(product.salePrice ?? product.price)}</span>
-                      {product.salePrice && product.salePrice < product.price && (
-                        <span className="block text-xs text-muted-foreground line-through">{formatPrice(product.price)}</span>
+                      <span className="font-semibold">{formatPrice(product.salePrice ?? product.basePrice)}</span>
+                      {product.salePrice && product.salePrice < product.basePrice && (
+                        <span className="block text-xs text-muted-foreground line-through">{formatPrice(product.basePrice)}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">

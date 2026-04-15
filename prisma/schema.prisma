@@ -195,6 +195,7 @@ model Seller {
   bankAccount     String?
   bkashNumber     String?
   status          SellerStatus @default(PENDING)
+  verifiedAt      DateTime?
   isFirstParty    Boolean      @default(false)
   commissionRate  Float        @default(10)
   totalSales      Float        @default(0)

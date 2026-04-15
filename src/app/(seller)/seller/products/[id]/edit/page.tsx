@@ -6,15 +6,16 @@ import { ProductForm } from '@/frontend/components/seller/ProductForm'
 
 export const metadata: Metadata = { title: 'Seller Edit Product' }
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user) redirect('/auth/login')
+  const { id } = await params
 
   const seller = await db.seller.findUnique({ where: { userId: session.user.id } })
   if (!seller) redirect('/seller/register')
 
   const product = await db.product.findUnique({
-    where: { id: params.id, sellerId: seller.id },
+    where: { id, sellerId: seller.id },
     include: {
       images: { orderBy: { sortOrder: 'asc' } },
       variants: true,

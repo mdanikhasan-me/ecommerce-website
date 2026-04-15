@@ -1,43 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
+import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = await auth()
-  if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-  }
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await requireAdminSession()
+    const { id } = await params
+    const { status, note } = await req.json()
 
-  const { status, note } = await req.json()
+    const order = await db.order.findUnique({ where: { id } })
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
 
-  const order = await db.order.findUnique({ where: { id: params.id } })
-  if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-
-  const updatedOrder = await db.order.update({
-    where: { id: params.id },
-    data: {
-      status: status as any,
-      deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
-      cancelledAt: status === 'CANCELLED' ? new Date() : undefined,
-      statusHistory: {
-        create: {
-          status: status as any,
-          note: note || `Status updated to ${status} by admin`,
+    const updatedOrder = await db.order.update({
+      where: { id },
+      data: {
+        status: status as any,
+        deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
+        cancelledAt: status === 'CANCELLED' ? new Date() : undefined,
+        statusHistory: {
+          create: {
+            status: status as any,
+            note: note || `Status updated to ${status} by admin`,
+          },
         },
       },
-    },
-  })
+    })
 
-  // Notify customer
-  await db.notification.create({
-    data: {
-      userId: order.userId,
-      type: 'ORDER',
-      title: `Order ${order.orderNumber} Update`,
-      message: `Your order status has been updated to: ${status.replace('_', ' ')}`,
-      link: `/account/orders/${order.id}`,
-    },
-  }).catch(() => {})
+    await db.notification.create({
+      data: {
+        userId: order.userId,
+        type: 'ORDER',
+        title: `Order ${order.orderNumber} Update`,
+        message: `Your order status has been updated to ${status.replace('_', ' ')}`,
+        link: `/account/orders/${order.id}`,
+      },
+    }).catch(() => {})
 
-  return NextResponse.json({ success: true, order: updatedOrder })
+    await logAdminAudit({
+      userId: session.user.id,
+      action: 'order.status.updated',
+      entity: 'order',
+      entityId: order.id,
+      oldValues: { status: order.status },
+      newValues: { status, note: note || null },
+    })
+
+    revalidatePath('/admin/orders')
+    revalidatePath(`/admin/orders/${order.id}`)
+    revalidatePath(`/account/orders/${order.id}`)
+
+    return NextResponse.json({ success: true, order: updatedOrder })
+  } catch (error: any) {
+    const status = error.message === 'Unauthorized' ? 403 : 400
+    return NextResponse.json({ error: error.message || 'Could not update order status' }, { status })
+  }
 }

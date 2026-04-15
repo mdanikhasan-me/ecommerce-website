@@ -11,9 +11,9 @@ async function main() {
     data: [
       { key: 'site_name', value: 'BoilaBin', group: 'general' },
       { key: 'site_tagline', value: 'Shop Quality Products from Trusted Sellers', group: 'general' },
-      { key: 'site_email', value: 'hello@boilabin.com', group: 'general' },
-      { key: 'site_phone', value: '+880 1700-000000', group: 'general' },
-      { key: 'site_address', value: 'Dhaka, Bangladesh', group: 'general' },
+      { key: 'site_email', value: 'anikhasan2@icloud.com', group: 'general' },
+      { key: 'site_phone', value: '01758409063', group: 'general' },
+      { key: 'site_address', value: 'Bashundhara R/A, J Block, Road 20', group: 'general' },
       { key: 'currency', value: 'BDT', group: 'general' },
       { key: 'currency_symbol', value: '৳', group: 'general' },
       { key: 'seller_mode', value: 'false', group: 'features' },

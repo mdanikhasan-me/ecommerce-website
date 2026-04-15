@@ -1,3 +1,5 @@
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+
 /**
  * SEO Constants
  *
@@ -42,14 +44,13 @@ export const SEO = {
     legalName: 'BoilaBin',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com',
     logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'}/logo.png`,
-    email: 'hello@boilabin.com',
-    phone: '+880 1700 000000',
+    email: CONTACT_EMAIL,
+    phone: CONTACT_PHONE,
     address: {
       '@type': 'PostalAddress' as const,
-      streetAddress: 'Dhaka',
+      streetAddress: CONTACT_ADDRESS,
       addressLocality: 'Dhaka',
       addressRegion: 'Dhaka Division',
-      postalCode: '1200',
       addressCountry: 'BD',
     },
     sameAs: [] as string[],

@@ -1,9 +1,9 @@
-import { randomUUID } from 'crypto'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
+import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
 
 type ProductImageInput = {
   url: string
@@ -35,8 +35,7 @@ export type AdminProductPayload = {
   lowStockThreshold?: number
   weight?: number | null
   categoryId: string
-  brandId?: string | null
-  sellerId: string
+  brandName?: string | null
   tags?: string[]
   metaTitle?: string | null
   metaDescription?: string | null
@@ -54,16 +53,6 @@ export interface AdminCategoryOption {
   parentId: string | null
 }
 
-export interface AdminBrandOption {
-  id: string
-  name: string
-}
-
-export interface AdminSellerOption {
-  id: string
-  storeName: string
-}
-
 export interface AdminEditableProduct {
   id: string
   name: string
@@ -78,8 +67,8 @@ export interface AdminEditableProduct {
   lowStockThreshold: number
   weight: number | null
   categoryId: string
-  brandId: string | null
-  sellerId: string
+  brandName: string
+  officialStoreName: string
   tags: string[]
   metaTitle: string | null
   metaDescription: string | null
@@ -108,8 +97,6 @@ export interface AdminEditableProduct {
     }>
   }>
 }
-
-const PRODUCT_UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'products')
 
 export async function requireAdminSession() {
   const session = await auth()
@@ -140,22 +127,21 @@ export async function ensureUniqueProductSlug(rawSlug: string, excludeId?: strin
   }
 }
 
-function parseImageDataUrl(dataUrl: string) {
-  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/)
-  if (!match) return null
+async function ensureUniqueBrandSlug(rawName: string) {
+  const baseSlug = slugify(rawName) || `brand-${Date.now().toString(36)}`
+  let candidate = baseSlug
+  let suffix = 2
 
-  return {
-    mimeType: match[1],
-    buffer: Buffer.from(match[2], 'base64'),
+  while (true) {
+    const existing = await db.brand.findUnique({
+      where: { slug: candidate },
+      select: { id: true },
+    })
+
+    if (!existing) return candidate
+    candidate = `${baseSlug}-${suffix}`
+    suffix += 1
   }
-}
-
-function extensionForMime(mimeType: string) {
-  if (mimeType.includes('png')) return 'png'
-  if (mimeType.includes('jpeg') || mimeType.includes('jpg')) return 'jpg'
-  if (mimeType.includes('webp')) return 'webp'
-  if (mimeType.includes('gif')) return 'gif'
-  return 'png'
 }
 
 async function persistImage(url: string, slug: string) {
@@ -163,19 +149,13 @@ async function persistImage(url: string, slug: string) {
     return url.trim()
   }
 
-  const parsed = parseImageDataUrl(url)
-  if (!parsed) {
-    throw new Error('Invalid image upload payload')
-  }
-
-  await fs.mkdir(PRODUCT_UPLOAD_DIR, { recursive: true })
-
-  const filename = `${slug}-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}.${extensionForMime(parsed.mimeType)}`
-  const outputPath = path.join(PRODUCT_UPLOAD_DIR, filename)
-
-  await fs.writeFile(outputPath, parsed.buffer)
-
-  return `/uploads/products/${filename}`
+  return persistOptimizedImageUpload({
+    dataUrl: url,
+    directorySegments: ['uploads', 'products'],
+    baseName: slug,
+    publicPathPrefix: '/uploads/products',
+    profile: 'products',
+  })
 }
 
 function isManagedUpload(url: string) {
@@ -267,36 +247,76 @@ export function validateProductPayload(payload: AdminProductPayload) {
   if (!payload.description?.trim()) throw new Error('Product description is required')
   if (!payload.sku?.trim()) throw new Error('SKU is required')
   if (!payload.categoryId) throw new Error('Category is required')
-  if (!payload.sellerId) throw new Error('Seller is required')
   if (!Number.isFinite(payload.basePrice) || payload.basePrice < 0) throw new Error('Base price is required')
   if (!Number.isFinite(payload.stockQuantity ?? 0) || (payload.stockQuantity ?? 0) < 0) throw new Error('Stock quantity is invalid')
 }
 
+async function getOfficialSeller() {
+  const seller = await db.seller.findFirst({
+    where: { isFirstParty: true, status: 'APPROVED' },
+    select: {
+      id: true,
+      storeName: true,
+    },
+    orderBy: { createdAt: 'asc' },
+  })
+
+  if (!seller) {
+    throw new Error('Official store is not configured yet')
+  }
+
+  return seller
+}
+
+async function resolveBrandId(brandName?: string | null) {
+  const cleanName = brandName?.trim()
+  if (!cleanName) return null
+
+  const existingBrand = await db.brand.findFirst({
+    where: { name: { equals: cleanName, mode: 'insensitive' } },
+    select: { id: true },
+  })
+
+  if (existingBrand) return existingBrand.id
+
+  const slug = await ensureUniqueBrandSlug(cleanName)
+  const latestBrand = await db.brand.findFirst({
+    orderBy: { sortOrder: 'desc' },
+    select: { sortOrder: true },
+  })
+
+  const createdBrand = await db.brand.create({
+    data: {
+      name: cleanName,
+      slug,
+      isActive: true,
+      sortOrder: (latestBrand?.sortOrder ?? 0) + 1,
+    },
+    select: { id: true },
+  })
+
+  return createdBrand.id
+}
+
 export async function validateProductRelations(payload: AdminProductPayload) {
-  const [category, brand, seller] = await Promise.all([
+  const [category, officialSeller] = await Promise.all([
     db.category.findUnique({
       where: { id: payload.categoryId },
       select: { id: true },
     }),
-    payload.brandId
-      ? db.brand.findUnique({
-          where: { id: payload.brandId },
-          select: { id: true },
-        })
-      : Promise.resolve(null),
-    db.seller.findUnique({
-      where: { id: payload.sellerId },
-      select: { id: true },
-    }),
+    getOfficialSeller(),
   ])
 
   if (!category) throw new Error('Selected category was not found')
-  if (payload.brandId && !brand) throw new Error('Selected brand was not found')
-  if (!seller) throw new Error('Selected seller was not found')
+  return {
+    brandId: await resolveBrandId(payload.brandName),
+    sellerId: officialSeller.id,
+    officialStoreName: officialSeller.storeName,
+  }
 }
 
 export async function getAdminProductEditorOptions() {
-  const [categories, brands, sellers] = await Promise.all([
+  const [categories, officialSeller] = await Promise.all([
     db.category.findMany({
       where: { isActive: true },
       select: {
@@ -306,32 +326,17 @@ export async function getAdminProductEditorOptions() {
       },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     }),
-    db.brand.findMany({
-      where: { isActive: true },
-      select: {
-        id: true,
-        name: true,
-      },
-      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
-    }),
-    db.seller.findMany({
-      select: {
-        id: true,
-        storeName: true,
-      },
-      orderBy: [{ isFirstParty: 'desc' }, { storeName: 'asc' }],
-    }),
+    getOfficialSeller(),
   ])
 
   return {
     categories: categories as AdminCategoryOption[],
-    brands: brands as AdminBrandOption[],
-    sellers: sellers as AdminSellerOption[],
+    officialStoreName: officialSeller.storeName,
   }
 }
 
 export async function getAdminEditableProduct(id: string) {
-  return db.product.findUnique({
+  const product = await db.product.findUnique({
     where: { id },
     select: {
       id: true,
@@ -347,8 +352,6 @@ export async function getAdminEditableProduct(id: string) {
       lowStockThreshold: true,
       weight: true,
       categoryId: true,
-      brandId: true,
-      sellerId: true,
       tags: true,
       metaTitle: true,
       metaDescription: true,
@@ -356,6 +359,16 @@ export async function getAdminEditableProduct(id: string) {
       isFeatured: true,
       isNew: true,
       isBestSeller: true,
+      brand: {
+        select: {
+          name: true,
+        },
+      },
+      seller: {
+        select: {
+          storeName: true,
+        },
+      },
       images: {
         orderBy: { sortOrder: 'asc' },
         select: {
@@ -385,5 +398,13 @@ export async function getAdminEditableProduct(id: string) {
         },
       },
     },
-  }) as Promise<AdminEditableProduct | null>
+  })
+
+  if (!product) return null
+
+  return {
+    ...product,
+    brandName: product.brand?.name ?? '',
+    officialStoreName: product.seller.storeName,
+  } as AdminEditableProduct
 }

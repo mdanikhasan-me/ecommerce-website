@@ -14,6 +14,10 @@
 import type { Metadata } from 'next'
 import { SEO } from './constants'
 
+function formatBdt(value: number) {
+  return new Intl.NumberFormat('en-BD').format(value)
+}
+
 // ─── Product Page Metadata ──────────────────────────────────────────────────
 
 interface ProductMeta {
@@ -21,6 +25,8 @@ interface ProductMeta {
   slug: string
   description?: string | null
   shortDescription?: string | null
+  metaTitle?: string | null
+  metaDescription?: string | null
   basePrice: number
   salePrice?: number | null
   images: { url: string; isPrimary: boolean }[]
@@ -59,9 +65,19 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     'online shopping bangladesh',
   ]
 
+  const seoTitle = product.metaTitle?.trim() || `${product.name} price in Bangladesh`
+  const seoDescription =
+    product.metaDescription?.trim() ||
+    `Buy ${product.name} in Bangladesh at BDT ${formatBdt(price)}. ${product.brand?.name ? `Original ${product.brand.name} product. ` : ''}Fast delivery, secure checkout, and cash on delivery from Boilabin.`
+  const seoSocialTitle = `${seoTitle} | BDT ${formatBdt(price)}`
+
   return {
     title: `${product.name} | Price in BD ৳${price.toLocaleString('en-IN')}`,
     description: desc,
+    ...{
+      title: seoTitle,
+      description: seoDescription,
+    },
     keywords,
     alternates: {
       canonical: url,

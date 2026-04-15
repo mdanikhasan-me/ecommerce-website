@@ -161,7 +161,7 @@ export default function CartPage() {
             </Link>
 
             <p className="text-xs text-muted-foreground text-center mt-3">
-              🔒 Secure checkout · bKash · Nagad · COD
+              Secure checkout with bKash, Nagad, and cash on delivery
             </p>
           </div>
         </div>

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
-function parseConfig(config: string | null): Prisma.InputJsonValue | null {
-  if (!config) return null
+function parseConfig(
+  config: string | null,
+): Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput {
+  if (!config) return Prisma.JsonNull
 
   try {
     return JSON.parse(config) as Prisma.InputJsonValue

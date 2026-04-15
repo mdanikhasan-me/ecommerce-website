@@ -15,14 +15,16 @@ export default async function SellerSettingsPage() {
     select: {
       id: true,
       storeName: true,
-      slug: true,
+      storeSlug: true,
       description: true,
-      logo: true,
-      banner: true,
-      phone: true,
-      returnPolicy: true,
-      shippingPolicy: true,
-      address: true,
+      storeLogo: true,
+      storeBanner: true,
+      businessType: true,
+      tradeLicense: true,
+      nidNumber: true,
+      bankName: true,
+      bankAccount: true,
+      bkashNumber: true,
     },
   })
   if (!seller) redirect('/seller/register')

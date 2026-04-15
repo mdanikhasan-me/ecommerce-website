@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
@@ -20,11 +21,13 @@ export default function ContactPage() {
 
   return (
     <div className="container-site py-12">
-      <div className="max-w-4xl">
-        <h1 className="font-display text-3xl font-bold mb-2">Contact Us</h1>
-        <p className="text-muted-foreground mb-10">We&apos;re here to help. Reach out any time.</p>
+      <div className="mx-auto max-w-5xl">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Contact Us</h1>
+          <p className="text-muted-foreground">We&apos;re here to help. Reach out any time.</p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10">
           {/* Info */}
           <div className="space-y-6">
             <div className="flex items-start gap-4">
@@ -33,8 +36,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold">Email</p>
-                <p className="text-sm text-muted-foreground">hello@boilabin.com</p>
-                <p className="text-sm text-muted-foreground">support@boilabin.com</p>
+                <p className="text-sm text-muted-foreground">{CONTACT_EMAIL}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -43,7 +45,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold">Phone</p>
-                <p className="text-sm text-muted-foreground">+880 1700-000000</p>
+                <p className="text-sm text-muted-foreground">{CONTACT_PHONE}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Mon–Sat, 9am–6pm</p>
               </div>
             </div>
@@ -53,7 +55,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold">Office</p>
-                <p className="text-sm text-muted-foreground">Dhaka, Bangladesh</p>
+                <p className="text-sm text-muted-foreground">{CONTACT_ADDRESS}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -74,7 +76,7 @@ export default function ContactPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 rounded-[28px] border border-border/70 bg-card p-6 shadow-sm">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Your Name</label>

@@ -10,15 +10,16 @@ import {
 } from '@/backend/admin/admin-utils'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
     const existingBrand = await db.brand.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: { select: { products: true } },
       },
@@ -85,9 +86,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
     const existingBrand = await db.brand.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: { select: { products: true } },
       },

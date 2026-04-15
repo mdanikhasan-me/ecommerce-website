@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { CheckCircle, Package, MapPin, CreditCard, ArrowRight } from 'lucide-react'
 import { formatPrice, formatDate } from '@/backend/utils'
 
-interface Props { params: { orderNumber: string } }
+interface Props { params: Promise<{ orderNumber: string }> }
 
 export default async function OrderConfirmationPage({ params }: Props) {
+  const { orderNumber } = await params
   const order = await db.order.findUnique({
-    where: { orderNumber: params.orderNumber },
+    where: { orderNumber },
     include: {
       items: true,
       address: true,

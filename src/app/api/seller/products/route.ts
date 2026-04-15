@@ -6,7 +6,7 @@ import { slugify } from '@/backend/utils'
 async function getSellerOrFail() {
   const session = await auth()
   if (!session?.user) return null
-  return db.seller.findUnique({ where: { userId: session.user.id, status: 'APPROVED' } })
+  return db.seller.findFirst({ where: { userId: session.user.id, status: 'APPROVED' } })
 }
 
 export async function POST(req: NextRequest) {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         description: body.description,
         shortDescription: body.shortDescription || null,
         sku: body.sku,
-        price: body.price,
+        basePrice: body.price,
         salePrice: body.salePrice || null,
         costPrice: body.costPrice || null,
         stockQuantity: body.stockQuantity || 0,
@@ -64,7 +64,7 @@ export async function PUT(req: NextRequest) {
     const id = req.nextUrl.searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'Missing product id' }, { status: 400 })
 
-    const existing = await db.product.findUnique({ where: { id, sellerId: seller.id } })
+    const existing = await db.product.findFirst({ where: { id, sellerId: seller.id } })
     if (!existing) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
 
     const body = await req.json()
@@ -79,7 +79,7 @@ export async function PUT(req: NextRequest) {
         description: body.description,
         shortDescription: body.shortDescription || null,
         sku: body.sku,
-        price: body.price,
+        basePrice: body.price,
         salePrice: body.salePrice || null,
         costPrice: body.costPrice || null,
         stockQuantity: body.stockQuantity || 0,

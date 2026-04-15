@@ -60,6 +60,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
           alt={banner.title}
           fill
           priority
+          quality={92}
           className={cn(
             'object-cover transition-all duration-700',
             isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'

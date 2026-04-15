@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-function parseConfig(config: string | null): Prisma.InputJsonValue | null {
-  if (!config) return null
+function parseConfig(
+  config: string | null,
+): Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput {
+  if (!config) return Prisma.JsonNull
 
   try {
     return JSON.parse(config) as Prisma.InputJsonValue
@@ -20,8 +22,9 @@ function parseConfig(config: string | null): Prisma.InputJsonValue | null {
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingSection = await db.homepageSection.findUnique({ where: { id: params.id } })
+    const existingSection = await db.homepageSection.findUnique({ where: { id } })
     if (!existingSection) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 })
     }
@@ -51,8 +54,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingSection = await db.homepageSection.findUnique({ where: { id: params.id } })
+    const existingSection = await db.homepageSection.findUnique({ where: { id } })
     if (!existingSection) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 })
     }

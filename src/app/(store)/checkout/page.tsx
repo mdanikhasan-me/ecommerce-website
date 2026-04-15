@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -47,10 +47,13 @@ export default function CheckoutPage() {
   const shippingFee = calculateShipping(subtotal)
   const total = subtotal + shippingFee
 
-  if (items.length === 0) {
-    router.replace('/cart')
-    return null
-  }
+  useEffect(() => {
+    if (items.length === 0) {
+      router.replace('/cart')
+    }
+  }, [items.length, router])
+
+  if (items.length === 0) return null
 
   const onAddressSubmit = () => setStep(1)
 
@@ -229,6 +232,18 @@ export default function CheckoutPage() {
                         <p className="font-semibold text-sm">{gateway.name}</p>
                         <p className="text-xs text-muted-foreground">{gateway.description}</p>
                       </div>
+                      {gateway.logo ? (
+                        <div className="rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm">
+                          <Image
+                            src={gateway.logo}
+                            alt={gateway.name}
+                            width={108}
+                            height={34}
+                            unoptimized
+                            className="h-6 w-auto object-contain"
+                          />
+                        </div>
+                      ) : null}
                       {selectedPayment === gateway.id && <Check className="h-4 w-4 text-primary" />}
                     </label>
                   ))}
@@ -269,7 +284,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold">{formatPrice(item.price * item.quantity)}</p>
-                          <p className="text-xs text-muted-foreground">×{item.quantity}</p>
+                          <p className="text-xs text-muted-foreground">x{item.quantity}</p>
                         </div>
                       </div>
                     ))}
@@ -307,7 +322,7 @@ export default function CheckoutPage() {
 
               <div className="mt-4 p-3 bg-green-50 rounded-xl text-green-700 text-xs text-center font-medium">
                 <Truck className="h-4 w-4 inline mr-1.5" />
-                Estimated delivery: 1–3 business days
+                Estimated delivery: 1 to 3 business days
               </div>
             </div>
           </div>

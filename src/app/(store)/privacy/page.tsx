@@ -1,39 +1,78 @@
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/shared/contact'
+import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
+
 export const metadata: Metadata = { title: 'Boilabin Privacy Policy' }
+
 export default function PrivacyPage() {
   return (
-    <div className="container-site py-12">
-      <div className="max-w-3xl">
-        <h1 className="font-display text-3xl font-bold mb-2">Privacy Policy</h1>
-        <p className="text-muted-foreground mb-8">Last updated: January 2025</p>
-        <div className="space-y-6 text-muted-foreground leading-relaxed">
-          <p>Boilabin (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is committed to protecting your privacy. This policy describes how we collect, use, and safeguard your personal information.</p>
-          <h2 className="font-display text-xl font-semibold text-foreground">Information We Collect</h2>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Account information: name, email, phone, password (hashed)</li>
-            <li>Delivery addresses</li>
-            <li>Order history and preferences</li>
-            <li>Payment method details (processed securely, not stored by us)</li>
-            <li>Device and browsing data for analytics</li>
-          </ul>
-          <h2 className="font-display text-xl font-semibold text-foreground">How We Use Your Information</h2>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Processing and fulfilling your orders</li>
-            <li>Sending order updates and notifications</li>
-            <li>Improving our platform and personalizing your experience</li>
-            <li>Fraud prevention and security</li>
-            <li>Legal compliance</li>
-          </ul>
-          <h2 className="font-display text-xl font-semibold text-foreground">Data Security</h2>
-          <p>We use industry-standard encryption (TLS/HTTPS) for all data transmission. Passwords are hashed using bcrypt. Payment data is processed by certified payment gateways.</p>
-          <h2 className="font-display text-xl font-semibold text-foreground">Your Rights</h2>
-          <p>You may request access to, correction of, or deletion of your personal data at any time by contacting privacy@boilabin.com.</p>
-          <h2 className="font-display text-xl font-semibold text-foreground">Cookies</h2>
-          <p>We use essential cookies for authentication and cart functionality. Analytics cookies help us improve the platform. You may disable non-essential cookies in your browser settings.</p>
-          <h2 className="font-display text-xl font-semibold text-foreground">Contact</h2>
-          <p>For privacy inquiries: privacy@boilabin.com</p>
-        </div>
-      </div>
-    </div>
+    <ContentPageShell
+      eyebrow="Privacy policy"
+      title="How customer data is collected, used, and protected."
+      description="This page explains what information Boilabin collects, why it is needed, and the steps taken to keep customer data safer across the platform."
+      updatedAt="January 2025"
+      sections={[
+        {
+          id: 'collect',
+          title: 'Information we collect',
+          body: (
+            <ul>
+              <li>Account details such as name, email, phone number, and password hash</li>
+              <li>Delivery addresses and order history</li>
+              <li>Product preferences and storefront activity</li>
+              <li>Payment method metadata processed through secure gateways</li>
+              <li>Device and browser information used for analytics and fraud prevention</li>
+            </ul>
+          ),
+        },
+        {
+          id: 'use',
+          title: 'How the information is used',
+          body: (
+            <ul>
+              <li>Processing orders and arranging delivery</li>
+              <li>Sending order updates, alerts, and support communication</li>
+              <li>Improving recommendations, discovery, and site performance</li>
+              <li>Detecting fraud, abuse, and suspicious account activity</li>
+              <li>Meeting legal and operational requirements</li>
+            </ul>
+          ),
+        },
+        {
+          id: 'security',
+          title: 'Security and retention',
+          body: (
+            <>
+              <p>
+                Boilabin uses HTTPS and other common security measures to protect data in transit.
+                Passwords are stored as hashes, and payment details are processed through payment
+                partners instead of being stored directly by us.
+              </p>
+              <p>
+                Data is retained only as long as it is needed for order history, customer service,
+                fraud prevention, or legal compliance.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'rights',
+          title: 'Your rights and contact',
+          body: (
+            <>
+              <p>
+                You may request access to your personal information, ask for corrections, or request
+                deletion where applicable.
+              </p>
+              <p>
+                For privacy related questions, contact {CONTACT_EMAIL}. We also use essential cookies
+                for authentication and cart functions, while analytics cookies help us improve the
+                storefront experience.
+              </p>
+            </>
+          ),
+        },
+      ]}
+    />
   )
 }

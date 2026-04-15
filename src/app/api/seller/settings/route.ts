@@ -17,10 +17,12 @@ export async function PUT(req: NextRequest) {
       data: {
         storeName: body.storeName,
         description: body.description || null,
-        phone: body.phone || null,
-        address: body.address || null,
-        returnPolicy: body.returnPolicy || null,
-        shippingPolicy: body.shippingPolicy || null,
+        businessType: body.businessType || null,
+        tradeLicense: body.tradeLicense || null,
+        nidNumber: body.nidNumber || null,
+        bankName: body.bankName || null,
+        bankAccount: body.bankAccount || null,
+        bkashNumber: body.bkashNumber || null,
       },
     })
 

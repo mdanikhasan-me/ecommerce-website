@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
+type NormalizedFlashSaleItem = {
+  productId: string
+  discountType: 'PERCENTAGE' | 'FIXED'
+  discountValue: number
+  maxQuantity: number | null
+}
+
 function normalizeFlashSalePayload(payload: any) {
   if (!payload.title?.trim()) throw new Error('Flash sale title is required')
 
@@ -14,7 +21,7 @@ function normalizeFlashSalePayload(payload: any) {
   const items = Array.isArray(payload.items) ? payload.items : []
   if (!items.length) throw new Error('At least one flash sale product is required')
 
-  const normalizedItems = items.map((item: any) => {
+  const normalizedItems: NormalizedFlashSaleItem[] = items.map((item: any) => {
     if (!item.productId) throw new Error('Flash sale item product is required')
     if (!['PERCENTAGE', 'FIXED'].includes(item.discountType)) throw new Error('Discount type is invalid')
 

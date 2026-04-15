@@ -3,14 +3,15 @@ import { formatDateRelative } from '@/backend/utils'
 import { Star } from 'lucide-react'
 import { ReviewModerationActions } from '@/frontend/components/admin/ReviewModerationActions'
 
-interface Props { searchParams: { status?: string; page?: string } }
+interface Props { searchParams: Promise<{ status?: string; page?: string }> }
 export const metadata = { title: 'Admin Reviews' }
 
 export default async function AdminReviewsPage({ searchParams }: Props) {
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
+  const filters = await searchParams
+  const page = Math.max(1, parseInt(filters.page ?? '1'))
   const limit = 20
   const skip = (page - 1) * limit
-  const statusFilter = searchParams.status ?? 'PENDING'
+  const statusFilter = filters.status ?? 'PENDING'
 
   const [reviews, total] = await Promise.all([
     db.review.findMany({

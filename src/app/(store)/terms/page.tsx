@@ -1,31 +1,109 @@
 import type { Metadata } from 'next'
+import { CONTACT_EMAIL } from '@/shared/contact'
+import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
 export const metadata: Metadata = { title: 'Boilabin Terms of Service' }
+
 export default function TermsPage() {
   return (
-    <div className="container-site py-12">
-      <div className="max-w-3xl prose prose-sm max-w-none">
-        <h1 className="font-display text-3xl font-bold">Terms of Service</h1>
-        <p className="text-muted-foreground">Last updated: January 2025</p>
-        <p>By accessing and using Boilabin (&quot;the Platform&quot;), you agree to these Terms of Service. Please read them carefully.</p>
-        <h2 className="font-display text-xl font-semibold mt-8">1. Acceptance of Terms</h2>
-        <p>By creating an account or placing an order on Boilabin, you agree to be bound by these terms and our Privacy Policy.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">2. Account Responsibility</h2>
-        <p>You are responsible for maintaining the confidentiality of your account credentials. Notify us immediately of any unauthorized use.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">3. Product Information</h2>
-        <p>We strive for accuracy in all product descriptions, prices, and availability. We reserve the right to correct errors and cancel orders placed at incorrect prices.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">4. Orders & Payments</h2>
-        <p>All orders are subject to acceptance and availability. Payment must be completed before dispatch for online payment methods. Cash on Delivery is subject to a delivery charge.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">5. Returns & Refunds</h2>
-        <p>We offer a 7-day return window for most products. Please see our Return Policy for full details on eligible items and conditions.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">6. Intellectual Property</h2>
-        <p>All content on the Boilabin platform, including text, images, logos, and design, is owned by Boilabin or our licensors. Unauthorized reproduction is prohibited.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">7. Limitation of Liability</h2>
-        <p>Boilabin is not liable for indirect, incidental, or consequential damages arising from use of the platform, to the maximum extent permitted by Bangladeshi law.</p>
-        <h2 className="font-display text-xl font-semibold mt-6">8. Governing Law</h2>
-          <p>These terms are governed by the laws of the People&apos;s Republic of Bangladesh.</p>
-        <p className="text-muted-foreground">For questions about these terms, contact: legal@boilabin.com</p>
-      </div>
-    </div>
+    <ContentPageShell
+      eyebrow="Terms of service"
+      title="Clear marketplace rules, written to be readable."
+      description="These terms explain how Boilabin works, what customers can expect from us, and the responsibilities that come with using the platform."
+      updatedAt="January 2025"
+      sections={[
+        {
+          id: 'acceptance',
+          title: 'Acceptance of terms',
+          body: (
+            <p>
+              By creating an account, browsing the storefront, or placing an order on Boilabin,
+              you agree to be bound by these terms and our privacy policy.
+            </p>
+          ),
+        },
+        {
+          id: 'account',
+          title: 'Account responsibility',
+          body: (
+            <p>
+              You are responsible for maintaining the confidentiality of your login credentials
+              and for any activity that takes place under your account. If you suspect unauthorized
+              access, contact us immediately.
+            </p>
+          ),
+        },
+        {
+          id: 'products',
+          title: 'Product information and availability',
+          body: (
+            <>
+              <p>
+                We work to keep product details, prices, images, and stock status as accurate as
+                possible, but we may occasionally need to correct errors or update listings.
+              </p>
+              <p>
+                Boilabin reserves the right to cancel or refuse orders placed against incorrect
+                pricing, incomplete information, or unavailable inventory.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'orders',
+          title: 'Orders and payments',
+          body: (
+            <>
+              <p>
+                Orders are subject to review, acceptance, and availability. Payment instructions
+                shown during checkout apply to the order you place.
+              </p>
+              <p>
+                Cash on delivery may be offered depending on the order and delivery area. Online
+                payment methods are only considered complete after successful confirmation.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'returns',
+          title: 'Returns and refunds',
+          body: (
+            <p>
+              Most products follow our 7 day return window, subject to eligibility conditions.
+              Please review the refund policy page for details on approved return cases, exclusions,
+              and refund timelines.
+            </p>
+          ),
+        },
+        {
+          id: 'property',
+          title: 'Intellectual property',
+          body: (
+            <p>
+              All text, branding, interface design, imagery, and site content are owned by
+              Boilabin or our licensors. Copying, republishing, or reusing those materials without
+              permission is prohibited.
+            </p>
+          ),
+        },
+        {
+          id: 'liability',
+          title: 'Liability and governing law',
+          body: (
+            <>
+              <p>
+                To the maximum extent permitted by law, Boilabin is not liable for indirect,
+                incidental, or consequential damages resulting from use of the platform.
+              </p>
+              <p>
+                These terms are governed by the laws of the People&apos;s Republic of Bangladesh.
+                For questions, contact {CONTACT_EMAIL}.
+              </p>
+            </>
+          ),
+        },
+      ]}
+    />
   )
 }

@@ -8,7 +8,7 @@ import {
 } from '@/backend/admin/admin-utils'
 
 interface RouteContext {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 function normalizeBannerPayload(payload: any) {
@@ -38,8 +38,9 @@ function normalizeBannerPayload(payload: any) {
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingBanner = await db.banner.findUnique({ where: { id: params.id } })
+    const existingBanner = await db.banner.findUnique({ where: { id } })
     if (!existingBanner) {
       return NextResponse.json({ error: 'Banner not found' }, { status: 404 })
     }
@@ -97,8 +98,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   try {
     await requireAdminSession()
+    const { id } = await params
 
-    const existingBanner = await db.banner.findUnique({ where: { id: params.id } })
+    const existingBanner = await db.banner.findUnique({ where: { id } })
     if (!existingBanner) {
       return NextResponse.json({ error: 'Banner not found' }, { status: 404 })
     }

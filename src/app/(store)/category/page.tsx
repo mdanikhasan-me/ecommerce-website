@@ -3,7 +3,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 import { db } from '@/backend/database'
-import { CATEGORY_CONFIG, getCategoryConfig } from '@/frontend/components/category/category-config'
+import { getCategoryConfig } from '@/frontend/components/category/category-config'
+import { getCategoryMediaPath } from '@/shared/category-media'
 
 export const metadata: Metadata = {
   title: 'Boilabin Categories',
@@ -60,103 +61,77 @@ export default async function CategoriesPage() {
 
 function CategorySectionCard({ category }: { category: CategoryItem }) {
   const config = getCategoryConfig(category.slug)
-  const Icon = config.icon
 
   return (
-    <section>
-      <div className="mb-4 flex flex-col gap-3 border-b border-black/8 pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-black/6"
-            style={{ backgroundColor: config.surface }}
-          >
-            <Icon className="h-[18px] w-[18px]" style={{ color: config.accentDark }} />
-          </div>
-
-          <div>
-            <h2 className="text-[1.55rem] font-semibold tracking-tight text-[#161616]">{category.name}</h2>
-          </div>
-        </div>
-
+    <section className="rounded-[30px] border border-black/8 bg-white p-4 shadow-[0_18px_42px_-36px_rgba(15,23,42,0.18)] sm:p-5">
+      <div className="grid gap-5 lg:grid-cols-[minmax(220px,260px)_1fr]">
         <Link
           href={`/category/${category.slug}`}
-          className="inline-flex items-center gap-2 text-sm font-semibold"
-          style={{ color: config.accentDark }}
+          className="group relative isolate aspect-[1.02] overflow-hidden rounded-[24px] border border-black/6 bg-slate-100"
         >
-          Open category
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-
-      <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(118px,134px))]">
-        <CategorySquareTile
-          href={`/category/${category.slug}`}
-          title={category.name}
-          tone={config.surface}
-          textColor={config.accentDark}
-          imageSrc={getCategoryImagePath(category.slug)}
-        />
-
-        {category.children.map((child) => (
-          <CategorySquareTile
-            key={child.id}
-            href={`/category/${child.slug}`}
-            title={child.name}
-            tone="#ffffff"
-            textColor="#161616"
-            imageSrc={getCategoryImagePath(category.slug)}
+          <Image
+            src={getCategoryMediaPath(category)}
+            alt={category.name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            sizes="(max-width: 1024px) 100vw, 260px"
+            quality={84}
           />
-        ))}
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.22)_44%,rgba(15,23,42,0.76)_100%)]" />
+          <div
+            className="absolute inset-x-0 top-0 h-24 opacity-60"
+            style={{ background: `radial-gradient(circle at top right, ${config.accent}22 0%, transparent 56%)` }}
+          />
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+            <div>
+              <h2 className="text-[1.5rem] font-semibold tracking-tight text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+                {category.name}
+              </h2>
+              <p className="mt-1 text-sm text-white/78">{config.eyebrow}</p>
+            </div>
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/92 text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </Link>
+
+        <div className="flex min-w-0 flex-col justify-between">
+          <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{config.summary}</p>
+              <Link
+                href={`/category/${category.slug}`}
+                className="inline-flex items-center gap-2 text-sm font-semibold"
+                style={{ color: config.accentDark }}
+              >
+                Open category
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {category.children.length > 0 ? (
+              category.children.map((child) => (
+                <Link
+                  key={child.id}
+                  href={`/category/${child.slug}`}
+                  className="group rounded-[18px] border border-black/8 bg-[#faf7f1] px-4 py-4 transition-colors hover:bg-white"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#161616]">{child.name}</p>
+                    <ArrowRight className="h-4 w-4 text-[#161616] transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="rounded-[18px] border border-dashed border-black/10 bg-[#faf7f1] px-4 py-4 text-sm text-muted-foreground">
+                Open this department to browse the full collection.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   )
-}
-
-function CategorySquareTile({
-  href,
-  title,
-  tone,
-  textColor,
-  imageSrc,
-}: {
-  href: string
-  title: string
-  tone: string
-  textColor: string
-  imageSrc: string
-}) {
-  return (
-    <Link
-      href={href}
-      className="group relative isolate flex aspect-square min-h-[118px] overflow-hidden rounded-[20px] border border-black/8 p-3 shadow-[0_10px_22px_-22px_rgba(15,23,42,0.12)] transition-all hover:-translate-y-0.5"
-      style={{ backgroundColor: tone }}
-    >
-      <div
-        className="absolute inset-0 opacity-[0.05] transition-opacity duration-300 group-hover:opacity-[0.08]"
-        style={{
-          background: `radial-gradient(circle at top right, ${textColor} 0%, transparent 58%)`,
-        }}
-      />
-
-      <div className="absolute bottom-0 right-0 h-[58%] w-[58%] opacity-[0.18] transition-transform duration-300 group-hover:scale-[1.04]">
-        <Image
-          src={imageSrc}
-          alt=""
-          fill
-          className="object-contain object-right-bottom p-2"
-          sizes="134px"
-        />
-      </div>
-
-      <div className="relative z-10 mt-auto max-w-[80%]">
-        <p className="text-[13px] font-semibold leading-[18px]" style={{ color: textColor }}>
-          {title}
-        </p>
-      </div>
-    </Link>
-  )
-}
-
-function getCategoryImagePath(slug: string) {
-  return CATEGORY_CONFIG[slug] ? `/images/categories/${slug}.svg` : '/images/categories/default.svg'
 }

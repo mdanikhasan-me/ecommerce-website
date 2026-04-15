@@ -6,9 +6,9 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import {
   Search, ShoppingCart, Heart, User, Menu, X, ChevronDown,
-  Package, LogOut, LayoutDashboard, MapPin, Zap, Tag
+  Package, LogOut, LayoutDashboard, MapPin, Zap, Tag, BarChart2
 } from 'lucide-react'
-import { useCartStore } from '@/frontend/stores'
+import { useCartStore, useCompareStore } from '@/frontend/stores'
 import { cn } from '@/backend/utils'
 
 const NAV_CATEGORIES = [
@@ -53,8 +53,10 @@ export function Header() {
   const router = useRouter()
   const { data: session } = useSession()
   const { getItemCount, openCart } = useCartStore()
+  const { items: compareItems } = useCompareStore()
   const searchRef = useRef<HTMLDivElement>(null)
   const cartCount = mounted ? getItemCount() : 0
+  const compareCount = mounted ? compareItems.length : 0
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -174,6 +176,20 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-1">
+              {/* Compare */}
+              <Link
+                href="/compare"
+                className="p-2 rounded-lg hover:bg-secondary transition-colors relative"
+                aria-label="Compare products"
+              >
+                <BarChart2 className="h-5 w-5" />
+                {compareCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[1rem] bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                    {compareCount > 9 ? '9+' : compareCount}
+                  </span>
+                )}
+              </Link>
+
               {/* Wishlist */}
               <Link
                 href="/wishlist"
@@ -233,6 +249,10 @@ export function Header() {
                         <Link href="/account/addresses" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                           <MapPin className="h-4 w-4" />
                           Addresses
+                        </Link>
+                        <Link href="/compare" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                          <BarChart2 className="h-4 w-4" />
+                          Compare
                         </Link>
                         <button
                           onClick={() => signOut({ callbackUrl: '/' })}
@@ -350,6 +370,9 @@ export function Header() {
             </Link>
             <Link href="/brands" className="py-2.5 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
               Brands
+            </Link>
+            <Link href="/compare" className="py-2.5 text-sm font-medium border-t border-border pt-4" onClick={() => setIsMobileMenuOpen(false)}>
+              Compare
             </Link>
           </div>
         </div>
