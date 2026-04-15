@@ -44,12 +44,12 @@ export function PromoSection({
       title: 'Flash Deals',
       copy: 'Big markdowns on top picks. Catch the highest discounts before this round closes.',
       cta: 'Shop deals',
-      gradient: 'from-fuchsia-700 via-purple-800 to-slate-950',
-      labelClass: 'text-white/72',
-      copyClass: 'text-white/84',
+      gradient: 'from-[#5e2f84] via-[#482567] to-[#171528]',
+      labelClass: 'text-white/[0.78]',
+      copyClass: 'text-white/[0.9]',
       headlineClass: 'text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.28)]',
-      previewRailClass: 'border-white/12 bg-black/14',
-      previewCardClass: 'border-white/16 bg-white/[0.96]',
+      previewRailClass: 'bg-white/[0.07]',
+      previewCardClass: 'border-white/[0.12] bg-white/[0.97]',
       products: flashDealProducts.slice(0, 3),
     },
     {
@@ -59,12 +59,12 @@ export function PromoSection({
       title: 'New Arrivals',
       copy: 'See the latest product drops here first, then explore the full arrival list.',
       cta: 'Explore all',
-      gradient: 'from-slate-700 via-slate-900 to-slate-950',
-      labelClass: 'text-slate-200/72',
-      copyClass: 'text-slate-100/74',
+      gradient: 'from-[#2b3b52] via-[#18243a] to-[#101828]',
+      labelClass: 'text-slate-200/[0.84]',
+      copyClass: 'text-slate-100/[0.9]',
       headlineClass: 'text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.24)]',
-      previewRailClass: 'border-white/10 bg-black/16',
-      previewCardClass: 'border-white/12 bg-white/[0.97]',
+      previewRailClass: 'bg-white/[0.06]',
+      previewCardClass: 'border-white/[0.1] bg-white/[0.98]',
       products: newArrivalProducts.slice(0, 3),
     },
   ]
@@ -75,12 +75,12 @@ export function PromoSection({
         <Link
           key={collection.href}
           href={collection.href}
-          className={`group relative min-h-[368px] overflow-hidden rounded-[30px] border border-black/6 bg-gradient-to-br p-6 shadow-[0_24px_70px_rgba(17,24,39,0.18)] sm:min-h-[392px] ${collection.gradient}`}
+          className={`group relative min-h-[388px] overflow-hidden rounded-[30px] border border-black/[0.06] bg-gradient-to-br p-6 shadow-[0_24px_70px_rgba(17,24,39,0.18)] sm:min-h-[412px] ${collection.gradient}`}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%)]" />
-          <div className="absolute inset-y-0 left-0 w-[44%] bg-[linear-gradient(90deg,rgba(15,23,42,0.26),rgba(15,23,42,0.08),transparent)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_34%)]" />
+          <div className="absolute inset-y-0 left-0 w-[46%] bg-[linear-gradient(90deg,rgba(15,23,42,0.30),rgba(15,23,42,0.10),transparent)]" />
           <div className="relative grid h-full gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
-            <div className="flex flex-col justify-between gap-5 rounded-[26px] border border-white/10 bg-black/12 p-5 backdrop-blur-[2px]">
+            <div className="flex flex-col justify-between gap-5 rounded-[26px] bg-black/[0.18] p-5 shadow-[0_18px_46px_rgba(15,23,42,0.18)] backdrop-blur-[4px]">
               <div>
                 <span className={`text-xs font-semibold uppercase tracking-widest ${collection.labelClass}`}>
                   {collection.label}
@@ -92,14 +92,14 @@ export function PromoSection({
                 {collection.kind === 'flash' ? (
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     {flashDealMaxDiscount > 0 ? (
-                      <span className="inline-flex items-center rounded-full border border-white/16 bg-white/12 px-3 py-1 text-xs font-semibold text-white">
+                      <span className="inline-flex items-center rounded-full border border-white/[0.18] bg-white/[0.12] px-3 py-1 text-xs font-semibold text-white">
                         Up to {flashDealMaxDiscount}% off
                       </span>
                     ) : null}
                     {flashDealEndsAt ? <PromoCountdown endsAt={flashDealEndsAt} /> : null}
                   </div>
                 ) : (
-                  <div className="mt-4 inline-flex items-center rounded-full border border-white/12 bg-white/10 px-3 py-1 text-xs font-semibold text-white/88">
+                  <div className="mt-4 inline-flex items-center rounded-full bg-white/[0.1] px-3 py-1 text-xs font-semibold text-white/[0.92]">
                     Fresh drops every week
                   </div>
                 )}
@@ -110,7 +110,7 @@ export function PromoSection({
               </span>
             </div>
 
-            <div className={`rounded-[28px] border p-3 shadow-[0_18px_44px_rgba(15,23,42,0.12)] backdrop-blur ${collection.previewRailClass}`}>
+            <div className={`rounded-[28px] p-3 shadow-[0_18px_44px_rgba(15,23,42,0.12)] backdrop-blur ${collection.previewRailClass}`}>
               <div className="grid grid-cols-3 gap-3">
               {collection.products.length > 0 ? (
                 collection.products.map((product) => (
@@ -125,7 +125,7 @@ export function PromoSection({
                 Array.from({ length: 3 }).map((_, index) => (
                   <div
                     key={`${collection.href}-${index}`}
-                    className="aspect-[0.78] rounded-[22px] border border-white/14 bg-white/10 backdrop-blur"
+                    className="aspect-[0.78] rounded-[22px] bg-white/[0.12] backdrop-blur"
                   />
                 ))
               )}
@@ -204,13 +204,13 @@ function PromoCountdown({ endsAt }: { endsAt: Date | string }) {
   }, [endTime])
 
   return (
-    <div className="flex items-center gap-2 rounded-full border border-white/16 bg-white/12 px-3 py-1.5 text-white">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">Ends in</span>
+    <div className="flex items-center gap-2 rounded-full border border-white/[0.18] bg-white/[0.12] px-3 py-1.5 text-white">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/[0.75]">Ends in</span>
       <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
         {[timeLeft.h, timeLeft.m, timeLeft.s].map((value, index) => (
           <span key={`${value}-${index}`} className="flex items-center gap-1.5">
-            <span className="rounded-md bg-black/22 px-2 py-1">{value}</span>
-            {index < 2 ? <span className="text-white/42">:</span> : null}
+            <span className="rounded-md bg-black/[0.22] px-2 py-1">{value}</span>
+            {index < 2 ? <span className="text-white/[0.42]">:</span> : null}
           </span>
         ))}
       </div>

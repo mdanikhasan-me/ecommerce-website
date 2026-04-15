@@ -1,0 +1,24 @@
+<svg width="112" height="34" viewBox="0 0 112 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(8 6)">
+    <path
+      d="M7 4.5H18L23 9.25V19C23 20.1046 22.1046 21 21 21H7C5.89543 21 5 20.1046 5 19V6.5C5 5.39543 5.89543 4.5 7 4.5Z"
+      stroke="#F59E0B"
+      stroke-width="1.8"
+      stroke-linejoin="round"
+    />
+    <path d="M18 4.5V9.25H23" stroke="#F59E0B" stroke-width="1.8" stroke-linejoin="round" />
+    <path d="M9 11H19" stroke="#FDBA74" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M9 15H16" stroke="#FDBA74" stroke-width="1.8" stroke-linecap="round" />
+  </g>
+  <text
+    x="41"
+    y="22"
+    fill="#F8FAFC"
+    font-family="Segoe UI, Arial, sans-serif"
+    font-size="15"
+    font-weight="700"
+    letter-spacing="0.08em"
+  >
+    COD
+  </text>
+</svg>
