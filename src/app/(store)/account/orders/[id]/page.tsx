@@ -5,7 +5,6 @@ import { formatPrice, formatDate } from '@/backend/utils'
 import { ArrowLeft, Package, MapPin, CreditCard, Clock, CheckCircle, Truck, Star } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 
 export const metadata: Metadata = { title: 'Boilabin Order Details' }
 
@@ -110,13 +109,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <div key={item.id} className="flex items-start gap-3">
                     <div className="size-16 rounded-lg bg-secondary overflow-hidden shrink-0">
                       {item.product.images[0] ? (
-                        <Image
+                        <img
                           src={item.product.images[0].url}
                           alt={item.product.name}
                           width={64}
                           height={64}
-                          sizes="64px"
-                          quality={80}
+                          loading="lazy"
+                          decoding="async"
                           className="size-full object-cover"
                         />
                       ) : <div className="size-full bg-muted" />}

@@ -63,29 +63,12 @@ const FOOTER_PAYMENT_METHODS = [
   PAYMENT_ASSETS.MASTERCARD,
 ]
 
-function getPaymentLogoClass(alt: string) {
-  if (alt === 'Cash on Delivery') {
-    return 'object-contain opacity-100'
-  }
-
-  if (alt === 'bKash') {
-    return 'object-contain opacity-100'
-  }
-
-  if (alt === 'Nagad') {
-    return 'object-contain opacity-100'
-  }
-
-  return 'object-contain opacity-100'
-}
-
-function getPaymentLogoFrameClass(alt: string) {
-  if (alt === 'Cash on Delivery') return 'h-[18px] w-[42px]'
-  if (alt === 'bKash') return 'h-[24px] w-[28px]'
-  if (alt === 'Nagad') return 'h-[26px] w-[32px]'
-  if (alt === 'Mastercard') return 'h-[20px] w-[46px]'
-  if (alt === 'Visa') return 'h-[18px] w-[46px]'
-  return 'h-[18px] w-[46px]'
+const PAYMENT_LOGO_FRAME_CLASSES: Record<string, string> = {
+  'Cash on Delivery': 'h-[18px] w-[42px]',
+  bKash: 'h-[24px] w-[28px]',
+  Nagad: 'h-[26px] w-[32px]',
+  Mastercard: 'h-[20px] w-[46px]',
+  Visa: 'h-[18px] w-[46px]',
 }
 
 export function Footer() {
@@ -218,13 +201,17 @@ export function Footer() {
                   key={method.alt}
                   className="inline-flex h-10 min-w-[86px] items-center justify-center rounded-full border border-white/10 px-3 py-1.5 transition-colors hover:border-white/20"
                 >
-                  <span className={`relative block ${getPaymentLogoFrameClass(method.alt)}`}>
+                  <span
+                    className={`relative block ${
+                      PAYMENT_LOGO_FRAME_CLASSES[method.alt] ?? 'h-[18px] w-[46px]'
+                    }`}
+                  >
                     <Image
                       src={method.src}
                       alt={method.alt}
                       fill
                       unoptimized
-                      className={getPaymentLogoClass(method.alt)}
+                      className="object-contain opacity-100"
                     />
                   </span>
                 </span>
