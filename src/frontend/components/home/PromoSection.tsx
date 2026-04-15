@@ -1,11 +1,9 @@
-'use client'
-
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
 import { Truck, ShieldCheck, RefreshCcw, Headphones, Mail } from 'lucide-react'
 import { ProductCardData } from '@/backend/types/product'
 import { calculateDiscount, formatPrice } from '@/backend/utils'
+import { CountdownTimer } from '@/frontend/components/ui/CountdownTimer'
 
 interface PromoSectionProps {
   flashDealProducts: ProductCardData[]
@@ -22,9 +20,6 @@ type PromoCollection = {
   copy: string
   cta: string
   gradient: string
-  labelClass: string
-  copyClass: string
-  headlineClass: string
   previewRailClass: string
   previewCardClass: string
   products: ProductCardData[]
@@ -45,10 +40,7 @@ export function PromoSection({
       copy: 'Big markdowns on top picks. Catch the highest discounts before this round closes.',
       cta: 'Shop deals',
       gradient: 'from-[#5e2f84] via-[#482567] to-[#171528]',
-      labelClass: 'text-white/[0.78]',
-      copyClass: 'text-white/[0.9]',
-      headlineClass: 'text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.28)]',
-      previewRailClass: 'bg-white/[0.07]',
+      previewRailClass: 'bg-white/[0.05]',
       previewCardClass: 'border-white/[0.12] bg-white/[0.97]',
       products: flashDealProducts.slice(0, 3),
     },
@@ -60,10 +52,7 @@ export function PromoSection({
       copy: 'See the latest product drops here first, then explore the full arrival list.',
       cta: 'Explore all',
       gradient: 'from-[#2b3b52] via-[#18243a] to-[#101828]',
-      labelClass: 'text-slate-200/[0.84]',
-      copyClass: 'text-slate-100/[0.9]',
-      headlineClass: 'text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.24)]',
-      previewRailClass: 'bg-white/[0.06]',
+      previewRailClass: 'bg-white/[0.05]',
       previewCardClass: 'border-white/[0.1] bg-white/[0.98]',
       products: newArrivalProducts.slice(0, 3),
     },
@@ -80,15 +69,15 @@ export function PromoSection({
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_34%)]" />
           <div className="absolute inset-y-0 left-0 w-[46%] bg-[linear-gradient(90deg,rgba(15,23,42,0.30),rgba(15,23,42,0.10),transparent)]" />
           <div className="relative grid h-full gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
-            <div className="flex flex-col justify-between gap-5 rounded-[26px] bg-black/[0.18] p-5 shadow-[0_18px_46px_rgba(15,23,42,0.18)] backdrop-blur-[4px]">
+            <div className="flex flex-col justify-between gap-5 rounded-[26px] bg-slate-950/[0.22] p-5 shadow-[0_18px_46px_rgba(15,23,42,0.18)] backdrop-blur-[6px]">
               <div>
-                <span className={`text-xs font-semibold uppercase tracking-widest ${collection.labelClass}`}>
+                <span className="text-xs font-semibold uppercase tracking-widest text-white/80">
                   {collection.label}
                 </span>
-                <h3 className={`mt-2 font-display text-2xl font-bold ${collection.headlineClass}`}>
+                <h3 className="mt-2 font-display text-2xl font-bold text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.28)]">
                   {collection.title}
                 </h3>
-                <p className={`mt-3 max-w-sm text-sm leading-6 ${collection.copyClass}`}>{collection.copy}</p>
+                <p className="mt-3 max-w-sm text-sm leading-6 text-white/90">{collection.copy}</p>
                 {collection.kind === 'flash' ? (
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     {flashDealMaxDiscount > 0 ? (
@@ -96,10 +85,18 @@ export function PromoSection({
                         Up to {flashDealMaxDiscount}% off
                       </span>
                     ) : null}
-                    {flashDealEndsAt ? <PromoCountdown endsAt={flashDealEndsAt} /> : null}
+                    {flashDealEndsAt ? (
+                      <CountdownTimer
+                        endsAt={flashDealEndsAt}
+                        label="Ends in"
+                        className="flex items-center gap-2 rounded-full border border-white/[0.18] bg-white/[0.12] px-3 py-1.5 text-white"
+                        valueClassName="rounded-md bg-black/[0.22] px-2 py-1"
+                        separatorClassName="text-white/[0.42]"
+                      />
+                    ) : null}
                   </div>
                 ) : (
-                  <div className="mt-4 inline-flex items-center rounded-full bg-white/[0.1] px-3 py-1 text-xs font-semibold text-white/[0.92]">
+                  <div className="mt-4 inline-flex items-center rounded-full bg-white/[0.12] px-3 py-1 text-xs font-semibold text-white/95">
                     Fresh drops every week
                   </div>
                 )}
@@ -191,43 +188,6 @@ function PromoProductPreview({
   )
 }
 
-function PromoCountdown({ endsAt }: { endsAt: Date | string }) {
-  const endTime = useMemo(() => new Date(endsAt).getTime(), [endsAt])
-  const [timeLeft, setTimeLeft] = useState(getTimeLeft(endTime))
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setTimeLeft(getTimeLeft(endTime))
-    }, 1000)
-
-    return () => window.clearInterval(timer)
-  }, [endTime])
-
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-white/[0.18] bg-white/[0.12] px-3 py-1.5 text-white">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/[0.75]">Ends in</span>
-      <div className="flex items-center gap-1.5 font-mono text-xs font-bold">
-        {[timeLeft.h, timeLeft.m, timeLeft.s].map((value, index) => (
-          <span key={`${value}-${index}`} className="flex items-center gap-1.5">
-            <span className="rounded-md bg-black/[0.22] px-2 py-1">{value}</span>
-            {index < 2 ? <span className="text-white/[0.42]">:</span> : null}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function getTimeLeft(endTime: number) {
-  const diff = Math.max(0, endTime - Date.now())
-  const totalSeconds = Math.floor(diff / 1000)
-  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0')
-  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0')
-  const seconds = String(totalSeconds % 60).padStart(2, '0')
-
-  return { h: hours, m: minutes, s: seconds }
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface Brand {
@@ -308,14 +268,14 @@ export function NewsletterSection() {
             <p className="text-white/70 mt-2 text-sm">
               Subscribe to our newsletter and never miss flash sales, new arrivals, or special offers.
             </p>
-            <form className="flex gap-2 mt-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="mt-6 flex gap-2">
               <input
                 type="email"
                 placeholder="Enter your email address"
                 className="flex-1 rounded-xl px-4 py-3 text-sm bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all min-w-0"
               />
               <button
-                type="submit"
+                type="button"
                 className="flex-shrink-0 bg-white text-brand-700 px-5 py-3 rounded-xl text-sm font-bold hover:bg-brand-50 transition-colors"
               >
                 Subscribe

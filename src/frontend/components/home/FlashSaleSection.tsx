@@ -1,9 +1,7 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Zap, ChevronRight } from 'lucide-react'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import { CountdownTimer } from '@/frontend/components/ui/CountdownTimer'
 
 interface FlashSaleItem {
   product: any
@@ -19,38 +17,6 @@ interface FlashSale {
   items: FlashSaleItem[]
 }
 
-function Countdown({ endsAt }: { endsAt: Date }) {
-  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 })
-
-  useEffect(() => {
-    const update = () => {
-      const diff = new Date(endsAt).getTime() - Date.now()
-      if (diff <= 0) { setTimeLeft({ h: 0, m: 0, s: 0 }); return }
-      setTimeLeft({
-        h: Math.floor(diff / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      })
-    }
-    update()
-    const id = setInterval(update, 1000)
-    return () => clearInterval(id)
-  }, [endsAt])
-
-  const pad = (n: number) => String(n).padStart(2, '0')
-
-  return (
-    <div className="flex items-center gap-1.5 font-mono font-bold text-xl text-foreground">
-      {[pad(timeLeft.h), pad(timeLeft.m), pad(timeLeft.s)].map((v, i) => (
-        <span key={i} className="flex items-center gap-1.5">
-          <span className="bg-foreground text-background rounded-lg px-2.5 py-1">{v}</span>
-          {i < 2 && <span className="text-foreground/60">:</span>}
-        </span>
-      ))}
-    </div>
-  )
-}
-
 export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
   return (
     <div>
@@ -62,7 +28,12 @@ export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
           </div>
           <div className="hidden sm:block">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Ends in</p>
-            <Countdown endsAt={flashSale.endsAt} />
+            <CountdownTimer
+              endsAt={flashSale.endsAt}
+              className="flex items-center gap-1.5 font-mono font-bold text-xl text-foreground"
+              valueClassName="rounded-lg bg-foreground px-2.5 py-1 text-background"
+              separatorClassName="text-foreground/60"
+            />
           </div>
         </div>
         <Link href="/deals" className="flex items-center gap-1 text-sm text-primary font-medium hover:gap-2 transition-all">
@@ -72,7 +43,12 @@ export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
 
       <div className="sm:hidden mb-4">
         <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Ends in</p>
-        <Countdown endsAt={flashSale.endsAt} />
+        <CountdownTimer
+          endsAt={flashSale.endsAt}
+          className="flex items-center gap-1.5 font-mono font-bold text-xl text-foreground"
+          valueClassName="rounded-lg bg-foreground px-2.5 py-1 text-background"
+          separatorClassName="text-foreground/60"
+        />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">

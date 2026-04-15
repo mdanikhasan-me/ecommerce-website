@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -18,21 +17,17 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className, layout = 'grid' }: ProductCardProps) {
   const router = useRouter()
-  const [isHydrated, setIsHydrated] = useState(false)
-  const { addItem, openCart } = useCartStore()
-  const { toggle, has } = useWishlistStore()
-  const { add: addCompare, has: hasCompare } = useCompareStore()
-
-  useEffect(() => {
-    setIsHydrated(true)
-  }, [])
+  const addItem = useCartStore((state) => state.addItem)
+  const openCart = useCartStore((state) => state.openCart)
+  const toggleWishlist = useWishlistStore((state) => state.toggle)
+  const isWished = useWishlistStore((state) => state.items.includes(product.id))
+  const addCompare = useCompareStore((state) => state.add)
+  const isCompared = useCompareStore((state) => state.items.includes(product.id))
 
   const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
   const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
   const { label: stockLabel, color: stockColor, inStock } = getStockStatus(product.stockQuantity)
   const price = product.salePrice ?? product.basePrice
-  const isWished = isHydrated && has(product.id)
-  const isCompared = isHydrated && hasCompare(product.id)
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -55,9 +50,8 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const currentlyWished = has(product.id)
-    toggle(product.id)
-    toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
+    toggleWishlist(product.id)
+    toast.success(isWished ? 'Removed from wishlist' : 'Added to wishlist')
   }
 
   if (layout === 'list') {
@@ -91,8 +85,8 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           <p className={cn('mt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
         </div>
         <div className="flex flex-col items-end justify-between gap-2">
-          <button suppressHydrationWarning onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
-            <Heart suppressHydrationWarning className={cn('h-4 w-4', isWished && 'fill-current')} />
+          <button onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
+            <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
           </button>
           <button onClick={handleAddToCart} disabled={!inStock} className="btn-primary text-xs py-1.5 px-3">
             Add to Cart
@@ -132,7 +126,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
         <div className="absolute top-2 right-2 flex flex-col gap-1.5 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
           <button
-            suppressHydrationWarning
             onClick={handleWishlist}
             className={cn(
               'h-8 w-8 rounded-lg shadow-md flex items-center justify-center hover:bg-primary hover:text-white transition-colors',
@@ -140,7 +133,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
             )}
             aria-label="Add to wishlist"
           >
-            <Heart suppressHydrationWarning className={cn('h-3.5 w-3.5', isWished && 'fill-current')} />
+            <Heart className={cn('h-3.5 w-3.5', isWished && 'fill-current')} />
           </button>
           <button
             onClick={(e) => {

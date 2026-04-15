@@ -5,6 +5,7 @@ import { formatPrice, formatDate } from '@/backend/utils'
 import { ArrowLeft, Package, MapPin, CreditCard, Clock, CheckCircle, Truck, Star } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 
 export const metadata: Metadata = { title: 'Boilabin Order Details' }
 
@@ -15,6 +16,8 @@ const TIMELINE_STEPS = [
   { status: 'SHIPPED', label: 'Shipped', icon: Truck },
   { status: 'DELIVERED', label: 'Delivered', icon: CheckCircle },
 ]
+
+const TIMELINE_PROGRESS_WIDTH_CLASSES = ['w-0', 'w-1/4', 'w-2/4', 'w-3/4', 'w-full'] as const
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -37,6 +40,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const isCancelled = order.status === 'CANCELLED'
   const statusIdx = TIMELINE_STEPS.findIndex((s) => s.status === order.status)
+  const progressWidthClass = TIMELINE_PROGRESS_WIDTH_CLASSES[Math.max(0, statusIdx)] ?? 'w-0'
   const reviewStatuses = order.status === 'DELIVERED' && order.items.length > 0
     ? await db.review.findMany({
         where: {
@@ -73,7 +77,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <div className="flex items-center justify-between relative">
               {/* Background line */}
               <div className="absolute top-4 left-0 right-0 h-0.5 bg-border" />
-              <div className="absolute top-4 left-0 h-0.5 bg-primary transition-all" style={{ width: `${Math.max(0, statusIdx) / (TIMELINE_STEPS.length - 1) * 100}%` }} />
+              <div className={`absolute top-4 left-0 h-0.5 bg-primary transition-all ${progressWidthClass}`} />
 
               {TIMELINE_STEPS.map((step, idx) => {
                 const isCompleted = idx <= statusIdx
@@ -106,7 +110,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <div key={item.id} className="flex items-start gap-3">
                     <div className="size-16 rounded-lg bg-secondary overflow-hidden shrink-0">
                       {item.product.images[0] ? (
-                        <img src={item.product.images[0].url} alt="" className="size-full object-cover" />
+                        <Image
+                          src={item.product.images[0].url}
+                          alt={item.product.name}
+                          width={64}
+                          height={64}
+                          sizes="64px"
+                          quality={80}
+                          className="size-full object-cover"
+                        />
                       ) : <div className="size-full bg-muted" />}
                     </div>
                     <div className="flex-1 min-w-0">

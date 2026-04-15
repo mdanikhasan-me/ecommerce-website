@@ -7,7 +7,7 @@ export const PAYMENT_ASSETS = {
   CASH_ON_DELIVERY: {
     src: '/assets/payments/cod.svg',
     alt: 'Cash on Delivery',
-    width: 112,
+    width: 88,
     height: 34,
   },
   BKASH: {

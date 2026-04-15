@@ -70,15 +70,28 @@ const STORE_FOOTER_PAYMENT_METHODS = [
 ]
 
 function getPaymentLogoClass(alt: string) {
-  if (alt === 'bKash' || alt === 'Nagad') {
-    return 'h-6 w-auto origin-center scale-[1.5] opacity-100'
-  }
-
   if (alt === 'Cash on Delivery') {
-    return 'h-5.5 w-auto origin-center scale-[1.06] opacity-100'
+    return 'object-contain opacity-100'
   }
 
-  return 'h-5 w-auto opacity-95'
+  if (alt === 'bKash') {
+    return 'object-contain opacity-100'
+  }
+
+  if (alt === 'Nagad') {
+    return 'object-contain opacity-100'
+  }
+
+  return 'object-contain opacity-100'
+}
+
+function getPaymentLogoFrameClass(alt: string) {
+  if (alt === 'Cash on Delivery') return 'h-[18px] w-[42px]'
+  if (alt === 'bKash') return 'h-[24px] w-[28px]'
+  if (alt === 'Nagad') return 'h-[26px] w-[32px]'
+  if (alt === 'Mastercard') return 'h-[20px] w-[46px]'
+  if (alt === 'Visa') return 'h-[18px] w-[46px]'
+  return 'h-[18px] w-[46px]'
 }
 
 export function StoreFooter() {
@@ -238,16 +251,17 @@ export function StoreFooter() {
             {STORE_FOOTER_PAYMENT_METHODS.map((method) => (
               <span
                 key={method.alt}
-                className="inline-flex min-w-[78px] items-center justify-center rounded-full border border-white/10 px-3 py-1.5 transition-colors hover:border-white/20"
+                className="inline-flex h-10 min-w-[86px] items-center justify-center rounded-full border border-white/10 px-3 py-1.5 transition-colors hover:border-white/20"
               >
-                <Image
-                  src={method.src}
-                  alt={method.alt}
-                  width={method.width}
-                  height={method.height}
-                  unoptimized
-                  className={getPaymentLogoClass(method.alt)}
-                />
+                <span className={`relative block ${getPaymentLogoFrameClass(method.alt)}`}>
+                  <Image
+                    src={method.src}
+                    alt={method.alt}
+                    fill
+                    unoptimized
+                    className={getPaymentLogoClass(method.alt)}
+                  />
+                </span>
               </span>
             ))}
           </div>

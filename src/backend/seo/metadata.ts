@@ -72,12 +72,8 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const seoSocialTitle = `${seoTitle} | BDT ${formatBdt(price)}`
 
   return {
-    title: `${product.name} | Price in BD ৳${price.toLocaleString('en-IN')}`,
-    description: desc,
-    ...{
-      title: seoTitle,
-      description: seoDescription,
-    },
+    title: seoTitle,
+    description: seoDescription,
     keywords,
     alternates: {
       canonical: url,
