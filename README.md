@@ -1,9 +1,11 @@
 # Boilabin
 
-![Boilabin Wordmark](./public/assets/branding/boilabin-wordmark.svg)
-
 <div align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=24&pause=1100&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Premium+storefront%2C+admin+panel%2C+and+seller-ready+architecture;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
+</div>
+
+<div align="center">
+  <strong>Bangladesh first premium ecommerce platform with storefront, admin, and seller ready architecture.</strong>
 </div>
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
@@ -25,7 +27,7 @@
 ![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
 ![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
 
-![Boilabin Storefront Preview](./public/assets/readme/storefront-preview.png)
+![Boilabin Storefront Preview](https://github.com/mdanikhasan-dev/ecommerce-website/blob/main/public/assets/readme/storefront-preview.png?raw=1)
 
 ---
 
