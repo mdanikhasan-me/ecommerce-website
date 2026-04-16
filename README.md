@@ -1,47 +1,45 @@
 # Boilabin
 
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=24&pause=1100&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Premium+storefront%2C+admin+panel%2C+and+seller-ready+architecture;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
+  <img src="public/assets/branding/boilabin-wordmark.svg" alt="Boilabin" width="260" />
+
+  <br />
+  <br />
+
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=22&pause=1200&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Customer+storefront%2C+admin+panel%2C+and+seller+foundation;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
+
+  <br />
+  <br />
+
+  ![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
+  ![React](https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=0B1120)
+  ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+  ![NextAuth](https://img.shields.io/badge/Auth-NextAuth-7C3AED?style=for-the-badge)
+  ![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
+  ![Private Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
+
+  <br />
+  <br />
+
+
 </div>
-
-<div align="center">
-  <strong>Bangladesh first premium ecommerce platform with storefront, admin, and seller ready architecture.</strong>
-</div>
-
-![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=0B1120)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-![NextAuth](https://img.shields.io/badge/Auth-NextAuth-7C3AED?style=for-the-badge)
-![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
-![Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
-
-![Storefront](https://img.shields.io/badge/Storefront-Customer%20Ready-111827?style=flat-square&logo=vercel&logoColor=white)
-![Admin](https://img.shields.io/badge/Admin-Operations%20Panel-2B2D42?style=flat-square&logo=buffer&logoColor=white)
-![Compare](https://img.shields.io/badge/Compare-Live-3F3D56?style=flat-square&logo=semanticuireact&logoColor=white)
-![Reviews](https://img.shields.io/badge/Reviews-Delivered%20Order%20Flow-4C1D95?style=flat-square&logo=trustpilot&logoColor=white)
-![SEO](https://img.shields.io/badge/SEO-Dynamic%20Product%20Meta-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)
-![Flash Deals](https://img.shields.io/badge/Flash%20Deals-Real%20Campaign%20Only-6D28D9?style=flat-square&logo=lightning&logoColor=white)
-![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
-![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
-
-![Boilabin Storefront Preview](https://github.com/mdanikhasan-dev/ecommerce-website/blob/main/public/assets/readme/storefront-preview.png?raw=1)
 
 ---
 
 ## Overview
 
-Boilabin is a Bangladesh-first ecommerce marketplace designed to feel polished, premium, and practical. It combines a customer storefront, a functional admin panel, and a seller-ready architecture that can grow into a broader marketplace later without forcing unnecessary complexity too early.
+Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping. The project combines a polished storefront, a functional admin panel, and a seller-ready architecture that can scale into a larger marketplace later.
 
-### Core Highlights
+### What it includes
 
 - Customer storefront with category discovery, search, cart, checkout, wishlist, compare, reviews, and account pages
-- Functional admin panel for products, categories, brands, flash sales, banners, content, reports, inventory, reviews, and orders
-- Seller-ready structure with onboarding, dashboard, product management, and order handling foundations
-- SEO-aware product metadata tailored for Bangladesh-first search phrases
-- Clean local asset organization for branding, payments, categories, screenshots, and uploaded media
+- Admin panel for products, categories, brands, flash sales, banners, content, reports, inventory, reviews, and orders
+- Seller foundation with onboarding, dashboard, product management, and order handling structure
+- SEO-focused product metadata and Bangladesh-first pricing language
+- Local asset organization for branding, payments, categories, and uploaded media
 
 ---
 
@@ -96,8 +94,7 @@ boilabin-marketplace/
 |   |-- assets/
 |   |   |-- branding/
 |   |   |-- categories/
-|   |   |-- payments/
-|   |   `-- readme/
+|   |   `-- payments/
 |   `-- uploads/
 |-- src/
 |   |-- app/
@@ -160,7 +157,7 @@ Open `http://localhost:3000`
 | Admin | `admin@boilabin.com` | `Admin@123` |
 | Customer | `customer@example.com` | `Customer@123` |
 
-### Useful Routes
+### Useful routes
 
 - Storefront: `http://localhost:3000`
 - Admin: `http://localhost:3000/admin`
@@ -184,7 +181,7 @@ npm run db:reset   # Reset and reseed database
 
 ## Payments
 
-### Currently Working
+### Currently working
 
 - `Cash on Delivery`
 
@@ -203,7 +200,7 @@ This keeps the checkout honest: unsupported gateways should not pretend to compl
 
 The admin panel is designed to manage the store as a real working operations dashboard.
 
-### Included Sections
+### Included sections
 
 - Products
 - Categories
@@ -225,13 +222,13 @@ The admin panel is designed to manage the store as a real working operations das
 
 Boilabin is built so it can stay first-party now and still grow into a broader marketplace later.
 
-### Current Direction
+### Current direction
 
 - Single-store friendly storefront
 - Seller model and seller dashboard foundation already present
 - Admin can review seller-side flows and marketplace-style entities
 
-### Future-ready Path
+### Future-ready path
 
 - Enable third-party seller onboarding fully
 - Add live seller payouts and payment settlements
@@ -260,8 +257,7 @@ All long-term static assets are grouped for easier maintenance.
 public/assets/
 |-- branding/
 |-- categories/
-|-- payments/
-`-- readme/
+`-- payments/
 ```
 
 This keeps permanent visuals separate from uploaded runtime media under `public/uploads/`.
@@ -280,7 +276,7 @@ This keeps permanent visuals separate from uploaded runtime media under `public/
 
 ## Development Notes
 
-### Product Comparison
+### Product comparison
 
 The compare page now supports:
 
@@ -291,7 +287,7 @@ The compare page now supports:
 - product description
 - direct add-to-cart actions
 
-### Flash Deals
+### Flash deals
 
 Flash deal banners and sections now only appear when there is a real active flash-sale campaign with actual products behind it.
 
