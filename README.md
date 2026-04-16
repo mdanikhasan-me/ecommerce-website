@@ -24,7 +24,7 @@
   <br />
   <br />
 
-  ![Storefront Preview](public/uploads/admin/banners/banners-mnyz4sgc-f0051b3e.jpg)
+
 </div>
 
 ---
