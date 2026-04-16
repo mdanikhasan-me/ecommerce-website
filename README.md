@@ -30,7 +30,7 @@
 ![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
 ![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
 
-![Boilabin Storefront Preview](https://raw.githubusercontent.com/mdanikhasan-dev/ecommerce-website/main/public/assets/readme/storefront-preview.png)
+![Boilabin Storefront Preview](./public/assets/readme/storefront-preview.png)
 
 ---
 
