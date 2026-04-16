@@ -1,31 +1,36 @@
 # Boilabin
 
 <div align="center">
-  <img src="public/assets/branding/boilabin-wordmark.svg" alt="Boilabin" width="260" />
-
-  <br />
-  <br />
-
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=22&pause=1200&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Customer+storefront%2C+admin+panel%2C+and+seller+foundation;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
-
-  <br />
-  <br />
-
-  ![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
-  ![React](https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=0B1120)
-  ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
-  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-  ![NextAuth](https://img.shields.io/badge/Auth-NextAuth-7C3AED?style=for-the-badge)
-  ![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
-  ![Private Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
-
-  <br />
-  <br />
-
-
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=24&pause=1100&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Premium+storefront%2C+admin+panel%2C+and+seller-ready+architecture;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
 </div>
+
+<div align="center">
+  <strong>Boilabin</strong><br />
+  Bangladesh first premium ecommerce platform with storefront, admin, and seller ready architecture.
+</div>
+
+<br />
+
+![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=0B1120)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![NextAuth](https://img.shields.io/badge/Auth-NextAuth-7C3AED?style=for-the-badge)
+![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
+![Private Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
+
+![Storefront](https://img.shields.io/badge/Storefront-Customer%20Ready-111827?style=flat-square&logo=vercel&logoColor=white)
+![Admin](https://img.shields.io/badge/Admin-Operations%20Panel-2B2D42?style=flat-square&logo=buffer&logoColor=white)
+![Compare](https://img.shields.io/badge/Compare-Live-3F3D56?style=flat-square&logo=semanticuireact&logoColor=white)
+![Reviews](https://img.shields.io/badge/Reviews-Delivered%20Order%20Flow-4C1D95?style=flat-square&logo=trustpilot&logoColor=white)
+![SEO](https://img.shields.io/badge/SEO-Dynamic%20Product%20Meta-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)
+![Flash Deals](https://img.shields.io/badge/Flash%20Deals-Real%20Campaign%20Only-6D28D9?style=flat-square&logo=lightning&logoColor=white)
+![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
+![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
+
+![Boilabin Storefront Preview](https://raw.githubusercontent.com/mdanikhasan-dev/ecommerce-website/main/public/assets/readme/storefront-preview.png)
 
 ---
 

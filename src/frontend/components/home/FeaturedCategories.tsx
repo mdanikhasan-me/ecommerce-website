@@ -66,14 +66,7 @@ function CategoryTile({ category }: { category: Category }) {
 
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_0%,rgba(15,23,42,0.14)_52%,rgba(15,23,42,0.76)_100%)]" />
 
-      <div
-        className="absolute inset-x-0 top-0 h-24 opacity-60"
-        style={{
-          background: config
-            ? `radial-gradient(circle at top right, ${config.accent}22 0%, transparent 56%)`
-            : 'none',
-        }}
-      />
+      <div className={`absolute inset-x-0 top-0 h-24 opacity-60 ${config?.glowClass ?? ''}`} />
 
       <div className="relative z-10 mt-auto flex items-end justify-between gap-3 p-4">
         <p className="max-w-[72%] text-[1.22rem] font-semibold leading-6 text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
