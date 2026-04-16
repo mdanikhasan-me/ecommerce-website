@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { generateOrderNumber } from '@/backend/utils'
+import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
+
+const AVAILABLE_PAYMENT_METHODS = new Set(
+  PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
+)
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -36,6 +41,13 @@ export async function POST(req: NextRequest) {
     const session = await auth()
     const body = await req.json()
     const { items, address, paymentMethod, subtotal, shippingFee, total, notes, discount = 0, couponId, isGuestOrder, guestEmail, guestPhone } = body
+
+    if (!AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
+      return NextResponse.json(
+        { error: 'This payment method is not configured yet. Please use an active checkout method.' },
+        { status: 400 }
+      )
+    }
 
     // Validate stock
     for (const item of items) {

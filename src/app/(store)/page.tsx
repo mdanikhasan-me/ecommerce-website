@@ -33,11 +33,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-function getDiscountPercent(basePrice: number, salePrice?: number | null) {
-  if (!salePrice || salePrice >= basePrice) return 0
-  return Math.round(((basePrice - salePrice) / basePrice) * 100)
-}
-
 async function getHomeData() {
   const [banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts] =
     await Promise.all([
@@ -114,44 +109,22 @@ export default async function HomePage() {
   const { banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts } =
     await getHomeData()
 
-  const topDiscountedProducts = [...saleProducts]
-    .filter((product) => getDiscountPercent(product.basePrice, product.salePrice) > 0)
-    .sort((left, right) => {
-      const discountGap =
-        getDiscountPercent(right.basePrice, right.salePrice) -
-        getDiscountPercent(left.basePrice, left.salePrice)
-
-      if (discountGap !== 0) return discountGap
-      return right.soldCount - left.soldCount
-    })
-
   const flashDealPreviewProducts =
-    topDiscountedProducts.length > 0
-      ? topDiscountedProducts
-      : flashSale && flashSale.items.length > 0
-        ? flashSale.items.map((item) => item.product)
-        : saleProducts
+    flashSale && flashSale.items.length > 0 ? flashSale.items.map((item) => item.product) : []
 
-  const flashDealEndsAt =
-    flashSale?.endsAt ??
-    topDiscountedProducts
-      .map((product) => product.salePriceExpiry)
-      .filter((date): date is Date => Boolean(date))
-      .sort((left, right) => left.getTime() - right.getTime())[0] ??
-    null
+  const flashDealEndsAt = flashSale?.endsAt ?? null
 
-  const flashDealMaxDiscount =
-    topDiscountedProducts.length > 0
-      ? getDiscountPercent(topDiscountedProducts[0].basePrice, topDiscountedProducts[0].salePrice)
-      : flashSale && flashSale.items.length > 0
-        ? Math.max(
-            ...flashSale.items.map((item) =>
-              item.discountType === 'PERCENTAGE'
-                ? Math.round(item.discountValue)
-                : getDiscountPercent(item.product.basePrice, item.product.salePrice)
-            )
-          )
-        : 0
+  const flashDealMaxDiscount = flashSale && flashSale.items.length > 0
+    ? Math.max(
+        ...flashSale.items.map((item) =>
+          item.discountType === 'PERCENTAGE'
+            ? Math.round(item.discountValue)
+            : item.product.salePrice && item.product.salePrice < item.product.basePrice
+              ? Math.round(((item.product.basePrice - item.product.salePrice) / item.product.basePrice) * 100)
+              : 0
+        )
+      )
+    : 0
 
   return (
     <div className="min-h-screen">

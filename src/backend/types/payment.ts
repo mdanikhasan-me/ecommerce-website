@@ -6,4 +6,6 @@ export interface PaymentGateway {
   logo: string
   isAvailable: boolean
   description: string
+  disabledReason?: string
+  badge?: string
 }

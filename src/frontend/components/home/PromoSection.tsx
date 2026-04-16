@@ -56,10 +56,14 @@ export function PromoSection({
       previewCardClass: 'border-white/[0.1] bg-white/[0.98]',
       products: newArrivalProducts.slice(0, 3),
     },
-  ]
+  ].filter((collection) => collection.products.length > 0)
+
+  if (collections.length === 0) {
+    return null
+  }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className={`grid grid-cols-1 gap-6 ${collections.length > 1 ? 'md:grid-cols-2' : ''}`}>
       {collections.map((collection) => (
         <Link
           key={collection.href}

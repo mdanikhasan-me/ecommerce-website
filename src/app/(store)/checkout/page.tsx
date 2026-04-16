@@ -29,13 +29,16 @@ type AddressForm = z.infer<typeof addressSchema>
 
 const DIVISIONS = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Sylhet', 'Barisal', 'Rangpur', 'Mymensingh']
 const STEPS = ['Delivery', 'Payment', 'Review']
+const PAYMENT_GATEWAY_OPTIONS = PAYMENT_GATEWAYS
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const { items, getSubtotal, clearCart } = useCartStore()
   const [step, setStep] = useState(0)
-  const [selectedPayment, setSelectedPayment] = useState('CASH_ON_DELIVERY')
+  const [selectedPayment, setSelectedPayment] = useState(
+    () => PAYMENT_GATEWAY_OPTIONS.find((gateway) => gateway.isAvailable)?.id ?? 'CASH_ON_DELIVERY'
+  )
   const [submitting, setSubmitting] = useState(false)
   const [orderNote, setOrderNote] = useState('')
 
@@ -46,6 +49,9 @@ export default function CheckoutPage() {
   const subtotal = getSubtotal()
   const shippingFee = calculateShipping(subtotal)
   const total = subtotal + shippingFee
+  const paymentGateways = PAYMENT_GATEWAY_OPTIONS
+  const selectedGateway = paymentGateways.find((gateway) => gateway.id === selectedPayment)
+  const hasAvailablePaymentGateway = paymentGateways.some((gateway) => gateway.isAvailable)
 
   useEffect(() => {
     if (items.length === 0) {
@@ -59,6 +65,11 @@ export default function CheckoutPage() {
 
   const placeOrder = async () => {
     const addressData = getValues()
+    if (!selectedGateway?.isAvailable) {
+      toast.error(selectedGateway?.disabledReason || 'This payment method is not ready yet')
+      return
+    }
+
     setSubmitting(true)
     try {
       const res = await fetch('/api/orders', {
@@ -98,8 +109,6 @@ export default function CheckoutPage() {
       setSubmitting(false)
     }
   }
-
-  const paymentGateways = PAYMENT_GATEWAYS.filter((g) => g.isAvailable)
 
   return (
     <div className="container-site py-8">
@@ -210,8 +219,12 @@ export default function CheckoutPage() {
                     <label
                       key={gateway.id}
                       className={cn(
-                        'flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all',
-                        selectedPayment === gateway.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/30'
+                        'flex items-center gap-4 p-4 rounded-xl border-2 transition-all',
+                        gateway.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
+                        selectedPayment === gateway.id && gateway.isAvailable
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border',
+                        gateway.isAvailable ? 'hover:border-primary/30' : 'bg-muted/25'
                       )}
                     >
                       <input
@@ -219,18 +232,37 @@ export default function CheckoutPage() {
                         name="payment"
                         value={gateway.id}
                         checked={selectedPayment === gateway.id}
-                        onChange={() => setSelectedPayment(gateway.id)}
+                        onChange={() => {
+                          if (gateway.isAvailable) setSelectedPayment(gateway.id)
+                        }}
+                        disabled={!gateway.isAvailable}
                         className="sr-only"
                       />
                       <div className={cn(
                         'h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all',
-                        selectedPayment === gateway.id ? 'border-primary' : 'border-muted-foreground'
+                        selectedPayment === gateway.id && gateway.isAvailable
+                          ? 'border-primary'
+                          : 'border-muted-foreground/60'
                       )}>
-                        {selectedPayment === gateway.id && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
+                        {selectedPayment === gateway.id && gateway.isAvailable && (
+                          <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                        )}
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-sm">{gateway.name}</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-semibold text-sm">{gateway.name}</p>
+                          {gateway.badge ? (
+                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+                              {gateway.badge}
+                            </span>
+                          ) : null}
+                        </div>
                         <p className="text-xs text-muted-foreground">{gateway.description}</p>
+                        {!gateway.isAvailable && gateway.disabledReason ? (
+                          <p className="mt-1 text-[11px] font-medium text-amber-700">
+                            {gateway.disabledReason}
+                          </p>
+                        ) : null}
                       </div>
                       {gateway.logo ? (
                         <div className="rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm">
@@ -262,7 +294,19 @@ export default function CheckoutPage() {
 
                 <div className="flex gap-3 mt-5">
                   <button onClick={() => setStep(0)} className="btn-outline flex-1">Back</button>
-                  <button onClick={() => setStep(2)} className="btn-primary flex-1">Review Order</button>
+                  <button
+                    onClick={() => {
+                      if (!selectedGateway?.isAvailable) {
+                        toast.error(selectedGateway?.disabledReason || 'This payment method is not ready yet')
+                        return
+                      }
+                      setStep(2)
+                    }}
+                    disabled={!hasAvailablePaymentGateway}
+                    className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Review Order
+                  </button>
                 </div>
               </div>
             )}

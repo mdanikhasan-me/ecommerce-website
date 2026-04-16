@@ -44,7 +44,7 @@ $action = New-ScheduledTaskAction `
     -Argument "-NoProfile -ExecutionPolicy Bypass -File '$scriptPath'"
 
 $trigger = New-ScheduledTaskTrigger `
-    -RepetitionInterval (New-TimeSpan -Minutes 30) `
+    -RepetitionInterval (New-TimeSpan -Minutes 5) `
     -AtStartup
 
 $settings = New-ScheduledTaskSettingsSet `
@@ -65,7 +65,7 @@ Write-Host "✓ Scheduled task created successfully!" -ForegroundColor Green
 Write-Host "" -ForegroundColor White
 Write-Host "Task Details:" -ForegroundColor Cyan
 Write-Host "  Name: $taskName" -ForegroundColor White
-Write-Host "  Schedule: Every 30 minutes" -ForegroundColor White
+Write-Host "  Schedule: Every 5 minutes" -ForegroundColor White
 Write-Host "  Script: $scriptPath" -ForegroundColor White
 Write-Host "" -ForegroundColor White
 Write-Host "Setup complete! Auto-push is now active." -ForegroundColor Green

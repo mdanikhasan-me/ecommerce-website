@@ -7,6 +7,9 @@
 import type { PaymentGateway } from '@/backend/types/payment'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 
+const BANGLADESH_ONLINE_GATEWAY_READY =
+  process.env.NEXT_PUBLIC_BANGLADESH_ONLINE_PAYMENTS === 'true'
+
 export const PAYMENT_GATEWAYS: PaymentGateway[] = [
   {
     id: 'CASH_ON_DELIVERY',
@@ -19,15 +22,27 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     id: 'BKASH',
     name: 'bKash',
     logo: PAYMENT_ASSETS.BKASH.src,
-    isAvailable: true,
-    description: 'Pay via bKash mobile banking',
+    isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
+    description: BANGLADESH_ONLINE_GATEWAY_READY
+      ? 'Pay via bKash mobile banking'
+      : 'Online checkout popup will be enabled after gateway setup',
+    disabledReason: BANGLADESH_ONLINE_GATEWAY_READY
+      ? undefined
+      : 'bKash checkout is not configured yet',
+    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Coming soon',
   },
   {
     id: 'NAGAD',
     name: 'Nagad',
     logo: PAYMENT_ASSETS.NAGAD.src,
-    isAvailable: true,
-    description: 'Pay via Nagad mobile banking',
+    isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
+    description: BANGLADESH_ONLINE_GATEWAY_READY
+      ? 'Pay via Nagad mobile banking'
+      : 'Online checkout popup will be enabled after gateway setup',
+    disabledReason: BANGLADESH_ONLINE_GATEWAY_READY
+      ? undefined
+      : 'Nagad checkout is not configured yet',
+    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Coming soon',
   },
   {
     id: 'SSLCOMMERZ',

@@ -12,6 +12,8 @@ type CompareProduct = {
   id: string
   name: string
   slug: string
+  description: string
+  shortDescription?: string | null
   basePrice: number
   salePrice?: number | null
   rating: number
@@ -20,6 +22,59 @@ type CompareProduct = {
   images: { url: string; isPrimary: boolean }[]
   brand?: { name: string; slug: string } | null
   category: { name: string; slug: string }
+}
+
+const COMPARE_LABEL_COLUMN_WIDTH = 148
+
+function getCompareDescription(product: CompareProduct) {
+  const rawDescription = product.shortDescription?.trim() || product.description?.trim() || ''
+  const cleanedDescription = rawDescription.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+
+  return cleanedDescription || 'No description added yet.'
+}
+
+function getCompareLayout(productCount: number) {
+  if (productCount <= 1) {
+    return {
+      columnWidth: 560,
+      wrapperMinWidth: 708,
+      cardMaxWidthClass: 'max-w-[420px]',
+      imageFrameClass: 'max-w-[340px]',
+      contentClass: 'items-center text-center',
+      titleClass: 'text-xl leading-7',
+    }
+  }
+
+  if (productCount === 2) {
+    return {
+      columnWidth: 420,
+      wrapperMinWidth: 988,
+      cardMaxWidthClass: 'max-w-[340px]',
+      imageFrameClass: 'max-w-[260px]',
+      contentClass: 'items-center text-center',
+      titleClass: 'text-lg leading-7',
+    }
+  }
+
+  if (productCount === 3) {
+    return {
+      columnWidth: 320,
+      wrapperMinWidth: 1108,
+      cardMaxWidthClass: 'max-w-[260px]',
+      imageFrameClass: 'max-w-[210px]',
+      contentClass: 'items-center text-center',
+      titleClass: 'text-base leading-6',
+    }
+  }
+
+  return {
+    columnWidth: 280,
+    wrapperMinWidth: 1268,
+    cardMaxWidthClass: 'max-w-[240px]',
+    imageFrameClass: 'max-w-[190px]',
+    contentClass: 'items-center text-center',
+    titleClass: 'text-base leading-6',
+  }
 }
 
 export default function ComparePage() {
@@ -56,6 +111,8 @@ export default function ComparePage() {
     const productMap = new Map(products.map((product) => [product.id, product]))
     return items.map((id) => productMap.get(id)).filter(Boolean) as CompareProduct[]
   }, [items, products])
+  const compareLayout = getCompareLayout(orderedProducts.length)
+  const compareGridTemplateColumns = `${COMPARE_LABEL_COLUMN_WIDTH}px repeat(${orderedProducts.length}, ${compareLayout.columnWidth}px)`
 
   return (
     <div className="container-site py-8">
@@ -86,7 +143,7 @@ export default function ComparePage() {
       {!isHydrated || loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-[360px] animate-pulse rounded-[28px] bg-secondary" />
+            <div key={index} className="h-[280px] animate-pulse rounded-[24px] bg-secondary" />
           ))}
         </div>
       ) : orderedProducts.length === 0 ? (
@@ -108,29 +165,45 @@ export default function ComparePage() {
       ) : (
         <div className="overflow-hidden rounded-[32px] border border-border bg-card shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
           <div className="overflow-x-auto">
-            <div className="min-w-[920px]">
+            <div className="mx-auto w-max" style={{ minWidth: `${compareLayout.wrapperMinWidth}px` }}>
               <div
                 className="grid border-b border-border bg-secondary/45"
-                style={{ gridTemplateColumns: `180px repeat(${orderedProducts.length}, minmax(240px, 1fr))` }}
+                style={{ gridTemplateColumns: compareGridTemplateColumns }}
               >
-                <div className="px-6 py-5 text-sm font-semibold text-muted-foreground">Products</div>
+                <div className="px-4 py-4 text-sm font-semibold text-muted-foreground">Products</div>
                 {orderedProducts.map((product) => {
                   const primaryImage =
                     product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url
                   const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
 
                   return (
-                    <div key={product.id} className="border-l border-border px-5 py-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <Link href={`/products/${product.slug}`} className="block flex-1">
-                          <div className="relative aspect-[1.08] overflow-hidden rounded-[22px] bg-secondary">
+                    <div key={product.id} className="relative border-l border-border px-4 py-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          remove(product.id)
+                          toast.success('Removed from compare')
+                        }}
+                        className="absolute right-4 top-4 rounded-full border border-border bg-background/90 p-2 text-muted-foreground shadow-sm transition-colors hover:border-destructive/20 hover:text-destructive"
+                        aria-label={`Remove ${product.name} from compare`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+
+                      <Link
+                        href={`/products/${product.slug}`}
+                        className={`mx-auto flex min-h-[272px] w-full min-w-0 flex-col ${compareLayout.contentClass} ${compareLayout.cardMaxWidthClass}`}
+                      >
+                          <div
+                            className={`relative aspect-[4/4.7] w-full ${compareLayout.imageFrameClass} self-center overflow-hidden rounded-[22px] bg-secondary/80`}
+                          >
                             {primaryImage ? (
                               <Image
                                 src={primaryImage}
                                 alt={product.name}
                                 fill
-                                className="object-cover"
-                                sizes="240px"
+                                className="object-contain p-3"
+                                sizes={`${Math.min(compareLayout.columnWidth - 48, 280)}px`}
                                 quality={84}
                               />
                             ) : null}
@@ -140,33 +213,33 @@ export default function ComparePage() {
                               </span>
                             ) : null}
                           </div>
-                          <p className="mt-4 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                          <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                             {product.brand?.name ?? product.category.name}
                           </p>
-                          <h2 className="mt-2 line-clamp-2 text-lg font-semibold text-foreground">
+                          <h2 className={`mt-1.5 line-clamp-2 font-semibold text-foreground ${compareLayout.titleClass}`}>
                             {product.name}
                           </h2>
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            remove(product.id)
-                            toast.success('Removed from compare')
-                          }}
-                          className="rounded-full border border-border p-2 text-muted-foreground transition-colors hover:border-destructive/20 hover:text-destructive"
-                          aria-label={`Remove ${product.name} from compare`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                      </Link>
                     </div>
                   )
                 })}
               </div>
 
               <CompareRow
+                label="Description"
+                products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
+                renderValue={(product) => (
+                  <p className="line-clamp-4 text-sm leading-6 text-muted-foreground">
+                    {getCompareDescription(product)}
+                  </p>
+                )}
+              />
+
+              <CompareRow
                 label="Price"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => {
                   const currentPrice = product.salePrice ?? product.basePrice
                   return (
@@ -187,6 +260,7 @@ export default function ComparePage() {
               <CompareRow
                 label="Savings"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => {
                   const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
                   return (
@@ -200,6 +274,7 @@ export default function ComparePage() {
               <CompareRow
                 label="Rating"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => (
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-foreground">{product.rating.toFixed(1)} / 5</p>
@@ -211,6 +286,7 @@ export default function ComparePage() {
               <CompareRow
                 label="Category"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => (
                   <span className="text-sm font-medium text-foreground">{product.category.name}</span>
                 )}
@@ -219,6 +295,7 @@ export default function ComparePage() {
               <CompareRow
                 label="Stock"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => {
                   const { label, color } = getStockStatus(product.stockQuantity)
                   return <span className={`text-sm font-semibold ${color}`}>{label}</span>
@@ -228,6 +305,7 @@ export default function ComparePage() {
               <CompareRow
                 label="Actions"
                 products={orderedProducts}
+                columnWidth={compareLayout.columnWidth}
                 renderValue={(product) => {
                   const primaryImage =
                     product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url ?? ''
@@ -275,20 +353,24 @@ export default function ComparePage() {
 function CompareRow({
   label,
   products,
+  columnWidth,
   renderValue,
 }: {
   label: string
   products: CompareProduct[]
+  columnWidth: number
   renderValue: (product: CompareProduct) => ReactNode
 }) {
   return (
     <div
       className="grid border-t border-border"
-      style={{ gridTemplateColumns: `180px repeat(${products.length}, minmax(240px, 1fr))` }}
+      style={{
+        gridTemplateColumns: `${COMPARE_LABEL_COLUMN_WIDTH}px repeat(${products.length}, ${columnWidth}px)`,
+      }}
     >
-      <div className="px-6 py-5 text-sm font-semibold text-muted-foreground">{label}</div>
+      <div className="px-4 py-4 text-sm font-semibold text-muted-foreground">{label}</div>
       {products.map((product) => (
-        <div key={`${label}-${product.id}`} className="border-l border-border px-5 py-5">
+        <div key={`${label}-${product.id}`} className="border-l border-border px-4 py-4">
           {renderValue(product)}
         </div>
       ))}
