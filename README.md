@@ -1,408 +1,308 @@
-# BoilaBin — Full Stack E-Commerce Marketplace
+# Boilabin
 
-A production-ready, premium e-commerce platform built with Next.js 15, TypeScript, Tailwind CSS, PostgreSQL, and Prisma. Designed for Bangladesh-first commerce with global scalability.
+<div align="center">
+  <img src="public/assets/branding/boilabin-wordmark.svg" alt="Boilabin" width="260" />
+
+  <br />
+  <br />
+
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=22&pause=1200&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Customer+storefront%2C+admin+panel%2C+and+seller+foundation;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
+
+  <br />
+  <br />
+
+  ![Next.js](https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white)
+  ![React](https://img.shields.io/badge/React-18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=0B1120)
+  ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+  ![NextAuth](https://img.shields.io/badge/Auth-NextAuth-7C3AED?style=for-the-badge)
+  ![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
+  ![Private Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
+
+  <br />
+  <br />
+
+  ![Storefront Preview](public/uploads/admin/banners/banners-mnyz4sgc-f0051b3e.jpg)
+</div>
+
+---
+
+## Overview
+
+Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping. The project combines a polished storefront, a functional admin panel, and a seller-ready architecture that can scale into a larger marketplace later.
+
+### What it includes
+
+- Customer storefront with category discovery, search, cart, checkout, wishlist, compare, reviews, and account pages
+- Admin panel for products, categories, brands, flash sales, banners, content, reports, inventory, reviews, and orders
+- Seller foundation with onboarding, dashboard, product management, and order handling structure
+- SEO-focused product metadata and Bangladesh-first pricing language
+- Local asset organization for branding, payments, categories, and uploaded media
+
+---
+
+## Feature Snapshot
+
+| Area | Highlights |
+| --- | --- |
+| Storefront | Hero banners, featured collections, flash deals, new arrivals, category browsing, brand pages |
+| Shopping | Cart drawer, wishlist, compare, 3-step checkout, guest-friendly flow, order confirmation |
+| Product System | Variants, attributes, specs, sale pricing, stock tracking, review summaries |
+| Reviews | Delivered-order review flow, moderation, rating sync |
+| Admin | Product CRUD, brand/category management, coupons, banners, flash sale campaigns, reports |
+| Marketplace Ready | Seller onboarding structure, seller admin review, seller order and product sections |
+| SEO | Dynamic metadata, Bangladesh pricing phrases, product-level meta title and description generation |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS + CSS Variables |
-| Database | PostgreSQL |
-| ORM | Prisma 5 |
-| Auth | NextAuth v5 (Credentials + Google OAuth) |
-| State | Zustand (cart, wishlist, compare) |
-| Fonts | DM Sans + Sora (Google Fonts) |
-| Payments | COD, bKash, Nagad, SSLCommerz (structured), Stripe (structured) |
-| Images | Next.js Image Optimization |
+### Core Stack
+
+- `Next.js 15` with App Router
+- `React 18`
+- `TypeScript`
+- `Tailwind CSS`
+- `Prisma 5`
+- `PostgreSQL`
+- `NextAuth v5`
+- `Zustand`
+- `Zod`
+- `React Hook Form`
+- `Sharp`
+
+### Frontend Tooling
+
+- `Lucide React`
+- `Framer Motion`
+- `TanStack Query`
+- `SWR`
+- `Embla Carousel`
 
 ---
 
 ## Project Structure
 
-```
+```text
 boilabin-marketplace/
-├── prisma/
-│   ├── schema.prisma          # Full DB schema (25+ models)
-│   └── seed.ts                # 20+ products, categories, brands, banners
-├── src/
-│   ├── app/
-│   │   ├── (store)/           # Customer-facing pages
-│   │   │   ├── page.tsx              # Homepage
-│   │   │   ├── products/[slug]/      # Product detail
-│   │   │   ├── category/[slug]/      # Category listing
-│   │   │   ├── search/               # Search + filters
-│   │   │   ├── cart/                 # Shopping cart
-│   │   │   ├── checkout/             # Multi-step checkout
-│   │   │   ├── wishlist/             # Wishlist
-│   │   │   ├── deals/                # Flash deals
-│   │   │   ├── new-arrivals/         # New products
-│   │   │   ├── brands/               # Brand directory
-│   │   │   ├── account/              # Customer dashboard
-│   │   │   ├── auth/                 # Login, Register
-│   │   │   ├── order/[number]/       # Order confirmation
-│   │   │   ├── seller/register/      # Seller signup
-│   │   │   ├── about/                # About page
-│   │   │   ├── contact/              # Contact page
-│   │   │   ├── faq/                  # FAQ
-│   │   │   ├── terms/                # Terms of service
-│   │   │   ├── privacy/              # Privacy policy
-│   │   │   └── returns/              # Return policy
-│   │   ├── (admin)/           # Admin panel
-│   │   │   └── admin/
-│   │   │       ├── dashboard/        # Analytics overview
-│   │   │       ├── products/         # Product management
-│   │   │       ├── orders/           # Order management
-│   │   │       ├── categories/       # Category management
-│   │   │       ├── brands/           # Brand management
-│   │   │       ├── coupons/          # Coupon management
-│   │   │       ├── reviews/          # Review moderation
-│   │   │       ├── users/            # Customer management
-│   │   │       ├── inventory/        # Stock management
-│   │   │       ├── reports/          # Analytics
-│   │   │       └── settings/         # Platform settings
-│   │   ├── (seller)/          # Seller panel foundation
-│   │   │   └── seller/
-│   │   │       ├── dashboard/        # Seller overview
-│   │   │       ├── products/         # Seller products
-│   │   │       └── orders/           # Seller orders
-│   │   └── api/               # API routes
-│   │       ├── auth/                 # NextAuth + register
-│   │       ├── products/             # Product CRUD
-│   │       ├── orders/               # Order creation
-│   │       ├── reviews/              # Review submission
-│   │       ├── coupons/validate/     # Coupon validation
-│   │       ├── search/suggestions/   # Autocomplete
-│   │       └── admin/                # Admin APIs
-│   ├── components/
-│   │   ├── layout/            # Header, Footer
-│   │   ├── home/              # Hero, Categories, FlashSale, etc.
-│   │   ├── product/           # ProductCard, Detail, Reviews, Filters
-│   │   ├── cart/              # CartDrawer
-│   │   ├── admin/             # AdminSidebar, AdminHeader, etc.
-│   │   └── shared/            # Reusable UI
-│   ├── lib/
-│   │   ├── auth/              # NextAuth config
-│   │   ├── db/                # Prisma client singleton
-│   │   ├── store/             # Zustand stores (cart, wishlist, compare)
-│   │   └── utils/             # Formatting, helpers
-│   ├── types/                 # TypeScript types + NextAuth extension
-│   └── middleware.ts          # Route protection
-├── .env.example               # All environment variables documented
-├── next.config.js
-├── tailwind.config.ts
-└── tsconfig.json
+|-- prisma/
+|   |-- schema.prisma
+|   `-- seed.ts
+|-- public/
+|   |-- assets/
+|   |   |-- branding/
+|   |   |-- categories/
+|   |   `-- payments/
+|   `-- uploads/
+|-- src/
+|   |-- app/
+|   |   |-- (store)/
+|   |   |-- (admin)/
+|   |   |-- (seller)/
+|   |   `-- api/
+|   |-- backend/
+|   |-- frontend/
+|   |   |-- components/
+|   |   |-- stores/
+|   |   `-- media/
+|   `-- shared/
+|-- scripts/
+|-- next.config.js
+`-- README.md
 ```
 
 ---
 
-## Quick Start
+## Local Setup
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- npm or pnpm
-
-### 1. Clone and Install
+### 1. Install dependencies
 
 ```bash
-git clone <your-repo-url>
-cd boilabin-marketplace
 npm install
 ```
 
-### 2. Environment Setup
+### 2. Configure environment
 
-```bash
-cp .env.example .env
-```
+Create `.env` and set at least:
 
-Edit `.env` and fill in:
 ```env
-# Required
 DATABASE_URL="postgresql://username:password@localhost:5432/boilabin"
-NEXTAUTH_SECRET="generate-with: openssl rand -base64 32"
+NEXTAUTH_SECRET="generate-a-strong-secret"
 NEXTAUTH_URL="http://localhost:3000"
-
-# Optional at start (can add later)
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-UPLOADTHING_SECRET=...
-STRIPE_SECRET_KEY=...
-BKASH_APP_KEY=...
 ```
 
-### 3. Database Setup
+### 3. Set up database
 
 ```bash
-# Create and migrate the database
-npx prisma migrate dev --name init
-
-# OR push schema without migrations (faster for dev)
 npx prisma db push
-
-# Seed with sample data (20+ products, categories, brands, banners)
 npm run db:seed
 ```
 
-### 4. Run Development Server
+### 4. Start development
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open `http://localhost:3000`
 
 ---
 
-## Access Credentials
-
-After seeding, use these to log in:
+## Demo Access
 
 | Role | Email | Password |
-|------|-------|----------|
-| Super Admin | admin@boilabin.com | Admin@123 |
-| Customer | customer@example.com | Customer@123 |
+| --- | --- | --- |
+| Admin | `admin@boilabin.com` | `Admin@123` |
+| Customer | `customer@example.com` | `Customer@123` |
 
-**Admin Panel:** [http://localhost:3000/admin](http://localhost:3000/admin)
+### Useful routes
+
+- Storefront: `http://localhost:3000`
+- Admin: `http://localhost:3000/admin`
+- Seller: `http://localhost:3000/seller`
 
 ---
 
-## Database Commands
+## NPM Scripts
 
 ```bash
-# Open Prisma Studio (visual DB browser)
-npm run db:studio
-
-# Create a new migration
-npm run db:migrate
-
-# Reset DB and re-seed (WARNING: deletes all data)
-npm run db:reset
-
-# Generate Prisma client after schema changes
-npx prisma generate
+npm run dev        # Start Next.js in development
+npm run build      # Production build
+npm run start      # Run production server
+npm run lint       # Lint project
+npm run db:seed    # Seed demo data
+npm run db:studio  # Open Prisma Studio
+npm run db:reset   # Reset and reseed database
 ```
 
 ---
 
-## Key Features
+## Payments
 
-### Customer Experience
-- Premium homepage with hero banner, flash sales, featured products
-- Category tree with nested subcategories
-- Advanced product search with 6+ filters + sort
-- Product detail with image gallery, zoom, variant selection
-- Real-time cart drawer with quantity management
-- 3-step checkout (Address → Payment → Review)
-- Guest checkout support
-- Order confirmation + tracking page
-- Wishlist and product comparison
-- Customer account dashboard
-- Order history
+### Currently working
 
-### Product System
-- Full variant support (size, color, storage, etc.)
-- Product attributes and specifications table
-- Sale pricing with percentage badge calculation
-- Stock tracking with low-stock indicators
-- Recently viewed, related products
-- Flash sale with countdown timer and sold quantity bar
-- Coupon system (percentage + fixed amount)
+- `Cash on Delivery`
 
-### Review System
-- Verified purchase badge (auto-detected from delivered orders)
-- Star rating with distribution chart
-- Admin moderation queue
-- Auto-updates product rating after approval
+### Present in UI, but not live until gateway integration is completed
 
-### Admin Panel
-- Real-time dashboard with revenue/order KPIs
-- Order management with status updates + customer notifications
-- Product and inventory management
-- Category tree management
-- Coupon creation and tracking
-- Review moderation (approve/reject)
-- Customer management
-- Analytics and top product reports
-- Feature flag system (enable/disable seller marketplace)
+- `bKash`
+- `Nagad`
+- `Card / Online Banking`
+- `Stripe`
 
-### Seller Foundation (Marketplace-Ready)
-- Seller registration page with feature flag (disabled by default)
-- `isFirstParty` flag on Seller model for own store
-- Seller dashboard with revenue overview
-- Approval workflow from admin
-- `seller_mode` setting to enable marketplace without code changes
-
-### Payment Architecture
-The payment module is structured for easy integration:
-```typescript
-// Payment methods defined in src/types/index.ts
-PAYMENT_GATEWAYS = [
-  { id: 'CASH_ON_DELIVERY', ... },  // ✅ Active
-  { id: 'BKASH', ... },             // ✅ UI ready, needs API keys
-  { id: 'NAGAD', ... },             // ✅ UI ready, needs API keys
-  { id: 'SSLCOMMERZ', ... },        // ✅ UI ready, needs API keys
-  { id: 'STRIPE', ... },            // ⏳ Disabled until needed
-]
-```
-
-To activate a gateway:
-1. Add API keys to `.env`
-2. Create `src/app/api/payments/[gateway]/route.ts`
-3. Implement the webhook handler
-4. Set gateway `isAvailable: true` in types
+This keeps the checkout honest: unsupported gateways should not pretend to complete payment until a real gateway handoff exists.
 
 ---
 
-## Enabling Marketplace Mode
+## Admin Coverage
 
-When ready to onboard third-party sellers (~6 months):
+The admin panel is designed to manage the store as a real working operations dashboard.
 
-1. **Enable in Admin Settings:**
-   Admin → Settings → Feature Flags → Enable Seller Marketplace ✓
+### Included sections
 
-2. **Seller registration becomes live** at `/seller/register`
-
-3. **Admin approves sellers** via Admin → Sellers panel
-
-4. **Sellers access** `/seller/dashboard` after approval
-
-No code changes required — the entire architecture is already in place.
-
----
-
-## Environment Variables Reference
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `NEXTAUTH_SECRET` | ✅ | Random 32+ char secret |
-| `NEXTAUTH_URL` | ✅ | Your site URL |
-| `GOOGLE_CLIENT_ID` | ⚡ | For Google OAuth |
-| `GOOGLE_CLIENT_SECRET` | ⚡ | For Google OAuth |
-| `UPLOADTHING_SECRET` | ⚡ | For file/image uploads |
-| `STRIPE_SECRET_KEY` | ⚡ | For Stripe payments |
-| `BKASH_APP_KEY` | ⚡ | For bKash integration |
-| `NAGAD_MERCHANT_ID` | ⚡ | For Nagad integration |
-| `SSLCOMMERZ_STORE_ID` | ⚡ | For SSLCommerz |
-
-✅ Required | ⚡ Optional (can add later)
+- Products
+- Categories
+- Brands
+- Orders
+- Reviews
+- Coupons
+- Inventory
+- Flash sales
+- Banners
+- Content blocks
+- Reports
+- Settings
+- Seller review and control flows
 
 ---
 
-## Deployment
+## Marketplace Direction
 
-### Vercel (Recommended)
+Boilabin is built so it can stay first-party now and still grow into a broader marketplace later.
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+### Current direction
 
-# Deploy
-vercel
+- Single-store friendly storefront
+- Seller model and seller dashboard foundation already present
+- Admin can review seller-side flows and marketplace-style entities
 
-# Set environment variables in Vercel dashboard
-# Run migrations against your production DB
-npx prisma migrate deploy
-```
+### Future-ready path
 
-### Self-Hosted (Ubuntu/Nginx)
-
-```bash
-# Build
-npm run build
-
-# Start
-npm start
-
-# PM2
-pm2 start npm --name "boilabin" -- start
-pm2 save
-```
-
-**Nginx config:**
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### Database (Production)
-
-Use [Neon](https://neon.tech), [Supabase](https://supabase.com), or a VPS PostgreSQL instance.
-
-```bash
-# After setting production DATABASE_URL
-npx prisma migrate deploy
-npm run db:seed
-```
+- Enable third-party seller onboarding fully
+- Add live seller payouts and payment settlements
+- Expand seller compliance and approval workflows
 
 ---
 
-## Customization Guide
+## SEO Notes
 
-### Changing Brand Colors
-Edit `src/app/globals.css`:
-```css
-:root {
-  --primary: 23 83% 55%;  /* Change HSL values */
-}
+The project already supports product-focused metadata patterns such as:
+
+- `iPad Pro price in BD`
+- `iPad Pro price in Bangladesh`
+- Brand-aware meta descriptions with BDT pricing
+- Product metadata generation from product fields
+
+This makes product pages more suitable for search-driven ecommerce traffic in Bangladesh.
+
+---
+
+## Asset Organization
+
+All long-term static assets are grouped for easier maintenance.
+
+```text
+public/assets/
+|-- branding/
+|-- categories/
+`-- payments/
 ```
 
-### Adding a New Payment Gateway
-1. Add env keys to `.env`
-2. Add gateway to `PAYMENT_GATEWAYS` in `src/types/index.ts`
-3. Create API route: `src/app/api/payments/[gateway]/route.ts`
-4. Handle webhook at: `src/app/api/payments/[gateway]/webhook/route.ts`
-
-### Adding a New Admin Feature
-1. Create page: `src/app/(admin)/admin/[feature]/page.tsx`
-2. Add to sidebar: `src/components/admin/AdminSidebar.tsx`
-3. Create API: `src/app/api/admin/[feature]/route.ts`
+This keeps permanent visuals separate from uploaded runtime media under `public/uploads/`.
 
 ---
 
-## Security Notes
+## Why This Project Stands Out
 
-- All passwords hashed with bcrypt (12 rounds)
-- JWT sessions with NEXTAUTH_SECRET
-- Admin routes protected by middleware + session role check
-- Input validation with Zod on all API routes
-- SQL injection prevented by Prisma's parameterized queries
-- CSRF protection built into NextAuth
+- Bangladesh-focused ecommerce flow instead of a generic template-only build
+- Real admin structure, not just a storefront demo
+- Seller-ready architecture without forcing marketplace complexity too early
+- Strong asset organization and SEO-aware content direction
+- Designed to be polished visually while still practical to extend
 
 ---
 
-## Sample Data Included
+## Development Notes
 
-After seeding (`npm run db:seed`):
-- **9 brands:** Apple, Samsung, Sony, Xiaomi, Dell, HP, Bose, Nike, Anker
-- **15 categories:** Electronics, Mobile, Laptops, Audio, Wearables, Fashion, Home, Beauty, Sports, Gaming, Baby, Books
-- **21 products:** iPhone 15 Pro, Galaxy S24 Ultra, Sony WH-1000XM5, PS5, Apple Watch, AirPods Pro, Dell XPS 15, and more
-- **3 banners:** Hero carousel
-- **1 flash sale:** Active with countdown
-- **3 coupons:** WELCOME10, SAVE500, TECH20
-- **4 reviews:** Approved reviews with verified purchase status
-- **1 sample order:** Delivered order for demo customer
-- **4 shipping zones:** Dhaka City, Dhaka Division, Chittagong, Others
+### Product comparison
+
+The compare page now supports:
+
+- side-by-side pricing
+- stock status
+- ratings
+- category info
+- product description
+- direct add-to-cart actions
+
+### Flash deals
+
+Flash deal banners and sections now only appear when there is a real active flash-sale campaign with actual products behind it.
+
+---
+
+## Roadmap
+
+- Live Bangladesh payment gateway integration
+- Production-grade caching and rate limiting
+- More advanced seller operations
+- Better reporting and export flows
+- Stronger visual product media and showcase polish
 
 ---
 
 ## License
 
-MIT — Build freely, customize fully.
-Bash _Pointer main feact add react to jeson
+This project is currently private and maintained as a custom product build.
