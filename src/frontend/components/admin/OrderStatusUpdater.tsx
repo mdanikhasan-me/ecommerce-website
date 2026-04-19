@@ -33,7 +33,7 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
 
   return (
     <div className="flex items-center gap-2">
-      <select
+      <select aria-label="Select option" title="Select option"
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         className="input-base w-44 text-sm"
@@ -42,13 +42,13 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
           <option key={s} value={s}>{s.replace('_', ' ')}</option>
         ))}
       </select>
-      <input
+      <input aria-label="Note (optional)" title="Note (optional)"
         placeholder="Note (optional)"
         value={note}
         onChange={(e) => setNote(e.target.value)}
         className="input-base w-40 text-sm hidden sm:block"
       />
-      <button
+      <button type="button"
         onClick={updateStatus}
         disabled={loading || status === currentStatus}
         className="btn-primary text-sm disabled:opacity-50"

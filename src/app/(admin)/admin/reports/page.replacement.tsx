@@ -36,9 +36,9 @@ export default async function AdminReportsPage({ searchParams }: Props) {
           </p>
         </div>
         <form className="flex flex-wrap gap-2 rounded-2xl border border-border bg-card p-3">
-          <input type="date" name="from" defaultValue={toDateInputValue(range.from)} className="input-base" />
-          <input type="date" name="to" defaultValue={toDateInputValue(range.to)} className="input-base" />
-          <input type="hidden" name="tab" value={activeTab} />
+          <input aria-label="Form input" title="Form input" type="date" name="from" defaultValue={toDateInputValue(range.from)} className="input-base" />
+          <input aria-label="Form input" title="Form input" type="date" name="to" defaultValue={toDateInputValue(range.to)} className="input-base" />
+          <input aria-label="Form input" title="Form input" type="hidden" name="tab" value={activeTab} />
           <button type="submit" className="btn-primary px-4">
             Apply
           </button>

@@ -138,7 +138,7 @@ export function BrandEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Name</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.name}
                   onChange={(event) => updateField('name', event.target.value)}
                   className="input-base"
@@ -149,7 +149,7 @@ export function BrandEditorForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Slug</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.slug}
                     onChange={(event) => {
                       setManualSlug(true)
@@ -162,7 +162,7 @@ export function BrandEditorForm({
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     value={form.sortOrder}
                     onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -173,7 +173,7 @@ export function BrandEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Website</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="url"
                   value={form.website}
                   onChange={(event) => updateField('website', event.target.value)}
@@ -184,7 +184,7 @@ export function BrandEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
                   className="input-base min-h-[160px] resize-y"
@@ -215,7 +215,7 @@ export function BrandEditorForm({
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <div className="mt-4 space-y-3">
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}
@@ -224,7 +224,7 @@ export function BrandEditorForm({
                 Active
               </label>
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isFeatured}
                   onChange={(event) => updateField('isFeatured', event.target.checked)}

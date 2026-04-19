@@ -48,8 +48,8 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 
       <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3">
-          <input name="q" defaultValue={filters.q} placeholder="Search name or email..." className="input-base max-w-xs" />
-          <select name="role" defaultValue={filters.role} className="input-base w-40">
+          <input aria-label="Search name or email..." title="Search name or email..." name="q" defaultValue={filters.q} placeholder="Search name or email..." className="input-base max-w-xs" />
+          <select aria-label="Role" title="Role" name="role" defaultValue={filters.role} className="input-base w-40">
             <option value="">All Roles</option>
             <option value="CUSTOMER">Customer</option>
             <option value="SELLER">Seller</option>

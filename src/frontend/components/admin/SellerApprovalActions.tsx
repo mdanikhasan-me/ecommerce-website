@@ -39,7 +39,7 @@ export function SellerApprovalActions({ sellerId, currentStatus }: Props) {
   return (
     <div className="flex items-center gap-2">
       {currentStatus !== 'APPROVED' && (
-        <button
+        <button type="button"
           onClick={() => handleAction('APPROVED')}
           disabled={loading !== null}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
@@ -49,7 +49,7 @@ export function SellerApprovalActions({ sellerId, currentStatus }: Props) {
         </button>
       )}
       {currentStatus !== 'REJECTED' && currentStatus !== 'APPROVED' && (
-        <button
+        <button type="button"
           onClick={() => handleAction('REJECTED')}
           disabled={loading !== null}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
@@ -59,7 +59,7 @@ export function SellerApprovalActions({ sellerId, currentStatus }: Props) {
         </button>
       )}
       {currentStatus === 'APPROVED' && (
-        <button
+        <button type="button"
           onClick={() => handleAction('SUSPENDED')}
           disabled={loading !== null}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-orange-600 text-white text-sm font-medium hover:bg-orange-700 transition-colors disabled:opacity-50"

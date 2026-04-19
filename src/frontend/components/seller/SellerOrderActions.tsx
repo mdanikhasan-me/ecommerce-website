@@ -38,7 +38,7 @@ export function SellerOrderActions({ orderId, currentStatus }: { orderId: string
   }
 
   return (
-    <button onClick={handleUpdate} disabled={loading} className="btn-primary gap-2">
+    <button type="button" onClick={handleUpdate} disabled={loading} className="btn-primary gap-2">
       {loading && <Loader2 className="size-4 animate-spin" />}
       {LABELS[next]}
     </button>

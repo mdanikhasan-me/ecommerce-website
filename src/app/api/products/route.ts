@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { requireAdminSession } from '@/backend/admin/admin-utils'
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
@@ -60,12 +61,60 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    await requireAdminSession()
     const body = await req.json()
-    const { images, specifications, variants, ...productData } = body
+    const {
+      images,
+      specifications,
+      variants,
+      name,
+      slug,
+      sku,
+      description,
+      shortDescription,
+      basePrice,
+      salePrice,
+      costPrice,
+      stockQuantity,
+      weight,
+      categoryId,
+      brandId,
+      sellerId,
+      isActive,
+      isFeatured,
+      isNew,
+      isBestSeller,
+      metaTitle,
+      metaDescription,
+      tags,
+    } = body
+
+    if (!name || !slug || !sku || !categoryId || basePrice === undefined) {
+      return NextResponse.json({ error: 'Missing required product fields' }, { status: 400 })
+    }
 
     const product = await db.product.create({
       data: {
-        ...productData,
+        name,
+        slug,
+        sku,
+        description: description ?? '',
+        shortDescription: shortDescription ?? null,
+        basePrice: Number(basePrice),
+        salePrice: salePrice != null ? Number(salePrice) : null,
+        costPrice: costPrice != null ? Number(costPrice) : null,
+        stockQuantity: stockQuantity != null ? Number(stockQuantity) : 0,
+        weight: weight != null ? Number(weight) : null,
+        categoryId,
+        brandId: brandId ?? null,
+        sellerId: sellerId ?? null,
+        isActive: Boolean(isActive ?? true),
+        isFeatured: Boolean(isFeatured ?? false),
+        isNew: Boolean(isNew ?? true),
+        isBestSeller: Boolean(isBestSeller ?? false),
+        metaTitle: metaTitle ?? null,
+        metaDescription: metaDescription ?? null,
+        tags: Array.isArray(tags) ? tags : undefined,
         images: images?.length ? { create: images } : undefined,
         specifications: specifications?.length ? { create: specifications } : undefined,
         variants: variants?.length ? {
@@ -80,6 +129,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, product }, { status: 201 })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+    const status = error.message === 'Unauthorized' ? 403 : 400
+    return NextResponse.json({ error: status === 403 ? 'Unauthorized' : 'Could not create product' }, { status })
   }
 }

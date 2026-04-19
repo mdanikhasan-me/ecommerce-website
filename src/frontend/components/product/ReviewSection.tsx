@@ -40,9 +40,12 @@ function StarBar({ count, total, star }: { count: number; total: number; star: n
     <div className="flex items-center gap-3 text-sm">
       <span className="w-4 text-right text-muted-foreground">{star}</span>
       <Star className="h-3.5 w-3.5 star-filled flex-shrink-0" />
-      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-        <div className="h-full bg-amber-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
-      </div>
+      <progress
+        className="progress-track progress-amber flex-1"
+        value={pct}
+        max={100}
+        aria-label={`${star} star reviews`}
+      />
       <span className="w-8 text-muted-foreground">{count}</span>
     </div>
   )
@@ -125,7 +128,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
               <span className="text-xs font-medium text-muted-foreground">{reviewStatusLabel}</span>
             )}
             {canWriteReview && !showForm && (
-              <button onClick={() => setShowForm(true)} className="btn-primary py-2 text-sm">
+              <button type="button" onClick={() => setShowForm(true)} className="btn-primary py-2 text-sm">
                 Leave a Review
               </button>
             )}
@@ -158,16 +161,28 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
 
               {/* Star Picker */}
               <div className="flex items-center gap-2 mb-4">
-                <div className="flex gap-1">
+                <div className="flex gap-1" role="radiogroup" aria-label="Product rating">
                   {[1, 2, 3, 4, 5].map((s) => (
-                    <button
-                      key={s} type="button"
+                    <label
+                      key={s}
+                      className="cursor-pointer"
                       onMouseEnter={() => setForm((f) => ({ ...f, hoverRating: s }))}
                       onMouseLeave={() => setForm((f) => ({ ...f, hoverRating: 0 }))}
-                      onClick={() => setForm((f) => ({ ...f, rating: s }))}
                     >
-                      <Star className={cn('h-8 w-8 transition-colors', s <= (form.hoverRating || form.rating) ? 'star-filled' : 'text-muted')} />
-                    </button>
+                      <input
+                        type="radio"
+                        name="review-rating"
+                        value={s}
+                        checked={form.rating === s}
+                        onChange={() => setForm((f) => ({ ...f, rating: s }))}
+                        className="sr-only"
+                      />
+                      <span className="sr-only">Rate {s} {s === 1 ? 'star' : 'stars'}</span>
+                      <Star
+                        aria-hidden="true"
+                        className={cn('h-8 w-8 transition-colors', s <= (form.hoverRating || form.rating) ? 'star-filled' : 'text-muted')}
+                      />
+                    </label>
                   ))}
                 </div>
                 {(form.hoverRating || form.rating) > 0 && (
@@ -175,13 +190,13 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
                 )}
               </div>
 
-              <input
+              <input aria-label="Review title (optional)" title="Review title (optional)"
                 placeholder="Review title (optional)"
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 className="input-base mb-3"
               />
-              <textarea
+              <textarea aria-label="Share your experience with this product..." title="Share your experience with this product..."
                 placeholder="Share your experience with this product..."
                 value={form.body}
                 onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
@@ -201,7 +216,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
           {/* Sort */}
           <div className="flex items-center justify-between mb-5">
             <p className="text-sm font-medium">{visibleReviewLabel}</p>
-            <select
+            <select aria-label="Select option" title="Select option"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'highest' | 'lowest' | 'helpful')}
               className="text-sm border border-input rounded-lg px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
@@ -219,7 +234,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
               <Star className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p>No customer reviews yet.</p>
               {canWriteReview && !showForm && (
-                <button onClick={() => setShowForm(true)} className="mt-3 btn-primary">Leave a Review</button>
+                <button type="button" onClick={() => setShowForm(true)} className="mt-3 btn-primary">Leave a Review</button>
               )}
               {!canWriteReview && reviewStatusLabel && <p className="mt-3 text-sm">{reviewStatusLabel}</p>}
             </div>

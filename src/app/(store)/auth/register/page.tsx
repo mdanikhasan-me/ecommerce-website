@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 
 function RegisterForm() {
   const router = useRouter()
@@ -45,28 +46,36 @@ function RegisterForm() {
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-display font-bold text-lg">B</span>
             </div>
-            <span className="font-display font-bold text-xl tracking-tight">Boilabin</span>
+            <BrandWordmark className="text-xl text-foreground">Boilabin</BrandWordmark>
           </Link>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6 sm:p-7">
           <h1 className="font-display text-lg font-bold mb-1">Create your account</h1>
-          <p className="text-sm text-muted-foreground mb-6">Join Boilabin to start shopping</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Join <BrandWordmark className="text-sm text-foreground">Boilabin</BrandWordmark> to start shopping
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Full name</label>
-              <input type="text" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your full name" required className="input-base" autoComplete="name" />
+              <label htmlFor="register-name" className="text-sm font-medium mb-1.5 block">Full name</label>
+              <input id="register-name" name="name" type="text" title="Full name" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your full name" required className="input-base" autoComplete="name" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Email</label>
-              <input type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="you@example.com" required className="input-base" autoComplete="email" />
+              <label htmlFor="register-email" className="text-sm font-medium mb-1.5 block">Email</label>
+              <input id="register-email" name="email" type="email" title="Email address" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} placeholder="you@example.com" required className="input-base" autoComplete="email" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Password</label>
+              <label htmlFor="register-password" className="text-sm font-medium mb-1.5 block">Password</label>
               <div className="relative">
-                <input type={showPassword ? 'text' : 'password'} value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} required className="input-base pr-10" autoComplete="new-password" minLength={6} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <input id="register-password" name="password" type={showPassword ? 'text' : 'password'} title="Password" placeholder="Create a password" value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} required className="input-base pr-10" autoComplete="new-password" minLength={6} />
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -82,7 +91,7 @@ function RegisterForm() {
             <div className="relative flex justify-center text-xs"><span className="px-3 bg-card text-muted-foreground">or</span></div>
           </div>
 
-          <button onClick={() => signIn('google', { callbackUrl })} className="btn-outline w-full h-11 gap-2">
+          <button type="button" onClick={() => signIn('google', { callbackUrl })} className="btn-outline w-full h-11 gap-2">
             <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />

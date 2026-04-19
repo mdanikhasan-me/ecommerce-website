@@ -72,7 +72,7 @@ export function NotificationComposer({
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium">Audience</label>
-          <select
+          <select aria-label="Select option" title="Select option"
             value={form.recipientType}
             onChange={(event) => updateField('recipientType', event.target.value)}
             className="input-base"
@@ -86,7 +86,7 @@ export function NotificationComposer({
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Type</label>
-          <select
+          <select aria-label="Select option" title="Select option"
             value={form.type}
             onChange={(event) => updateField('type', event.target.value)}
             className="input-base"
@@ -103,7 +103,7 @@ export function NotificationComposer({
       {form.recipientType === 'USER' && (
         <div className="mt-4">
           <label className="mb-1.5 block text-sm font-medium">Recipient</label>
-          <select
+          <select aria-label="Select option" title="Select option"
             value={form.userId}
             onChange={(event) => updateField('userId', event.target.value)}
             className="input-base"
@@ -122,7 +122,7 @@ export function NotificationComposer({
       <div className="mt-4 grid gap-4">
         <div>
           <label className="mb-1.5 block text-sm font-medium">Title</label>
-          <input
+          <input aria-label="Form input" title="Form input"
             value={form.title}
             onChange={(event) => updateField('title', event.target.value)}
             className="input-base"
@@ -131,7 +131,7 @@ export function NotificationComposer({
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Message</label>
-          <textarea
+          <textarea aria-label="Text area" title="Text area"
             value={form.message}
             onChange={(event) => updateField('message', event.target.value)}
             className="input-base min-h-[120px] resize-y"
@@ -140,7 +140,7 @@ export function NotificationComposer({
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Link</label>
-          <input
+          <input aria-label="Form input" title="Form input"
             value={form.link}
             onChange={(event) => updateField('link', event.target.value)}
             className="input-base"

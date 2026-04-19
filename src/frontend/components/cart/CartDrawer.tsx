@@ -40,7 +40,7 @@ export function CartDrawer() {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 bg-foreground/40 backdrop-blur-sm z-50 transition-opacity duration-300',
+          'fixed inset-0 z-50 bg-foreground/40 transition-opacity duration-300',
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
         onClick={closeCart}
@@ -65,7 +65,13 @@ export function CartDrawer() {
               </span>
             )}
           </div>
-          <button onClick={closeCart} className="p-2 rounded-lg hover:bg-secondary transition-colors">
+          <button
+            type="button"
+            aria-label="Close cart"
+            title="Close cart"
+            onClick={closeCart}
+            className="p-2 rounded-lg hover:bg-secondary transition-colors"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -82,6 +88,7 @@ export function CartDrawer() {
                 <p className="text-muted-foreground text-sm mt-1">Discover thousands of products and add them to your cart.</p>
               </div>
               <button
+                type="button"
                 onClick={closeCart}
                 className="btn-primary mt-2"
               >
@@ -115,6 +122,9 @@ export function CartDrawer() {
                       {/* Qty */}
                       <div className="flex items-center border border-border rounded-lg overflow-hidden">
                         <button
+                          type="button"
+                          aria-label="Decrease quantity"
+                          title="Decrease quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
                           className="p-1.5 hover:bg-secondary transition-colors"
                         >
@@ -122,6 +132,9 @@ export function CartDrawer() {
                         </button>
                         <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                         <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          title="Increase quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
                           disabled={item.quantity >= item.stockQuantity}
                           className="p-1.5 hover:bg-secondary transition-colors disabled:opacity-40"
@@ -141,6 +154,9 @@ export function CartDrawer() {
 
                   {/* Remove */}
                   <button
+                    type="button"
+                    aria-label={`Remove ${item.name}`}
+                    title={`Remove ${item.name}`}
                     onClick={() => removeItem(item.productId, item.variantId)}
                     className="p-1.5 h-fit rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                   >

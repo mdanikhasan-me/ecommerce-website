@@ -161,7 +161,7 @@ export function CouponEditorForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Coupon code</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.code}
                     onChange={(event) => updateField('code', event.target.value.toUpperCase())}
                     className="input-base"
@@ -170,7 +170,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Name</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.name}
                     onChange={(event) => updateField('name', event.target.value)}
                     className="input-base"
@@ -181,7 +181,7 @@ export function CouponEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
                   className="input-base min-h-[120px] resize-y"
@@ -191,7 +191,7 @@ export function CouponEditorForm({
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Discount type</label>
-                  <select
+                  <select aria-label="Select option" title="Select option"
                     value={form.type}
                     onChange={(event) => updateField('type', event.target.value)}
                     className="input-base"
@@ -202,7 +202,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Value</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     step="0.01"
@@ -214,7 +214,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Min order amount</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     step="0.01"
@@ -225,7 +225,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Max discount</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     step="0.01"
@@ -236,7 +236,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Usage limit</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     value={form.usageLimit}
@@ -246,7 +246,7 @@ export function CouponEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Per user limit</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="1"
                     value={form.perUserLimit}
@@ -263,7 +263,7 @@ export function CouponEditorForm({
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Limit to categories</label>
-                <select
+                <select aria-label="Select option" title="Select option"
                   multiple
                   value={form.categoryIds}
                   onChange={(event) =>
@@ -284,7 +284,7 @@ export function CouponEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Limit to products</label>
-                <select
+                <select aria-label="Select option" title="Select option"
                   multiple
                   value={form.productIds}
                   onChange={(event) =>
@@ -312,7 +312,7 @@ export function CouponEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Starts at</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="datetime-local"
                   value={form.startsAt}
                   onChange={(event) => updateField('startsAt', event.target.value)}
@@ -321,7 +321,7 @@ export function CouponEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Expires at</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="datetime-local"
                   value={form.expiresAt}
                   onChange={(event) => updateField('expiresAt', event.target.value)}
@@ -330,7 +330,7 @@ export function CouponEditorForm({
               </div>
 
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

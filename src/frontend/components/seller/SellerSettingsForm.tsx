@@ -82,27 +82,27 @@ export function SellerSettingsForm({ seller }: SellerSettingsFormProps) {
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Store Name</label>
-            <input type="text" value={form.storeName} onChange={(e) => update('storeName', e.target.value)} className="input-base" required />
+            <input aria-label="Form input" title="Form input" type="text" value={form.storeName} onChange={(e) => update('storeName', e.target.value)} className="input-base" required />
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Store URL</label>
             <div className="flex items-center gap-0">
               <span className="text-sm text-muted-foreground bg-secondary px-3 py-2.5 rounded-l-lg border border-r-0 border-input">boilabin.com/store/</span>
-              <input type="text" value={seller.storeSlug} disabled className="input-base rounded-l-none opacity-60 cursor-not-allowed" />
+              <input aria-label="Form input" title="Form input" type="text" value={seller.storeSlug} disabled className="input-base rounded-l-none opacity-60 cursor-not-allowed" />
             </div>
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Description</label>
-            <textarea value={form.description} onChange={(e) => update('description', e.target.value)} className="input-base min-h-[100px] resize-y" placeholder="Describe your store..." />
+            <textarea aria-label="Text area" title="Text area" value={form.description} onChange={(e) => update('description', e.target.value)} className="input-base min-h-[100px] resize-y" placeholder="Describe your store..." />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium mb-1.5 block">Business Type</label>
-              <input type="text" value={form.businessType} onChange={(e) => update('businessType', e.target.value)} className="input-base" placeholder="Retailer, distributor, importer" />
+              <input aria-label="Form input" title="Form input" type="text" value={form.businessType} onChange={(e) => update('businessType', e.target.value)} className="input-base" placeholder="Retailer, distributor, importer" />
             </div>
             <div>
               <label className="text-sm font-medium mb-1.5 block">Trade License</label>
-              <input type="text" value={form.tradeLicense} onChange={(e) => update('tradeLicense', e.target.value)} className="input-base" placeholder="License number" />
+              <input aria-label="Form input" title="Form input" type="text" value={form.tradeLicense} onChange={(e) => update('tradeLicense', e.target.value)} className="input-base" placeholder="License number" />
             </div>
           </div>
         </div>
@@ -114,19 +114,19 @@ export function SellerSettingsForm({ seller }: SellerSettingsFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">NID Number</label>
-            <input type="text" value={form.nidNumber} onChange={(e) => update('nidNumber', e.target.value)} className="input-base" placeholder="National ID" />
+            <input aria-label="Form input" title="Form input" type="text" value={form.nidNumber} onChange={(e) => update('nidNumber', e.target.value)} className="input-base" placeholder="National ID" />
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">bKash Number</label>
-            <input type="text" value={form.bkashNumber} onChange={(e) => update('bkashNumber', e.target.value)} className="input-base" placeholder="Merchant or payout number" />
+            <input aria-label="Form input" title="Form input" type="text" value={form.bkashNumber} onChange={(e) => update('bkashNumber', e.target.value)} className="input-base" placeholder="Merchant or payout number" />
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Bank Name</label>
-            <input type="text" value={form.bankName} onChange={(e) => update('bankName', e.target.value)} className="input-base" placeholder="Bank name" />
+            <input aria-label="Form input" title="Form input" type="text" value={form.bankName} onChange={(e) => update('bankName', e.target.value)} className="input-base" placeholder="Bank name" />
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Bank Account</label>
-            <input type="text" value={form.bankAccount} onChange={(e) => update('bankAccount', e.target.value)} className="input-base" placeholder="Account number" />
+            <input aria-label="Form input" title="Form input" type="text" value={form.bankAccount} onChange={(e) => update('bankAccount', e.target.value)} className="input-base" placeholder="Account number" />
           </div>
         </div>
       </div>

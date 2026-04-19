@@ -64,7 +64,7 @@ export function ReturnRequestManager({
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium">Return status</label>
-          <select value={status} onChange={(event) => setStatus(event.target.value)} className="input-base">
+          <select aria-label="Select option" title="Select option" value={status} onChange={(event) => setStatus(event.target.value)} className="input-base">
             {RETURN_STATUSES.map((value) => (
               <option key={value} value={value}>
                 {value.replace('_', ' ')}
@@ -74,7 +74,7 @@ export function ReturnRequestManager({
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium">Refund amount</label>
-          <input
+          <input aria-label="Form input" title="Form input"
             type="number"
             min="0"
             step="0.01"
@@ -88,7 +88,7 @@ export function ReturnRequestManager({
 
       <div>
         <label className="mb-1.5 block text-sm font-medium">Admin notes</label>
-        <textarea
+        <textarea aria-label="Text area" title="Text area"
           value={adminNotes}
           onChange={(event) => setAdminNotes(event.target.value)}
           className="input-base min-h-[130px] resize-y"

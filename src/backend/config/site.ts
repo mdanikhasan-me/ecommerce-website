@@ -1,18 +1,19 @@
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+
 /**
  * Site Configuration
  *
- * Centralized constants for the BoilaBin marketplace.
+ * Centralized constants for the Boilabin marketplace.
  * Update these values to rebrand or reconfigure the platform.
  */
 
 export const siteConfig = {
-  name: 'BoilaBin',
+  name: 'Boilabin',
   description: "Bangladesh's premium online marketplace",
   url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   locale: 'en-BD',
   currency: 'BDT',
-  currencySymbol: '৳',
+  currencySymbol: 'Tk',
 
   contact: {
     email: CONTACT_EMAIL,
@@ -29,8 +30,8 @@ export const siteConfig = {
   },
 
   shipping: {
-    freeShippingMin: 2000,   // ৳2,000 for free shipping
-    baseFee: 60,             // ৳60 base shipping fee
+    freeShippingMin: 2000,   // Tk 2,000 for free shipping
+    baseFee: 60,             // Tk 60 base shipping fee
   },
 
   limits: {

@@ -4,23 +4,23 @@
 
 @layer base {
   :root {
-    --background: 40 14% 97%;
-    --foreground: 270 12% 10%;
+    --background: 40 38% 95%;
+    --foreground: 268 14% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 270 12% 10%;
+    --card: 42 50% 97%;
+    --card-foreground: 268 14% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 270 12% 10%;
+    --popover: 42 50% 97%;
+    --popover-foreground: 268 14% 11%;
 
     --primary: 270 36% 18%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 10% 94%;
-    --secondary-foreground: 270 12% 14%;
+    --secondary: 40 31% 91%;
+    --secondary-foreground: 268 14% 14%;
 
-    --muted: 40 10% 94%;
-    --muted-foreground: 260 6% 42%;
+    --muted: 40 24% 92%;
+    --muted-foreground: 258 8% 38%;
 
     --accent: 164 36% 50%;
     --accent-foreground: 270 36% 14%;
@@ -34,9 +34,13 @@
     --warning: 43 80% 42%;
     --warning-foreground: 43 90% 10%;
 
-    --border: 35 12% 88%;
-    --input: 35 12% 88%;
+    --border: 36 18% 82%;
+    --input: 36 18% 82%;
     --ring: 270 36% 18%;
+    --buttermilk: 39 28% 92%;
+    --footer-heading: 38 24% 93%;
+    --footer-link: 31 15% 80%;
+    --footer-muted: 28 9% 70%;
 
     --radius: 0.5rem;
   }
@@ -72,10 +76,19 @@
   body {
     @apply bg-background text-foreground;
     -webkit-tap-highlight-color: transparent;
+    background-image:
+      radial-gradient(circle at top left, hsl(33 42% 90% / 0.32), transparent 26%),
+      linear-gradient(180deg, hsl(var(--background)), hsl(43 32% 94%));
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
+  }
+
+  /* Brand voice: every emphatic weight uses the display face (Poppins — wordmark match). */
+  .font-display {
+    font-family: var(--font-poppins), var(--font-sora), system-ui, sans-serif;
+    letter-spacing: -0.01em;
   }
 
   ::selection {
@@ -87,9 +100,12 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--border)) transparent;
+  /* Firefox + Chrome 121+. Webkit fallback below. */
+  @supports (scrollbar-width: thin) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--border)) transparent;
+    }
   }
   *::-webkit-scrollbar { width: 5px; height: 5px; }
   *::-webkit-scrollbar-track { background: transparent; }
@@ -98,39 +114,54 @@
 
 @layer components {
   .skeleton {
-    @apply bg-gradient-to-r from-muted via-muted/60 to-muted;
-    background-size: 200% 100%;
+    @apply relative overflow-hidden bg-muted;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translate3d(-100%, 0, 0);
+    will-change: transform;
+    background: linear-gradient(90deg, transparent, hsl(var(--muted-foreground) / 0.08), transparent);
     animation: shimmer 1.5s infinite;
   }
 
   .product-card {
-    @apply bg-card rounded-lg border border-border overflow-hidden transition-all duration-200;
-    box-shadow: 0 1px 2px rgba(23, 18, 15, 0.04);
+    @apply bg-card overflow-hidden transition-all duration-300;
+    border-radius: 1.15rem;
+    border: 1px solid hsl(var(--border) / 0.74);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.8) inset,
+      0 12px 30px rgba(33, 25, 21, 0.05);
   }
   .product-card:hover {
-    box-shadow: 0 14px 28px rgba(23, 18, 15, 0.08);
-    border-color: hsl(var(--border) / 0.82);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.86) inset,
+      0 18px 38px rgba(33, 25, 21, 0.08);
+    border-color: hsl(var(--primary) / 0.14);
     transform: translateY(-2px);
   }
 
   .section-title {
-    @apply font-display text-xl font-bold tracking-tight;
+    @apply font-display font-bold tracking-tight;
+    font-size: clamp(1.75rem, 1.35rem + 1vw, 2.45rem);
+    line-height: 0.96;
   }
 
   .badge-sale {
-    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm;
     background: hsl(var(--card) / 0.92);
     border-color: hsl(var(--destructive) / 0.14);
     color: hsl(var(--destructive));
   }
   .badge-new {
-    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm;
     background: hsl(var(--card) / 0.92);
     border-color: hsl(var(--primary) / 0.12);
     color: hsl(var(--primary));
   }
   .badge-bestseller {
-    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm backdrop-blur-md;
+    @apply inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm;
     background: hsl(var(--card) / 0.94);
     border-color: hsl(var(--warning) / 0.16);
     color: hsl(36 72% 30%);
@@ -154,18 +185,19 @@
 
   .btn-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90
-    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
     transition-all duration-150 active:scale-[0.98]
     disabled:pointer-events-none disabled:opacity-50;
+    box-shadow: 0 14px 28px rgba(45, 27, 61, 0.16);
   }
   .btn-secondary {
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/80
-    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
     transition-all duration-150 active:scale-[0.98];
   }
   .btn-outline {
     @apply border border-border bg-transparent hover:bg-secondary
-    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
     transition-all duration-150 active:scale-[0.98];
   }
   .btn-accent {
@@ -178,6 +210,139 @@
     @apply flex items-center gap-3 p-3 bg-secondary/60 rounded-lg text-sm text-muted-foreground;
   }
 
+  .brand-wordmark {
+    font-family: var(--font-poppins), var(--font-sora), system-ui, sans-serif;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 0.94;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .brand-wordmark-art {
+    display: inline-block;
+    aspect-ratio: 800 / 180;
+    background-color: currentColor;
+    vertical-align: middle;
+    -webkit-mask-image: url('/assets/branding/boilabin-wordmark.png');
+    mask-image: url('/assets/branding/boilabin-wordmark.png');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  .footer-heading {
+    color: hsl(var(--footer-heading));
+  }
+
+  .footer-muted {
+    color: hsl(var(--footer-muted));
+  }
+
+  .footer-link {
+    color: hsl(var(--footer-link));
+    transition:
+      color 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .footer-link:hover,
+  .footer-link:focus-visible {
+    color: hsl(var(--buttermilk));
+  }
+
+  .footer-social {
+    color: hsl(var(--footer-link));
+    border-color: hsl(var(--border) / 0.18);
+    transition:
+      color 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .footer-social:hover,
+  .footer-social:focus-visible {
+    color: hsl(var(--buttermilk));
+    border-color: hsl(var(--buttermilk) / 0.26);
+    background: hsl(var(--buttermilk) / 0.05);
+  }
+
+  .section-kicker {
+    color: hsl(var(--primary) / 0.72);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .section-shell {
+    border: 1px solid hsl(var(--border) / 0.72);
+    background: linear-gradient(180deg, hsl(var(--card)), hsl(43 36% 96% / 0.92));
+    border-radius: 1.65rem;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.86) inset,
+      0 18px 42px rgba(23, 18, 15, 0.05);
+  }
+
+  .editorial-link {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200;
+    color: hsl(var(--primary));
+    background: hsl(var(--card) / 0.82);
+    border: 1px solid hsl(var(--primary) / 0.08);
+  }
+
+  .editorial-link:hover {
+    background: hsl(var(--secondary) / 0.92);
+    border-color: hsl(var(--primary) / 0.16);
+    transform: translateY(-1px);
+  }
+
+  .store-band {
+    border-top: 1px solid hsl(var(--border) / 0.56);
+    border-bottom: 1px solid hsl(var(--border) / 0.56);
+    background:
+      linear-gradient(180deg, hsl(39 38% 93% / 0.78), hsl(43 34% 95% / 0.9));
+  }
+
+  .progress-track {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+  }
+  .progress-track::-webkit-progress-bar {
+    background: hsl(var(--muted));
+    border-radius: 999px;
+  }
+  .progress-track::-webkit-progress-value {
+    border-radius: 999px;
+    transition: width 180ms ease;
+  }
+  .progress-track::-moz-progress-bar {
+    border-radius: 999px;
+    transition: width 180ms ease;
+  }
+  .progress-amber::-webkit-progress-value,
+  .progress-amber::-moz-progress-bar {
+    background: rgb(251 191 36);
+  }
+  .progress-red::-webkit-progress-value,
+  .progress-red::-moz-progress-bar {
+    background: rgb(239 68 68);
+  }
+
+  .zoom-image {
+    transform-origin: var(--zoom-origin, 50% 50%);
+  }
+
   .container-site {
     @apply w-full px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24;
   }
@@ -185,6 +350,10 @@
 
 @layer utilities {
   .font-700 { font-weight: 700; }
+
+  .bg-white {
+    background-color: hsl(var(--card)) !important;
+  }
 
   .star-filled { @apply text-amber-400 fill-amber-400; }
   .star-empty { @apply text-amber-200 fill-amber-100; }
@@ -208,6 +377,5 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  to { transform: translate3d(100%, 0, 0); }
 }

@@ -1,7 +1,7 @@
 /**
  * Payment Gateway Configuration
  *
- * Available payment methods for the BoilaBin marketplace.
+ * Available payment methods for the Boilabin marketplace.
  */
 
 import type { PaymentGateway } from '@/backend/types/payment'

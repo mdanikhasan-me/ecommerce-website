@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Loader2, User } from 'lucide-react'
+import { Save, Loader2 } from 'lucide-react'
 
 interface ProfileFormProps {
   user: { id: string; name: string | null; email: string; phone: string | null; image: string | null }
@@ -63,17 +63,49 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-1.5 block">Full Name</label>
-            <input type="text" value={form.name} onChange={(e) => update('name', e.target.value)} className="input-base" required />
+            <label htmlFor="profile-name" className="text-sm font-medium mb-1.5 block">Full Name</label>
+            <input
+              id="profile-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              placeholder="Your full name"
+              title="Full name"
+              value={form.name}
+              onChange={(e) => update('name', e.target.value)}
+              className="input-base"
+              required
+            />
           </div>
           <div>
-            <label className="text-sm font-medium mb-1.5 block">Email</label>
-            <input type="email" value={user.email} disabled className="input-base opacity-60 cursor-not-allowed" />
+            <label htmlFor="profile-email" className="text-sm font-medium mb-1.5 block">Email</label>
+            <input
+              id="profile-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              title="Email address (read-only)"
+              value={user.email}
+              disabled
+              readOnly
+              className="input-base opacity-60 cursor-not-allowed"
+            />
             <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
           </div>
           <div>
-            <label className="text-sm font-medium mb-1.5 block">Phone</label>
-            <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} className="input-base" placeholder="+880..." />
+            <label htmlFor="profile-phone" className="text-sm font-medium mb-1.5 block">Phone</label>
+            <input
+              id="profile-phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              title="Phone number"
+              value={form.phone}
+              onChange={(e) => update('phone', e.target.value)}
+              className="input-base"
+              placeholder="+880..."
+            />
           </div>
         </div>
       </div>

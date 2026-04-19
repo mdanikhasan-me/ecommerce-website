@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 import { db } from '@/backend/database'
+import { cn } from '@/backend/utils'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { getCategoryMediaPath } from '@/shared/category-media'
 
@@ -63,7 +64,7 @@ function CategorySectionCard({ category }: { category: CategoryItem }) {
   const config = getCategoryConfig(category.slug)
 
   return (
-    <section className="rounded-[30px] border border-black/8 bg-white p-4 shadow-[0_18px_42px_-36px_rgba(15,23,42,0.18)] sm:p-5">
+    <section className="rounded-[30px] border border-black/8 bg-card p-4 shadow-[0_18px_42px_-36px_rgba(15,23,42,0.18)] sm:p-5">
       <div className="grid gap-5 lg:grid-cols-[minmax(220px,260px)_1fr]">
         <Link
           href={`/category/${category.slug}`}
@@ -78,10 +79,7 @@ function CategorySectionCard({ category }: { category: CategoryItem }) {
             quality={84}
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.04)_0%,rgba(15,23,42,0.22)_44%,rgba(15,23,42,0.76)_100%)]" />
-          <div
-            className="absolute inset-x-0 top-0 h-24 opacity-60"
-            style={{ background: `radial-gradient(circle at top right, ${config.accent}22 0%, transparent 56%)` }}
-          />
+          <div className={cn('absolute inset-x-0 top-0 h-24 opacity-60', config.glowClass)} />
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
             <div>
               <h2 className="text-[1.5rem] font-semibold tracking-tight text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
@@ -101,8 +99,7 @@ function CategorySectionCard({ category }: { category: CategoryItem }) {
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{config.summary}</p>
               <Link
                 href={`/category/${category.slug}`}
-                className="inline-flex items-center gap-2 text-sm font-semibold"
-                style={{ color: config.accentDark }}
+                className={cn('inline-flex items-center gap-2 text-sm font-semibold', config.linkClass)}
               >
                 Open category
                 <ArrowRight className="h-4 w-4" />

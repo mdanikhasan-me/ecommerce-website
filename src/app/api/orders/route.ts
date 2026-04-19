@@ -36,11 +36,27 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ items: orders, total, page, totalPages: Math.ceil(total / limit) })
 }
 
+const SHIPPING_FEE_FLAT = 60
+const FREE_SHIPPING_THRESHOLD = 2000
+
+function computeShipping(subtotal: number) {
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
+}
+
+function isValidEmail(value: unknown): value is string {
+  return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254
+}
+
+function sanitizeString(value: unknown, max: number) {
+  if (typeof value !== 'string') return ''
+  return value.trim().slice(0, max)
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth()
     const body = await req.json()
-    const { items, address, paymentMethod, subtotal, shippingFee, total, notes, discount = 0, couponId, isGuestOrder, guestEmail, guestPhone } = body
+    const { items, address, paymentMethod, notes, couponCode, isGuestOrder, guestEmail, guestPhone } = body
 
     if (!AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
       return NextResponse.json(
@@ -49,122 +65,236 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Validate stock
-    for (const item of items) {
-      const product = await db.product.findUnique({
-        where: { id: item.productId },
-        select: { stockQuantity: true, name: true, isActive: true },
-      })
-      if (!product || !product.isActive) {
-        return NextResponse.json({ error: `Product "${item.productName}" is no longer available` }, { status: 400 })
-      }
-      if (product.stockQuantity < item.quantity) {
-        return NextResponse.json({ error: `Insufficient stock for "${item.productName}"` }, { status: 400 })
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+    }
+
+    if (!address || !address.fullName || !address.phone || !address.addressLine1 || !address.city || !address.district || !address.division) {
+      return NextResponse.json({ error: 'Delivery address is incomplete' }, { status: 400 })
+    }
+
+    if (!session?.user) {
+      if (!isValidEmail(guestEmail)) {
+        return NextResponse.json({ error: 'A valid email is required for guest checkout' }, { status: 400 })
       }
     }
 
-    let userId = session?.user?.id
-    let addressId: string | undefined
+    // Fetch products + variants server-side; ignore client-supplied prices
+    const productIds: string[] = Array.from(new Set(items.map((i: any) => String(i.productId)).filter(Boolean)))
+    const variantIds: string[] = Array.from(new Set(items.map((i: any) => i.variantId).filter(Boolean).map(String)))
 
-    // Handle guest or logged-in user
+    const [products, variants] = await Promise.all([
+      db.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
+      }),
+      variantIds.length
+        ? db.productVariant.findMany({
+            where: { id: { in: variantIds } },
+            select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true },
+          })
+        : Promise.resolve([] as any[]),
+    ])
+
+    const productMap = new Map(products.map((p) => [p.id, p]))
+    const variantMap = new Map(variants.map((v) => [v.id, v]))
+
+    type PreparedItem = {
+      productId: string
+      variantId: string | null
+      productName: string
+      productSku: string
+      variantName: string | null
+      price: number
+      quantity: number
+      total: number
+      imageUrl: string | null
+    }
+
+    const preparedItems: PreparedItem[] = []
+    let subtotal = 0
+
+    for (const raw of items) {
+      const qty = Math.max(1, Math.floor(Number(raw.quantity) || 0))
+      if (qty <= 0) {
+        return NextResponse.json({ error: 'Invalid item quantity' }, { status: 400 })
+      }
+
+      const product = productMap.get(String(raw.productId))
+      if (!product || !product.isActive) {
+        return NextResponse.json({ error: 'One or more products are no longer available' }, { status: 400 })
+      }
+      if (product.stockQuantity < qty) {
+        return NextResponse.json({ error: `Insufficient stock for "${product.name}"` }, { status: 400 })
+      }
+
+      let unitPrice = product.salePrice ?? product.basePrice
+      let variantId: string | null = null
+      let variantName: string | null = null
+
+      if (raw.variantId) {
+        const variant = variantMap.get(String(raw.variantId))
+        if (!variant || variant.productId !== product.id) {
+          return NextResponse.json({ error: 'Invalid product variant' }, { status: 400 })
+        }
+        if (variant.stockQuantity < qty) {
+          return NextResponse.json({ error: `Insufficient stock for variant "${variant.name}"` }, { status: 400 })
+        }
+        variantId = variant.id
+        variantName = variant.name
+        unitPrice = variant.salePrice ?? variant.price ?? unitPrice
+      }
+
+      const lineTotal = unitPrice * qty
+      subtotal += lineTotal
+      preparedItems.push({
+        productId: product.id,
+        variantId,
+        productName: product.name,
+        productSku: product.sku,
+        variantName,
+        price: unitPrice,
+        quantity: qty,
+        total: lineTotal,
+        imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl : null,
+      })
+    }
+
+    // Validate coupon server-side (if provided)
+    let discount = 0
+    let couponId: string | null = null
+    const code = typeof couponCode === 'string' ? couponCode.trim().toUpperCase() : ''
+    if (code) {
+      const coupon = await db.coupon.findUnique({ where: { code } })
+      const now = new Date()
+      if (!coupon || !coupon.isActive) {
+        return NextResponse.json({ error: 'Invalid coupon code' }, { status: 400 })
+      }
+      if (coupon.startsAt && coupon.startsAt > now) {
+        return NextResponse.json({ error: 'Coupon is not yet active' }, { status: 400 })
+      }
+      if (coupon.expiresAt && coupon.expiresAt < now) {
+        return NextResponse.json({ error: 'Coupon has expired' }, { status: 400 })
+      }
+      if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
+        return NextResponse.json({ error: 'Coupon usage limit reached' }, { status: 400 })
+      }
+      if (subtotal < coupon.minOrderAmount) {
+        return NextResponse.json({ error: `Minimum order amount is ৳${coupon.minOrderAmount}` }, { status: 400 })
+      }
+
+      // Enforce per-user limit (authenticated only)
+      if (coupon.perUserLimit && session?.user?.id) {
+        const userUsage = await db.order.count({
+          where: { userId: session.user.id, couponId: coupon.id, status: { not: 'CANCELLED' } },
+        })
+        if (userUsage >= coupon.perUserLimit) {
+          return NextResponse.json({ error: 'You have reached the usage limit for this coupon' }, { status: 400 })
+        }
+      }
+
+      if (coupon.type === 'PERCENTAGE') {
+        discount = (subtotal * coupon.value) / 100
+        if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount)
+      } else if (coupon.type === 'FIXED') {
+        discount = Math.min(coupon.value, subtotal)
+      }
+      couponId = coupon.id
+    }
+
+    const shippingFee = computeShipping(subtotal)
+    const total = Math.max(0, subtotal - discount + shippingFee)
+
+    const safeAddress = {
+      fullName: sanitizeString(address.fullName, 120),
+      phone: sanitizeString(address.phone, 20),
+      addressLine1: sanitizeString(address.addressLine1, 200),
+      addressLine2: address.addressLine2 ? sanitizeString(address.addressLine2, 200) : null,
+      city: sanitizeString(address.city, 80),
+      district: sanitizeString(address.district, 80),
+      division: sanitizeString(address.division, 80),
+      postalCode: address.postalCode ? sanitizeString(address.postalCode, 20) : null,
+    }
+
+    let userId = session?.user?.id
+
     if (!userId) {
-      // Create or find guest user
+      const email = (guestEmail as string).toLowerCase().trim()
       const guestUser = await db.user.upsert({
-        where: { email: guestEmail ?? `guest_${Date.now()}@boilabin.guest` },
+        where: { email },
         update: {},
-        create: {
-          email: guestEmail ?? `guest_${Date.now()}@boilabin.guest`,
-          name: address.fullName,
-          role: 'CUSTOMER',
-        },
+        create: { email, name: safeAddress.fullName, role: 'CUSTOMER' },
       })
       userId = guestUser.id
     }
 
-    // Create address
-    const createdAddress = await db.address.create({
-      data: {
-        userId: userId,
-        fullName: address.fullName,
-        phone: address.phone,
-        addressLine1: address.addressLine1,
-        addressLine2: address.addressLine2,
-        city: address.city,
-        district: address.district,
-        division: address.division,
-        postalCode: address.postalCode,
-      },
-    })
-    addressId = createdAddress.id
+    const orderNumber = generateOrderNumber()
 
-    // Create order
-    const order = await db.order.create({
-      data: {
-        orderNumber: generateOrderNumber(),
-        userId,
-        addressId,
-        subtotal,
-        shippingFee,
-        discount,
-        total,
-        paymentMethod: paymentMethod as any,
-        couponId: couponId ?? undefined,
-        notes,
-        isGuestOrder: !session?.user,
-        guestEmail: !session?.user ? guestEmail : undefined,
-        guestPhone: !session?.user ? guestPhone : undefined,
-        items: {
-          create: items.map((item: any) => ({
-            productId: item.productId,
-            variantId: item.variantId,
-            productName: item.productName,
-            productSku: item.productSku,
-            variantName: item.variantName,
-            price: item.price,
-            quantity: item.quantity,
-            total: item.price * item.quantity,
-            imageUrl: item.imageUrl,
-          })),
-        },
-        statusHistory: {
-          create: [{ status: 'PENDING', note: 'Order placed' }],
-        },
-      },
-    })
+    // Atomic: create order + decrement stock + increment coupon usage
+    const order = await db.$transaction(async (tx) => {
+      // Re-check + decrement stock using conditional update
+      for (const line of preparedItems) {
+        const updated = await tx.product.updateMany({
+          where: { id: line.productId, isActive: true, stockQuantity: { gte: line.quantity } },
+          data: {
+            stockQuantity: { decrement: line.quantity },
+            soldCount: { increment: line.quantity },
+          },
+        })
+        if (updated.count === 0) {
+          throw new Error(`INSUFFICIENT_STOCK:${line.productName}`)
+        }
+        if (line.variantId) {
+          const vUpdated = await tx.productVariant.updateMany({
+            where: { id: line.variantId, stockQuantity: { gte: line.quantity } },
+            data: { stockQuantity: { decrement: line.quantity } },
+          })
+          if (vUpdated.count === 0) {
+            throw new Error(`INSUFFICIENT_STOCK:${line.productName}`)
+          }
+        }
+      }
 
-    // Deduct stock
-    for (const item of items) {
-      await db.product.update({
-        where: { id: item.productId },
+      const createdAddress = await tx.address.create({
+        data: { userId: userId!, ...safeAddress },
+      })
+
+      const created = await tx.order.create({
         data: {
-          stockQuantity: { decrement: item.quantity },
-          soldCount: { increment: item.quantity },
+          orderNumber,
+          userId: userId!,
+          addressId: createdAddress.id,
+          subtotal,
+          shippingFee,
+          discount,
+          total,
+          paymentMethod: paymentMethod as any,
+          couponId: couponId ?? undefined,
+          notes: notes ? sanitizeString(notes, 500) : undefined,
+          isGuestOrder: !session?.user,
+          guestEmail: !session?.user ? (guestEmail as string).toLowerCase().trim() : undefined,
+          guestPhone: !session?.user && typeof guestPhone === 'string' ? sanitizeString(guestPhone, 20) : undefined,
+          items: { create: preparedItems },
+          statusHistory: { create: [{ status: 'PENDING', note: 'Order placed' }] },
         },
       })
-      if (item.variantId) {
-        await db.productVariant.update({
-          where: { id: item.variantId },
-          data: { stockQuantity: { decrement: item.quantity } },
-        })
+
+      if (couponId) {
+        await tx.coupon.update({ where: { id: couponId }, data: { usageCount: { increment: 1 } } })
       }
-    }
 
-    // Increment coupon usage
-    if (couponId) {
-      await db.coupon.update({ where: { id: couponId }, data: { usageCount: { increment: 1 } } }).catch(() => {})
-    }
+      await tx.payment.create({
+        data: {
+          orderId: created.id,
+          amount: total,
+          method: paymentMethod as any,
+          status: 'PENDING',
+        },
+      })
 
-    // Create payment record
-    await db.payment.create({
-      data: {
-        orderId: order.id,
-        amount: total,
-        method: paymentMethod as any,
-        status: paymentMethod === 'CASH_ON_DELIVERY' ? 'PENDING' : 'PENDING',
-      },
+      return created
     })
 
-    // Create notification
     await db.notification.create({
       data: {
         userId,
@@ -175,9 +305,12 @@ export async function POST(req: NextRequest) {
       },
     }).catch(() => {})
 
-    return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber }, { status: 201 })
+    return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber, subtotal, shippingFee, discount, total }, { status: 201 })
   } catch (error: any) {
     console.error('Order creation error:', error)
-    return NextResponse.json({ error: error.message || 'Failed to create order' }, { status: 500 })
+    if (typeof error?.message === 'string' && error.message.startsWith('INSUFFICIENT_STOCK:')) {
+      return NextResponse.json({ error: `Insufficient stock for "${error.message.split(':')[1]}"` }, { status: 409 })
+    }
+    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }

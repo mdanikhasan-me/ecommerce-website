@@ -148,7 +148,7 @@ export function CategoryEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Name</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.name}
                   onChange={(event) => updateField('name', event.target.value)}
                   className="input-base"
@@ -159,7 +159,7 @@ export function CategoryEditorForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Slug</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.slug}
                     onChange={(event) => {
                       setManualSlug(true)
@@ -172,7 +172,7 @@ export function CategoryEditorForm({
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     value={form.sortOrder}
                     onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -183,7 +183,7 @@ export function CategoryEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
                   className="input-base min-h-[140px] resize-y"
@@ -208,7 +208,7 @@ export function CategoryEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Parent category</label>
-                <select
+                <select aria-label="Select option" title="Select option"
                   value={form.parentId}
                   onChange={(event) => updateField('parentId', event.target.value)}
                   className="input-base"
@@ -224,7 +224,7 @@ export function CategoryEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Icon label</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.icon}
                   onChange={(event) => updateField('icon', event.target.value)}
                   className="input-base"
@@ -233,7 +233,7 @@ export function CategoryEditorForm({
               </div>
 
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

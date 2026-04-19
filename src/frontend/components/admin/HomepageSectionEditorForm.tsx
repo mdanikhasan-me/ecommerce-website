@@ -120,7 +120,7 @@ export function HomepageSectionEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Type</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.type}
                   onChange={(event) => updateField('type', event.target.value)}
                   className="input-base"
@@ -130,7 +130,7 @@ export function HomepageSectionEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Title</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
@@ -138,7 +138,7 @@ export function HomepageSectionEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Subtitle</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.subtitle}
                   onChange={(event) => updateField('subtitle', event.target.value)}
                   className="input-base"
@@ -146,7 +146,7 @@ export function HomepageSectionEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Config JSON</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.config}
                   onChange={(event) => updateField('config', event.target.value)}
                   className="input-base min-h-[260px] resize-y font-mono text-xs"
@@ -163,7 +163,7 @@ export function HomepageSectionEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   value={form.sortOrder}
                   onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -171,7 +171,7 @@ export function HomepageSectionEditorForm({
                 />
               </div>
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

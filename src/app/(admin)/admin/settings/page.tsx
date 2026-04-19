@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
     <div className="space-y-5 max-w-3xl">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl font-bold">Settings</h1>
-        <button onClick={handleSave} disabled={saving} className="btn-primary flex items-center gap-2">
+        <button type="button" onClick={handleSave} disabled={saving} className="btn-primary flex items-center gap-2">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
@@ -88,7 +88,7 @@ export default function AdminSettingsPage() {
         <div className="w-44 flex-shrink-0">
           <nav className="space-y-1">
             {SETTINGS_GROUPS.map((group) => (
-              <button
+              <button type="button"
                 key={group.id}
                 onClick={() => setActiveGroup(group.id)}
                 className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
@@ -113,7 +113,10 @@ export default function AdminSettingsPage() {
                 <p className="text-xs text-muted-foreground mb-2">{field.description}</p>
               )}
               {field.type === 'toggle' ? (
-                <button
+                <button type="button"
+                  aria-label={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
+                  aria-pressed={values[field.key] === 'true'}
+                  title={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
                   onClick={() =>
                     setValues((v) => ({
                       ...v,
@@ -131,7 +134,7 @@ export default function AdminSettingsPage() {
                   />
                 </button>
               ) : (
-                <input
+                <input aria-label="Form input" title="Form input"
                   type={field.type}
                   value={values[field.key] ?? ''}
                   onChange={(e) =>

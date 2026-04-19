@@ -17,12 +17,22 @@ const STATUS_COLORS: Record<string, string> = {
   RETURNED: 'bg-gray-50 text-gray-700',
 }
 
-export default async function AccountOrdersPage() {
+export default async function AccountOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ orderNumber?: string }>
+}) {
   const session = await auth()
   if (!session?.user) redirect('/auth/login?callbackUrl=/account/orders')
 
+  const params = await searchParams
+  const filter = params.orderNumber?.trim()
+
   const orders = await db.order.findMany({
-    where: { userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      ...(filter ? { orderNumber: { contains: filter, mode: 'insensitive' as const } } : {}),
+    },
     orderBy: { createdAt: 'desc' },
     include: {
       items: {
@@ -37,6 +47,12 @@ export default async function AccountOrdersPage() {
     <div className="container-site py-8">
       <div className="max-w-4xl">
         <h1 className="font-display text-2xl font-bold mb-6">My Orders</h1>
+        {filter && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            Showing results for &quot;{filter}&quot; &middot;{' '}
+            <Link href="/account/orders" className="text-primary underline">clear filter</Link>
+          </p>
+        )}
 
         {orders.length === 0 ? (
           <div className="text-center py-20">

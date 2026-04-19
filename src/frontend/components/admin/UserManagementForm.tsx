@@ -83,7 +83,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-sm font-medium">Full name</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               value={form.name}
               onChange={(event) => updateField('name', event.target.value)}
               className="input-base"
@@ -92,11 +92,11 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Email</label>
-            <input value={user.email} disabled className="input-base opacity-70" />
+            <input aria-label="Form input" title="Form input" value={user.email} disabled className="input-base opacity-70" />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Phone</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               value={form.phone}
               onChange={(event) => updateField('phone', event.target.value)}
               className="input-base"
@@ -105,7 +105,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium">Role</label>
-            <select
+            <select aria-label="Select option" title="Select option"
               value={form.role}
               onChange={(event) => updateField('role', event.target.value)}
               className="input-base"
@@ -120,7 +120,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
         </div>
 
         <label className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm">
-          <input
+          <input aria-label="Form input" title="Form input"
             type="checkbox"
             checked={form.isActive}
             onChange={(event) => updateField('isActive', event.target.checked)}

@@ -1,15 +1,28 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { usePathname, useRouter } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import {
-  Search, ShoppingCart, Heart, User, Menu, X, ChevronDown,
-  Package, LogOut, LayoutDashboard, MapPin, Zap, Tag, BarChart2
+  BarChart2,
+  ChevronDown,
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  MapPin,
+  Menu,
+  Package,
+  Search,
+  ShoppingCart,
+  Tag,
+  User,
+  X,
+  Zap,
 } from 'lucide-react'
-import { useCartStore, useCompareStore } from '@/frontend/stores'
 import { cn } from '@/backend/utils'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { useCartStore, useCompareStore } from '@/frontend/stores'
 
 const NAV_CATEGORIES = [
   {
@@ -39,18 +52,19 @@ const NAV_CATEGORIES = [
   { name: 'Sports & Fitness', slug: 'sports-fitness', sub: [] },
 ]
 
+type Suggestion =
+  | { type: 'brand'; name: string; slug: string; href: string }
+  | { type: 'product'; name: string; slug: string; href: string; brandName: string | null }
+
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
-  type Suggestion =
-    | { type: 'brand'; name: string; slug: string; href: string }
-    | { type: 'product'; name: string; slug: string; href: string; brandName: string | null }
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
   const { data: session } = useSession()
   const { getItemCount, openCart } = useCartStore()
   const { items: compareItems } = useCompareStore()
@@ -58,12 +72,8 @@ export function Header() {
   const cartCount = mounted ? getItemCount() : 0
   const compareCount = mounted ? compareItems.length : 0
 
-  useEffect(() => { setMounted(true) }, [])
-
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 0)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    setMounted(true)
   }, [])
 
   useEffect(() => {
@@ -77,7 +87,11 @@ export function Header() {
   }, [])
 
   useEffect(() => {
-    if (!searchQuery.trim()) { setSuggestions([]); return }
+    if (!searchQuery.trim()) {
+      setSuggestions([])
+      return
+    }
+
     const timeout = setTimeout(async () => {
       try {
         const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchQuery)}`)
@@ -85,178 +99,189 @@ export function Header() {
         setSuggestions(data.suggestions || [])
       } catch {}
     }, 300)
+
     return () => clearTimeout(timeout)
   }, [searchQuery])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-      setShowSuggestions(false)
-    }
+    if (!searchQuery.trim()) return
+
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    setShowSuggestions(false)
   }
 
   return (
-    <header className={cn(
-      'sticky top-0 z-50 w-full transition-shadow duration-200',
-      isScrolled ? 'shadow-sm' : ''
-    )}>
-      {/* ─── Top Bar ──────────────────────────────────────────── */}
-      <div className="bg-foreground text-background text-xs py-1.5">
-        <div className="container-site flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <Zap className="h-3 w-3 text-primary" />
-            Free delivery on orders over ৳2,000
+    <header className="w-full border-b border-black/6 bg-background">
+      <div className="border-b border-black/6 bg-foreground text-background">
+        <div className="container-site flex min-h-9 items-center justify-between gap-4 text-[11px] tracking-[0.02em] text-background/84">
+          <span className="flex items-center gap-1.5 font-medium">
+            <Zap className="h-3 w-3 text-[hsl(var(--buttermilk))]" />
+            Free delivery on orders over Tk 2,000
           </span>
-          <div className="hidden sm:flex items-center gap-4">
-            <Link href="/help" className="hover:text-primary transition-colors">Help</Link>
-            <Link href="/track-order" className="hover:text-primary transition-colors">Track Order</Link>
-            <Link href="/about" className="hover:text-primary transition-colors">About</Link>
+          <div className="hidden items-center gap-5 sm:flex">
+            <Link href="/help" className="transition-colors hover:text-[hsl(var(--buttermilk))]">
+              Help
+            </Link>
+            <Link href="/track-order" className="transition-colors hover:text-[hsl(var(--buttermilk))]">
+              Track Order
+            </Link>
+            <Link href="/about" className="transition-colors hover:text-[hsl(var(--buttermilk))]">
+              About
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* ─── Main Header ──────────────────────────────────────── */}
-      <div className="bg-background border-b border-border">
+      <div className="border-b border-black/6 bg-background">
         <div className="container-site">
-          <div className="flex h-16 items-center gap-4">
-            {/* Logo */}
-            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-white font-display font-bold text-lg">B</span>
-              </div>
-              <span className="font-display font-bold text-xl tracking-tight hidden sm:block">
-                Boilabin
-              </span>
+          <div className="flex min-h-[4.2rem] items-center gap-3 py-3 lg:gap-5">
+            <Link
+              href="/"
+              className="group flex flex-shrink-0 items-center gap-3"
+              aria-label="Boilabin home"
+            >
+              <BoilabinLogo variant="mark" size={40} priority />
+              <BoilabinLogo variant="wordmark" size={22} className="hidden sm:block" />
             </Link>
 
-            {/* Search */}
-            <div ref={searchRef} className="flex-1 relative">
+            <div ref={searchRef} className="relative flex-1">
               <form onSubmit={handleSearch} className="flex items-center">
                 <div className="relative w-full">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42" />
                   <input
+                    aria-label="Search products, brands..."
+                    title="Search products, brands..."
                     type="search"
                     placeholder="Search products, brands..."
                     value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true) }}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value)
+                      setShowSuggestions(true)
+                    }}
                     onFocus={() => setShowSuggestions(true)}
-                    className="w-full h-10 pl-9 pr-4 rounded-xl border border-input bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                    className="h-11 w-full rounded-full border border-black/8 bg-card pl-11 pr-5 text-sm text-foreground shadow-[0_6px_16px_rgba(23,18,15,0.03)] transition-colors placeholder:text-foreground/36 focus:border-primary/25 focus:outline-none"
                   />
                 </div>
               </form>
 
-              {/* Suggestions Dropdown */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
+              {showSuggestions && suggestions.length > 0 ? (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[1.1rem] border border-black/6 bg-card shadow-[0_20px_44px_rgba(23,18,15,0.1)]">
                   {suggestions.map((s) => (
                     <Link
                       key={`${s.type}-${s.slug}`}
                       href={s.href}
-                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors text-sm"
+                      className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-secondary/70"
                       onClick={() => setShowSuggestions(false)}
                     >
                       {s.type === 'brand' ? (
-                        <Tag className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                        <Tag className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
                       ) : (
-                        <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        <Search className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
                       )}
-                      <span className="flex-1 min-w-0 truncate">{s.name}</span>
-                      {s.type === 'brand' && (
-                        <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full flex-shrink-0">Brand</span>
-                      )}
-                      {s.type === 'product' && s.brandName && (
-                        <span className="text-xs text-muted-foreground flex-shrink-0">{s.brandName}</span>
-                      )}
+                      <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                      {s.type === 'brand' ? (
+                        <span className="flex-shrink-0 rounded-full bg-primary/8 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                          Brand
+                        </span>
+                      ) : null}
+                      {s.type === 'product' && s.brandName ? (
+                        <span className="flex-shrink-0 text-xs text-muted-foreground">{s.brandName}</span>
+                      ) : null}
                     </Link>
                   ))}
                 </div>
-              )}
+              ) : null}
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-1">
-              {/* Compare */}
+            <div className="flex items-center gap-1 lg:gap-1.5">
               <Link
                 href="/compare"
-                className="p-2 rounded-lg hover:bg-secondary transition-colors relative"
+                className="relative rounded-lg p-2 transition-colors hover:bg-secondary"
                 aria-label="Compare products"
+                title="Compare products"
               >
                 <BarChart2 className="h-5 w-5" />
-                {compareCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[1rem] bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                {compareCount > 0 ? (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                     {compareCount > 9 ? '9+' : compareCount}
                   </span>
-                )}
+                ) : null}
               </Link>
 
-              {/* Wishlist */}
               <Link
                 href="/wishlist"
-                className="p-2 rounded-lg hover:bg-secondary transition-colors relative"
+                className="rounded-lg p-2 transition-colors hover:bg-secondary"
                 aria-label="Wishlist"
+                title="Wishlist"
               >
                 <Heart className="h-5 w-5" />
               </Link>
 
-              {/* Cart */}
               <button
-                onClick={openCart}
-                className="p-2 rounded-lg hover:bg-secondary transition-colors relative"
+                type="button"
+                title="Cart"
                 aria-label="Cart"
+                onClick={openCart}
+                className="relative rounded-lg p-2 transition-colors hover:bg-secondary"
               >
                 <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {cartCount > 0 ? (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
-                )}
+                ) : null}
               </button>
 
-              {/* Account */}
               {session ? (
                 <div className="relative group">
-                  <button className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary transition-colors">
-                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-primary text-xs font-semibold">
+                  <button
+                    type="button"
+                    aria-label="Open account menu"
+                    title="Open account menu"
+                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-secondary"
+                  >
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-xs font-semibold text-primary">
                         {session.user.name?.[0]?.toUpperCase() ?? 'U'}
                       </span>
                     </div>
-                    <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block" />
+                    <ChevronDown className="hidden h-3 w-3 text-muted-foreground sm:block" />
                   </button>
 
-                  <div className="absolute right-0 top-full z-50 w-52 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xl">
+                  <div className="invisible absolute right-0 top-full z-50 w-52 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                    <div className="overflow-hidden rounded-[1.1rem] border border-black/6 bg-card shadow-[0_20px_44px_rgba(23,18,15,0.1)]">
                       <div className="border-b border-border p-3">
-                        <p className="text-sm font-semibold truncate">{session.user.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
+                        <p className="truncate text-sm font-semibold">{session.user.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
                       </div>
                       <div className="p-1">
-                        {(session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
-                          <Link href="/admin" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-primary font-medium">
+                        {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
+                          <Link href="/admin" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary">
                             <LayoutDashboard className="h-4 w-4" />
                             Admin Panel
                           </Link>
-                        )}
-                        <Link href="/account" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                        ) : null}
+                        <Link href="/account" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
                           <User className="h-4 w-4" />
                           My Account
                         </Link>
-                        <Link href="/account/orders" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                        <Link href="/account/orders" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
                           <Package className="h-4 w-4" />
                           My Orders
                         </Link>
-                        <Link href="/account/addresses" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                        <Link href="/account/addresses" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
                           <MapPin className="h-4 w-4" />
                           Addresses
                         </Link>
-                        <Link href="/compare" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                        <Link href="/compare" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
                           <BarChart2 className="h-4 w-4" />
                           Compare
                         </Link>
                         <button
+                          type="button"
                           onClick={() => signOut({ callbackUrl: '/' })}
-                          className="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-destructive"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-destructive transition-colors hover:bg-secondary"
                         >
                           <LogOut className="h-4 w-4" />
                           Sign Out
@@ -268,17 +293,19 @@ export function Header() {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+                  className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90 sm:flex"
                 >
                   <User className="h-4 w-4" />
-                  <span className="hidden sm:block">Sign In</span>
+                  <span>Sign In</span>
                 </Link>
               )}
 
-              {/* Mobile Menu Toggle */}
               <button
+                type="button"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-secondary transition-colors lg:hidden"
+                className="rounded-lg p-2 transition-colors hover:bg-secondary lg:hidden"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
@@ -287,96 +314,136 @@ export function Header() {
         </div>
       </div>
 
-      {/* ─── Nav Bar ──────────────────────────────────────────── */}
-      <div className="bg-background border-b border-border hidden lg:block">
+      <div className="hidden border-b border-black/6 bg-background lg:block">
         <div className="container-site">
-          <nav className="flex items-center gap-1 h-10">
+          <nav className="flex h-12 items-center gap-1.5">
             {NAV_CATEGORIES.map((cat) => (
               <div
                 key={cat.slug}
                 className="relative group"
-                onMouseEnter={() => cat.sub.length > 0 && setHoveredCategory(cat.slug)}
+                onMouseEnter={() => (cat.sub.length > 0 ? setHoveredCategory(cat.slug) : null)}
                 onMouseLeave={() => setHoveredCategory(null)}
               >
                 <Link
                   href={`/category/${cat.slug}`}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                    'flex items-center gap-1 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
                     hoveredCategory === cat.slug
                       ? 'bg-secondary text-primary'
-                      : 'hover:bg-secondary hover:text-primary'
+                      : 'text-foreground/78 hover:bg-secondary hover:text-primary'
                   )}
                 >
                   {cat.name}
-                  {cat.sub.length > 0 && <ChevronDown className="h-3 w-3" />}
+                  {cat.sub.length > 0 ? <ChevronDown className="h-3 w-3" /> : null}
                 </Link>
 
-                {hoveredCategory === cat.slug && cat.sub.length > 0 && (
+                {hoveredCategory === cat.slug && cat.sub.length > 0 ? (
                   <div className="absolute left-0 top-full z-50 w-48 pt-2">
-                    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+                    <div className="overflow-hidden rounded-[1rem] border border-black/6 bg-card shadow-[0_16px_36px_rgba(23,18,15,0.08)]">
                       {cat.sub.map((sub) => (
                         <Link
                           key={sub.slug}
                           href={`/category/${sub.slug}`}
-                          className="block px-4 py-2.5 text-sm hover:bg-secondary hover:text-primary transition-colors"
+                          className="block px-4 py-2.5 text-sm transition-colors hover:bg-secondary hover:text-primary"
                         >
                           {sub.name}
                         </Link>
                       ))}
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
 
             <Link
               href="/deals"
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors ml-2"
+              className={cn(
+                'ml-2 flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors',
+                pathname === '/deals'
+                  ? 'bg-red-50 text-red-600'
+                  : 'text-red-600 hover:bg-red-50'
+              )}
             >
               <Zap className="h-3.5 w-3.5" />
               Flash Deals
             </Link>
 
-            <Link href="/new-arrivals" className="px-3 py-2 text-sm font-medium hover:bg-secondary rounded-lg transition-colors ml-auto">
+            <Link
+              href="/new-arrivals"
+              className={cn(
+                'ml-auto rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
+                pathname === '/new-arrivals'
+                  ? 'bg-secondary text-primary'
+                  : 'text-foreground/78 hover:bg-secondary hover:text-primary'
+              )}
+            >
               New Arrivals
             </Link>
-            <Link href="/brands" className="px-3 py-2 text-sm font-medium hover:bg-secondary rounded-lg transition-colors">
+            <Link
+              href="/brands"
+              className={cn(
+                'rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
+                pathname === '/brands'
+                  ? 'bg-secondary text-primary'
+                  : 'text-foreground/78 hover:bg-secondary hover:text-primary'
+              )}
+            >
               Brands
             </Link>
           </nav>
         </div>
       </div>
 
-      {/* ─── Mobile Menu ──────────────────────────────────────── */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-background border-b border-border">
-          <div className="container-site py-4 flex flex-col gap-2">
+      {isMobileMenuOpen ? (
+        <div className="border-b border-black/6 bg-background lg:hidden">
+          <div className="container-site flex flex-col gap-2 py-4">
             {NAV_CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/category/${cat.slug}`}
-                className="flex items-center justify-between py-2.5 text-sm font-medium border-b border-border last:border-0"
+                className="flex items-center justify-between rounded-xl border border-black/6 bg-card px-4 py-3 text-sm font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {cat.name}
-                {cat.sub.length > 0 && <ChevronDown className="h-4 w-4" />}
+                {cat.sub.length > 0 ? <ChevronDown className="h-4 w-4" /> : null}
               </Link>
             ))}
-            <Link href="/deals" className="py-2.5 text-sm font-medium text-red-500 border-b border-border" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              href="/deals"
+              className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Flash Deals
             </Link>
-            <Link href="/new-arrivals" className="py-2.5 text-sm font-medium border-b border-border" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              href="/new-arrivals"
+              className="rounded-xl border border-black/6 bg-card px-4 py-3 text-sm font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               New Arrivals
             </Link>
-            <Link href="/brands" className="py-2.5 text-sm font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              href="/brands"
+              className="rounded-xl border border-black/6 bg-card px-4 py-3 text-sm font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Brands
             </Link>
-            <Link href="/compare" className="py-2.5 text-sm font-medium border-t border-border pt-4" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              href="/compare"
+              className="rounded-xl border border-black/6 bg-card px-4 py-3 text-sm font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Compare
             </Link>
+            {!session ? (
+              <Link href="/auth/login" className="btn-primary mt-2 justify-center" onClick={() => setIsMobileMenuOpen(false)}>
+                Sign In
+              </Link>
+            ) : null}
           </div>
         </div>
-      )}
+      ) : null}
     </header>
   )
 }

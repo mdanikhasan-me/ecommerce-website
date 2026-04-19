@@ -73,7 +73,7 @@ export function ToastContainer() {
           >
             <Icon className="size-4 shrink-0 mt-0.5" />
             <p className="text-sm flex-1">{t.message}</p>
-            <button onClick={() => remove(t.id)} className="shrink-0 opacity-60 hover:opacity-100">
+            <button type="button" aria-label="Dismiss notification" title="Dismiss notification" onClick={() => remove(t.id)} className="shrink-0 opacity-60 hover:opacity-100">
               <X className="size-3.5" />
             </button>
           </div>

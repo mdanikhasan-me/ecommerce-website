@@ -4,8 +4,7 @@ import { HeroBanner } from '@/frontend/components/home/HeroBanner'
 import { FeaturedCategories } from '@/frontend/components/home/FeaturedCategories'
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { FlashSaleSection } from '@/frontend/components/home/FlashSaleSection'
-import { PromoSection } from '@/frontend/components/home/PromoSection'
-import { NewsletterSection } from '@/frontend/components/home/NewsletterSection'
+import { PromoSection, NewsletterSection } from '@/frontend/components/home/PromoSection'
 import { ProductCardSkeleton } from '@/frontend/components/product/ProductCard'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
 import type { Metadata } from 'next'
@@ -136,12 +135,12 @@ export default async function HomePage() {
 
       <HeroBanner banners={banners} />
 
-      <section className="container-site py-10">
+      <section className="container-site py-8 sm:py-10">
         <FeaturedCategories categories={categories} />
       </section>
 
       {flashSale && flashSale.items.length > 0 && (
-        <section className="bg-accent/5 border-y border-border py-10">
+        <section className="store-band py-10">
           <div className="container-site">
             <Suspense fallback={<div className="grid grid-cols-2 md:grid-cols-4 gap-4">{Array(4).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)}</div>}>
               <FlashSaleSection flashSale={flashSale} />
@@ -151,7 +150,7 @@ export default async function HomePage() {
       )}
 
       {featured.length > 0 && (
-        <section className="container-site py-10">
+        <section className="container-site py-12">
           <ProductGrid
             title="Featured Products"
             subtitle="Handpicked products, premium quality"
@@ -161,7 +160,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="container-site py-4">
+      <section className="container-site py-4 sm:py-6">
         <PromoSection
           flashDealProducts={flashDealPreviewProducts}
           newArrivalProducts={newArrivals}
@@ -171,7 +170,7 @@ export default async function HomePage() {
       </section>
 
       {bestSellers.length > 0 && (
-        <section className="container-site py-10">
+        <section className="container-site py-12">
           <ProductGrid
             title="Best Sellers"
             subtitle="Loved by thousands of customers"
@@ -182,7 +181,7 @@ export default async function HomePage() {
       )}
 
       {newArrivals.length > 0 && (
-        <section className="container-site py-10">
+        <section className="container-site py-12">
           <ProductGrid
             title="New Arrivals"
             subtitle="Fresh finds, just landed"

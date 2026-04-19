@@ -29,7 +29,7 @@ export function ReviewModerationActions({ reviewId }: { reviewId: string }) {
 
   return (
     <div className="flex gap-2 flex-shrink-0">
-      <button
+      <button type="button"
         onClick={() => moderate('approve')}
         disabled={!!loading}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-semibold hover:bg-green-100 transition-colors disabled:opacity-50"
@@ -37,7 +37,7 @@ export function ReviewModerationActions({ reviewId }: { reviewId: string }) {
         <Check className="h-3.5 w-3.5" />
         {loading === 'approve' ? '...' : 'Approve'}
       </button>
-      <button
+      <button type="button"
         onClick={() => moderate('reject')}
         disabled={!!loading}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"

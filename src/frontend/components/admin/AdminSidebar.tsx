@@ -8,6 +8,8 @@ import {
   FileText, Store, ChevronRight, Zap
 } from 'lucide-react'
 import { cn } from '@/backend/utils'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -40,11 +42,9 @@ export function AdminSidebar({ role }: { role: string }) {
       {/* Logo */}
       <div className="p-5 border-b border-white/10">
         <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-white font-display font-bold text-lg">B</span>
-          </div>
+          <BoilabinLogo variant="mark-light" size={32} />
           <div>
-            <span className="font-display font-bold">Boilabin</span>
+            <BrandWordmark variant="art" aria-label="Boilabin" className="w-[5.8rem] text-white" />
             <span className="text-xs text-white/50 block -mt-0.5">Admin Panel</span>
           </div>
         </Link>

@@ -126,7 +126,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Product Name</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="text"
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
@@ -137,7 +137,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Short Description</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="text"
               value={form.shortDescription}
               onChange={(e) => update('shortDescription', e.target.value)}
@@ -147,7 +147,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Full Description</label>
-            <textarea
+            <textarea aria-label="Text area" title="Text area"
               value={form.description}
               onChange={(e) => update('description', e.target.value)}
               className="input-base min-h-[120px] resize-y"
@@ -157,7 +157,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">SKU</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="text"
               value={form.sku}
               onChange={(e) => update('sku', e.target.value)}
@@ -175,7 +175,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Regular Price (৳)</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="number"
               value={form.price}
               onChange={(e) => update('price', e.target.value)}
@@ -188,7 +188,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Sale Price (৳)</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="number"
               value={form.salePrice}
               onChange={(e) => update('salePrice', e.target.value)}
@@ -200,7 +200,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Cost Price (৳)</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="number"
               value={form.costPrice}
               onChange={(e) => update('costPrice', e.target.value)}
@@ -219,7 +219,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Stock Quantity</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="number"
               value={form.stockQuantity}
               onChange={(e) => update('stockQuantity', e.target.value)}
@@ -230,7 +230,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Weight (grams)</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="number"
               value={form.weight}
               onChange={(e) => update('weight', e.target.value)}
@@ -248,7 +248,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Category</label>
-            <select
+            <select aria-label="Select option" title="Select option"
               value={form.categoryId}
               onChange={(e) => update('categoryId', e.target.value)}
               className="input-base"
@@ -271,7 +271,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Brand</label>
-            <select
+            <select aria-label="Select option" title="Select option"
               value={form.brandId}
               onChange={(e) => update('brandId', e.target.value)}
               className="input-base"
@@ -300,28 +300,28 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
             {variants.map((v, idx) => (
               <div key={idx} className="flex items-start gap-3 p-3 bg-secondary rounded-lg">
                 <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="text"
                     value={v.name}
                     onChange={(e) => updateVariant(idx, 'name', e.target.value)}
                     className="input-base text-xs"
                     placeholder="e.g. Color"
                   />
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="text"
                     value={v.value}
                     onChange={(e) => updateVariant(idx, 'value', e.target.value)}
                     className="input-base text-xs"
                     placeholder="e.g. Black"
                   />
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     value={v.price}
                     onChange={(e) => updateVariant(idx, 'price', e.target.value)}
                     className="input-base text-xs"
                     placeholder="Price override"
                   />
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     value={v.stock}
                     onChange={(e) => updateVariant(idx, 'stock', e.target.value)}
@@ -329,7 +329,13 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
                     placeholder="Stock"
                   />
                 </div>
-                <button type="button" onClick={() => removeVariant(idx)} className="p-1.5 text-red-400 hover:text-red-600">
+                <button
+                  type="button"
+                  aria-label={`Remove variant ${idx + 1}`}
+                  title={`Remove variant ${idx + 1}`}
+                  onClick={() => removeVariant(idx)}
+                  className="p-1.5 text-red-400 hover:text-red-600"
+                >
                   <Trash2 className="size-4" />
                 </button>
               </div>
@@ -344,7 +350,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Meta Title</label>
-            <input
+            <input aria-label="Form input" title="Form input"
               type="text"
               value={form.metaTitle}
               onChange={(e) => update('metaTitle', e.target.value)}
@@ -354,7 +360,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
           </div>
           <div>
             <label className="text-sm font-medium mb-1.5 block">Meta Description</label>
-            <textarea
+            <textarea aria-label="Text area" title="Text area"
               value={form.metaDescription}
               onChange={(e) => update('metaDescription', e.target.value)}
               className="input-base min-h-[80px] resize-y"
@@ -374,7 +380,7 @@ export function ProductForm({ categories, brands, sellerId, product }: ProductFo
             { key: 'isNew', label: 'Mark as New' },
           ].map(({ key, label }) => (
             <label key={key} className="flex items-center gap-2 cursor-pointer">
-              <input
+              <input aria-label="Form input" title="Form input"
                 type="checkbox"
                 checked={(form as any)[key]}
                 onChange={(e) => update(key, e.target.checked)}

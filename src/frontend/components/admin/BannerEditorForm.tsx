@@ -134,7 +134,7 @@ export function BannerEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Title</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
@@ -143,7 +143,7 @@ export function BannerEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Subtitle</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.subtitle}
                   onChange={(event) => updateField('subtitle', event.target.value)}
                   className="input-base"
@@ -151,7 +151,7 @@ export function BannerEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Link URL</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.linkUrl}
                   onChange={(event) => updateField('linkUrl', event.target.value)}
                   className="input-base"
@@ -184,7 +184,7 @@ export function BannerEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Position</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.position}
                   onChange={(event) => updateField('position', event.target.value)}
                   className="input-base"
@@ -193,7 +193,7 @@ export function BannerEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   value={form.sortOrder}
                   onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -202,7 +202,7 @@ export function BannerEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Starts at</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="datetime-local"
                   value={form.startsAt}
                   onChange={(event) => updateField('startsAt', event.target.value)}
@@ -211,7 +211,7 @@ export function BannerEditorForm({
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Ends at</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="datetime-local"
                   value={form.endsAt}
                   onChange={(event) => updateField('endsAt', event.target.value)}
@@ -219,7 +219,7 @@ export function BannerEditorForm({
                 />
               </div>
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

@@ -150,12 +150,12 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium mb-1 block">Full Name *</label>
-                      <input {...register('fullName')} placeholder="Arif Rahman" className="input-base" />
+                      <input aria-label="Arif Rahman" title="Arif Rahman" {...register('fullName')} placeholder="Arif Rahman" className="input-base" />
                       {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-1 block">Phone *</label>
-                      <input {...register('phone')} placeholder="01712345678" className="input-base" />
+                      <input aria-label="01712345678" title="01712345678" {...register('phone')} placeholder="01712345678" className="input-base" />
                       {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                     </div>
                   </div>
@@ -163,26 +163,26 @@ export default function CheckoutPage() {
                   {!session && (
                     <div>
                       <label className="text-sm font-medium mb-1 block">Email (for order updates)</label>
-                      <input {...register('email')} type="email" placeholder="you@example.com" className="input-base" />
+                      <input aria-label="you@example.com" title="you@example.com" {...register('email')} type="email" placeholder="you@example.com" className="input-base" />
                       {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
                     </div>
                   )}
 
                   <div>
                     <label className="text-sm font-medium mb-1 block">Address Line 1 *</label>
-                    <input {...register('addressLine1')} placeholder="House/Flat number, Road, Area" className="input-base" />
+                    <input aria-label="House/Flat number, Road, Area" title="House/Flat number, Road, Area" {...register('addressLine1')} placeholder="House/Flat number, Road, Area" className="input-base" />
                     {errors.addressLine1 && <p className="text-xs text-destructive mt-1">{errors.addressLine1.message}</p>}
                   </div>
 
                   <div>
                     <label className="text-sm font-medium mb-1 block">Address Line 2</label>
-                    <input {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base" />
+                    <input aria-label="Landmark (optional)" title="Landmark (optional)" {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="text-sm font-medium mb-1 block">Division *</label>
-                      <select {...register('division')} className="input-base">
+                      <select aria-label="Select option" title="Select option" {...register('division')} className="input-base">
                         <option value="">Select Division</option>
                         {DIVISIONS.map((d) => <option key={d} value={d}>{d}</option>)}
                       </select>
@@ -190,12 +190,12 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-1 block">District *</label>
-                      <input {...register('district')} placeholder="e.g. Dhaka" className="input-base" />
+                      <input aria-label="e.g. Dhaka" title="e.g. Dhaka" {...register('district')} placeholder="e.g. Dhaka" className="input-base" />
                       {errors.district && <p className="text-xs text-destructive mt-1">{errors.district.message}</p>}
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-1 block">City *</label>
-                      <input {...register('city')} placeholder="e.g. Dhaka City" className="input-base" />
+                      <input aria-label="e.g. Dhaka City" title="e.g. Dhaka City" {...register('city')} placeholder="e.g. Dhaka City" className="input-base" />
                       {errors.city && <p className="text-xs text-destructive mt-1">{errors.city.message}</p>}
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
                         gateway.isAvailable ? 'hover:border-primary/30' : 'bg-muted/25'
                       )}
                     >
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="radio"
                         name="payment"
                         value={gateway.id}
@@ -283,7 +283,7 @@ export default function CheckoutPage() {
 
                 <div className="mt-4">
                   <label className="text-sm font-medium mb-1 block">Order Note (optional)</label>
-                  <textarea
+                  <textarea aria-label="Text area" title="Text area"
                     value={orderNote}
                     onChange={(e) => setOrderNote(e.target.value)}
                     placeholder="Any special instructions..."
@@ -293,8 +293,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex gap-3 mt-5">
-                  <button onClick={() => setStep(0)} className="btn-outline flex-1">Back</button>
-                  <button
+                  <button type="button" onClick={() => setStep(0)} className="btn-outline flex-1">Back</button>
+                  <button type="button"
                     onClick={() => {
                       if (!selectedGateway?.isAvailable) {
                         toast.error(selectedGateway?.disabledReason || 'This payment method is not ready yet')
@@ -336,8 +336,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(1)} className="btn-outline flex-1">Back</button>
-                  <button onClick={placeOrder} disabled={submitting} className="btn-primary flex-1 flex items-center justify-center gap-2">
+                  <button type="button" onClick={() => setStep(1)} className="btn-outline flex-1">Back</button>
+                  <button type="button" onClick={placeOrder} disabled={submitting} className="btn-primary flex-1 flex items-center justify-center gap-2">
                     {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Placing Order...</> : 'Place Order'}
                   </button>
                 </div>

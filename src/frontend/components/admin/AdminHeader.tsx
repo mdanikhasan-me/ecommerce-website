@@ -12,7 +12,12 @@ export function AdminHeader({ user }: { user: { name?: string | null; email?: st
         <Link href="/" target="_blank" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground" title="View Store">
           <ExternalLink className="h-4 w-4" />
         </Link>
-        <button className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground relative">
+        <button
+          type="button"
+          aria-label="Notifications"
+          title="Notifications"
+          className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground relative"
+        >
           <Bell className="h-4 w-4" />
           <span className="absolute top-1 right-1 h-2 w-2 bg-primary rounded-full" />
         </button>
@@ -25,6 +30,9 @@ export function AdminHeader({ user }: { user: { name?: string | null; email?: st
             <p className="text-xs text-muted-foreground mt-0.5">{user.role.replace('_', ' ')}</p>
           </div>
           <button
+            type="button"
+            aria-label="Sign out"
+            title="Sign out"
             onClick={() => signOut({ callbackUrl: '/auth/login' })}
             className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground ml-1"
           >

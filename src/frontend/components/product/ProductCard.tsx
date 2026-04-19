@@ -56,8 +56,8 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
 
   if (layout === 'list') {
     return (
-      <Link href={`/products/${product.slug}`} className={cn('product-card flex gap-4 p-4', className)}>
-        <div className="relative h-28 w-28 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+      <Link href={`/products/${product.slug}`} className={cn('product-card flex gap-4 p-4 md:p-5', className)}>
+        <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-[1.1rem] bg-[#eee6db]">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -70,25 +70,25 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-medium tracking-[0.01em] text-foreground/70">{product.brand?.name}</p>
-          <h3 className="mt-1 text-[15px] font-semibold leading-6 text-foreground line-clamp-2">{product.name}</h3>
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/56">{product.brand?.name}</p>
+          <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-6 text-foreground">{product.name}</h3>
           <div className="flex items-center gap-1 mt-1">
             <Star className="h-3 w-3 star-filled" />
             <span className="text-[12px] font-semibold text-foreground/80">{product.rating.toFixed(1)}</span>
             <span className="text-[12px] font-medium text-foreground/55">({product.reviewCount})</span>
           </div>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="font-display font-bold">{formatPrice(price)}</span>
+          <div className="mt-3 flex items-center gap-2">
+            <span className="font-display text-[1.2rem] font-bold">{formatPrice(price)}</span>
             {product.salePrice && <span className="text-xs text-muted-foreground line-through">{formatPrice(product.basePrice)}</span>}
             {discount > 0 && <span className="badge-sale">{discount}% off</span>}
           </div>
           <p className={cn('mt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
         </div>
         <div className="flex flex-col items-end justify-between gap-2">
-          <button onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
+          <button type="button" aria-label={isWished ? 'Remove from wishlist' : 'Add to wishlist'} title={isWished ? 'Remove from wishlist' : 'Add to wishlist'} onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
             <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
           </button>
-          <button onClick={handleAddToCart} disabled={!inStock} className="btn-primary text-xs py-1.5 px-3">
+          <button type="button" onClick={handleAddToCart} disabled={!inStock} className="btn-primary text-xs py-1.5 px-3">
             Add to Cart
           </button>
         </div>
@@ -101,13 +101,13 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
       href={`/products/${product.slug}`}
       className={cn('product-card group block', className)}
     >
-      <div className="relative aspect-square overflow-hidden bg-muted rounded-t-xl">
+      <div className="relative aspect-square overflow-hidden rounded-t-[1.35rem] bg-[#eee6db]">
         {primaryImage ? (
           <Image
             src={primaryImage}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.045]"
             quality={84}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
@@ -123,19 +123,19 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           {product.isBestSeller && <span className="badge-bestseller">Best Seller</span>}
         </div>
 
-        <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
-        <div className="absolute top-2 right-2 flex flex-col gap-1.5 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-          <button
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.08)_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute right-2 top-2 flex translate-x-10 flex-col gap-1.5 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+          <button title="Add to wishlist" type="button"
             onClick={handleWishlist}
             className={cn(
-              'h-8 w-8 rounded-lg shadow-md flex items-center justify-center hover:bg-primary hover:text-white transition-colors',
-              isWished ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-background'
+              'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 shadow-[0_12px_24px_rgba(23,18,15,0.08)] transition-colors hover:bg-primary hover:text-white',
+              isWished ? 'bg-red-50 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-[hsl(var(--card)/0.94)]'
             )}
             aria-label="Add to wishlist"
           >
             <Heart className={cn('h-3.5 w-3.5', isWished && 'fill-current')} />
           </button>
-          <button
+          <button type="button"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -150,20 +150,21 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
               else toast.success('Added to compare')
             }}
             className={cn(
-              'h-8 w-8 rounded-lg bg-background shadow-md flex items-center justify-center hover:bg-primary hover:text-white transition-colors',
+              'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] shadow-[0_12px_24px_rgba(23,18,15,0.08)] transition-colors hover:bg-primary hover:text-white',
               isCompared && 'bg-primary/10 text-primary'
             )}
             aria-label="Compare"
+            title="Compare"
           >
             <BarChart2 className="h-3.5 w-3.5" />
           </button>
         </div>
 
         {inStock && (
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <button
+          <div className="absolute bottom-0 left-0 right-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
+            <button type="button"
               onClick={handleAddToCart}
-              className="w-full bg-primary text-white py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+              className="flex w-full items-center justify-center gap-2 bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
             >
               <ShoppingCart className="h-4 w-4" />
               Add to Cart
@@ -172,15 +173,15 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         )}
       </div>
 
-      <div className="p-3">
+      <div className="p-4">
         {product.brand && (
-          <p className="mb-1 text-[13px] font-medium tracking-[0.01em] text-foreground/70">{product.brand.name}</p>
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.22em] text-foreground/52">{product.brand.name}</p>
         )}
-        <h3 className="text-[15px] font-semibold leading-6 text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+        <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-foreground transition-colors group-hover:text-primary">
           {product.name}
         </h3>
 
-        <div className="mt-2 flex items-center gap-1.5">
+        <div className="mt-3 flex items-center gap-1.5">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
@@ -190,14 +191,14 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           <span className="text-[12px] font-medium text-foreground/55">{product.reviewCount} reviews</span>
         </div>
 
-        <div className="mt-2.5 flex items-baseline gap-2">
+        <div className="mt-3.5 flex items-baseline gap-2">
           <span className="price-current">{formatPrice(price)}</span>
           {product.salePrice && (
             <span className="price-original">{formatPrice(product.basePrice)}</span>
           )}
         </div>
 
-        <p className={cn('mt-1.5 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
+        <p className={cn('mt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
       </div>
     </Link>
   )

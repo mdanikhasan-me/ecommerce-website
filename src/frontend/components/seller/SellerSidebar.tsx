@@ -13,6 +13,7 @@ import {
   Store,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -36,22 +37,18 @@ export function SellerSidebar({ storeName }: SellerSidebarProps) {
   return (
     <aside
       className={cn(
-        'sticky top-0 h-screen border-r border-border bg-card transition-all duration-200 flex flex-col',
+        'sticky top-0 flex h-screen flex-col border-r border-white/10 bg-foreground text-background transition-all duration-200',
         collapsed ? 'w-16' : 'w-56'
       )}
     >
-      {/* Store identity */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border">
-        <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-          <Store className="size-4 text-primary" />
+      <div className="flex items-center gap-3 border-b border-white/10 px-4 py-5">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
+          <Store className="size-4 text-white" />
         </div>
-        {!collapsed && (
-          <span className="font-display font-semibold text-sm truncate">{storeName}</span>
-        )}
+        {!collapsed && <span className="truncate text-sm font-semibold text-white">{storeName}</span>}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 py-3 px-2 space-y-0.5">
+      <nav className="flex-1 space-y-0.5 px-2 py-3">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
@@ -60,9 +57,7 @@ export function SellerSidebar({ storeName }: SellerSidebarProps) {
               href={item.href}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                isActive ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/8 hover:text-white'
               )}
             >
               <item.icon className="size-4 shrink-0" />
@@ -72,13 +67,28 @@ export function SellerSidebar({ storeName }: SellerSidebarProps) {
         })}
       </nav>
 
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="flex items-center justify-center py-3 border-t border-border text-muted-foreground hover:text-foreground transition-colors"
-      >
-        {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
-      </button>
+      <div className="border-t border-white/10 p-2">
+        <Link
+          href="/"
+          target="_blank"
+          className={cn(
+            'mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-white/60 hover:bg-white/8 hover:text-white',
+            collapsed ? 'justify-center' : ''
+          )}
+        >
+          <ExternalLink className="size-4 shrink-0" />
+          {!collapsed && <span>View Store</span>}
+        </Link>
+        <button
+          type="button"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex w-full items-center justify-center py-2 text-white/60 transition-colors hover:text-white"
+        >
+          {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
+        </button>
+      </div>
     </aside>
   )
 }

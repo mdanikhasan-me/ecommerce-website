@@ -12,11 +12,21 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSending(true)
-    // Simulate send
-    await new Promise((r) => setTimeout(r, 1200))
-    toast.success('Message sent! We\'ll reply within 24 hours.')
-    setForm({ name: '', email: '', subject: '', message: '' })
-    setSending(false)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not send message')
+      toast.success("Message sent! We'll reply within 24 hours.")
+      setForm({ name: '', email: '', subject: '', message: '' })
+    } catch (err: any) {
+      toast.error(err.message || 'Could not send message')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -46,7 +56,7 @@ export default function ContactPage() {
               <div>
                 <p className="font-semibold">Phone</p>
                 <p className="text-sm text-muted-foreground">{CONTACT_PHONE}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Mon–Sat, 9am–6pm</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Monday to Saturday, 9am to 6pm</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -64,8 +74,8 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold">Support Hours</p>
-                <p className="text-sm text-muted-foreground">Saturday – Thursday: 9am – 9pm</p>
-                <p className="text-sm text-muted-foreground">Friday: 2pm – 9pm</p>
+                <p className="text-sm text-muted-foreground">Saturday to Thursday: 9am to 9pm</p>
+                <p className="text-sm text-muted-foreground">Friday: 2pm to 9pm</p>
               </div>
             </div>
 
@@ -80,16 +90,16 @@ export default function ContactPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Your Name</label>
-                <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Arif Rahman" required className="input-base" />
+                <input aria-label="Form input" title="Form input" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Arif Rahman" required className="input-base" />
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Email</label>
-                <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="you@example.com" required className="input-base" />
+                <input aria-label="Form input" title="Form input" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="you@example.com" required className="input-base" />
               </div>
             </div>
             <div>
               <label className="text-sm font-medium mb-1.5 block">Subject</label>
-              <select value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} required className="input-base">
+              <select aria-label="Subject" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} required className="input-base">
                 <option value="">Select a subject</option>
                 <option>Order Issue</option>
                 <option>Return Request</option>
@@ -101,7 +111,7 @@ export default function ContactPage() {
             </div>
             <div>
               <label className="text-sm font-medium mb-1.5 block">Message</label>
-              <textarea value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} placeholder="Describe your issue or question..." rows={5} required className="input-base resize-none" />
+              <textarea aria-label="Text area" title="Text area" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} placeholder="Describe your issue or question..." rows={5} required className="input-base resize-none" />
             </div>
             <button type="submit" disabled={sending} className="btn-primary w-full flex items-center justify-center gap-2">
               <Send className="h-4 w-4" />

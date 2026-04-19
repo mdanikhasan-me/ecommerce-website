@@ -178,7 +178,7 @@ export function FlashSaleEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Title</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
@@ -188,7 +188,7 @@ export function FlashSaleEditorForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Starts at</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="datetime-local"
                     value={form.startsAt}
                     onChange={(event) => updateField('startsAt', event.target.value)}
@@ -198,7 +198,7 @@ export function FlashSaleEditorForm({
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Ends at</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="datetime-local"
                     value={form.endsAt}
                     onChange={(event) => updateField('endsAt', event.target.value)}
@@ -226,7 +226,7 @@ export function FlashSaleEditorForm({
                 items.map((item) => (
                   <div key={item.id} className="rounded-2xl border border-border bg-secondary/30 p-4">
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      <select
+                      <select aria-label="Select option" title="Select option"
                         value={item.productId}
                         onChange={(event) => updateItem(item.id, 'productId', event.target.value)}
                         className="input-base text-sm"
@@ -238,7 +238,7 @@ export function FlashSaleEditorForm({
                           </option>
                         ))}
                       </select>
-                      <select
+                      <select aria-label="Select option" title="Select option"
                         value={item.discountType}
                         onChange={(event) => updateItem(item.id, 'discountType', event.target.value)}
                         className="input-base text-sm"
@@ -246,7 +246,7 @@ export function FlashSaleEditorForm({
                         <option value="PERCENTAGE">Percentage</option>
                         <option value="FIXED">Fixed amount</option>
                       </select>
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="number"
                         min="0"
                         step="0.01"
@@ -255,7 +255,7 @@ export function FlashSaleEditorForm({
                         className="input-base text-sm"
                         placeholder="Discount value"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="number"
                         min="0"
                         value={item.maxQuantity}
@@ -282,7 +282,7 @@ export function FlashSaleEditorForm({
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <div className="mt-4 space-y-3">
               <label className="flex items-center gap-3 text-sm">
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

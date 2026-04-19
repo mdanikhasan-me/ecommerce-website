@@ -60,17 +60,17 @@ export default async function AdminProductsPage({ searchParams }: Props) {
       {/* Filters */}
       <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3 flex-1">
-          <input
+          <input aria-label="Search products..." title="Search products..."
             name="q"
             defaultValue={filters.q}
             placeholder="Search products..."
             className="input-base max-w-xs"
           />
-          <select name="category" defaultValue={filters.category} className="input-base max-w-xs">
+          <select aria-label="Category" title="Category" name="category" defaultValue={filters.category} className="input-base max-w-xs">
             <option value="">All Categories</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <select name="status" defaultValue={filters.status} className="input-base w-40">
+          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base w-40">
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -156,7 +156,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
-            <p className="text-muted-foreground">Showing {skip + 1}–{Math.min(skip + limit, total)} of {total}</p>
+            <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
             <div className="flex gap-2">
               {page > 1 && (
                 <Link href={`/admin/products?page=${page - 1}${filters.q ? `&q=${filters.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>

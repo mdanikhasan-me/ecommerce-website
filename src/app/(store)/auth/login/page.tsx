@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
 function LoginForm() {
   const router = useRouter()
@@ -49,10 +51,8 @@ function LoginForm() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">B</span>
-            </div>
-            <span className="font-display font-bold text-xl tracking-tight">Boilabin</span>
+            <BoilabinLogo variant="mark" size={36} priority />
+            <BrandWordmark variant="art" aria-label="Boilabin" className="w-[7rem] text-foreground" />
           </Link>
         </div>
 
@@ -73,9 +73,12 @@ function LoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Email</label>
+              <label htmlFor="login-email" className="text-sm font-medium mb-1.5 block">Email</label>
               <input
+                id="login-email"
+                name="email"
                 type="email"
+                title="Email address"
                 value={form.email}
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 placeholder="you@example.com"
@@ -87,14 +90,18 @@ function LoginForm() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium">Password</label>
+                <label htmlFor="login-password" className="text-sm font-medium">Password</label>
                 <Link href="/auth/forgot-password" className="text-xs text-accent hover:underline">
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
                 <input
+                  id="login-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
+                  title="Password"
+                  placeholder="Enter your password"
                   value={form.password}
                   onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
                   required
@@ -103,6 +110,8 @@ function LoginForm() {
                 />
                 <button
                   type="button"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
@@ -121,7 +130,7 @@ function LoginForm() {
             <div className="relative flex justify-center text-xs"><span className="px-3 bg-card text-muted-foreground">or</span></div>
           </div>
 
-          <button
+          <button type="button"
             onClick={handleGoogle}
             disabled={googleLoading}
             className="btn-outline w-full h-11 gap-2"
@@ -140,7 +149,7 @@ function LoginForm() {
           </button>
 
           <p className="text-center text-sm text-muted-foreground mt-5">
-            New to Boilabin?{' '}
+            New to <span className="inline-flex align-middle"><BrandWordmark variant="art" aria-label="Boilabin" className="w-[4.2rem] align-[-0.1em] text-foreground" /></span>?{' '}
             <Link href={`/auth/register${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold hover:underline">
               Create an account
             </Link>

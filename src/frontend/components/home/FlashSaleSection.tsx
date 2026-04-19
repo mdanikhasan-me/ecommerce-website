@@ -20,53 +20,61 @@ interface FlashSale {
 export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-xl">
+          <div className="flex items-center gap-2 rounded-full border border-[#b74b67]/14 bg-[rgba(174,40,67,0.08)] px-4 py-2 text-[#9f2344]">
             <Zap className="h-5 w-5" />
             <span className="font-display font-bold text-lg">Flash Sale</span>
           </div>
           <div className="hidden sm:block">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Ends in</p>
+            <p className="section-kicker mb-1 text-[11px]">Ends in</p>
             <CountdownTimer
               endsAt={flashSale.endsAt}
-              className="flex items-center gap-1.5 font-mono font-bold text-xl text-foreground"
-              valueClassName="rounded-lg bg-foreground px-2.5 py-1 text-background"
-              separatorClassName="text-foreground/60"
+              className="flex items-center gap-1.5 font-mono text-xl font-bold text-foreground"
+              valueClassName="rounded-xl bg-foreground px-2.5 py-1 text-background"
+              separatorClassName="text-foreground/56"
             />
           </div>
         </div>
-        <Link href="/deals" className="flex items-center gap-1 text-sm text-primary font-medium hover:gap-2 transition-all">
-          All Deals <ChevronRight className="h-4 w-4" />
+        <Link href="/deals" className="editorial-link group w-fit">
+          All deals <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
         </Link>
       </div>
 
       <div className="sm:hidden mb-4">
-        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Ends in</p>
+        <p className="section-kicker mb-1 text-[11px]">Ends in</p>
         <CountdownTimer
           endsAt={flashSale.endsAt}
-          className="flex items-center gap-1.5 font-mono font-bold text-xl text-foreground"
-          valueClassName="rounded-lg bg-foreground px-2.5 py-1 text-background"
-          separatorClassName="text-foreground/60"
+          className="flex items-center gap-1.5 font-mono text-xl font-bold text-foreground"
+          valueClassName="rounded-xl bg-foreground px-2.5 py-1 text-background"
+          separatorClassName="text-foreground/56"
         />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {flashSale.items.map((item) => (
           <div key={item.product.id} className="relative">
             <ProductCard product={item.product} />
             {item.maxQuantity && (
               <div className="mt-1 px-3">
-                <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                  <span>Sold: {item.soldQuantity}</span>
-                  <span>{Math.round((item.soldQuantity / item.maxQuantity) * 100)}%</span>
-                </div>
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-red-500 rounded-full transition-all"
-                    style={{ width: `${Math.min((item.soldQuantity / item.maxQuantity) * 100, 100)}%` }}
-                  />
-                </div>
+                {(() => {
+                  const soldPct = Math.min((item.soldQuantity / item.maxQuantity) * 100, 100)
+
+                  return (
+                    <>
+                      <div className="mb-1 flex justify-between text-xs text-muted-foreground">
+                        <span>Sold: {item.soldQuantity}</span>
+                        <span>{Math.round(soldPct)}%</span>
+                      </div>
+                      <progress
+                        className="progress-track progress-red"
+                        value={soldPct}
+                        max={100}
+                        aria-label={`${item.product.name} flash sale sell-through`}
+                      />
+                    </>
+                  )
+                })()}
               </div>
             )}
           </div>

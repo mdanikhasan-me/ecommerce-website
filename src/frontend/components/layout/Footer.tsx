@@ -1,35 +1,21 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import {
-  CreditCard,
   Facebook,
   Instagram,
   Mail,
   MapPin,
   Phone,
-  RefreshCw,
-  Shield,
-  Truck,
-  Twitter,
-  Youtube,
 } from 'lucide-react'
 import { PAYMENT_ASSETS } from '@/shared/assets'
-import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, INSTAGRAM_URL } from '@/shared/contact'
-
-const TRUST_FEATURES = [
-  { icon: Truck, title: 'Free Delivery', desc: 'On orders over BDT 2,000' },
-  { icon: Shield, title: 'Secure Payments', desc: '100% protected checkout' },
-  { icon: RefreshCw, title: 'Easy Returns', desc: '7 day return policy' },
-  { icon: CreditCard, title: 'Multiple Payments', desc: 'bKash, Nagad, Visa, Mastercard' },
-]
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 
 const SOCIAL_LINKS = [
-  { icon: Facebook, href: '#', label: 'Facebook' },
+  { icon: Facebook, href: FACEBOOK_URL, label: 'Facebook' },
   { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Youtube, href: '#', label: 'YouTube' },
 ]
 
 const SHOP_LINKS = [
@@ -63,65 +49,48 @@ const FOOTER_PAYMENT_METHODS = [
   PAYMENT_ASSETS.MASTERCARD,
 ]
 
-const PAYMENT_LOGO_FRAME_CLASSES: Record<string, string> = {
-  'Cash on Delivery': 'h-[18px] w-[42px]',
-  bKash: 'h-[24px] w-[28px]',
-  Nagad: 'h-[26px] w-[32px]',
-  Mastercard: 'h-[20px] w-[46px]',
-  Visa: 'h-[18px] w-[46px]',
+const FOOTER_PAYMENT_LOGO_CLASSES: Record<string, string> = {
+  'Cash on Delivery': 'h-[0.9rem] w-auto',
+  bKash: 'h-[1.05rem] w-auto',
+  Nagad: 'h-[1.15rem] w-auto',
+  Visa: 'h-[0.95rem] w-auto',
+  Mastercard: 'h-[0.95rem] w-auto',
 }
 
 export function Footer() {
   return (
     <footer className="mt-16 bg-foreground text-background">
-      <div className="border-b border-white/10">
-        <div className="container-site py-8">
-          <div className="mx-auto grid max-w-[1380px] grid-cols-2 gap-6 md:grid-cols-4">
-            {TRUST_FEATURES.map((feature) => (
-              <div
-                key={feature.title}
-                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 shadow-[0_12px_32px_rgba(0,0,0,0.14)]"
-              >
-                <div className="flex-shrink-0 rounded-xl bg-white p-2.5 shadow-[0_10px_24px_rgba(0,0,0,0.18)]">
-                  <feature.icon className="h-5 w-5 text-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">{feature.title}</p>
-                  <p className="mt-1 text-xs text-white/72">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <div className="container-site py-12">
         <div className="mx-auto grid max-w-[1380px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:justify-between">
           <div className="max-w-sm lg:pt-1">
-            <Link href="/" className="mb-4 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="font-display text-lg font-bold text-white">B</span>
-              </div>
-              <span className="font-display text-xl font-bold">Boilabin</span>
+            <Link href="/" className="mb-5 inline-flex items-center gap-3.5" aria-label="Boilabin home">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.03] ring-1 ring-white/10">
+                <BoilabinLogo variant="mark-light" size={34} />
+              </span>
+              <BrandWordmark
+                variant="art"
+                aria-label="Boilabin"
+                className="w-[8rem] text-[hsl(var(--footer-heading))] sm:w-[8.7rem]"
+              />
             </Link>
-            <p className="mb-6 text-sm leading-relaxed text-white/60">
+            <p className="footer-muted mb-6 text-sm leading-relaxed">
               Bangladesh&apos;s premium online store. Quality products, fast delivery, and a shopping
               experience you can trust.
             </p>
-            <div className="flex flex-col gap-2.5 text-sm text-white/60">
+            <div className="footer-muted flex flex-col gap-2.5 text-sm">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="flex items-center gap-2 transition-colors hover:text-primary"
+                className="footer-link flex items-center gap-2"
               >
                 <Mail className="h-4 w-4" /> {CONTACT_EMAIL}
               </a>
               <a
                 href={`tel:${CONTACT_PHONE}`}
-                className="flex items-center gap-2 transition-colors hover:text-primary"
+                className="footer-link flex items-center gap-2"
               >
                 <Phone className="h-4 w-4" /> {CONTACT_PHONE}
               </a>
-              <span className="flex items-center gap-2">
+              <span className="footer-link flex items-center gap-2">
                 <MapPin className="h-4 w-4" /> {CONTACT_ADDRESS}
               </span>
             </div>
@@ -133,7 +102,7 @@ export function Footer() {
                   target={item.href.startsWith('http') ? '_blank' : undefined}
                   rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   aria-label={item.label}
-                  className="rounded-lg border border-white/10 bg-transparent p-2 transition-colors hover:border-primary/35 hover:bg-white/[0.04]"
+                  className="footer-social rounded-lg border bg-transparent p-2"
                 >
                   <item.icon className="h-4 w-4" />
                 </a>
@@ -143,13 +112,13 @@ export function Footer() {
 
           <div className="grid gap-8 sm:grid-cols-2 lg:justify-self-end lg:gap-x-16 xl:grid-cols-3">
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
+              <h4 className="footer-heading mb-4 text-xs font-semibold uppercase tracking-[0.18em]">
                 Shop
               </h4>
-              <ul className="space-y-2.5 text-sm text-white/60">
+              <ul className="footer-muted space-y-2.5 text-sm">
                 {SHOP_LINKS.map(([label, href]) => (
                   <li key={href}>
-                    <Link href={href} className="transition-colors hover:text-primary">
+                    <Link href={href} className="footer-link">
                       {label}
                     </Link>
                   </li>
@@ -158,13 +127,13 @@ export function Footer() {
             </div>
 
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
+              <h4 className="footer-heading mb-4 text-xs font-semibold uppercase tracking-[0.18em]">
                 Support
               </h4>
-              <ul className="space-y-2.5 text-sm text-white/60">
+              <ul className="footer-muted space-y-2.5 text-sm">
                 {SUPPORT_LINKS.map(([label, href]) => (
                   <li key={href}>
-                    <Link href={href} className="transition-colors hover:text-primary">
+                    <Link href={href} className="footer-link">
                       {label}
                     </Link>
                   </li>
@@ -173,13 +142,13 @@ export function Footer() {
             </div>
 
             <div>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
+              <h4 className="footer-heading mb-4 text-xs font-semibold uppercase tracking-[0.18em]">
                 Company
               </h4>
-              <ul className="space-y-2.5 text-sm text-white/60">
+              <ul className="footer-muted space-y-2.5 text-sm">
                 {COMPANY_LINKS.map(([label, href]) => (
                   <li key={href}>
-                    <Link href={href} className="transition-colors hover:text-primary">
+                    <Link href={href} className="footer-link">
                       {label}
                     </Link>
                   </li>
@@ -191,29 +160,30 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-site py-4 text-xs text-white/40">
+        <div className="container-site footer-muted py-4 text-xs">
           <div className="mx-auto flex max-w-[1380px] flex-col items-center justify-between gap-3 sm:flex-row">
-            <p>Copyright {new Date().getFullYear()} Boilabin. All rights reserved.</p>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-white/46">Payments</span>
+            <p className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <span>Copyright {new Date().getFullYear()}</span>
+              <BrandWordmark
+                variant="art"
+                aria-label="Boilabin"
+                className="w-[4.2rem] text-[hsl(var(--footer-heading))] align-[-0.16em]"
+              />
+              <span>All rights reserved.</span>
+            </p>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <span className="tracking-[0.08em] text-white/44">Payments</span>
               {FOOTER_PAYMENT_METHODS.map((method) => (
-                <span
-                  key={method.alt}
-                  className="inline-flex h-10 min-w-[86px] items-center justify-center rounded-full border border-white/10 px-3 py-1.5 transition-colors hover:border-white/20"
-                >
-                  <span
-                    className={`relative block ${
-                      PAYMENT_LOGO_FRAME_CLASSES[method.alt] ?? 'h-[18px] w-[46px]'
-                    }`}
-                  >
-                    <Image
-                      src={method.src}
-                      alt={method.alt}
-                      fill
-                      unoptimized
-                      className="object-contain opacity-100"
-                    />
-                  </span>
+                <span key={method.alt} className="inline-flex items-center justify-center opacity-92">
+                  <img
+                    src={method.src}
+                    alt={method.alt}
+                    width={method.width}
+                    height={method.height}
+                    loading="eager"
+                    decoding="async"
+                    className={`${FOOTER_PAYMENT_LOGO_CLASSES[method.alt] ?? 'h-[1rem] w-auto'} block object-contain`}
+                  />
                 </span>
               ))}
             </div>

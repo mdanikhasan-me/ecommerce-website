@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { OrderStatus } from '@prisma/client'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
+
+const ALLOWED_STATUSES = new Set<OrderStatus>([
+  'PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED',
+  'CANCELLED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED', 'REFUNDED',
+])
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireAdminSession()
     const { id } = await params
     const { status, note } = await req.json()
+
+    if (!ALLOWED_STATUSES.has(status)) {
+      return NextResponse.json({ error: 'Invalid order status' }, { status: 400 })
+    }
+    const safeNote = typeof note === 'string' ? note.trim().slice(0, 500) || null : null
 
     const order = await db.order.findUnique({ where: { id } })
     if (!order) {
@@ -17,13 +28,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const updatedOrder = await db.order.update({
       where: { id },
       data: {
-        status: status as any,
+        status: status as OrderStatus,
         deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
         cancelledAt: status === 'CANCELLED' ? new Date() : undefined,
         statusHistory: {
           create: {
-            status: status as any,
-            note: note || `Status updated to ${status} by admin`,
+            status: status as OrderStatus,
+            note: safeNote ?? `Status updated to ${status} by admin`,
           },
         },
       },
@@ -45,7 +56,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'order',
       entityId: order.id,
       oldValues: { status: order.status },
-      newValues: { status, note: note || null },
+      newValues: { status, note: safeNote },
     })
 
     revalidatePath('/admin/orders')
@@ -54,7 +65,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ success: true, order: updatedOrder })
   } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 403 : 400
-    return NextResponse.json({ error: error.message || 'Could not update order status' }, { status })
+    const isAuth = error?.message === 'Unauthorized'
+    return NextResponse.json(
+      { error: isAuth ? 'Unauthorized' : 'Could not update order status' },
+      { status: isAuth ? 403 : 400 },
+    )
   }
 }

@@ -10,7 +10,7 @@ export default function AboutPage() {
       title="A cleaner online shopping experience for Bangladesh."
       description="Boilabin is being built around trust, clarity, and better product discovery so customers can shop with more confidence from the first click to the final delivery."
       highlights={[
-        { label: 'Focus', value: 'Authentic products and a more polished storefront' },
+        { label: 'Focus', value: 'Authentic products and a clearer storefront' },
         { label: 'Coverage', value: 'Fast delivery across Bangladesh with tracked fulfillment' },
         { label: 'Support', value: 'Straightforward service before and after checkout' },
       ]}
@@ -26,7 +26,7 @@ export default function AboutPage() {
               </p>
               <p>
                 Instead of overwhelming people with messy listings and inconsistent storefronts,
-                we want the experience to feel curated. The focus is better presentation,
+                we want the experience to feel deliberate and easy to trust. The focus is better presentation,
                 clearer product information, and service that still feels human after payment.
               </p>
             </>

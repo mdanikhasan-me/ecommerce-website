@@ -79,11 +79,24 @@ export default function CartPage() {
 
                 <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
                   <div className="flex items-center border border-border rounded-xl overflow-hidden">
-                    <button onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)} className="p-2 hover:bg-secondary transition-colors">
+                    <button
+                      type="button"
+                      aria-label={`Decrease quantity for ${item.name}`}
+                      title={`Decrease quantity for ${item.name}`}
+                      onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
+                      className="p-2 hover:bg-secondary transition-colors"
+                    >
                       <Minus className="h-3.5 w-3.5" />
                     </button>
                     <span className="px-4 text-sm font-semibold">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)} disabled={item.quantity >= item.stockQuantity} className="p-2 hover:bg-secondary transition-colors disabled:opacity-40">
+                    <button
+                      type="button"
+                      aria-label={`Increase quantity for ${item.name}`}
+                      title={`Increase quantity for ${item.name}`}
+                      onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
+                      disabled={item.quantity >= item.stockQuantity}
+                      className="p-2 hover:bg-secondary transition-colors disabled:opacity-40"
+                    >
                       <Plus className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -95,7 +108,13 @@ export default function CartPage() {
                         <p className="text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
                       )}
                     </div>
-                    <button onClick={() => removeItem(item.productId, item.variantId)} className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+                    <button
+                      type="button"
+                      aria-label={`Remove ${item.name} from cart`}
+                      title={`Remove ${item.name} from cart`}
+                      onClick={() => removeItem(item.productId, item.variantId)}
+                      className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -116,14 +135,14 @@ export default function CartPage() {
                 <Tag className="h-4 w-4 text-primary" /> Coupon Code
               </p>
               <div className="flex gap-2">
-                <input
+                <input aria-label="Enter code" title="Enter code"
                   type="text"
                   placeholder="Enter code"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   className="input-base"
                 />
-                <button onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode} className="btn-outline px-3 flex-shrink-0 text-sm">
+                <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode} className="btn-outline px-3 flex-shrink-0 text-sm">
                   {applyingCoupon ? '...' : 'Apply'}
                 </button>
               </div>

@@ -20,15 +20,18 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   if (visibleCategories.length === 0) return null
 
   return (
-    <section className="rounded-[34px] border border-black/6 bg-[#fbf8f2] px-5 py-6 shadow-[0_28px_70px_-56px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="font-display text-[2.3rem] leading-[0.95] tracking-tight text-[#161616] sm:text-[3rem]">
-          Shop by Category
-        </h2>
+    <section className="section-shell px-5 py-6 sm:px-8 sm:py-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="section-kicker">Browse Categories</p>
+          <h2 className="mt-3 section-title max-w-[12ch]">
+            Shop by category
+          </h2>
+        </div>
 
         <Link
           href="/category"
-          className="group inline-flex items-center gap-2 self-start rounded-full border border-black/8 bg-[#faf8f4] px-5 py-3 text-sm font-semibold text-[#161616] transition-colors hover:bg-white"
+          className="editorial-link group self-start"
         >
           All categories
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -51,7 +54,7 @@ function CategoryTile({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-square min-h-[196px] overflow-hidden rounded-[28px] border border-black/6 bg-[#f7f3eb] shadow-[0_18px_40px_-34px_rgba(15,23,42,0.16)] transition-all hover:-translate-y-1"
+      className="group relative isolate flex aspect-square min-h-[196px] overflow-hidden rounded-[28px] border border-black/6 bg-[#f5efe6] shadow-[0_20px_48px_-38px_rgba(15,23,42,0.16)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-38px_rgba(15,23,42,0.22)]"
     >
       <div className="absolute inset-0">
         <Image
@@ -64,7 +67,7 @@ function CategoryTile({ category }: { category: Category }) {
         />
       </div>
 
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_0%,rgba(15,23,42,0.14)_52%,rgba(15,23,42,0.76)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_0%,rgba(15,23,42,0.16)_50%,rgba(15,23,42,0.8)_100%)]" />
 
       <div className={`absolute inset-x-0 top-0 h-24 opacity-60 ${config?.glowClass ?? ''}`} />
 
@@ -73,7 +76,7 @@ function CategoryTile({ category }: { category: Category }) {
           {category.name}
         </p>
 
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/92 text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
           <ArrowRight className="h-4 w-4" />
         </span>
       </div>

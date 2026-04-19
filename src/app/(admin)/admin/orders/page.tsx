@@ -64,8 +64,8 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       {/* Filters */}
       <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3 flex-1">
-          <input name="q" defaultValue={filters.q} placeholder="Search by order # or email..." className="input-base max-w-xs" />
-          <select name="status" defaultValue={filters.status} className="input-base w-44">
+          <input aria-label="Search by order # or email..." title="Search by order # or email..." name="q" defaultValue={filters.q} placeholder="Search by order # or email..." className="input-base max-w-xs" />
+          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base w-44">
             <option value="">All Status</option>
             {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
@@ -133,7 +133,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
 
         {totalPages > 1 && (
           <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
-            <p className="text-muted-foreground">Showing {skip + 1}–{Math.min(skip + limit, total)} of {total}</p>
+            <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
             <div className="flex gap-2">
               {page > 1 && <Link href={`/admin/orders?page=${page - 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
               {page < totalPages && <Link href={`/admin/orders?page=${page + 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}

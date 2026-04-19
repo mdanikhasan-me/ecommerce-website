@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans, Sora, DM_Mono } from 'next/font/google'
+import { DM_Sans, Sora, DM_Mono, Poppins } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { BRAND_ASSETS } from '@/shared/assets'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -16,6 +17,14 @@ const sora = Sora({
   weight: ['400', '500', '600', '700', '800'],
 })
 
+// Brand display face — matches the BOILABIN wordmark (geometric rounded sans).
+const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800', '900'],
+})
+
 const dmMono = DM_Mono({
   subsets: ['latin'],
   variable: '--font-dm-mono',
@@ -25,28 +34,38 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'),
+  icons: {
+    icon: [
+      { url: BRAND_ASSETS.icons.favicon32, sizes: '32x32', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.app512, sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: BRAND_ASSETS.icons.appleTouch, sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: BRAND_ASSETS.icons.favicon32,
+  },
   title: {
-    default: 'BoilaBin, Shop Quality Products Online in Bangladesh',
-    template: '%s, BoilaBin',
+    default: 'Boilabin, Shop Quality Products Online in Bangladesh',
+    template: '%s, Boilabin',
   },
   description:
     'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery, bKash and Nagad accepted.',
   keywords: ['online shopping bangladesh', 'buy online bd', 'best price bangladesh', 'price in bd', 'boilabin'],
-  authors: [{ name: 'BoilaBin' }],
-  creator: 'BoilaBin',
-  publisher: 'BoilaBin',
+  authors: [{ name: 'Boilabin' }],
+  creator: 'Boilabin',
+  publisher: 'Boilabin',
   openGraph: {
     type: 'website',
     locale: 'en_BD',
     url: process.env.NEXT_PUBLIC_SITE_URL,
-    siteName: 'BoilaBin',
-    title: 'BoilaBin, Shop Quality Products Online in Bangladesh',
+    siteName: 'Boilabin',
+    title: 'Boilabin, Shop Quality Products Online in Bangladesh',
     description: 'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh.',
   },
   twitter: {
     card: 'summary_large_image',
     site: '@boilabin',
-    title: 'BoilaBin, Shop Quality Products Online in Bangladesh',
+    title: 'Boilabin, Shop Quality Products Online in Bangladesh',
     description: 'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh.',
   },
   robots: {
@@ -73,7 +92,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${sora.variable} ${dmMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${dmSans.variable} ${sora.variable} ${poppins.variable} ${dmMono.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased bg-background text-foreground">
         {children}
         <Toaster

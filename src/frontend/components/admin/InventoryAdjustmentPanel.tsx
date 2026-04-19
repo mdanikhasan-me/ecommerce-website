@@ -104,7 +104,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Product stock</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     value={stockQuantity}
@@ -114,7 +114,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Low stock threshold</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="number"
                     min="0"
                     value={lowStockThreshold}
@@ -126,7 +126,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Adjustment note</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
                   className="input-base min-h-[110px] resize-y"
@@ -153,7 +153,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
                             {variant.sku} · {variant.isActive ? 'Active' : 'Inactive'}
                           </p>
                         </div>
-                        <input
+                        <input aria-label="Form input" title="Form input"
                           type="number"
                           min="0"
                           value={variant.stockQuantity}

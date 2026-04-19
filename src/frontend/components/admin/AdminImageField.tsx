@@ -77,7 +77,7 @@ export function AdminImageField({
               Remove
             </button>
           )}
-          <input
+          <input aria-label="Form input" title="Form input"
             ref={inputRef}
             type="file"
             accept="image/*"
@@ -87,7 +87,7 @@ export function AdminImageField({
         </div>
 
         <div className="mt-3">
-          <input
+          <input aria-label="Form input" title="Form input"
             value={value}
             onChange={(event) => onChange(event.target.value)}
             className="input-base text-sm"

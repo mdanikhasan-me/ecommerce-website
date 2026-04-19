@@ -728,3 +728,24 @@ model AuditLog {
   userAgent  String?
   createdAt  DateTime @default(now())
 }
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  isHandled Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([isHandled])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

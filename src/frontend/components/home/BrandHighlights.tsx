@@ -1,1 +1,0 @@
-export { BrandHighlights } from './PromoSection'

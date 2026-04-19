@@ -2,13 +2,6 @@
  * Metadata Generators
  *
  * Next.js Metadata API helpers for every page type.
- * Based on research of Amazon, Daraz BD, and top e-commerce SEO practices:
- *
- * - Bilingual keywords (English + Bangla) for Bangladesh market
- * - BDT pricing in meta descriptions (triggers Google rich snippets)
- * - "price in BD" keyword pattern (how Bangladeshis search)
- * - Product-specific Open Graph type for shopping carousels
- * - Canonical URLs to prevent duplicate content
  */
 
 import type { Metadata } from 'next'
@@ -17,8 +10,6 @@ import { SEO } from './constants'
 function formatBdt(value: number) {
   return new Intl.NumberFormat('en-BD').format(value)
 }
-
-// ─── Product Page Metadata ──────────────────────────────────────────────────
 
 interface ProductMeta {
   name: string
@@ -43,20 +34,16 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
   const url = `${SEO.siteUrl}/products/${product.slug}`
 
-  // Bangladesh-optimized description: includes BDT price & "price in BD" pattern
   const desc =
     product.shortDescription ??
     product.description?.slice(0, 155) ??
-    `Buy ${product.name} at ৳${price.toLocaleString('en-IN')} in Bangladesh. ${product.brand?.name ? `Original ${product.brand.name}.` : ''} Free delivery on orders over ৳2,000. Cash on delivery available.`
+    `Buy ${product.name} at ৳${price.toLocaleString('en-IN')} in Bangladesh. ${product.brand?.name ? `Original ${product.brand.name}. ` : ''}Free delivery on orders over ৳2,000. Cash on delivery available.`
 
-  // Bilingual keyword generation (what Bangladeshis actually search)
   const keywords = [
     product.name,
     `${product.name} price in bd`,
     `${product.name} price bangladesh`,
-    `${product.name} দাম`,
     `buy ${product.name} online`,
-    `${product.name} কিনুন`,
     product.category.name,
     `${product.category.name} price bd`,
     ...(product.brand ? [product.brand.name, `${product.brand.name} ${product.category.name}`] : []),
@@ -69,7 +56,6 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const seoDescription =
     product.metaDescription?.trim() ||
     `Buy ${product.name} in Bangladesh at BDT ${formatBdt(price)}. ${product.brand?.name ? `Original ${product.brand.name} product. ` : ''}Fast delivery, secure checkout, and cash on delivery from Boilabin.`
-  const seoSocialTitle = `${seoTitle} | BDT ${formatBdt(price)}`
 
   return {
     title: seoTitle,
@@ -79,7 +65,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
       canonical: url,
     },
     openGraph: {
-      title: `${product.name} | ৳${price.toLocaleString('en-IN')} | ${SEO.siteName}`,
+      title: `${product.name}, ৳${price.toLocaleString('en-IN')}, ${SEO.siteName}`,
       description: desc,
       url,
       siteName: SEO.siteName,
@@ -98,15 +84,13 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name} | ৳${price.toLocaleString('en-IN')}`,
+      title: `${product.name}, ৳${price.toLocaleString('en-IN')}`,
       description: desc,
       images: primaryImage ? [primaryImage] : undefined,
     },
     robots: SEO.robots,
   }
 }
-
-// ─── Category Page Metadata ─────────────────────────────────────────────────
 
 interface CategoryMeta {
   name: string
@@ -122,20 +106,18 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
     `Shop ${category.name} at the best prices in Bangladesh. ${category.productCount ? `${category.productCount}+ products` : 'Wide selection'} with free delivery on orders over ৳2,000.`
 
   return {
-    title: `${category.name} | Best Prices in Bangladesh`,
+    title: `${category.name}, Best Prices in Bangladesh`,
     description: desc,
     keywords: [
       category.name,
       `${category.name} price bd`,
       `${category.name} bangladesh`,
       `buy ${category.name} online bd`,
-      `${category.name} দাম বাংলাদেশ`,
-      `${category.name} কিনুন`,
       ...SEO.baseKeywords,
     ],
     alternates: { canonical: url },
     openGraph: {
-      title: `${category.name} | Best Prices in Bangladesh | ${SEO.siteName}`,
+      title: `${category.name}, Best Prices in Bangladesh, ${SEO.siteName}`,
       description: desc,
       url,
       siteName: SEO.siteName,
@@ -145,8 +127,6 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
     robots: SEO.robots,
   }
 }
-
-// ─── Brand Page Metadata ────────────────────────────────────────────────────
 
 interface BrandMeta {
   name: string
@@ -161,19 +141,18 @@ export function generateBrandMetadata(brand: BrandMeta): Metadata {
     `Shop original ${brand.name} products at the best prices in Bangladesh. Genuine products with warranty. Free delivery on orders over ৳2,000.`
 
   return {
-    title: `${brand.name} Products | Official Store Bangladesh`,
+    title: `${brand.name} Products, Official Store Bangladesh`,
     description: desc,
     keywords: [
       brand.name,
       `${brand.name} price bd`,
       `${brand.name} bangladesh`,
       `original ${brand.name} bd`,
-      `${brand.name} অরিজিনাল`,
       ...SEO.baseKeywords,
     ],
     alternates: { canonical: url },
     openGraph: {
-      title: `${brand.name} Products | ${SEO.siteName}`,
+      title: `${brand.name} Products, ${SEO.siteName}`,
       description: desc,
       url,
       siteName: SEO.siteName,
@@ -183,8 +162,6 @@ export function generateBrandMetadata(brand: BrandMeta): Metadata {
     robots: SEO.robots,
   }
 }
-
-// ─── Static Page Metadata ───────────────────────────────────────────────────
 
 export function generatePageMetadata(
   title: string,
@@ -197,7 +174,7 @@ export function generatePageMetadata(
     description,
     alternates: { canonical: url },
     openGraph: {
-      title: `${title} | ${SEO.siteName}`,
+      title: `${title}, ${SEO.siteName}`,
       description,
       url,
       siteName: SEO.siteName,

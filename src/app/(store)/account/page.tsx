@@ -2,8 +2,9 @@ import { auth } from '@/backend/auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
 import Link from 'next/link'
-import { Package, MapPin, Heart, Bell, Settings, ChevronRight } from 'lucide-react'
-import { formatDate, formatPrice } from '@/backend/utils'
+import { Package, MapPin, Heart, Settings, ChevronRight } from 'lucide-react'
+import { formatPrice } from '@/backend/utils'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 
 export const metadata = { title: 'Boilabin Account' }
 
@@ -44,10 +45,16 @@ export default async function AccountPage() {
     <div className="container-site py-8">
       <div className="max-w-4xl">
         {/* Welcome */}
-        <div className="bg-gradient-to-r from-brand-600 to-brand-700 text-white rounded-2xl p-6 mb-8">
-          <p className="text-brand-200 text-sm">Welcome back,</p>
-          <h1 className="font-display text-2xl font-bold mt-0.5">{session.user.name}</h1>
-          <p className="text-brand-200 text-sm mt-1">{session.user.email}</p>
+        <div className="mb-8 rounded-[1.75rem] border border-black/8 bg-[linear-gradient(135deg,#2d1b3d_0%,#4a2d66_55%,#c8b49e_175%)] p-6 text-white shadow-[0_18px_42px_rgba(23,18,15,0.12)]">
+          <div className="flex items-center gap-3">
+            <BrandWordmark variant="art" aria-label="Boilabin" className="w-[6rem] text-[hsl(var(--buttermilk))]" />
+            <span className="rounded-full border border-white/14 bg-white/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/82">
+              Account
+            </span>
+          </div>
+          <p className="mt-5 text-sm text-white/72">Welcome back,</p>
+          <h1 className="mt-0.5 font-display text-2xl font-bold">{session.user.name}</h1>
+          <p className="mt-1 text-sm text-white/72">{session.user.email}</p>
         </div>
 
         {/* Quick Links */}

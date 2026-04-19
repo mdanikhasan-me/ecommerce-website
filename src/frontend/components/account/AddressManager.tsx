@@ -82,7 +82,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
           <MapPin className="size-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="font-display font-semibold text-lg mb-2">No addresses saved</h2>
           <p className="text-muted-foreground text-sm mb-6">Add a shipping address to speed up checkout</p>
-          <button onClick={() => setShowForm(true)} className="btn-primary gap-2"><Plus className="size-4" /> Add Address</button>
+          <button type="button" onClick={() => setShowForm(true)} className="btn-primary gap-2"><Plus className="size-4" /> Add Address</button>
         </div>
       ) : (
         <>
@@ -126,7 +126,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
             ))}
           </div>
           {!showForm && (
-            <button onClick={() => setShowForm(true)} className="btn-outline gap-2 w-full"><Plus className="size-4" /> Add New Address</button>
+            <button type="button" onClick={() => setShowForm(true)} className="btn-outline gap-2 w-full"><Plus className="size-4" /> Add New Address</button>
           )}
         </>
       )}

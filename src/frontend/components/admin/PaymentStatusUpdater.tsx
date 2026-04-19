@@ -49,7 +49,7 @@ export function PaymentStatusUpdater({
         Update payment status
       </p>
       <div className="flex flex-col gap-2">
-        <select
+        <select aria-label="Select option" title="Select option"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
           className="input-base text-sm"
@@ -60,7 +60,7 @@ export function PaymentStatusUpdater({
             </option>
           ))}
         </select>
-        <input
+        <input aria-label="Form input" title="Form input"
           value={note}
           onChange={(event) => setNote(event.target.value)}
           placeholder="Payment note"

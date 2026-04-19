@@ -4,7 +4,7 @@ interface SortOption { value: string; label: string }
 
 export function SortSelect({ current, options }: { current: string; options: SortOption[] }) {
   return (
-    <select
+    <select aria-label="Select option" title="Select option"
       defaultValue={current}
       onChange={(e) => {
         const url = new URL(window.location.href)

@@ -338,7 +338,7 @@ export function ProductEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Product name</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.name}
                   onChange={(event) => updateField('name', event.target.value)}
                   className="input-base"
@@ -349,7 +349,7 @@ export function ProductEditorForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Slug</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.slug}
                     onChange={(event) => {
                       setManualSlug(true)
@@ -362,7 +362,7 @@ export function ProductEditorForm({
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">SKU</label>
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     value={form.sku}
                     onChange={(event) => updateField('sku', event.target.value)}
                     className="input-base"
@@ -373,7 +373,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Short description</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.shortDescription}
                   onChange={(event) => updateField('shortDescription', event.target.value)}
                   className="input-base"
@@ -382,7 +382,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
                   className="input-base min-h-[160px] resize-y"
@@ -397,7 +397,7 @@ export function ProductEditorForm({
             <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Base price</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   step="0.01"
@@ -410,7 +410,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Sale price</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   step="0.01"
@@ -422,7 +422,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Cost price</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   step="0.01"
@@ -434,7 +434,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Stock quantity</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   value={form.stockQuantity}
@@ -446,7 +446,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Low stock threshold</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   value={form.lowStockThreshold}
@@ -457,7 +457,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Weight in grams</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   type="number"
                   min="0"
                   value={form.weight}
@@ -475,11 +475,11 @@ export function ProductEditorForm({
               <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary/80">
                 <Upload className="h-4 w-4" />
                 Upload files
-                <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
+                <input aria-label="Form input" title="Form input" type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
               </label>
 
               <div className="flex min-w-[260px] flex-1 gap-2">
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={newImageUrl}
                   onChange={(event) => setNewImageUrl(event.target.value)}
                   className="input-base"
@@ -514,7 +514,7 @@ export function ProductEditorForm({
                         <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                           Image URL
                         </label>
-                        <input
+                        <input aria-label="Form input" title="Form input"
                           value={image.url}
                           onChange={(event) => updateImage(image.id, 'url', event.target.value)}
                           className="input-base text-sm"
@@ -525,7 +525,7 @@ export function ProductEditorForm({
                         <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                           Alt text
                         </label>
-                        <input
+                        <input aria-label="Form input" title="Form input"
                           value={image.alt}
                           onChange={(event) => updateImage(image.id, 'alt', event.target.value)}
                           className="input-base text-sm"
@@ -565,31 +565,31 @@ export function ProductEditorForm({
                 {variants.map((variant) => (
                   <div key={variant.id} className="rounded-2xl border border-border bg-secondary/40 p-4">
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         value={variant.name}
                         onChange={(event) => updateVariant(variant.id, 'name', event.target.value)}
                         className="input-base text-sm"
                         placeholder="Variant name"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         value={variant.sku}
                         onChange={(event) => updateVariant(variant.id, 'sku', event.target.value)}
                         className="input-base text-sm"
                         placeholder="Variant SKU"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         value={variant.optionName}
                         onChange={(event) => updateVariant(variant.id, 'optionName', event.target.value)}
                         className="input-base text-sm"
                         placeholder="Option name"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         value={variant.optionValue}
                         onChange={(event) => updateVariant(variant.id, 'optionValue', event.target.value)}
                         className="input-base text-sm"
                         placeholder="Option value"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="number"
                         min="0"
                         step="0.01"
@@ -598,7 +598,7 @@ export function ProductEditorForm({
                         className="input-base text-sm"
                         placeholder="Price override"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="number"
                         min="0"
                         step="0.01"
@@ -607,7 +607,7 @@ export function ProductEditorForm({
                         className="input-base text-sm"
                         placeholder="Sale price"
                       />
-                      <input
+                      <input aria-label="Form input" title="Form input"
                         type="number"
                         min="0"
                         value={variant.stockQuantity}
@@ -616,7 +616,7 @@ export function ProductEditorForm({
                         placeholder="Stock"
                       />
                       <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm">
-                        <input
+                        <input aria-label="Form input" title="Form input"
                           type="checkbox"
                           checked={variant.isActive}
                           onChange={(event) => updateVariant(variant.id, 'isActive', event.target.checked)}
@@ -644,7 +644,7 @@ export function ProductEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Category</label>
-                <select
+                <select aria-label="Select option" title="Select option"
                   value={form.categoryId}
                   onChange={(event) => updateField('categoryId', event.target.value)}
                   className="input-base"
@@ -668,7 +668,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Brand name</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.brandName}
                   onChange={(event) => updateField('brandName', event.target.value)}
                   className="input-base"
@@ -681,7 +681,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Tags</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.tags}
                   onChange={(event) => updateField('tags', event.target.value)}
                   className="input-base"
@@ -701,7 +701,7 @@ export function ProductEditorForm({
                 ['isBestSeller', 'Best seller'],
               ].map(([key, label]) => (
                 <label key={key} className="flex items-center gap-3 text-sm">
-                  <input
+                  <input aria-label="Form input" title="Form input"
                     type="checkbox"
                     checked={Boolean(form[key as keyof typeof form])}
                     onChange={(event) => updateField(key, event.target.checked)}
@@ -718,7 +718,7 @@ export function ProductEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Meta title</label>
-                <input
+                <input aria-label="Form input" title="Form input"
                   value={form.metaTitle}
                   onChange={(event) => updateField('metaTitle', event.target.value)}
                   className="input-base"
@@ -731,7 +731,7 @@ export function ProductEditorForm({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Meta description</label>
-                <textarea
+                <textarea aria-label="Text area" title="Text area"
                   value={form.metaDescription}
                   onChange={(event) => updateField('metaDescription', event.target.value)}
                   className="input-base min-h-[120px] resize-y"
