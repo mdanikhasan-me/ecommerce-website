@@ -42,7 +42,7 @@ export default async function AdminBannersPage() {
             {banners.map((banner) => (
               <tr key={banner.id} className="hover:bg-secondary/40">
                 <td className="px-4 py-3">
-                  <p className="font-medium">{banner.title}</p>
+                  <p className="font-medium">{banner.title || 'Untitled banner'}</p>
                   {banner.subtitle && <p className="text-xs text-muted-foreground">{banner.subtitle}</p>}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{banner.position}</td>

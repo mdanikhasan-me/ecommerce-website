@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { generateOrderNumber } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 
@@ -238,7 +239,6 @@ export async function POST(req: NextRequest) {
           where: { id: line.productId, isActive: true, stockQuantity: { gte: line.quantity } },
           data: {
             stockQuantity: { decrement: line.quantity },
-            soldCount: { increment: line.quantity },
           },
         })
         if (updated.count === 0) {
@@ -294,6 +294,8 @@ export async function POST(req: NextRequest) {
 
       return created
     })
+
+    await syncProductSoldCounts(preparedItems.map((line) => line.productId))
 
     await db.notification.create({
       data: {

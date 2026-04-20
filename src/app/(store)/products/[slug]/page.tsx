@@ -1,40 +1,62 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { Suspense, cache } from 'react'
+
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
-import { getApprovedReviewStats, type ReviewAccessState } from '@/backend/reviews'
-import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
+import { type ReviewAccessState } from '@/backend/reviews'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
 import { ReviewSection } from '@/frontend/components/product/ReviewSection'
-import { generateProductMetadata, generateProductJsonLd, generateBreadcrumbJsonLd, JsonLd } from '@/backend/seo'
-import type { Metadata } from 'next'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generateProductJsonLd,
+  generateProductMetadata,
+} from '@/backend/seo'
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getProduct(slug: string) {
+const getProduct = cache(async (slug: string) => {
   return db.product.findUnique({
     where: { slug, isActive: true },
     include: {
-      images: { orderBy: { sortOrder: 'asc' } },
+      images: {
+        select: { url: true, alt: true, isPrimary: true, sortOrder: true },
+        orderBy: { sortOrder: 'asc' },
+      },
       brand: { select: { name: true, slug: true } },
       category: { select: { name: true, slug: true } },
-      seller: { select: { storeName: true, storeSlug: true, isFirstParty: true, rating: true } },
-      variants: { include: { options: true }, orderBy: { sortOrder: 'asc' } },
-      attributes: { orderBy: { sortOrder: 'asc' } },
-      specifications: { orderBy: { sortOrder: 'asc' } },
-      reviews: {
-        where: { status: 'APPROVED' },
-        include: { user: { select: { name: true, image: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
+      variants: {
+        where: { isActive: true },
+        include: { options: true },
+        orderBy: { sortOrder: 'asc' },
+      },
+      attributes: {
+        select: { id: true, name: true, value: true },
+        orderBy: { sortOrder: 'asc' },
+      },
+      specifications: {
+        select: { group: true, name: true, value: true, sortOrder: true },
+        orderBy: { sortOrder: 'asc' },
       },
     },
   })
-}
+})
 
-async function getReviewDistribution(productId: string) {
+const getApprovedReviews = cache(async (productId: string) => {
+  return db.review.findMany({
+    where: { productId, status: 'APPROVED' },
+    include: { user: { select: { name: true, image: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 10,
+  })
+})
+
+const getReviewDistribution = cache(async (productId: string) => {
   const grouped = await db.review.groupBy({
     by: ['rating'],
     where: { productId, status: 'APPROVED' },
@@ -45,14 +67,29 @@ async function getReviewDistribution(productId: string) {
     star,
     count: grouped.find((entry) => entry.rating === star)?._count._all ?? 0,
   }))
-}
+})
 
-// ─── SEO: Dynamic Metadata (title, description, OG, Twitter, keywords) ──────
+const getRelatedProducts = cache(async (categoryId: string, productId: string) => {
+  return db.product.findMany({
+    where: {
+      categoryId,
+      id: { not: productId },
+      isActive: true,
+    },
+    take: 4,
+    include: {
+      images: { where: { isPrimary: true }, take: 1 },
+      brand: { select: { name: true, slug: true } },
+      category: { select: { name: true, slug: true } },
+    },
+  })
+})
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await getProduct(slug)
+
   if (!product) return { title: 'Product Not Found' }
-  const reviewStats = await getApprovedReviewStats(product.id)
 
   return generateProductMetadata({
     name: product.name,
@@ -63,53 +100,80 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     metaDescription: product.metaDescription,
     basePrice: product.basePrice,
     salePrice: product.salePrice,
-    images: product.images.map((i) => ({ url: i.url, isPrimary: i.isPrimary })),
+    images: product.images.map((image) => ({ url: image.url, isPrimary: image.isPrimary })),
     category: product.category,
     brand: product.brand,
-    rating: reviewStats.rating,
-    reviewCount: reviewStats.reviewCount,
+    rating: product.rating,
+    reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
     tags: product.tags,
   })
 }
 
-export default async function ProductPage({ params }: Props) {
-  const { slug } = await params
-  const product = await getProduct(slug)
-  if (!product) notFound()
+function ReviewsFallback() {
+  return (
+    <section className="mt-12 overflow-hidden rounded-2xl border border-border">
+      <div className="border-b border-border bg-secondary px-6 py-4">
+        <div className="skeleton h-6 w-44 rounded" />
+      </div>
+      <div className="space-y-5 p-6">
+        <div className="skeleton h-28 w-full rounded-2xl" />
+        <div className="skeleton h-24 w-full rounded-2xl" />
+        <div className="skeleton h-24 w-full rounded-2xl" />
+      </div>
+    </section>
+  )
+}
+
+function RelatedProductsFallback() {
+  return (
+    <section className="mt-14">
+      <div className="skeleton mb-6 h-8 w-52 rounded" />
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="overflow-hidden rounded-2xl border border-border">
+            <div className="skeleton aspect-square w-full" />
+            <div className="space-y-3 p-4">
+              <div className="skeleton h-3 w-16 rounded" />
+              <div className="skeleton h-4 w-5/6 rounded" />
+              <div className="skeleton h-4 w-2/3 rounded" />
+              <div className="skeleton h-5 w-1/2 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+async function ProductReviewsSection({
+  productId,
+  productName,
+  rating,
+  reviewCount,
+}: {
+  productId: string
+  productName: string
+  rating: number
+  reviewCount: number
+}) {
   const session = await auth()
 
-  // Update view count (fire and forget)
-  db.product.update({ where: { id: product.id }, data: { viewCount: { increment: 1 } } }).catch(() => {})
-
-  const [related, reviewStats, reviewDistribution, reviewAccessData] = await Promise.all([
-    db.product.findMany({
-      where: {
-        categoryId: product.categoryId,
-        id: { not: product.id },
-        isActive: true,
-      },
-      take: 4,
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
-        brand: { select: { name: true, slug: true } },
-        category: { select: { name: true, slug: true } },
-      },
-    }),
-    getApprovedReviewStats(product.id),
-    getReviewDistribution(product.id),
+  const [reviews, distribution, reviewAccessData] = await Promise.all([
+    getApprovedReviews(productId),
+    getReviewDistribution(productId),
     session?.user
       ? Promise.all([
           db.order.findFirst({
             where: {
               userId: session.user.id,
               status: 'DELIVERED',
-              items: { some: { productId: product.id } },
+              items: { some: { productId } },
             },
             select: { id: true },
           }),
           db.review.findUnique({
-            where: { productId_userId: { productId: product.id, userId: session.user.id } },
+            where: { productId_userId: { productId, userId: session.user.id } },
             select: { status: true },
           }),
         ]).then(([deliveredOrder, existingReview]) => ({ deliveredOrder, existingReview }))
@@ -128,32 +192,58 @@ export default async function ProductPage({ params }: Props) {
         existingReviewStatus: null,
       }
 
-  const productWithLiveReviewStats = {
-    ...product,
-    rating: reviewStats.rating,
-    reviewCount: reviewStats.reviewCount,
-  }
+  return (
+    <ReviewSection
+      product={{ id: productId, name: productName, rating, reviewCount }}
+      reviews={reviews}
+      distribution={distribution}
+      reviewAccess={reviewAccess}
+    />
+  )
+}
 
-  // ─── SEO: JSON-LD Structured Data ──────────────────────────────────────
+async function RelatedProductsSection({
+  categoryId,
+  productId,
+}: {
+  categoryId: string
+  productId: string
+}) {
+  const related = await getRelatedProducts(categoryId, productId)
+
+  if (related.length === 0) return null
+
+  return (
+    <section className="mt-14">
+      <h2 className="section-title mb-6">You Might Also Like</h2>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        {related.map((relatedProduct) => (
+          <ProductCard key={relatedProduct.id} product={relatedProduct} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params
+  const product = await getProduct(slug)
+
+  if (!product) notFound()
+
   const productJsonLd = generateProductJsonLd({
     name: product.name,
     slug: product.slug,
     description: product.description,
     basePrice: product.basePrice,
     salePrice: product.salePrice,
-    images: product.images.map((i) => ({ url: i.url })),
+    images: product.images.map((image) => ({ url: image.url })),
     category: product.category,
     brand: product.brand,
     sku: product.sku,
-    rating: reviewStats.rating,
-    reviewCount: reviewStats.reviewCount,
+    rating: product.rating,
+    reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
-    reviews: product.reviews.map((r) => ({
-      rating: r.rating,
-      body: r.body,
-      user: r.user,
-      createdAt: r.createdAt,
-    })),
   })
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
@@ -164,59 +254,50 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className="container-site py-8">
-      {/* SEO: Structured Data */}
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
 
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/" className="transition-colors hover:text-foreground">
+          Home
+        </Link>
         <span>/</span>
-        <Link href={`/category/${product.category.slug}`} className="hover:text-foreground transition-colors capitalize">
+        <Link href={`/category/${product.category.slug}`} className="capitalize transition-colors hover:text-foreground">
           {product.category.name}
         </Link>
         <span>/</span>
-        <span className="text-foreground truncate max-w-[200px]">{product.name}</span>
+        <span className="max-w-[200px] truncate text-foreground">{product.name}</span>
       </nav>
 
-      {/* Main Product */}
-      <ProductDetailClient product={productWithLiveReviewStats} />
+      <ProductDetailClient product={product} />
 
-      {/* Specifications */}
-      {product.specifications.length > 0 && (
-        <div className="mt-12 border border-border rounded-2xl overflow-hidden">
-          <div className="bg-secondary px-6 py-4 border-b border-border">
-            <h3 className="font-display font-semibold text-lg">Specifications</h3>
+      {product.specifications.length > 0 ? (
+        <div className="mt-12 overflow-hidden rounded-2xl border border-border">
+          <div className="border-b border-border bg-secondary px-6 py-4">
+            <h3 className="font-display text-lg font-semibold">Specifications</h3>
           </div>
           <div className="divide-y divide-border">
-            {product.specifications.map((spec, i) => (
-              <div key={i} className="grid grid-cols-2 px-6 py-3 text-sm">
-                <span className="font-medium text-muted-foreground">{spec.name}</span>
-                <span>{spec.value}</span>
+            {product.specifications.map((specification, index) => (
+              <div key={index} className="grid grid-cols-2 px-6 py-3 text-sm">
+                <span className="font-medium text-muted-foreground">{specification.name}</span>
+                <span>{specification.value}</span>
               </div>
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Reviews */}
-      <ReviewSection
-        product={productWithLiveReviewStats}
-        reviews={product.reviews}
-        distribution={reviewDistribution}
-        reviewAccess={reviewAccess}
-      />
+      <Suspense fallback={<ReviewsFallback />}>
+        <ProductReviewsSection
+          productId={product.id}
+          productName={product.name}
+          rating={product.rating}
+          reviewCount={product.reviewCount}
+        />
+      </Suspense>
 
-      {/* Related Products */}
-      {related.length > 0 && (
-        <section className="mt-14">
-          <h2 className="section-title mb-6">You Might Also Like</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {related.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-      )}
+      <Suspense fallback={<RelatedProductsFallback />}>
+        <RelatedProductsSection categoryId={product.categoryId} productId={product.id} />
+      </Suspense>
     </div>
   )
 }

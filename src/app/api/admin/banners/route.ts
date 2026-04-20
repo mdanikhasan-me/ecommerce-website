@@ -7,9 +7,6 @@ import {
 } from '@/backend/admin/admin-utils'
 
 function normalizeBannerPayload(payload: any) {
-  if (!payload.title?.trim()) throw new Error('Banner title is required')
-  if (!payload.imageUrl?.trim()) throw new Error('Desktop image is required')
-
   const startsAt = payload.startsAt ? new Date(payload.startsAt) : null
   const endsAt = payload.endsAt ? new Date(payload.endsAt) : null
   if (startsAt && Number.isNaN(startsAt.getTime())) throw new Error('Start date is invalid')
@@ -17,9 +14,9 @@ function normalizeBannerPayload(payload: any) {
   if (startsAt && endsAt && startsAt > endsAt) throw new Error('End date must be later than the start date')
 
   return {
-    title: payload.title.trim(),
+    title: payload.title?.trim() || '',
     subtitle: payload.subtitle?.trim() || null,
-    imageUrl: payload.imageUrl,
+    imageUrl: payload.imageUrl?.trim() || '',
     mobileImageUrl: payload.mobileImageUrl || null,
     linkUrl: payload.linkUrl?.trim() || null,
     position: payload.position?.trim() || 'hero',
@@ -43,7 +40,7 @@ export async function POST(req: NextRequest) {
         data: {
           title: payload.title,
           subtitle: payload.subtitle,
-          imageUrl: imageUrl!,
+          imageUrl: imageUrl ?? '',
           mobileImageUrl,
           linkUrl: payload.linkUrl,
           position: payload.position,

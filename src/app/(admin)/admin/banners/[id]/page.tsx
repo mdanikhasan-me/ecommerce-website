@@ -34,7 +34,7 @@ export default async function AdminBannerDetailPage({ params }: Props) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold">{banner.title}</h1>
+          <h1 className="font-display text-2xl font-bold">{banner.title || 'Untitled banner'}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Update banner artwork, placement, schedule, and links.
           </p>

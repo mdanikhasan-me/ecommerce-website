@@ -141,7 +141,7 @@ export function generateBrandMetadata(brand: BrandMeta): Metadata {
     `Shop original ${brand.name} products at the best prices in Bangladesh. Genuine products with warranty. Free delivery on orders over ৳2,000.`
 
   return {
-    title: `${brand.name} Products, Official Store Bangladesh`,
+    title: `${brand.name} Products, Boilabin Bangladesh`,
     description: desc,
     keywords: [
       brand.name,

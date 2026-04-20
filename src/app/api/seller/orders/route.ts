@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { syncProductSoldCounts } from '@/backend/commerce-stats'
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -22,7 +23,14 @@ export async function PATCH(req: NextRequest) {
 
     const order = await db.order.findUnique({
       where: { id },
-      include: { items: { select: { product: { select: { sellerId: true } } } } },
+      include: {
+        items: {
+          select: {
+            productId: true,
+            product: { select: { sellerId: true } },
+          },
+        },
+      },
     })
 
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
@@ -36,6 +44,11 @@ export async function PATCH(req: NextRequest) {
     }
 
     const updated = await db.order.update({ where: { id }, data: { status } })
+    await syncProductSoldCounts(
+      order.items
+        .filter((item) => item.product.sellerId === seller.id)
+        .map((item) => item.productId)
+    )
     return NextResponse.json({ order: updated })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal error' }, { status: 500 })

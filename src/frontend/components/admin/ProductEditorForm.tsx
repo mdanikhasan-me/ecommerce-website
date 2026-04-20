@@ -257,7 +257,7 @@ export function ProductEditorForm({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!isSetupReady) {
-      setError('Add at least one active category and make sure the official store is configured before saving products.')
+      setError('Add at least one active category and make sure the main store profile is configured before saving products.')
       return
     }
     if (isEditing && !product?.id) {
@@ -327,7 +327,7 @@ export function ProductEditorForm({
 
       {!isSetupReady && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          Products need at least one active category and the official store before they can be saved.
+          Products need at least one active category and a configured main store profile before they can be saved.
         </div>
       )}
 

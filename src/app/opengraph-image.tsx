@@ -21,7 +21,7 @@ export default function OpengraphImage() {
             A more considered online shopping experience for Bangladesh.
           </div>
           <div tw="mt-2 max-w-[900px] text-[28px] text-[#D8C7D6]">
-            Verified sellers, dependable delivery, and smooth checkout with COD, bKash, and Nagad.
+            Authentic products, dependable delivery, and smooth checkout with COD, bKash, and Nagad.
           </div>
         </div>
 

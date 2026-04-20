@@ -262,7 +262,7 @@ async function getOfficialSeller() {
   })
 
   if (!seller) {
-    throw new Error('Official store is not configured yet')
+    throw new Error('Main store profile is not configured yet')
   }
 
   return seller

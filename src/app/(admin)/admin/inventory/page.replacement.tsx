@@ -73,6 +73,9 @@ export default async function AdminInventoryPage() {
                 <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground lg:table-cell">
                   Variants
                 </th>
+                <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground xl:table-cell">
+                  Views
+                </th>
                 <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Sold</th>
                 <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
               </tr>
@@ -117,6 +120,9 @@ export default async function AdminInventoryPage() {
                   </td>
                   <td className="hidden px-4 py-3 text-right text-muted-foreground lg:table-cell">
                     {product.variants.length}
+                  </td>
+                  <td className="hidden px-4 py-3 text-right text-muted-foreground xl:table-cell">
+                    {product.viewCount}
                   </td>
                   <td className="px-4 py-3 text-right text-muted-foreground">{product.soldCount}</td>
                   <td className="px-4 py-3 text-right">

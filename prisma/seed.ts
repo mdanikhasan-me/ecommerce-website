@@ -1,4 +1,4 @@
-import { PrismaClient, Role, OrderStatus, PaymentMethod, SellerStatus, CouponType, ReviewStatus } from '@prisma/client'
+﻿import { PrismaClient, Role, OrderStatus, PaymentMethod, SellerStatus, CouponType } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -60,9 +60,9 @@ async function main() {
     update: {},
     create: {
       userId: admin.id,
-      storeName: 'BoilaBin Official Store',
+      storeName: 'Boilabin',
       storeSlug: 'boilabin-official',
-      description: 'The official BoilaBin store — curated products, premium quality.',
+      description: 'Boilabin product catalog and brand storefront.',
       status: SellerStatus.APPROVED,
       isFirstParty: true,
       commissionRate: 0,
@@ -397,12 +397,23 @@ async function main() {
 
   console.log(`  Creating ${productsData.length} products...`)
   for (const p of productsData) {
-    const { specifications, imageUrl, ...productData } = p
+    const {
+      specifications,
+      imageUrl,
+      rating: _rating,
+      reviewCount: _reviewCount,
+      soldCount: _soldCount,
+      ...productData
+    } = p
     const product = await prisma.product.upsert({
       where: { sku: p.sku },
       update: {},
       create: {
         ...productData,
+        rating: 0,
+        reviewCount: 0,
+        soldCount: 0,
+        viewCount: 0,
         images: { create: [{ url: imageUrl, isPrimary: true, sortOrder: 0 }] },
         specifications: specifications ? {
           create: specifications.map((s, i) => ({ ...s, sortOrder: i }))
@@ -492,7 +503,7 @@ async function main() {
     await prisma.flashSaleItem.upsert({
       where: { flashSaleId_productId: { flashSaleId: flashSale.id, productId: fp.id } },
       update: {},
-      create: { flashSaleId: flashSale.id, productId: fp.id, discountType: CouponType.PERCENTAGE, discountValue: 20, maxQuantity: 100, soldQuantity: Math.floor(Math.random() * 80) },
+      create: { flashSaleId: flashSale.id, productId: fp.id, discountType: CouponType.PERCENTAGE, discountValue: 20, maxQuantity: 100, soldQuantity: 0 },
     })
   }
 
@@ -505,36 +516,6 @@ async function main() {
     ],
     skipDuplicates: true,
   })
-
-  // ─── REVIEWS ──────────────────────────────────────────────────────────
-  const reviewedProduct = await prisma.product.findFirst({ where: { sku: 'SONY-WH1000XM5' } })
-  if (reviewedProduct) {
-    const reviewsData = [
-      { rating: 5, title: 'Absolutely incredible!', body: 'Best headphones I\'ve ever owned. The noise cancellation is on another level — I can wear these in a busy Dhaka market and hear nothing but music. Sound quality is rich and detailed. Worth every taka.', isVerifiedBuy: true },
-      { rating: 5, title: 'Game changer for commuting', body: 'I travel by bus every day and these make the journey so much better. Battery life is phenomenal — I charged them 4 days ago and they\'re still going. Highly recommend.', isVerifiedBuy: true },
-      { rating: 4, title: 'Premium feel, minor niggles', body: 'Build quality feels expensive. ANC is excellent. Slight complaint: they get warm during long sessions in our Dhaka heat. But sound and comfort are top tier.', isVerifiedBuy: false },
-      { rating: 5, title: 'Best purchase this year', body: 'I was skeptical about the price but after using them I understand why people rave about Sony. Call quality is also crystal clear — my team on calls always comments on how good my audio sounds.', isVerifiedBuy: true },
-    ]
-
-    for (const [i, review] of reviewsData.entries()) {
-      const uniqueUser = await prisma.user.upsert({
-        where: { email: `reviewer${i + 1}@example.com` },
-        update: {},
-        create: {
-          name: ['Tanvir H.', 'Sadia K.', 'Mehedi R.', 'Farhana B.'][i],
-          email: `reviewer${i + 1}@example.com`,
-          password: await bcrypt.hash('password123', 10),
-          role: Role.CUSTOMER,
-          emailVerified: new Date(),
-        }
-      })
-      await prisma.review.upsert({
-        where: { productId_userId: { productId: reviewedProduct.id, userId: uniqueUser.id } },
-        update: {},
-        create: { productId: reviewedProduct.id, userId: uniqueUser.id, ...review, status: ReviewStatus.APPROVED },
-      })
-    }
-  }
 
   // ─── SAMPLE ORDER ─────────────────────────────────────────────────────
   const sampleProduct = await prisma.product.findFirst({ where: { sku: 'APL-AIRPODS-PRO2' } })
@@ -576,3 +557,4 @@ async function main() {
 main()
   .catch((e) => { console.error(e); process.exit(1) })
   .finally(async () => { await prisma.$disconnect() })
+

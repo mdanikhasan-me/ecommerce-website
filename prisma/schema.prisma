@@ -108,6 +108,7 @@ model User {
   notifications     Notification[]
   seller            Seller?
   viewedProducts    RecentlyViewed[]
+  productViews      ProductView[]
 
   @@index([email])
   @@index([role])
@@ -301,6 +302,7 @@ model Product {
   wishlistItems  WishlistItem[]
   compareItems   CompareItem[]
   recentlyViewed RecentlyViewed[]
+  productViews   ProductView[]
   flashSaleItems FlashSaleItem[]
 
   @@index([slug])
@@ -308,6 +310,21 @@ model Product {
   @@index([brandId])
   @@index([sellerId])
   @@index([isActive, isFeatured])
+}
+
+model ProductView {
+  id        String   @id @default(cuid())
+  productId String
+  viewerKey String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([productId, viewerKey])
+  @@index([productId])
+  @@index([userId])
 }
 
 model ProductImage {

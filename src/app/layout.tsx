@@ -93,6 +93,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${dmSans.variable} ${sora.variable} ${poppins.variable} ${dmMono.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://utfs.io" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://utfs.io" />
+      </head>
       <body className="font-sans antialiased bg-background text-foreground">
         {children}
         <Toaster

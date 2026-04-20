@@ -134,19 +134,22 @@ export function BannerEditorForm({
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Title</label>
+                <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the large headline on the storefront.</p>
                 <input aria-label="Form input" title="Form input"
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
-                  required
+                  placeholder="Optional banner title"
                 />
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Subtitle</label>
+                <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the smaller supporting text.</p>
                 <input aria-label="Form input" title="Form input"
                   value={form.subtitle}
                   onChange={(event) => updateField('subtitle', event.target.value)}
                   className="input-base"
+                  placeholder="Optional supporting text"
                 />
               </div>
               <div>
@@ -166,6 +169,7 @@ export function BannerEditorForm({
               label="Desktop image"
               value={form.imageUrl}
               onChange={(value) => updateField('imageUrl', value)}
+              helperText="Shown on tablet and desktop. Remove it if you want a text-only banner there."
             />
           </section>
 
@@ -174,6 +178,7 @@ export function BannerEditorForm({
               label="Mobile image"
               value={form.mobileImageUrl}
               onChange={(value) => updateField('mobileImageUrl', value)}
+              helperText="Optional phone-only artwork. If empty, the desktop image is reused on mobile."
             />
           </section>
         </div>

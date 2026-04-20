@@ -11,12 +11,17 @@ interface Banner {
   title: string
   subtitle?: string | null
   imageUrl: string
+  mobileImageUrl?: string | null
   linkUrl?: string | null
 }
 
 export function HeroBanner({ banners }: { banners: Banner[] }) {
   const [current, setCurrent] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const heroTitleClass =
+    'font-display font-bold leading-[0.9] text-[hsl(var(--buttermilk))] [text-shadow:0_6px_24px_rgba(16,12,10,0.42)]'
+  const heroSubtitleClass =
+    'max-w-xl text-sm leading-7 text-[hsl(var(--buttermilk))] [text-shadow:0_3px_18px_rgba(16,12,10,0.48)] sm:text-base'
 
   const goTo = useCallback((index: number) => {
     if (isTransitioning) return
@@ -39,10 +44,10 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
       <section className="container-site pt-6">
         <div className="relative overflow-hidden rounded-[2.4rem] border border-black/6 bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] px-6 py-12 shadow-[0_34px_80px_rgba(27,20,18,0.14)] sm:px-10 lg:px-14 lg:py-16">
           <div className="max-w-2xl">
-            <h1 className="mt-4 font-display text-[2.65rem] font-bold leading-[0.92] text-white sm:text-[4rem]">
+            <h1 className={cn('mt-4 text-[2.65rem] leading-[0.92] sm:text-[4rem]', heroTitleClass)}>
               A warmer, calmer way to shop online in Bangladesh.
             </h1>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-white/78 sm:text-base">
+            <p className={cn('mt-5', heroSubtitleClass)}>
               Discover electronics, fashion, home essentials, and trusted brands in a storefront built to help you buy with confidence.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -57,24 +62,48 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   }
 
   const banner = banners[current]
+  const title = banner.title.trim()
+  const subtitle = banner.subtitle?.trim() ?? ''
+  const desktopImageUrl = banner.imageUrl?.trim() ?? ''
+  const mobileImageUrl = banner.mobileImageUrl?.trim() ?? ''
+  const mobileHeroImage = mobileImageUrl || desktopImageUrl
+  const hasDesktopImage = Boolean(desktopImageUrl)
+  const hasMobileImage = Boolean(mobileHeroImage)
 
   return (
     <section className="container-site pt-6">
       <div className="group relative overflow-hidden rounded-[2.4rem] border border-black/6 bg-foreground shadow-[0_34px_80px_rgba(27,20,18,0.14)]">
         <div className="relative aspect-[19/15] w-full sm:aspect-[21/12] lg:aspect-[21/8]">
-          <Image
-            key={banner.id}
-            src={banner.imageUrl}
-            alt={banner.title}
-            fill
-            priority
-            quality={92}
-            className={cn(
-              'object-cover transition-all duration-700',
-              isTransitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100'
-            )}
-            sizes="100vw"
-          />
+          {hasMobileImage ? (
+            <Image
+              key={`${banner.id}-mobile`}
+              src={mobileHeroImage}
+              alt={title || 'Promotional banner'}
+              fill
+              priority
+              quality={90}
+              className={cn(
+                'object-cover transition-all duration-700 sm:hidden',
+                isTransitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100'
+              )}
+              sizes="100vw"
+            />
+          ) : null}
+          {hasDesktopImage ? (
+            <Image
+              key={`${banner.id}-desktop`}
+              src={desktopImageUrl}
+              alt={title || 'Promotional banner'}
+              fill
+              priority
+              quality={92}
+              className={cn(
+                'hidden object-cover transition-all duration-700 sm:block',
+                isTransitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100'
+              )}
+              sizes="100vw"
+            />
+          ) : null}
 
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,18,15,0.78)_0%,rgba(23,18,15,0.44)_38%,rgba(23,18,15,0.06)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(243,233,214,0.14),transparent_28%)]" />
@@ -87,12 +116,16 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
           >
             <div className="container-site flex h-full items-end py-8 sm:items-center sm:py-12 lg:py-14">
               <div className="max-w-[34rem] sm:p-2">
-                <h2 className="mt-4 font-display text-[2.2rem] font-bold leading-[0.9] text-white sm:text-[3.2rem] lg:text-[4.2rem]">
-                  {banner.title}
-                </h2>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-white/78 sm:text-base">
-                  {banner.subtitle || 'Clear product details, dependable delivery, and a shopping experience designed to feel calm from first click to final delivery.'}
-                </p>
+                {title ? (
+                  <h2 className={cn('mt-4 text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem]', heroTitleClass)}>
+                    {title}
+                  </h2>
+                ) : null}
+                {subtitle ? (
+                  <p className={cn(title ? 'mt-4' : 'mt-0', heroSubtitleClass)}>
+                    {subtitle}
+                  </p>
+                ) : null}
                 <div className="mt-7 flex flex-wrap items-center gap-3">
                   {banner.linkUrl ? (
                     <Link

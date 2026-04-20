@@ -55,7 +55,7 @@ export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
         {flashSale.items.map((item) => (
           <div key={item.product.id} className="relative">
             <ProductCard product={item.product} />
-            {item.maxQuantity && (
+            {item.maxQuantity && item.soldQuantity > 0 && (
               <div className="mt-1 px-3">
                 {(() => {
                   const soldPct = Math.min((item.soldQuantity / item.maxQuantity) * 100, 100)

@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { OrderStatus } from '@prisma/client'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
+import { syncProductSoldCounts } from '@/backend/commerce-stats'
 
 const ALLOWED_STATUSES = new Set<OrderStatus>([
   'PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED',
@@ -20,7 +21,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
     const safeNote = typeof note === 'string' ? note.trim().slice(0, 500) || null : null
 
-    const order = await db.order.findUnique({ where: { id } })
+    const order = await db.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          select: { productId: true },
+        },
+      },
+    })
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
@@ -58,6 +66,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       oldValues: { status: order.status },
       newValues: { status, note: safeNote },
     })
+
+    await syncProductSoldCounts(order.items.map((item) => item.productId))
 
     revalidatePath('/admin/orders')
     revalidatePath(`/admin/orders/${order.id}`)

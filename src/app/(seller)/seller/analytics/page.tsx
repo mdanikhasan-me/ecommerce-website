@@ -16,7 +16,7 @@ export default async function SellerAnalyticsPage() {
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
-  const [totalRevenue, monthlyRevenue, totalOrders, monthlyOrders, productCount, avgRating, topProducts] = await Promise.all([
+  const [totalRevenue, monthlyRevenue, totalOrders, monthlyOrders, productCount, totalViews, avgRating, topProducts] = await Promise.all([
     db.orderItem.aggregate({
       where: { product: { sellerId: seller.id }, order: { status: { not: 'CANCELLED' } } },
       _sum: { total: true },
@@ -39,6 +39,10 @@ export default async function SellerAnalyticsPage() {
       },
     }),
     db.product.count({ where: { sellerId: seller.id, isActive: true } }),
+    db.product.aggregate({
+      where: { sellerId: seller.id, isActive: true },
+      _sum: { viewCount: true },
+    }),
     db.review.aggregate({
       where: { product: { sellerId: seller.id }, status: 'APPROVED' },
       _avg: { rating: true },
@@ -47,7 +51,15 @@ export default async function SellerAnalyticsPage() {
       where: { sellerId: seller.id, isActive: true },
       orderBy: { soldCount: 'desc' },
       take: 5,
-      select: { id: true, name: true, soldCount: true, basePrice: true, salePrice: true, images: { where: { isPrimary: true }, take: 1 } },
+      select: {
+        id: true,
+        name: true,
+        soldCount: true,
+        viewCount: true,
+        basePrice: true,
+        salePrice: true,
+        images: { where: { isPrimary: true }, take: 1 },
+      },
     }),
   ])
 
@@ -57,6 +69,7 @@ export default async function SellerAnalyticsPage() {
     { label: 'Total Orders', value: totalOrders.toString(), icon: ShoppingBag, color: 'text-blue-600 bg-blue-50' },
     { label: 'Monthly Orders', value: monthlyOrders.toString(), icon: ShoppingBag, color: 'text-indigo-600 bg-indigo-50' },
     { label: 'Active Products', value: productCount.toString(), icon: Package, color: 'text-purple-600 bg-purple-50' },
+    { label: 'Unique Views', value: String(totalViews._sum.viewCount ?? 0), icon: Eye, color: 'text-sky-600 bg-sky-50' },
     { label: 'Average Rating', value: avgRating._avg.rating ? avgRating._avg.rating.toFixed(1) : 'N/A', icon: Star, color: 'text-amber-600 bg-amber-50' },
   ]
 
@@ -103,7 +116,10 @@ export default async function SellerAnalyticsPage() {
                   <p className="text-sm font-medium truncate">{product.name}</p>
                   <p className="text-xs text-muted-foreground">{formatPrice(product.salePrice ?? product.basePrice)}</p>
                 </div>
-                <span className="text-sm font-semibold">{product.soldCount} sold</span>
+                <div className="text-right text-xs text-muted-foreground">
+                  <p className="font-semibold text-foreground">{product.soldCount} sold</p>
+                  <p>{product.viewCount} views</p>
+                </div>
               </div>
             ))}
           </div>

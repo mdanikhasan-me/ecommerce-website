@@ -75,7 +75,9 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           <div className="flex items-center gap-1 mt-1">
             <Star className="h-3 w-3 star-filled" />
             <span className="text-[12px] font-semibold text-foreground/80">{product.rating.toFixed(1)}</span>
-            <span className="text-[12px] font-medium text-foreground/55">({product.reviewCount})</span>
+            <span className="text-[12px] font-medium text-foreground/55">
+              {product.reviewCount > 0 ? `(${product.reviewCount})` : '(No reviews yet)'}
+            </span>
           </div>
           <div className="mt-3 flex items-center gap-2">
             <span className="font-display text-[1.2rem] font-bold">{formatPrice(price)}</span>
@@ -188,7 +190,9 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
               className={cn('h-3 w-3', star <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
             />
           ))}
-          <span className="text-[12px] font-medium text-foreground/55">{product.reviewCount} reviews</span>
+          <span className="text-[12px] font-medium text-foreground/55">
+            {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
+          </span>
         </div>
 
         <div className="mt-3.5 flex items-baseline gap-2">

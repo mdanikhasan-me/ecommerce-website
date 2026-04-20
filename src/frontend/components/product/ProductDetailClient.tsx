@@ -15,14 +15,11 @@ import {
   Star,
   Plus,
   Minus,
-  Check,
-  Store,
   Zap,
 } from 'lucide-react'
 import { useCartStore, useWishlistStore, useCompareStore } from '@/frontend/stores'
 import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
 import toast from 'react-hot-toast'
-import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 
 export function ProductDetailClient({ product }: { product: any }) {
   const router = useRouter()
@@ -32,6 +29,7 @@ export function ProductDetailClient({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1)
   const [isZoomed, setIsZoomed] = useState(false)
   const zoomFrameRef = useRef<HTMLDivElement | null>(null)
+  const hasTrackedViewRef = useRef(false)
 
   const { addItem, openCart } = useCartStore()
   const { toggle, has } = useWishlistStore()
@@ -49,6 +47,17 @@ export function ProductDetailClient({ product }: { product: any }) {
   useEffect(() => {
     setIsHydrated(true)
   }, [])
+
+  useEffect(() => {
+    if (hasTrackedViewRef.current) return
+
+    hasTrackedViewRef.current = true
+    fetch(`/api/products/${product.id}/view`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      keepalive: true,
+    }).catch(() => {})
+  }, [product.id])
 
   const handleAddToCart = () => {
     if (!inStock) return
@@ -171,9 +180,11 @@ export function ProductDetailClient({ product }: { product: any }) {
             </div>
             <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
             <a href="#reviews" className="text-sm text-muted-foreground transition-colors hover:text-primary">
-              {product.reviewCount} reviews
+              {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
             </a>
-            <span className="text-sm text-muted-foreground">{product.soldCount} sold</span>
+            {product.soldCount > 0 && (
+              <span className="text-sm text-muted-foreground">{product.soldCount} sold</span>
+            )}
           </div>
         </div>
 
@@ -340,23 +351,6 @@ export function ProductDetailClient({ product }: { product: any }) {
             <div>
               <span className="font-medium">Secure checkout</span>
               <p className="mt-0.5 text-xs text-muted-foreground">bKash, Nagad, COD, and cards</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm">
-            <Store className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
-            <div>
-              <span className="font-medium">Sold directly by </span>
-              <span className="font-semibold text-foreground">
-                {product.seller?.storeName || (
-                  <span className="inline-flex items-center gap-2 align-middle">
-                    <BrandWordmark variant="art" className="w-[4.8rem] align-[-0.08em]" aria-label="Boilabin" />
-                    <span>Official Store</span>
-                  </span>
-                )}
-              </span>
-              <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs text-primary">
-                <Check className="h-2.5 w-2.5" /> Official Store
-              </span>
             </div>
           </div>
         </div>
