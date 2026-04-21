@@ -15,7 +15,6 @@ import {
   Package,
   Search,
   ShoppingCart,
-  Tag,
   User,
   X,
   Zap,
@@ -53,8 +52,7 @@ const NAV_CATEGORIES = [
 ]
 
 type Suggestion =
-  | { type: 'brand'; name: string; slug: string; href: string }
-  | { type: 'product'; name: string; slug: string; href: string; brandName: string | null }
+  { type: 'product'; name: string; slug: string; href: string }
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -150,10 +148,10 @@ export function Header() {
                 <div className="relative w-full">
                   <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42" />
                   <input
-                    aria-label="Search products, brands..."
-                    title="Search products, brands..."
+                    aria-label="Search products..."
+                    title="Search products..."
                     type="search"
-                    placeholder="Search products, brands..."
+                    placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value)
@@ -174,20 +172,8 @@ export function Header() {
                       className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-secondary/70"
                       onClick={() => setShowSuggestions(false)}
                     >
-                      {s.type === 'brand' ? (
-                        <Tag className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
-                      ) : (
-                        <Search className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
-                      )}
+                      <Search className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
                       <span className="min-w-0 flex-1 truncate">{s.name}</span>
-                      {s.type === 'brand' ? (
-                        <span className="flex-shrink-0 rounded-full bg-primary/8 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                          Brand
-                        </span>
-                      ) : null}
-                      {s.type === 'product' && s.brandName ? (
-                        <span className="flex-shrink-0 text-xs text-muted-foreground">{s.brandName}</span>
-                      ) : null}
                     </Link>
                   ))}
                 </div>
@@ -379,17 +365,6 @@ export function Header() {
             >
               New Arrivals
             </Link>
-            <Link
-              href="/brands"
-              className={cn(
-                'rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
-                pathname === '/brands'
-                  ? 'bg-secondary text-primary'
-                  : 'text-foreground/78 hover:bg-secondary hover:text-primary'
-              )}
-            >
-              Brands
-            </Link>
           </nav>
         </div>
       </div>
@@ -421,13 +396,6 @@ export function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               New Arrivals
-            </Link>
-            <Link
-              href="/brands"
-              className="rounded-xl border border-black/6 bg-card px-4 py-3 text-sm font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Brands
             </Link>
             <Link
               href="/compare"

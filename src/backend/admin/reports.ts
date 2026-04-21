@@ -179,8 +179,6 @@ export async function buildAdminReportCsv(
       orderBy: { soldCount: 'desc' },
       include: {
         category: { select: { name: true } },
-        brand: { select: { name: true } },
-        seller: { select: { storeName: true } },
       },
     })
 
@@ -189,8 +187,6 @@ export async function buildAdminReportCsv(
         name: product.name,
         sku: product.sku,
         category: product.category.name,
-        brand: product.brand?.name || '',
-        seller: product.seller.storeName,
         stockQuantity: product.stockQuantity,
         soldCount: product.soldCount,
         isActive: product.isActive,

@@ -21,7 +21,6 @@ const SOCIAL_LINKS = [
 const SHOP_LINKS = [
   ['New Arrivals', '/new-arrivals'],
   ['Flash Deals', '/deals'],
-  ['Brands', '/brands'],
   ['All Categories', '/category'],
 ] as const
 

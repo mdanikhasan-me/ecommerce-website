@@ -35,7 +35,6 @@ export type AdminProductPayload = {
   lowStockThreshold?: number
   weight?: number | null
   categoryId: string
-  brandName?: string | null
   tags?: string[]
   metaTitle?: string | null
   metaDescription?: string | null
@@ -43,6 +42,8 @@ export type AdminProductPayload = {
   isFeatured?: boolean
   isNew?: boolean
   isBestSeller?: boolean
+  pinnedInNew?: boolean
+  pinnedInBestSeller?: boolean
   images?: ProductImageInput[]
   variants?: ProductVariantInput[]
 }
@@ -67,7 +68,6 @@ export interface AdminEditableProduct {
   lowStockThreshold: number
   weight: number | null
   categoryId: string
-  brandName: string
   officialStoreName: string
   tags: string[]
   metaTitle: string | null
@@ -76,6 +76,8 @@ export interface AdminEditableProduct {
   isFeatured: boolean
   isNew: boolean
   isBestSeller: boolean
+  pinnedInNew: boolean
+  pinnedInBestSeller: boolean
   images: Array<{
     id: string
     url: string
@@ -118,23 +120,6 @@ export async function ensureUniqueProductSlug(rawSlug: string, excludeId?: strin
         slug: candidate,
         ...(excludeId ? { id: { not: excludeId } } : {}),
       },
-      select: { id: true },
-    })
-
-    if (!existing) return candidate
-    candidate = `${baseSlug}-${suffix}`
-    suffix += 1
-  }
-}
-
-async function ensureUniqueBrandSlug(rawName: string) {
-  const baseSlug = slugify(rawName) || `brand-${Date.now().toString(36)}`
-  let candidate = baseSlug
-  let suffix = 2
-
-  while (true) {
-    const existing = await db.brand.findUnique({
-      where: { slug: candidate },
       select: { id: true },
     })
 
@@ -268,36 +253,6 @@ async function getOfficialSeller() {
   return seller
 }
 
-async function resolveBrandId(brandName?: string | null) {
-  const cleanName = brandName?.trim()
-  if (!cleanName) return null
-
-  const existingBrand = await db.brand.findFirst({
-    where: { name: { equals: cleanName, mode: 'insensitive' } },
-    select: { id: true },
-  })
-
-  if (existingBrand) return existingBrand.id
-
-  const slug = await ensureUniqueBrandSlug(cleanName)
-  const latestBrand = await db.brand.findFirst({
-    orderBy: { sortOrder: 'desc' },
-    select: { sortOrder: true },
-  })
-
-  const createdBrand = await db.brand.create({
-    data: {
-      name: cleanName,
-      slug,
-      isActive: true,
-      sortOrder: (latestBrand?.sortOrder ?? 0) + 1,
-    },
-    select: { id: true },
-  })
-
-  return createdBrand.id
-}
-
 export async function validateProductRelations(payload: AdminProductPayload) {
   const [category, officialSeller] = await Promise.all([
     db.category.findUnique({
@@ -309,7 +264,7 @@ export async function validateProductRelations(payload: AdminProductPayload) {
 
   if (!category) throw new Error('Selected category was not found')
   return {
-    brandId: await resolveBrandId(payload.brandName),
+    brandId: null,
     sellerId: officialSeller.id,
     officialStoreName: officialSeller.storeName,
   }
@@ -359,11 +314,8 @@ export async function getAdminEditableProduct(id: string) {
       isFeatured: true,
       isNew: true,
       isBestSeller: true,
-      brand: {
-        select: {
-          name: true,
-        },
-      },
+      pinnedInNew: true,
+      pinnedInBestSeller: true,
       seller: {
         select: {
           storeName: true,
@@ -404,7 +356,6 @@ export async function getAdminEditableProduct(id: string) {
 
   return {
     ...product,
-    brandName: product.brand?.name ?? '',
     officialStoreName: product.seller.storeName,
   } as AdminEditableProduct
 }

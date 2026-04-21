@@ -219,7 +219,7 @@ export default function CheckoutPage() {
                     <label
                       key={gateway.id}
                       className={cn(
-                        'flex items-center gap-4 p-4 rounded-xl border-2 transition-all',
+                        'flex items-center gap-4 rounded-xl border-2 p-4 transition-all',
                         gateway.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
                         selectedPayment === gateway.id && gateway.isAvailable
                           ? 'border-primary bg-primary/5'
@@ -248,7 +248,7 @@ export default function CheckoutPage() {
                           <div className="h-2.5 w-2.5 rounded-full bg-primary" />
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="font-semibold text-sm">{gateway.name}</p>
                           {gateway.badge ? (
@@ -264,19 +264,31 @@ export default function CheckoutPage() {
                           </p>
                         ) : null}
                       </div>
-                      {gateway.logo ? (
-                        <div className="rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm">
-                          <Image
-                            src={gateway.logo}
-                            alt={gateway.name}
-                            width={108}
-                            height={34}
-                            unoptimized
-                            className="h-6 w-auto object-contain"
-                          />
+                      {gateway.logos?.length ? (
+                        <div className="ml-auto flex flex-shrink-0 items-center">
+                          <div className="flex min-h-12 min-w-[4.9rem] items-center justify-center gap-2 rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm sm:min-w-[6rem]">
+                            {gateway.logos.map((logo) => (
+                              <Image
+                                key={`${gateway.id}-${logo.alt}`}
+                                src={logo.src}
+                                alt={logo.alt}
+                                width={logo.width}
+                                height={logo.height}
+                                unoptimized
+                                className={cn(
+                                  'block w-auto object-contain',
+                                  logo.alt === 'Cash on Delivery' && 'h-5',
+                                  logo.alt === 'bKash' && 'h-5.5',
+                                  logo.alt === 'Nagad' && 'h-6',
+                                  logo.alt === 'Visa' && 'h-4.5',
+                                  logo.alt === 'Mastercard' && 'h-5'
+                                )}
+                              />
+                            ))}
+                          </div>
                         </div>
                       ) : null}
-                      {selectedPayment === gateway.id && <Check className="h-4 w-4 text-primary" />}
+                      {selectedPayment === gateway.id && <Check className="h-4 w-4 flex-shrink-0 text-primary" />}
                     </label>
                   ))}
                 </div>

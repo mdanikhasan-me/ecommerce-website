@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const NOTIFICATION_TYPES = ['SYSTEM', 'ORDER', 'REVIEW', 'PROMOTION', 'SELLER']
-const RECIPIENT_TYPES = ['ALL', 'CUSTOMERS', 'SELLERS', 'USER']
+const NOTIFICATION_TYPES = ['SYSTEM', 'ORDER', 'REVIEW', 'PROMOTION']
+const RECIPIENT_TYPES = ['ALL', 'CUSTOMERS', 'USER']
 
 export function NotificationComposer({
   users,

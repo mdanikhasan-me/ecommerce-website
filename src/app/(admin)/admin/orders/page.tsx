@@ -50,7 +50,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
   ])
 
   const totalPages = Math.ceil(total / limit)
-  const ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED', 'REFUNDED']
+  const ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED', 'REFUNDED']
 
   return (
     <div className="space-y-5">
@@ -131,15 +131,24 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
           </table>
         </div>
 
-        {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
-            <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
-            <div className="flex gap-2">
-              {page > 1 && <Link href={`/admin/orders?page=${page - 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
-              {page < totalPages && <Link href={`/admin/orders?page=${page + 1}${filters.status ? `&status=${filters.status}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
+        {totalPages > 1 && (() => {
+          const queryString = (targetPage: number) => {
+            const params = new URLSearchParams()
+            params.set('page', String(targetPage))
+            if (filters.q) params.set('q', filters.q)
+            if (filters.status) params.set('status', filters.status)
+            return params.toString()
+          }
+          return (
+            <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
+              <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
+              <div className="flex gap-2">
+                {page > 1 && <Link href={`/admin/orders?${queryString(page - 1)}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
+                {page < totalPages && <Link href={`/admin/orders?${queryString(page + 1)}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
       </div>
     </div>
   )

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     const payload = (await req.json()) as AdminProductPayload
     validateProductPayload(payload)
-    const { brandId, sellerId } = await validateProductRelations(payload)
+    const { sellerId } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name)
     const images = await normalizeProductImages(payload.images, slug)
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
           shortDescription: payload.shortDescription?.trim() || null,
           sku: payload.sku.trim(),
           categoryId: payload.categoryId,
-          brandId,
+          brandId: null,
           sellerId,
           basePrice: payload.basePrice,
           salePrice: payload.salePrice ?? null,
@@ -46,6 +46,8 @@ export async function POST(req: NextRequest) {
           isFeatured: payload.isFeatured ?? false,
           isNew: payload.isNew ?? true,
           isBestSeller: payload.isBestSeller ?? false,
+          pinnedInNew: payload.pinnedInNew ?? false,
+          pinnedInBestSeller: payload.pinnedInBestSeller ?? false,
           tags: normalizeTags(payload.tags),
           metaTitle: payload.metaTitle?.trim() || null,
           metaDescription: payload.metaDescription?.trim() || null,

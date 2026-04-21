@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       if (!parent) throw new Error('Selected parent category was not found')
     }
 
-    const slug = await ensureUniqueSlug('category', payload.slug || payload.name, existingCategory.id)
+    const slug = await ensureUniqueSlug(payload.slug || payload.name, existingCategory.id)
     const image = await persistAdminUpload(payload.image, 'categories')
     const newUploads = [image].filter(
       (url): url is string => Boolean(url && url !== existingCategory.image && url.startsWith('/uploads/admin/')),

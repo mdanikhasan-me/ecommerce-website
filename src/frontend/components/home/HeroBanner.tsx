@@ -41,9 +41,10 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
   if (!banners.length) {
     return (
-      <section className="container-site pt-6">
-        <div className="relative overflow-hidden rounded-[2.4rem] border border-black/6 bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] px-6 py-12 shadow-[0_34px_80px_rgba(27,20,18,0.14)] sm:px-10 lg:px-14 lg:py-16">
-          <div className="max-w-2xl">
+      <section className="w-full">
+        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] py-12 lg:py-16">
+          <div className="container-site">
+            <div className="max-w-2xl">
             <h1 className={cn('mt-4 text-[2.65rem] leading-[0.92] sm:text-[4rem]', heroTitleClass)}>
               A warmer, calmer way to shop online in Bangladesh.
             </h1>
@@ -54,6 +55,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
               <Link href="/search" className="inline-flex items-center rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white">
                 Start shopping
               </Link>
+            </div>
             </div>
           </div>
         </div>
@@ -71,8 +73,8 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   const hasMobileImage = Boolean(mobileHeroImage)
 
   return (
-    <section className="container-site pt-6">
-      <div className="group relative overflow-hidden rounded-[2.4rem] border border-black/6 bg-foreground shadow-[0_34px_80px_rgba(27,20,18,0.14)]">
+    <section className="w-full">
+      <div className="group relative overflow-hidden bg-foreground">
         <div className="relative aspect-[19/15] w-full sm:aspect-[21/12] lg:aspect-[21/8]">
           {hasMobileImage ? (
             <Image

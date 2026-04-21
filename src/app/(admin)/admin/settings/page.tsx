@@ -20,7 +20,6 @@ const SETTINGS_GROUPS = [
     id: 'features',
     label: 'Feature Flags',
     fields: [
-      { key: 'seller_mode', label: 'Enable Seller Marketplace', type: 'toggle', description: 'Allow third-party sellers to register and list products' },
       { key: 'guest_checkout', label: 'Allow Guest Checkout', type: 'toggle', description: 'Let customers checkout without creating an account' },
     ],
   },

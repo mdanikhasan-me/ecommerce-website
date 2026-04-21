@@ -1,6 +1,7 @@
 import { db } from '@/backend/database'
 import { formatDateRelative } from '@/backend/utils'
 import { Star } from 'lucide-react'
+import Link from 'next/link'
 import { ReviewModerationActions } from '@/frontend/components/admin/ReviewModerationActions'
 
 interface Props { searchParams: Promise<{ status?: string; page?: string }> }
@@ -28,6 +29,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
 
   const counts = await db.review.groupBy({ by: ['status'], _count: true })
   const countMap = Object.fromEntries(counts.map((c) => [c.status, c._count]))
+  const totalPages = Math.ceil(total / limit)
 
   const tabs = [
     { label: 'Pending', value: 'PENDING', count: countMap['PENDING'] ?? 0 },
@@ -86,13 +88,21 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
                   <p className="text-sm text-muted-foreground leading-relaxed">{review.body}</p>
                 </div>
 
-                {statusFilter === 'PENDING' && (
-                  <ReviewModerationActions reviewId={review.id} />
-                )}
+                <ReviewModerationActions reviewId={review.id} currentStatus={statusFilter} />
               </div>
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="px-5 py-3 border-t border-border flex items-center justify-between text-sm">
+            <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
+            <div className="flex gap-2">
+              {page > 1 && <Link href={`/admin/reviews?status=${statusFilter}&page=${page - 1}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
+              {page < totalPages && <Link href={`/admin/reviews?status=${statusFilter}&page=${page + 1}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

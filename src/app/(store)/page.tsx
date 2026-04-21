@@ -33,8 +33,17 @@ export const metadata: Metadata = {
 export const revalidate = 300
 
 async function getHomeData() {
-  const [banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts] =
-    await Promise.all([
+  const [
+    banners,
+    categories,
+    featured,
+    bestSellers,
+    newArrivals,
+    newArrivalsPinned,
+    bestSellersPinned,
+    flashSale,
+    saleProducts,
+  ] = await Promise.all([
       db.banner.findMany({ where: { isActive: true, position: 'hero' }, orderBy: { sortOrder: 'asc' } }),
       db.category.findMany({
         where: { isActive: true, parentId: null },
@@ -48,7 +57,6 @@ async function getHomeData() {
         orderBy: { soldCount: 'desc' },
         include: {
           images: { where: { isPrimary: true }, take: 1 },
-          brand: { select: { name: true, slug: true } },
           category: { select: { name: true, slug: true } },
         },
       }),
@@ -58,7 +66,6 @@ async function getHomeData() {
         orderBy: { soldCount: 'desc' },
         include: {
           images: { where: { isPrimary: true }, take: 1 },
-          brand: { select: { name: true, slug: true } },
           category: { select: { name: true, slug: true } },
         },
       }),
@@ -68,7 +75,24 @@ async function getHomeData() {
         orderBy: { createdAt: 'desc' },
         include: {
           images: { where: { isPrimary: true }, take: 1 },
-          brand: { select: { name: true, slug: true } },
+          category: { select: { name: true, slug: true } },
+        },
+      }),
+      db.product.findMany({
+        where: { isActive: true, isNew: true, pinnedInNew: true },
+        take: 8,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          images: { where: { isPrimary: true }, take: 1 },
+          category: { select: { name: true, slug: true } },
+        },
+      }),
+      db.product.findMany({
+        where: { isActive: true, isBestSeller: true, pinnedInBestSeller: true },
+        take: 8,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          images: { where: { isPrimary: true }, take: 1 },
           category: { select: { name: true, slug: true } },
         },
       }),
@@ -80,7 +104,6 @@ async function getHomeData() {
               product: {
                 include: {
                   images: { where: { isPrimary: true }, take: 1 },
-                  brand: { select: { name: true, slug: true } },
                   category: { select: { name: true, slug: true } },
                 },
               },
@@ -95,18 +118,39 @@ async function getHomeData() {
         orderBy: { updatedAt: 'desc' },
         include: {
           images: { where: { isPrimary: true }, take: 1 },
-          brand: { select: { name: true, slug: true } },
           category: { select: { name: true, slug: true } },
         },
       }),
     ])
 
-  return { banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts }
+  return {
+    banners,
+    categories,
+    featured,
+    bestSellers,
+    newArrivals,
+    newArrivalsPinned,
+    bestSellersPinned,
+    flashSale,
+    saleProducts,
+  }
 }
 
 export default async function HomePage() {
-  const { banners, categories, featured, bestSellers, newArrivals, flashSale, saleProducts } =
-    await getHomeData()
+  const {
+    banners,
+    categories,
+    featured,
+    bestSellers,
+    newArrivals,
+    newArrivalsPinned,
+    bestSellersPinned,
+    flashSale,
+    saleProducts,
+  } = await getHomeData()
+
+  const newArrivalRotatorProducts = newArrivalsPinned.length > 0 ? newArrivalsPinned : newArrivals
+  const bestSellerRotatorProducts = bestSellersPinned.length > 0 ? bestSellersPinned : bestSellers
 
   const flashDealPreviewProducts =
     flashSale && flashSale.items.length > 0 ? flashSale.items.map((item) => item.product) : []
@@ -160,10 +204,12 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="container-site py-4 sm:py-6">
+      <section className="w-full py-4 sm:py-6">
         <PromoSection
           flashDealProducts={flashDealPreviewProducts}
           newArrivalProducts={newArrivals}
+          newArrivalRotatorProducts={newArrivalRotatorProducts}
+          bestSellerRotatorProducts={bestSellerRotatorProducts}
           flashDealEndsAt={flashDealEndsAt}
           flashDealMaxDiscount={flashDealMaxDiscount}
         />

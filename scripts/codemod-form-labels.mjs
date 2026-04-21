@@ -61,4 +61,4 @@ for await (const file of glob('src/**/*.tsx')) {
   }
 }
 
-console.log(`done — ${added} elements in ${files} files`)
+console.log(`done ; ${added} elements in ${files} files`)

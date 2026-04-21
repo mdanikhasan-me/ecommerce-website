@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
 
 type SearchParams = {
-  q?: string; category?: string; brand?: string; minPrice?: string; maxPrice?: string;
+  q?: string; category?: string; minPrice?: string; maxPrice?: string;
   rating?: string; inStock?: string; sort?: string; page?: string; featured?: string;
 }
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 /**
  * Resolve a free-text query into a set of Prisma WHERE conditions.
  *
- * Strategy: pre-fetch brand IDs and category IDs whose names match any word
+ * Strategy: pre-fetch category IDs whose names match any word
  * in the query, then filter products using direct foreign-key `in` lookups.
  * This avoids Prisma's nested-relation OR filter, which can silently generate
  * bad SQL depending on the adapter version.
@@ -40,58 +40,41 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
     new Set(normalized.toLowerCase().split(/\s+/).filter((w) => w.length >= 2))
   )
 
-  // Build OR for brand names: match full phrase OR any individual word
-  const brandNameOR = [
-    { name: { contains: normalized, mode: 'insensitive' as const } },
-    ...words.map((w) => ({ name: { contains: w, mode: 'insensitive' as const } })),
-  ]
-
   // Build OR for category names: same approach
   const catNameOR = [
     { name: { contains: normalized, mode: 'insensitive' as const } },
     ...words.map((w) => ({ name: { contains: w, mode: 'insensitive' as const } })),
   ]
 
-  // Resolve brand and category IDs concurrently — simple indexed lookups
-  const [matchedBrands, matchedCategories] = await Promise.all([
-    db.brand.findMany({
-      where: { OR: brandNameOR },
-      select: { id: true },
-    }),
-    db.category.findMany({
-      where: { OR: catNameOR },
-      select: { id: true },
-    }),
-  ])
-
-  const brandIds = matchedBrands.map((b) => b.id)
+  const matchedCategories = await db.category.findMany({
+    where: { OR: catNameOR },
+    select: { id: true },
+  })
   const categoryIds = matchedCategories.map((c) => c.id)
 
   // Build the final OR conditions for products
   // Relevance priority:
-  //   1. Brand / category match  (pre-fetched IDs — no false positives)
-  //   2. Product name — full phrase, then individual words
-  //   3. Tags — exact word match
-  //   4. Short description / description — FULL PHRASE ONLY
+  //   1. Category match  (pre-fetched IDs, no false positives)
+  //   2. Product name; full phrase, then individual words
+  //   3. Tags; exact word match
+  //   4. Short description and description; FULL PHRASE ONLY
   //      (individual-word description search is too noisy:
   //       a "USB-C phone charger" description would surface chargers for
   //       every "phone" or "laptop" search)
   const productOR: Prisma.ProductWhereInput[] = []
 
-  // Brand / category via direct FK IN — most precise
-  if (brandIds.length > 0) productOR.push({ brandId: { in: brandIds } })
   if (categoryIds.length > 0) productOR.push({ categoryId: { in: categoryIds } })
 
-  // Name — full phrase first, then each word
+  // Name; full phrase first, then each word
   productOR.push({ name: { contains: normalized, mode: 'insensitive' } })
   for (const w of words) {
     productOR.push({ name: { contains: w, mode: 'insensitive' } } satisfies Prisma.ProductWhereInput)
   }
 
-  // Tags — exact word set match
+  // Tags; exact word set match
   if (words.length > 0) productOR.push({ tags: { hasSome: words } })
 
-  // Description fields — full phrase only, never individual words
+  // Description fields; full phrase only, never individual words
   productOR.push({ shortDescription: { contains: normalized, mode: 'insensitive' } })
   productOR.push({ description: { contains: normalized, mode: 'insensitive' } })
 
@@ -105,7 +88,7 @@ async function getSearchResults(params: SearchParams) {
 
   const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true }]
 
-  // Text search — resolved to direct ID lookups
+  // Text search; resolved to direct ID lookups
   if (params.q?.trim()) {
     const textWhere = await resolveTextWhere(params.q.trim())
     andClauses.push(textWhere)
@@ -113,7 +96,6 @@ async function getSearchResults(params: SearchParams) {
 
   // Hard filters applied as additional AND clauses
   if (params.category) andClauses.push({ category: { slug: params.category } })
-  if (params.brand) andClauses.push({ brand: { slug: params.brand } })
   if (params.minPrice) andClauses.push({ basePrice: { gte: parseFloat(params.minPrice) } })
   if (params.maxPrice) andClauses.push({ basePrice: { lte: parseFloat(params.maxPrice) } })
   if (params.inStock === 'true') andClauses.push({ stockQuantity: { gt: 0 } })
@@ -128,7 +110,7 @@ async function getSearchResults(params: SearchParams) {
   else if (params.sort === 'price_desc') orderBy = { basePrice: 'desc' }
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const [products, total, brands, categories] = await Promise.all([
+  const [products, total, categories] = await Promise.all([
     db.product.findMany({
       where,
       orderBy,
@@ -136,21 +118,19 @@ async function getSearchResults(params: SearchParams) {
       take: limit,
       include: {
         images: { where: { isPrimary: true }, take: 1 },
-        brand: { select: { name: true, slug: true } },
         category: { select: { name: true, slug: true } },
       },
     }),
     db.product.count({ where }),
-    db.brand.findMany({ where: { isActive: true }, select: { name: true, slug: true }, orderBy: { name: 'asc' }, take: 30 }),
     db.category.findMany({ where: { isActive: true }, select: { name: true, slug: true }, orderBy: { name: 'asc' } }),
   ])
 
-  return { products, total, brands, categories, page, totalPages: Math.ceil(total / limit) }
+  return { products, total, categories, page, totalPages: Math.ceil(total / limit) }
 }
 
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams
-  const { products, total, brands, categories, page, totalPages } = await getSearchResults(params)
+  const { products, total, categories, page, totalPages } = await getSearchResults(params)
 
   const SORT_OPTIONS = [
     { value: 'popular', label: 'Most Popular' },
@@ -178,7 +158,7 @@ export default async function SearchPage({ searchParams }: Props) {
 
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <SearchFiltersPanel brands={brands} categories={categories} searchParams={params} />
+          <SearchFiltersPanel categories={categories} searchParams={params} />
         </aside>
 
         <div className="flex-1 min-w-0">

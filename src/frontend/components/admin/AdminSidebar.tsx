@@ -3,9 +3,9 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Package, Grid3X3, Tag, ShoppingBag, Users, Ticket,
+  LayoutDashboard, Package, Grid3X3, ShoppingBag, Users, Ticket,
   Image, Star, Warehouse, BarChart3, Settings, RefreshCcw, Bell,
-  FileText, Store, ChevronRight, Zap
+  FileText, ChevronRight, Zap
 } from 'lucide-react'
 import { cn } from '@/backend/utils'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
@@ -16,7 +16,6 @@ const NAV_ITEMS = [
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Package },
   { label: 'Categories', href: '/admin/categories', icon: Grid3X3 },
-  { label: 'Brands', href: '/admin/brands', icon: Tag },
   { label: 'Inventory', href: '/admin/inventory', icon: Warehouse },
   { label: 'Coupons', href: '/admin/coupons', icon: Ticket },
   { label: 'Flash Sales', href: '/admin/flash-sales', icon: Zap },
@@ -30,11 +29,7 @@ const NAV_ITEMS = [
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-const SELLER_ITEMS = [
-  { label: 'Sellers', href: '/admin/sellers', icon: Store },
-]
-
-export function AdminSidebar({ role }: { role: string }) {
+export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
@@ -73,27 +68,6 @@ export function AdminSidebar({ role }: { role: string }) {
           )
         })}
 
-        {(role === 'SUPER_ADMIN' || role === 'ADMIN') && (
-          <>
-            <p className="text-white/40 text-xs font-semibold uppercase tracking-widest px-3 mt-4 mb-2">Marketplace</p>
-            {SELLER_ITEMS.map((item) => {
-              const isActive = pathname.startsWith(item.href)
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all mb-0.5',
-                    isActive ? 'bg-primary text-white' : 'text-white/60 hover:text-white hover:bg-white/10'
-                  )}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              )
-            })}
-          </>
-        )}
       </nav>
 
       {/* Footer */}

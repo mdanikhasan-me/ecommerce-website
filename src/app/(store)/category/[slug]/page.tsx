@@ -7,7 +7,6 @@ import type { Metadata } from 'next'
 
 type CategorySearchParams = {
   sort?: string
-  brand?: string
   minPrice?: string
   maxPrice?: string
   page?: string
@@ -17,6 +16,8 @@ interface Props {
   params: Promise<{ slug: string }>
   searchParams?: Promise<CategorySearchParams>
 }
+
+export const revalidate = 300
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -43,7 +44,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const categoryIds = [category.id, ...category.children.map((c) => c.id)]
 
   const where: any = { isActive: true, categoryId: { in: categoryIds } }
-  if (resolvedSearchParams.brand) where.brand = { slug: resolvedSearchParams.brand }
   if (resolvedSearchParams.minPrice) where.basePrice = { ...where.basePrice, gte: parseFloat(resolvedSearchParams.minPrice) }
   if (resolvedSearchParams.maxPrice) where.basePrice = { ...where.basePrice, lte: parseFloat(resolvedSearchParams.maxPrice) }
 
@@ -53,21 +53,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   else if (resolvedSearchParams.sort === 'price_desc') orderBy = { basePrice: 'desc' }
   else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const [products, total, brands] = await Promise.all([
+  const [products, total] = await Promise.all([
     db.product.findMany({
       where, orderBy, skip, take: limit,
       include: {
         images: { where: { isPrimary: true }, take: 1 },
-        brand: { select: { name: true, slug: true } },
         category: { select: { name: true, slug: true } },
       },
     }),
     db.product.count({ where }),
-    db.brand.findMany({
-      where: { isActive: true, products: { some: { categoryId: { in: categoryIds } } } },
-      select: { name: true, slug: true },
-      orderBy: { name: 'asc' },
-    }),
   ])
 
   const totalPages = Math.ceil(total / limit)
@@ -112,7 +106,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <SearchFiltersPanel brands={brands} categories={[]} searchParams={resolvedSearchParams as Record<string, string>} />
+          <SearchFiltersPanel categories={[]} searchParams={resolvedSearchParams as Record<string, string>} />
         </aside>
 
         <div className="flex-1 min-w-0">
@@ -133,7 +127,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <a
                       key={p}
-                      href={`/category/${slug}?page=${p}${resolvedSearchParams.brand ? `&brand=${resolvedSearchParams.brand}` : ''}`}
+                      href={`/category/${slug}?page=${p}`}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'}`}
                     >
                       {p}

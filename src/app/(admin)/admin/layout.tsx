@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/backend/auth'
+import { db } from '@/backend/database'
 import { AdminSidebar } from '@/frontend/components/admin/AdminSidebar'
 import { AdminHeader } from '@/frontend/components/admin/AdminHeader'
 
@@ -14,11 +15,15 @@ export default async function AdminLayout({
     redirect('/auth/login?callbackUrl=/admin')
   }
 
+  const unreadCount = await db.notification.count({
+    where: { userId: session.user.id, isRead: false },
+  })
+
   return (
     <div className="flex h-screen bg-secondary overflow-hidden">
-      <AdminSidebar role={session.user.role} />
+      <AdminSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <AdminHeader user={session.user} />
+        <AdminHeader user={session.user} unreadCount={unreadCount} />
         <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>

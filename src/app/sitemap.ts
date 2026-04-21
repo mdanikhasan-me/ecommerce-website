@@ -1,8 +1,7 @@
 /**
  * Dynamic Sitemap Generator
  *
- * Automatically generates sitemap.xml from database products, categories, and brands.
- * Google and Bing crawl this to discover and index all pages.
+ * Automatically generates sitemap.xml from database products and categories.
  *
  * Access at: /sitemap.xml
  */
@@ -13,12 +12,10 @@ import { db } from '@/backend/database'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // ─── Static pages ─────────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${SITE_URL}/deals`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/new-arrivals`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-    { url: `${SITE_URL}/brands`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/search`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.6 },
     { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
     { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
@@ -28,7 +25,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/returns`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
   ]
 
-  // ─── Product pages (highest priority after homepage) ──────
   const products = await db.product.findMany({
     where: { isActive: true },
     select: { slug: true, updatedAt: true },
@@ -42,7 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }))
 
-  // ─── Category pages ───────────────────────────────────────
   const categories = await db.category.findMany({
     select: { slug: true, updatedAt: true },
   })
@@ -54,17 +49,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // ─── Brand pages ──────────────────────────────────────────
-  const brands = await db.brand.findMany({
-    select: { slug: true, updatedAt: true },
-  })
-
-  const brandPages: MetadataRoute.Sitemap = brands.map((b) => ({
-    url: `${SITE_URL}/brands/${b.slug}`,
-    lastModified: b.updatedAt,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }))
-
-  return [...staticPages, ...productPages, ...categoryPages, ...brandPages]
+  return [...staticPages, ...productPages, ...categoryPages]
 }

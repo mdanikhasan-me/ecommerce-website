@@ -52,8 +52,8 @@ export default function AboutPage() {
             <>
               <p>
                 The long term vision is not just a store with products on shelves. It is a
-                marketplace that earns trust over time through better design, better operations,
-                and better seller standards.
+                retail brand that earns trust over time through better design, better operations,
+                and higher product standards.
               </p>
               <p>
                 We want Boilabin to feel modern and premium without becoming difficult to use.

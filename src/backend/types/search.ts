@@ -1,9 +1,7 @@
-// ─── SEARCH TYPES ─────────────────────────────────────────────────────────────
-
+// SEARCH TYPES
 export interface SearchFilters {
   q?: string
   category?: string
-  brand?: string
   minPrice?: number
   maxPrice?: number
   rating?: number

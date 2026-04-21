@@ -1,5 +1,4 @@
-// ─── CURRENCY ─────────────────────────────────────────────────────────────────
-
+// CURRENCY
 export function formatPrice(
   price: number,
   currency: string = 'BDT',
@@ -20,8 +19,7 @@ export function calculateDiscount(original: number, sale: number): number {
   return Math.round(((original - sale) / original) * 100)
 }
 
-// ─── DATE ─────────────────────────────────────────────────────────────────────
-
+// DATE
 export function formatDate(date: Date | string): string {
   return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -42,8 +40,7 @@ export function formatDateRelative(date: Date | string): string {
   return formatDate(date)
 }
 
-// ─── RATING ───────────────────────────────────────────────────────────────────
-
+// RATING
 export function getRatingLabel(rating: number): string {
   if (rating >= 4.5) return 'Excellent'
   if (rating >= 4.0) return 'Very Good'
@@ -52,8 +49,7 @@ export function getRatingLabel(rating: number): string {
   return 'Poor'
 }
 
-// ─── STOCK ────────────────────────────────────────────────────────────────────
-
+// STOCK
 export function getStockStatus(quantity: number): {
   label: string
   color: string

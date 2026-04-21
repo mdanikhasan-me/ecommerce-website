@@ -105,7 +105,6 @@ export default function ContactPage() {
                 <option>Return Request</option>
                 <option>Product Query</option>
                 <option>Payment Issue</option>
-                <option>Seller Inquiry</option>
                 <option>Other</option>
               </select>
             </div>

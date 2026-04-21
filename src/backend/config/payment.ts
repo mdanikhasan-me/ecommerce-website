@@ -14,14 +14,14 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
   {
     id: 'CASH_ON_DELIVERY',
     name: 'Cash on Delivery',
-    logo: PAYMENT_ASSETS.CASH_ON_DELIVERY.src,
+    logos: [PAYMENT_ASSETS.CASH_ON_DELIVERY],
     isAvailable: true,
     description: 'Pay when your order arrives',
   },
   {
     id: 'BKASH',
     name: 'bKash',
-    logo: PAYMENT_ASSETS.BKASH.src,
+    logos: [PAYMENT_ASSETS.BKASH],
     isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
     description: BANGLADESH_ONLINE_GATEWAY_READY
       ? 'Pay via bKash mobile banking'
@@ -34,7 +34,7 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
   {
     id: 'NAGAD',
     name: 'Nagad',
-    logo: PAYMENT_ASSETS.NAGAD.src,
+    logos: [PAYMENT_ASSETS.NAGAD],
     isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
     description: BANGLADESH_ONLINE_GATEWAY_READY
       ? 'Pay via Nagad mobile banking'
@@ -47,15 +47,17 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
   {
     id: 'SSLCOMMERZ',
     name: 'Card / Online Banking',
-    logo: PAYMENT_ASSETS.SSLCOMMERZ.src,
+    logos: [PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD],
     isAvailable: false,
     description: 'Visa, Mastercard, internet banking',
+    badge: 'Coming soon',
   },
   {
     id: 'STRIPE',
     name: 'International Card',
-    logo: PAYMENT_ASSETS.STRIPE.src,
+    logos: [PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD],
     isAvailable: false,
-    description: 'Coming soon',
+    description: 'Visa, Mastercard, and international cards',
+    badge: 'Coming soon',
   },
 ]

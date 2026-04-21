@@ -29,4 +29,4 @@ for await (const file of walk()) {
   }
 }
 
-console.log(`done — ${totalAdds} buttons in ${changedFiles} files`)
+console.log(`done ; ${totalAdds} buttons in ${changedFiles} files`)

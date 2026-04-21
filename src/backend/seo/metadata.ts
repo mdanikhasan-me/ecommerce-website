@@ -22,7 +22,6 @@ interface ProductMeta {
   salePrice?: number | null
   images: { url: string; isPrimary: boolean }[]
   category: { name: string; slug: string }
-  brand?: { name: string; slug: string } | null
   rating?: number
   reviewCount?: number
   stockQuantity?: number
@@ -31,13 +30,13 @@ interface ProductMeta {
 
 export function generateProductMetadata(product: ProductMeta): Metadata {
   const price = product.salePrice ?? product.basePrice
-  const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
+  const primaryImage = product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url
   const url = `${SEO.siteUrl}/products/${product.slug}`
 
   const desc =
     product.shortDescription ??
     product.description?.slice(0, 155) ??
-    `Buy ${product.name} at ৳${price.toLocaleString('en-IN')} in Bangladesh. ${product.brand?.name ? `Original ${product.brand.name}. ` : ''}Free delivery on orders over ৳2,000. Cash on delivery available.`
+    `Buy ${product.name} at Tk ${price.toLocaleString('en-BD')} in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery available.`
 
   const keywords = [
     product.name,
@@ -46,7 +45,6 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     `buy ${product.name} online`,
     product.category.name,
     `${product.category.name} price bd`,
-    ...(product.brand ? [product.brand.name, `${product.brand.name} ${product.category.name}`] : []),
     ...(product.tags ?? []),
     'boilabin',
     'online shopping bangladesh',
@@ -55,7 +53,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const seoTitle = product.metaTitle?.trim() || `${product.name} price in Bangladesh`
   const seoDescription =
     product.metaDescription?.trim() ||
-    `Buy ${product.name} in Bangladesh at BDT ${formatBdt(price)}. ${product.brand?.name ? `Original ${product.brand.name} product. ` : ''}Fast delivery, secure checkout, and cash on delivery from Boilabin.`
+    `Buy ${product.name} in Bangladesh at BDT ${formatBdt(price)}. Fast delivery, secure checkout, and cash on delivery from Boilabin.`
 
   return {
     title: seoTitle,
@@ -65,7 +63,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
       canonical: url,
     },
     openGraph: {
-      title: `${product.name}, ৳${price.toLocaleString('en-IN')}, ${SEO.siteName}`,
+      title: `${product.name}, Tk ${price.toLocaleString('en-BD')}, ${SEO.siteName}`,
       description: desc,
       url,
       siteName: SEO.siteName,
@@ -84,7 +82,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name}, ৳${price.toLocaleString('en-IN')}`,
+      title: `${product.name}, Tk ${price.toLocaleString('en-BD')}`,
       description: desc,
       images: primaryImage ? [primaryImage] : undefined,
     },
@@ -103,7 +101,7 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
   const url = `${SEO.siteUrl}/category/${category.slug}`
   const desc =
     category.description ??
-    `Shop ${category.name} at the best prices in Bangladesh. ${category.productCount ? `${category.productCount}+ products` : 'Wide selection'} with free delivery on orders over ৳2,000.`
+    `Shop ${category.name} at the best prices in Bangladesh. ${category.productCount ? `${category.productCount}+ products` : 'Wide selection'} with free delivery on orders over Tk 2,000.`
 
   return {
     title: `${category.name}, Best Prices in Bangladesh`,
@@ -128,45 +126,10 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
   }
 }
 
-interface BrandMeta {
-  name: string
-  slug: string
-  description?: string | null
-}
-
-export function generateBrandMetadata(brand: BrandMeta): Metadata {
-  const url = `${SEO.siteUrl}/brands/${brand.slug}`
-  const desc =
-    brand.description ??
-    `Shop original ${brand.name} products at the best prices in Bangladesh. Genuine products with warranty. Free delivery on orders over ৳2,000.`
-
-  return {
-    title: `${brand.name} Products, Boilabin Bangladesh`,
-    description: desc,
-    keywords: [
-      brand.name,
-      `${brand.name} price bd`,
-      `${brand.name} bangladesh`,
-      `original ${brand.name} bd`,
-      ...SEO.baseKeywords,
-    ],
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${brand.name} Products, ${SEO.siteName}`,
-      description: desc,
-      url,
-      siteName: SEO.siteName,
-      locale: SEO.locale,
-      type: 'website',
-    },
-    robots: SEO.robots,
-  }
-}
-
 export function generatePageMetadata(
   title: string,
   description: string,
-  path: string = ''
+  path: string = '',
 ): Metadata {
   const url = `${SEO.siteUrl}${path}`
   return {

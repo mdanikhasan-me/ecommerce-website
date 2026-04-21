@@ -7,7 +7,7 @@
  * - Product schema with Offer (price, currency BDT, availability)
  * - AggregateRating for star ratings in SERPs (20-30% CTR increase)
  * - BreadcrumbList for navigation breadcrumbs in search results
- * - Organization for brand knowledge panel
+ * - Organization schema for business identity and trust signals
  * - WebSite with SearchAction for Google sitelinks searchbox
  * - FAQPage for FAQ rich snippets
  *
@@ -16,8 +16,7 @@
 
 import { SEO } from './constants'
 
-// ─── Product JSON-LD ────────────────────────────────────────────────────────
-
+// Product JSON-LD
 interface ProductJsonLdInput {
   name: string
   slug: string
@@ -26,7 +25,6 @@ interface ProductJsonLdInput {
   salePrice?: number | null
   images: { url: string }[]
   category: { name: string; slug: string }
-  brand?: { name: string } | null
   sku?: string
   rating?: number
   reviewCount?: number
@@ -102,15 +100,7 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
     },
   }
 
-  // Brand
-  if (product.brand?.name) {
-    jsonLd.brand = {
-      '@type': 'Brand',
-      name: product.brand.name,
-    }
-  }
-
-  // AggregateRating (huge CTR boost — shows stars in SERPs)
+  // AggregateRating (huge CTR boost; shows stars in SERPs)
   if (product.rating && product.reviewCount && product.reviewCount > 0) {
     jsonLd.aggregateRating = {
       '@type': 'AggregateRating',
@@ -142,8 +132,7 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
   return jsonLd
 }
 
-// ─── Breadcrumb JSON-LD ─────────────────────────────────────────────────────
-
+// Breadcrumb JSON-LD
 interface BreadcrumbItem {
   name: string
   url: string
@@ -162,8 +151,7 @@ export function generateBreadcrumbJsonLd(items: BreadcrumbItem[]) {
   }
 }
 
-// ─── Organization JSON-LD ───────────────────────────────────────────────────
-
+// Organization JSON-LD
 export function generateOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -186,8 +174,7 @@ export function generateOrganizationJsonLd() {
   }
 }
 
-// ─── WebSite JSON-LD (with SearchAction for Google Sitelinks Searchbox) ─────
-
+// WebSite JSON-LD (with SearchAction for Google Sitelinks Searchbox)
 export function generateWebsiteJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -207,8 +194,7 @@ export function generateWebsiteJsonLd() {
   }
 }
 
-// ─── Local Business JSON-LD ─────────────────────────────────────────────────
-
+// Local Business JSON-LD
 export function generateLocalBusinessJsonLd() {
   return {
     '@context': 'https://schema.org',
@@ -230,8 +216,7 @@ export function generateLocalBusinessJsonLd() {
   }
 }
 
-// ─── FAQ JSON-LD ────────────────────────────────────────────────────────────
-
+// FAQ JSON-LD
 interface FAQItem {
   question: string
   answer: string
@@ -252,8 +237,7 @@ export function generateFAQJsonLd(items: FAQItem[]) {
   }
 }
 
-// ─── Collection / ItemList JSON-LD (for category pages) ─────────────────────
-
+// Collection / ItemList JSON-LD (for category pages)
 interface ItemListProduct {
   name: string
   slug: string

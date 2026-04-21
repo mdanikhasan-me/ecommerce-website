@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 
-const RECIPIENT_TYPES = ['USER', 'CUSTOMERS', 'SELLERS', 'ALL']
+const RECIPIENT_TYPES = ['USER', 'CUSTOMERS', 'ALL']
 
 export async function GET() {
   try {
@@ -49,9 +49,7 @@ export async function POST(req: NextRequest) {
       const where: Prisma.UserWhereInput =
         payload.recipientType === 'CUSTOMERS'
           ? { role: 'CUSTOMER', isActive: true }
-          : payload.recipientType === 'SELLERS'
-            ? { role: 'SELLER', isActive: true }
-            : { isActive: true }
+          : { isActive: true }
 
       const users = await db.user.findMany({
         where,

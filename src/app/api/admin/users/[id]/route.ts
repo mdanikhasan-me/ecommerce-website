@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 
-const ROLES = ['CUSTOMER', 'SELLER', 'ADMIN', 'SUPER_ADMIN']
+const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,15 +13,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const user = await db.user.findUnique({
       where: { id },
       include: {
-        seller: {
-          select: {
-            id: true,
-            storeName: true,
-            storeSlug: true,
-            status: true,
-            createdAt: true,
-          },
-        },
         _count: {
           select: {
             orders: true,
@@ -52,15 +43,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const existingUser = await db.user.findUnique({
       where: { id },
-      include: {
-        seller: {
-          select: {
-            id: true,
-            storeName: true,
-            status: true,
-          },
-        },
-      },
     })
 
     if (!existingUser) {
@@ -91,14 +73,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         isActive: Boolean(nextActive),
       },
       include: {
-        seller: {
-          select: {
-            id: true,
-            storeName: true,
-            storeSlug: true,
-            status: true,
-          },
-        },
         _count: {
           select: {
             orders: true,

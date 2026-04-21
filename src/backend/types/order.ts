@@ -1,5 +1,4 @@
-// ─── ORDER TYPES ──────────────────────────────────────────────────────────────
-
+// ORDER TYPES
 export interface OrderData {
   id: string
   orderNumber: string
@@ -30,8 +29,7 @@ export interface OrderItemData {
   productId: string
 }
 
-// ─── ADDRESS TYPES ────────────────────────────────────────────────────────────
-
+// ADDRESS TYPES
 export interface AddressData {
   id: string
   fullName: string

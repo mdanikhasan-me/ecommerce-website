@@ -35,30 +35,6 @@ export async function syncProductSoldCounts(productIds: string[]) {
   ])
 }
 
-export async function syncProductViewCounts(productIds: string[]) {
-  const ids = uniqueIds(productIds)
-  if (ids.length === 0) return
-
-  const grouped = await db.productView.groupBy({
-    by: ['productId'],
-    where: { productId: { in: ids } },
-    _count: { _all: true },
-  })
-
-  await db.$transaction([
-    db.product.updateMany({
-      where: { id: { in: ids } },
-      data: { viewCount: 0 },
-    }),
-    ...grouped.map((entry) =>
-      db.product.update({
-        where: { id: entry.productId },
-        data: { viewCount: entry._count._all },
-      })
-    ),
-  ])
-}
-
 type RecordProductViewArgs = {
   productId: string
   viewerKey: string

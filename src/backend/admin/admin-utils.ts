@@ -5,8 +5,6 @@ import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
 
-type SlugModel = 'category' | 'brand'
-
 export async function requireAdminSession() {
   const session = await auth()
   if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
@@ -36,27 +34,18 @@ export async function logAdminAudit(input: {
   }).catch(() => {})
 }
 
-export async function ensureUniqueSlug(model: SlugModel, rawSlug: string, excludeId?: string) {
-  const baseSlug = slugify(rawSlug) || `${model}-${Date.now().toString(36)}`
+export async function ensureUniqueSlug(rawSlug: string, excludeId?: string) {
+  const baseSlug = slugify(rawSlug) || `category-${Date.now().toString(36)}`
   let candidate = baseSlug
   let suffix = 2
 
   while (true) {
-    const where =
-      model === 'category'
-        ? {
-            slug: candidate,
-            ...(excludeId ? { id: { not: excludeId } } : {}),
-          }
-        : {
-            slug: candidate,
-            ...(excludeId ? { id: { not: excludeId } } : {}),
-          }
+    const where = {
+      slug: candidate,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    }
 
-    const existing =
-      model === 'category'
-        ? await db.category.findFirst({ where, select: { id: true } })
-        : await db.brand.findFirst({ where, select: { id: true } })
+    const existing = await db.category.findFirst({ where, select: { id: true } })
 
     if (!existing) return candidate
     candidate = `${baseSlug}-${suffix}`
@@ -104,17 +93,3 @@ export async function deleteReplacedAdminUploads(
   await cleanupManagedAdminUploads(removed)
 }
 
-export function parseOptionalNumber(value: unknown) {
-  if (value === null || value === undefined || value === '') return null
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) throw new Error('Invalid numeric value')
-  return parsed
-}
-
-export function parseRequiredNumber(value: unknown, label: string) {
-  const parsed = Number(value)
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`${label} is required`)
-  }
-  return parsed
-}

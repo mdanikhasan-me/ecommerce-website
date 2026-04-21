@@ -70,7 +70,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/56">{product.brand?.name}</p>
           <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-6 text-foreground">{product.name}</h3>
           <div className="flex items-center gap-1 mt-1">
             <Star className="h-3 w-3 star-filled" />
@@ -176,9 +175,6 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
       </div>
 
       <div className="p-4">
-        {product.brand && (
-          <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.22em] text-foreground/52">{product.brand.name}</p>
-        )}
         <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-foreground transition-colors group-hover:text-primary">
           {product.name}
         </h3>

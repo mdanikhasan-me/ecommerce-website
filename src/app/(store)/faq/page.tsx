@@ -33,7 +33,7 @@ const FAQS = [
   {
     category: 'Products and Authenticity',
     items: [
-      { q: 'Are all products on Boilabin authentic?', a: 'Yes. We source directly from authorized distributors and brand representatives so every product listed on Boilabin is authentic.' },
+      { q: 'Are all products on Boilabin authentic?', a: 'Yes. We source directly from authorized distributors and verified sourcing partners so every product listed on Boilabin is authentic.' },
       { q: 'Do products come with warranty?', a: "Warranty details are listed on each product page. Electronics typically come with the manufacturer's standard Bangladesh warranty." },
       { q: 'Can I find a product that is out of stock?', a: 'You can request to be notified when a product comes back in stock. Use the Notify Me button on the product page.' },
     ],

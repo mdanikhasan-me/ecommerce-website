@@ -17,7 +17,7 @@ const sora = Sora({
   weight: ['400', '500', '600', '700', '800'],
 })
 
-// Brand display face — matches the BOILABIN wordmark (geometric rounded sans).
+// Brand display face that matches the BOILABIN wordmark (geometric rounded sans).
 const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',

@@ -31,14 +31,6 @@ export async function GET(req: NextRequest) {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          seller: {
-            select: {
-              id: true,
-              storeName: true,
-              storeSlug: true,
-              status: true,
-            },
-          },
           _count: {
             select: {
               orders: true,

@@ -35,7 +35,6 @@ export default async function AdminProductsPage({ searchParams }: Props) {
       include: {
         images: { where: { isPrimary: true }, take: 1 },
         category: { select: { name: true } },
-        brand: { select: { name: true } },
       },
     }),
     db.product.count({ where }),
@@ -115,7 +114,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium truncate max-w-[200px]">{p.name}</p>
-                        <p className="text-xs text-muted-foreground">{p.brand?.name}</p>
+                        <p className="text-xs text-muted-foreground">{p.category.name}</p>
                       </div>
                     </div>
                   </td>
@@ -154,19 +153,29 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
-            <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link href={`/admin/products?page=${page - 1}${filters.q ? `&q=${filters.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>
-              )}
-              {page < totalPages && (
-                <Link href={`/admin/products?page=${page + 1}${filters.q ? `&q=${filters.q}` : ''}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>
-              )}
+        {totalPages > 1 && (() => {
+          const queryString = (targetPage: number) => {
+            const params = new URLSearchParams()
+            params.set('page', String(targetPage))
+            if (filters.q) params.set('q', filters.q)
+            if (filters.category) params.set('category', filters.category)
+            if (filters.status) params.set('status', filters.status)
+            return params.toString()
+          }
+          return (
+            <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
+              <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
+              <div className="flex gap-2">
+                {page > 1 && (
+                  <Link href={`/admin/products?${queryString(page - 1)}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>
+                )}
+                {page < totalPages && (
+                  <Link href={`/admin/products?${queryString(page + 1)}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
       </div>
     </div>
   )

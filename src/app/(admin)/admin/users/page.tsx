@@ -30,9 +30,10 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     db.user.count({ where }),
   ])
 
+  const totalPages = Math.ceil(total / limit)
+
   const ROLE_COLORS: Record<string, string> = {
     CUSTOMER: 'bg-blue-50 text-blue-700',
-    SELLER: 'bg-purple-50 text-purple-700',
     ADMIN: 'bg-warning/10 text-warning',
     SUPER_ADMIN: 'bg-red-50 text-red-700',
   }
@@ -52,7 +53,6 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <select aria-label="Role" title="Role" name="role" defaultValue={filters.role} className="input-base w-40">
             <option value="">All Roles</option>
             <option value="CUSTOMER">Customer</option>
-            <option value="SELLER">Seller</option>
             <option value="ADMIN">Admin</option>
           </select>
           <button type="submit" className="btn-primary px-4">Filter</button>
@@ -115,6 +115,25 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             ))}
           </tbody>
         </table>
+
+        {totalPages > 1 && (() => {
+          const queryString = (targetPage: number) => {
+            const params = new URLSearchParams()
+            params.set('page', String(targetPage))
+            if (filters.q) params.set('q', filters.q)
+            if (filters.role) params.set('role', filters.role)
+            return params.toString()
+          }
+          return (
+            <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
+              <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
+              <div className="flex gap-2">
+                {page > 1 && <Link href={`/admin/users?${queryString(page - 1)}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
+                {page < totalPages && <Link href={`/admin/users?${queryString(page + 1)}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
+              </div>
+            </div>
+          )
+        })()}
       </div>
     </div>
   )

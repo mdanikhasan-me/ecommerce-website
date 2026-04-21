@@ -6,7 +6,6 @@ const SUBJECTS = new Set([
   'Return Request',
   'Product Query',
   'Payment Issue',
-  'Seller Inquiry',
   'Other',
 ])
 

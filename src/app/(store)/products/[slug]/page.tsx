@@ -20,6 +20,8 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+export const revalidate = 60
+
 const getProduct = cache(async (slug: string) => {
   return db.product.findUnique({
     where: { slug, isActive: true },
@@ -28,7 +30,6 @@ const getProduct = cache(async (slug: string) => {
         select: { url: true, alt: true, isPrimary: true, sortOrder: true },
         orderBy: { sortOrder: 'asc' },
       },
-      brand: { select: { name: true, slug: true } },
       category: { select: { name: true, slug: true } },
       variants: {
         where: { isActive: true },
@@ -79,7 +80,6 @@ const getRelatedProducts = cache(async (categoryId: string, productId: string) =
     take: 4,
     include: {
       images: { where: { isPrimary: true }, take: 1 },
-      brand: { select: { name: true, slug: true } },
       category: { select: { name: true, slug: true } },
     },
   })
@@ -102,7 +102,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     salePrice: product.salePrice,
     images: product.images.map((image) => ({ url: image.url, isPrimary: image.isPrimary })),
     category: product.category,
-    brand: product.brand,
     rating: product.rating,
     reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
@@ -239,7 +238,6 @@ export default async function ProductPage({ params }: Props) {
     salePrice: product.salePrice,
     images: product.images.map((image) => ({ url: image.url })),
     category: product.category,
-    brand: product.brand,
     sku: product.sku,
     rating: product.rating,
     reviewCount: product.reviewCount,

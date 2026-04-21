@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       if (!parent) throw new Error('Selected parent category was not found')
     }
 
-    const slug = await ensureUniqueSlug('category', payload.slug || payload.name)
+    const slug = await ensureUniqueSlug(payload.slug || payload.name)
     const image = await persistAdminUpload(payload.image, 'categories')
 
     try {

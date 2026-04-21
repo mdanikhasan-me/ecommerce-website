@@ -189,12 +189,22 @@ export function BannerEditorForm({
             <div className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Position</label>
-                <input aria-label="Form input" title="Form input"
+                <p className="mb-1.5 text-xs text-muted-foreground">
+                  Controls where this banner shows on the storefront.
+                </p>
+                <select
+                  aria-label="Banner position"
+                  title="Banner position"
                   value={form.position}
                   onChange={(event) => updateField('position', event.target.value)}
                   className="input-base"
-                  placeholder="hero"
-                />
+                >
+                  <option value="hero">Hero (top of homepage)</option>
+                  <option value="new-arrivals">New Arrivals band</option>
+                  <option value="best-sellers">Best Sellers band</option>
+                  <option value="promo">Promo strip</option>
+                  <option value="category">Category page header</option>
+                </select>
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Sort order</label>

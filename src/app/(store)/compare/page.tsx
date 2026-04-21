@@ -20,7 +20,6 @@ type CompareProduct = {
   reviewCount: number
   stockQuantity: number
   images: { url: string; isPrimary: boolean }[]
-  brand?: { name: string; slug: string } | null
   category: { name: string; slug: string }
 }
 
@@ -214,7 +213,7 @@ export default function ComparePage() {
                             ) : null}
                           </div>
                           <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                            {product.brand?.name ?? product.category.name}
+                            {product.category.name}
                           </p>
                           <h2 className={`mt-1.5 line-clamp-2 font-semibold text-foreground ${compareLayout.titleClass}`}>
                             {product.name}

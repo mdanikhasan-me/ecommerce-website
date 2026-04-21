@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Boilabin New Arrivals' }
+export const revalidate = 300
 
 export default async function NewArrivalsPage() {
   const products = await db.product.findMany({
@@ -12,7 +13,6 @@ export default async function NewArrivalsPage() {
     take: 32,
     include: {
       images: { where: { isPrimary: true }, take: 1 },
-      brand: { select: { name: true, slug: true } },
       category: { select: { name: true, slug: true } },
     },
   })

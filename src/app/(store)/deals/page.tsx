@@ -5,6 +5,7 @@ import { Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Boilabin Flash Deals', description: 'Best deals and flash sales on Boilabin' }
+export const revalidate = 60
 
 export default async function DealsPage() {
   const [flashSale, saleProducts] = await Promise.all([
@@ -16,7 +17,6 @@ export default async function DealsPage() {
             product: {
               include: {
                 images: { where: { isPrimary: true }, take: 1 },
-                brand: { select: { name: true, slug: true } },
                 category: { select: { name: true, slug: true } },
               },
             },
@@ -30,7 +30,6 @@ export default async function DealsPage() {
       take: 16,
       include: {
         images: { where: { isPrimary: true }, take: 1 },
-        brand: { select: { name: true, slug: true } },
         category: { select: { name: true, slug: true } },
       },
     }),

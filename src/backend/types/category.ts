@@ -1,5 +1,4 @@
-// ─── CATEGORY TYPES ───────────────────────────────────────────────────────────
-
+// CATEGORY TYPES
 export interface CategoryTree {
   id: string
   name: string

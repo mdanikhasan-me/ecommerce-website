@@ -14,12 +14,6 @@ interface UserManagementFormProps {
     role: string
     isActive: boolean
     createdAt: Date | string
-    seller?: {
-      id: string
-      storeName: string
-      storeSlug: string
-      status: string
-    } | null
     _count: {
       orders: number
       reviews: number
@@ -29,7 +23,7 @@ interface UserManagementFormProps {
   }
 }
 
-const ROLES = ['CUSTOMER', 'SELLER', 'ADMIN', 'SUPER_ADMIN']
+const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']
 
 export function UserManagementForm({ user }: UserManagementFormProps) {
   const router = useRouter()
@@ -162,23 +156,6 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-5">
-          <h3 className="font-display font-semibold">Seller Link</h3>
-          {user.seller ? (
-            <div className="mt-4 space-y-2 text-sm">
-              <p className="font-medium">{user.seller.storeName}</p>
-              <p className="text-muted-foreground">Status: {user.seller.status}</p>
-              <Link href={`/admin/sellers/${user.seller.id}`} className="text-primary hover:underline">
-                Open seller review
-              </Link>
-              <Link href={`/store/${user.seller.storeSlug}`} target="_blank" className="block text-primary hover:underline">
-                View storefront
-              </Link>
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">No linked seller profile.</p>
-          )}
-        </section>
       </aside>
     </form>
   )

@@ -11,7 +11,6 @@ export default async function AdminInventoryPage() {
     orderBy: { stockQuantity: 'asc' },
     include: {
       category: { select: { name: true } },
-      brand: { select: { name: true } },
       variants: {
         orderBy: { sortOrder: 'asc' },
         select: {
@@ -86,9 +85,7 @@ export default async function AdminInventoryPage() {
                   <td className="max-w-[260px] px-4 py-3">
                     <div className="space-y-0.5">
                       <p className="truncate font-medium">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {product.brand?.name || 'No brand'}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{product.category.name}</p>
                     </div>
                   </td>
                   <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground md:table-cell">

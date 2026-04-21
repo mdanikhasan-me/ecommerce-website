@@ -6,12 +6,11 @@ import { Star, SlidersHorizontal, X } from 'lucide-react'
 import { cn } from '@/backend/utils'
 
 interface Props {
-  brands: { name: string; slug: string }[]
   categories: { name: string; slug: string }[]
   searchParams: Record<string, string | undefined>
 }
 
-export function SearchFiltersPanel({ brands, categories, searchParams }: Props) {
+export function SearchFiltersPanel({ categories, searchParams }: Props) {
   const router = useRouter()
   const [minPrice, setMinPrice] = useState(searchParams.minPrice ?? '')
   const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice ?? '')
@@ -42,7 +41,6 @@ export function SearchFiltersPanel({ brands, categories, searchParams }: Props) 
 
   const hasFilters = !!(
     searchParams.category ||
-    searchParams.brand ||
     searchParams.minPrice ||
     searchParams.maxPrice ||
     searchParams.rating ||
@@ -126,26 +124,6 @@ export function SearchFiltersPanel({ brands, categories, searchParams }: Props) 
               Tk {min ? Number(min).toLocaleString() : '0'}
               {max ? ` to Tk ${Number(max).toLocaleString()}` : '+'}
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h4 className="mb-2 text-sm font-semibold">Brand</h4>
-        <div className="max-h-48 space-y-1.5 overflow-y-auto">
-          {brands.map((brand) => (
-            <label key={brand.slug} className="group flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={searchParams.brand === brand.slug}
-                onChange={(e) => applyFilter('brand', e.target.checked ? brand.slug : undefined)}
-                aria-label={`Filter by brand ${brand.name}`}
-                className="accent-primary"
-              />
-              <span className={cn('text-sm transition-colors group-hover:text-primary', searchParams.brand === brand.slug && 'font-medium text-primary')}>
-                {brand.name}
-              </span>
-            </label>
           ))}
         </div>
       </div>

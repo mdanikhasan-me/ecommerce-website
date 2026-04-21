@@ -1,5 +1,4 @@
-// ─── PRODUCT TYPES ────────────────────────────────────────────────────────────
-
+// PRODUCT TYPES
 export interface ProductCardData {
   id: string
   name: string
@@ -14,7 +13,6 @@ export interface ProductCardData {
   isNew: boolean
   isBestSeller: boolean
   images: { url: string; isPrimary: boolean }[]
-  brand?: { name: string; slug: string } | null
   category: { name: string; slug: string }
 }
 
@@ -27,7 +25,6 @@ export interface ProductDetailData extends ProductCardData {
   attributes: { name: string; value: string }[]
   specifications: { group?: string | null; name: string; value: string }[]
   reviews: ReviewData[]
-  seller: { storeName: string; storeSlug: string; isFirstParty: boolean }
 }
 
 export interface VariantData {
@@ -41,8 +38,7 @@ export interface VariantData {
   options: { name: string; value: string }[]
 }
 
-// ─── REVIEW TYPES ─────────────────────────────────────────────────────────────
-
+// REVIEW TYPES
 export interface ReviewData {
   id: string
   rating: number

@@ -34,4 +34,4 @@ for await (const file of glob('src/**/*.tsx')) {
   }
 }
 
-console.log(`done — ${totalAdds} inputs in ${changedFiles} files`)
+console.log(`done ; ${totalAdds} inputs in ${changedFiles} files`)

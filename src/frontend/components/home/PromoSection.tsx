@@ -1,14 +1,18 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail } from 'lucide-react'
+import { ArrowRight, Mail } from 'lucide-react'
+
 import { ProductCardData } from '@/backend/types/product'
 import { calculateDiscount, formatPrice } from '@/backend/utils'
 import { CountdownTimer } from '@/frontend/components/ui/CountdownTimer'
 import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
+import { FeaturedProductRotator } from '@/frontend/components/home/FeaturedProductRotator'
 
 interface PromoSectionProps {
   flashDealProducts: ProductCardData[]
   newArrivalProducts: ProductCardData[]
+  newArrivalRotatorProducts?: ProductCardData[]
+  bestSellerRotatorProducts?: ProductCardData[]
   flashDealEndsAt?: Date | string | null
   flashDealMaxDiscount?: number
 }
@@ -20,122 +24,160 @@ type PromoCollection = {
   title: string
   copy: string
   cta: string
-  gradient: string
-  previewRailClass: string
-  previewCardClass: string
+  bandClassName: string
+  previewCardClassName: string
   products: ProductCardData[]
+  rotatorProducts: ProductCardData[]
 }
 
 export function PromoSection({
   flashDealProducts,
   newArrivalProducts,
+  newArrivalRotatorProducts,
+  bestSellerRotatorProducts,
   flashDealEndsAt,
   flashDealMaxDiscount = 0,
 }: PromoSectionProps) {
-  const collections: PromoCollection[] = ([
+  const collections: PromoCollection[] = [
     {
       kind: 'flash' as const,
       href: '/deals',
       label: 'Limited Offers',
       title: 'Flash Deals',
-      copy: 'Strong price drops, brought together in one clean place so the best offers are easy to scan.',
+      copy: 'Sharp price drops, arranged into a cleaner full-width banner so the strongest offers are easy to notice at a glance.',
       cta: 'Shop deals',
-      gradient: 'from-[#2f1e43] via-[#4a2d66] to-[#7d5a5f]',
-      previewRailClass: 'bg-[#f5efe6]',
-      previewCardClass: 'border-black/[0.06] bg-[#fffaf4]',
+      bandClassName: 'bg-[#261f31]',
+      previewCardClassName: 'border-[#dfd1bc] bg-[#fffaf3]',
       products: flashDealProducts.slice(0, 3),
+      rotatorProducts:
+        bestSellerRotatorProducts && bestSellerRotatorProducts.length > 0
+          ? bestSellerRotatorProducts
+          : flashDealProducts,
     },
     {
       kind: 'arrival' as const,
       href: '/new-arrivals',
       label: 'New This Week',
       title: 'New Arrivals',
-      copy: 'Fresh releases and recent drops, arranged with more breathing room so new products are easier to browse.',
+      copy: 'Fresh releases and recent drops, presented in a calmer layout so new pieces feel easier to scan and easier to browse.',
       cta: 'Explore all',
-      gradient: 'from-[#2f3649] via-[#1d2433] to-[#5e5449]',
-      previewRailClass: 'bg-[#f5efe6]',
-      previewCardClass: 'border-black/[0.06] bg-[#fffaf4]',
+      bandClassName: 'bg-[#202938]',
+      previewCardClassName: 'border-[#dfd1bc] bg-[#fffaf3]',
       products: newArrivalProducts.slice(0, 3),
+      rotatorProducts:
+        newArrivalRotatorProducts && newArrivalRotatorProducts.length > 0
+          ? newArrivalRotatorProducts
+          : newArrivalProducts,
     },
-  ] as PromoCollection[]).filter((collection) => collection.products.length > 0)
+  ].filter((collection) => collection.products.length > 0)
 
   if (collections.length === 0) {
     return null
   }
 
   return (
-    <div className={`grid grid-cols-1 gap-6 ${collections.length > 1 ? 'md:grid-cols-2' : ''}`}>
-      {collections.map((collection) => (
-        <Link
+    <section className="w-full border-y border-black/8">
+      {collections.map((collection, index) => (
+        <div
           key={collection.href}
-          href={collection.href}
-          className={`group relative min-h-[388px] overflow-hidden rounded-[30px] border border-black/[0.06] bg-gradient-to-br p-6 shadow-[0_28px_74px_rgba(17,24,39,0.16)] sm:min-h-[412px] ${collection.gradient}`}
+          className={`${collection.bandClassName} ${index > 0 ? 'border-t border-white/8' : ''}`}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%)]" />
-          <div className="absolute inset-y-0 left-0 w-[46%] bg-[linear-gradient(90deg,rgba(15,23,42,0.34),rgba(15,23,42,0.12),transparent)]" />
-          <div className="relative grid h-full gap-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
-            <div className="flex flex-col justify-between gap-5 p-2 sm:p-3">
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[hsl(var(--buttermilk))]">
-                  {collection.label}
-                </span>
-                <h3 className="mt-3 font-display text-[2rem] font-bold leading-[0.94] text-white [text-shadow:0_8px_24px_rgba(15,23,42,0.28)]">
-                  {collection.title}
-                </h3>
-                <p className="mt-3 max-w-sm text-sm leading-6 text-white/86">{collection.copy}</p>
-                {collection.kind === 'flash' ? (
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    {flashDealMaxDiscount > 0 ? (
-                      <span className="inline-flex items-center rounded-full border border-white/18 bg-black/12 px-3 py-1 text-xs font-semibold text-white">
-                        Up to {flashDealMaxDiscount}% off
-                      </span>
-                    ) : null}
-                    {flashDealEndsAt ? (
-                      <CountdownTimer
-                        endsAt={flashDealEndsAt}
-                        label="Ends in"
-                        className="flex items-center gap-2 rounded-full border border-white/18 bg-black/12 px-3 py-1.5 text-white"
-                        valueClassName="rounded-md bg-black/[0.22] px-2 py-1"
-                        separatorClassName="text-white/[0.42]"
-                      />
-                    ) : null}
-                  </div>
-                ) : (
-                  <div className="mt-4 inline-flex items-center rounded-full border border-white/14 bg-black/12 px-3 py-1 text-xs font-semibold text-white/95">
-                    New releases added regularly
-                  </div>
-                )}
-              </div>
-
-              <span className="inline-flex w-fit rounded-full bg-[hsl(var(--buttermilk))] px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[#231629] transition-colors group-hover:bg-white">
-                {collection.cta}
-              </span>
-            </div>
-
-            <div className={`rounded-[26px] p-3 shadow-[0_18px_44px_rgba(15,23,42,0.12)] ${collection.previewRailClass}`}>
-              <div className="grid grid-cols-3 gap-3">
-                {collection.products.length > 0 ? (
-                  collection.products.map((product) => (
-                    <PromoProductPreview
-                      key={product.id}
-                      product={product}
-                      cardClassName={collection.previewCardClass}
-                      badgeClassName={collection.kind === 'flash' ? 'bg-primary text-white' : 'bg-foreground text-white'}
-                    />
-                  ))
-                ) : (
-                  Array.from({ length: 3 }).map((_, index) => (
-                    <div
-                      key={`${collection.href}-${index}`}
-                      className="aspect-[0.78] rounded-[22px] bg-[#fffaf4]"
-                    />
-                  ))
-                )}
-              </div>
-            </div>
+          <div className="container-site">
+            <Link
+              href={collection.href}
+              className="group grid min-h-[30rem] items-stretch lg:grid-cols-[minmax(0,1.02fr)_minmax(24rem,0.98fr)] lg:gap-8"
+            >
+              <PromoTextPanel
+                collection={collection}
+                flashDealEndsAt={flashDealEndsAt}
+                flashDealMaxDiscount={flashDealMaxDiscount}
+              />
+              <PromoProductsPanel collection={collection} />
+            </Link>
           </div>
-        </Link>
+        </div>
       ))}
+    </section>
+  )
+}
+
+function PromoTextPanel({
+  collection,
+  flashDealEndsAt,
+  flashDealMaxDiscount,
+}: {
+  collection: PromoCollection
+  flashDealEndsAt?: Date | string | null
+  flashDealMaxDiscount: number
+}) {
+  return (
+    <div className="relative flex flex-col justify-center gap-8 py-10 sm:py-12 lg:flex-row lg:items-center lg:gap-10 lg:py-14">
+      <div className="flex-1 px-4 sm:px-6 lg:px-0 lg:pr-6 xl:pr-12">
+        <div className="max-w-[35rem]">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[hsl(var(--buttermilk))]">
+            {collection.label}
+          </span>
+
+          <h3 className="mt-4 max-w-[10ch] font-display text-[2.65rem] font-bold leading-[0.92] text-[hsl(var(--buttermilk))] sm:text-[3.4rem] xl:text-[4.15rem]">
+            {collection.title}
+          </h3>
+
+          <p className="mt-4 max-w-lg text-sm leading-7 text-[hsl(var(--buttermilk))]/90 sm:text-[15px]">
+            {collection.copy}
+          </p>
+
+          {collection.kind === 'flash' ? (
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              {flashDealMaxDiscount > 0 ? (
+                <span className="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-xs font-semibold text-[hsl(var(--buttermilk))]">
+                  Up to {flashDealMaxDiscount}% off
+                </span>
+              ) : null}
+              {flashDealEndsAt ? (
+                <CountdownTimer
+                  endsAt={flashDealEndsAt}
+                  label="Ends in"
+                  className="flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-[hsl(var(--buttermilk))]"
+                  valueClassName="rounded-md bg-black/16 px-2 py-1"
+                  separatorClassName="text-[hsl(var(--buttermilk))]/40"
+                />
+              ) : null}
+            </div>
+          ) : (
+            <div className="mt-5 inline-flex items-center rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-xs font-semibold text-[hsl(var(--buttermilk))]">
+              New releases added regularly
+            </div>
+          )}
+
+          <div className="mt-8">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors group-hover:bg-white">
+              {collection.cta}
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center px-4 sm:px-6 lg:justify-end lg:px-0 lg:pr-4">
+        <FeaturedProductRotator products={collection.rotatorProducts} />
+      </div>
+    </div>
+  )
+}
+
+function PromoProductsPanel({ collection }: { collection: PromoCollection }) {
+  return (
+    <div className="relative py-6 sm:py-8 lg:py-12">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {collection.products.map((product) => (
+          <PromoProductPreview
+            key={product.id}
+            product={product}
+            cardClassName={collection.previewCardClassName}
+            badgeClassName={collection.kind === 'flash' ? 'bg-primary text-white' : 'bg-foreground text-white'}
+          />
+        ))}
+      </div>
     </div>
   )
 }
@@ -154,16 +196,16 @@ function PromoProductPreview({
   const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
 
   return (
-    <div className={`rounded-[22px] border p-2.5 shadow-[0_18px_34px_rgba(15,23,42,0.12)] ${cardClassName}`}>
-      <div className="relative aspect-[0.92] overflow-hidden rounded-[18px] bg-[#efe8dc]">
+    <div className={`rounded-[1.45rem] border p-2.5 shadow-[0_18px_34px_rgba(15,23,42,0.08)] ${cardClassName}`}>
+      <div className="relative aspect-[0.92] overflow-hidden rounded-[1.15rem] bg-[#efe8dc]">
         {primaryImage ? (
           <Image
             src={primaryImage}
             alt={product.name}
             fill
             className="object-cover"
-            sizes="(max-width: 1024px) 28vw, 14vw"
-            quality={80}
+            sizes="(max-width: 640px) 82vw, (max-width: 1024px) 36vw, 16vw"
+            quality={82}
           />
         ) : null}
         {discount > 0 ? (
@@ -175,9 +217,9 @@ function PromoProductPreview({
 
       <div className="mt-2.5">
         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
-          {product.brand?.name ?? product.category.name}
+          {product.category.name}
         </p>
-        <p className="mt-1 line-clamp-2 text-[12px] font-semibold leading-4 text-slate-900">
+        <p className="mt-1 line-clamp-2 min-h-[2rem] text-[12px] font-semibold leading-4 text-slate-900">
           {product.name}
         </p>
         <div className="mt-2 flex flex-wrap items-baseline gap-1">
@@ -188,44 +230,6 @@ function PromoProductPreview({
             </span>
           ) : null}
         </div>
-      </div>
-    </div>
-  )
-}
-
-interface Brand {
-  id: string
-  name: string
-  slug: string
-  logo?: string | null
-}
-
-export function BrandHighlights({ brands }: { brands: Brand[] }) {
-  return (
-    <div>
-      <div className="mb-8 text-center">
-        <h2 className="section-title">Featured Brands</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Shop authentic products from world-class brands</p>
-      </div>
-
-      <div className="grid grid-cols-4 gap-5 sm:grid-cols-4 md:grid-cols-8">
-        {brands.map((brand) => (
-          <Link
-            key={brand.id}
-            href={`/brands/${brand.slug}`}
-            className="aspect-square rounded-xl bg-background p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <div className="flex h-full items-center justify-center">
-              {brand.logo ? (
-                <div className="relative h-10 w-full">
-                  <Image src={brand.logo} alt={brand.name} fill className="object-contain" sizes="100px" />
-                </div>
-              ) : (
-                <span className="font-display text-sm font-bold">{brand.name}</span>
-              )}
-            </div>
-          </Link>
-        ))}
       </div>
     </div>
   )

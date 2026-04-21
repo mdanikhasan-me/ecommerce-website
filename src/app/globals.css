@@ -85,7 +85,7 @@
     @apply font-display tracking-tight;
   }
 
-  /* Brand voice: every emphatic weight uses the display face (Poppins — wordmark match). */
+  /* Brand voice: every emphatic weight uses the display face (Poppins, wordmark match). */
   .font-display {
     font-family: var(--font-poppins), var(--font-sora), system-ui, sans-serif;
     letter-spacing: -0.01em;
@@ -378,4 +378,23 @@
 
 @keyframes shimmer {
   to { transform: translate3d(100%, 0, 0); }
+}
+
+@keyframes promo-fade {
+  0%, 26% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  33%, 100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@layer utilities {
+  .promo-backdrop-fade {
+    opacity: 0;
+    animation: promo-fade 18s ease-in-out infinite;
+    will-change: opacity, transform;
+  }
 }

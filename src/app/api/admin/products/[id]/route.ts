@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
     const payload = (await req.json()) as AdminProductPayload
     validateProductPayload(payload)
-    const { brandId, sellerId } = await validateProductRelations(payload)
+    const { sellerId } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name, existingProduct.id)
     const images = await normalizeProductImages(payload.images, slug)
@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
               shortDescription: payload.shortDescription?.trim() || null,
               sku: payload.sku.trim(),
               categoryId: payload.categoryId,
-              brandId,
+              brandId: null,
               sellerId,
               basePrice: payload.basePrice,
               salePrice: payload.salePrice ?? null,
@@ -74,6 +74,8 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
               isFeatured: payload.isFeatured ?? false,
               isNew: payload.isNew ?? true,
               isBestSeller: payload.isBestSeller ?? false,
+              pinnedInNew: payload.pinnedInNew ?? false,
+              pinnedInBestSeller: payload.pinnedInBestSeller ?? false,
               tags: normalizeTags(payload.tags),
               metaTitle: payload.metaTitle?.trim() || null,
               metaDescription: payload.metaDescription?.trim() || null,

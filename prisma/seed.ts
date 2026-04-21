@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Starting BoilaBin seed...')
 
-  // ─── SETTINGS ─────────────────────────────────────────────────────────
+  // SETTINGS
   await prisma.setting.createMany({
     data: [
       { key: 'site_name', value: 'BoilaBin', group: 'general' },
@@ -29,7 +29,7 @@ async function main() {
     update: {},
   })
 
-  // ─── SHIPPING ZONES ────────────────────────────────────────────────────
+  // SHIPPING ZONES
   await prisma.shippingZone.createMany({
     data: [
       { name: 'Dhaka City', divisions: ['Dhaka'], districts: ['Dhaka'], baseFee: 60, perKgFee: 0, minDays: 1, maxDays: 2 },
@@ -40,7 +40,7 @@ async function main() {
     skipDuplicates: true,
   })
 
-  // ─── SUPER ADMIN ───────────────────────────────────────────────────────
+  // SUPER ADMIN
   const adminPassword = await bcrypt.hash('Admin@123', 12)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@boilabin.com' },
@@ -54,7 +54,7 @@ async function main() {
     },
   })
 
-  // ─── FIRST-PARTY SELLER ───────────────────────────────────────────────
+  // FIRST-PARTY SELLER
   const firstPartySeller = await prisma.seller.upsert({
     where: { userId: admin.id },
     update: {},
@@ -62,14 +62,14 @@ async function main() {
       userId: admin.id,
       storeName: 'Boilabin',
       storeSlug: 'boilabin-official',
-      description: 'Boilabin product catalog and brand storefront.',
+      description: 'Boilabin product catalog and storefront.',
       status: SellerStatus.APPROVED,
       isFirstParty: true,
       commissionRate: 0,
     },
   })
 
-  // ─── SAMPLE CUSTOMER ──────────────────────────────────────────────────
+  // SAMPLE CUSTOMER
   const customerPassword = await bcrypt.hash('Customer@123', 12)
   const customer = await prisma.user.upsert({
     where: { email: 'customer@example.com' },
@@ -101,7 +101,7 @@ async function main() {
     },
   })
 
-  // ─── CATEGORIES ───────────────────────────────────────────────────────
+  // CATEGORIES
   const electronics = await prisma.category.upsert({ where: { slug: 'electronics' }, update: {}, create: { name: 'Electronics', slug: 'electronics', icon: 'Cpu', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&auto=format', sortOrder: 1 } })
   const mobile = await prisma.category.upsert({ where: { slug: 'mobile-phones' }, update: {}, create: { name: 'Mobile Phones', slug: 'mobile-phones', icon: 'Smartphone', parentId: electronics.id, sortOrder: 1 } })
   const laptops = await prisma.category.upsert({ where: { slug: 'laptops' }, update: {}, create: { name: 'Laptops', slug: 'laptops', icon: 'Laptop', parentId: electronics.id, sortOrder: 2 } })
@@ -121,7 +121,7 @@ async function main() {
   const gaming = await prisma.category.upsert({ where: { slug: 'gaming' }, update: {}, create: { name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&auto=format', sortOrder: 7 } })
   const babyKids = await prisma.category.upsert({ where: { slug: 'baby-kids' }, update: {}, create: { name: 'Baby & Kids', slug: 'baby-kids', icon: 'Baby', image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&auto=format', sortOrder: 8 } })
 
-  // ─── BRANDS ───────────────────────────────────────────────────────────
+  // BRANDS
   const apple = await prisma.brand.upsert({ where: { slug: 'apple' }, update: {}, create: { name: 'Apple', slug: 'apple', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Apple', isFeatured: true, sortOrder: 1 } })
   const samsung = await prisma.brand.upsert({ where: { slug: 'samsung' }, update: {}, create: { name: 'Samsung', slug: 'samsung', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Samsung', isFeatured: true, sortOrder: 2 } })
   const sony = await prisma.brand.upsert({ where: { slug: 'sony' }, update: {}, create: { name: 'Sony', slug: 'sony', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Sony', isFeatured: true, sortOrder: 3 } })
@@ -132,7 +132,7 @@ async function main() {
   const nike = await prisma.brand.upsert({ where: { slug: 'nike' }, update: {}, create: { name: 'Nike', slug: 'nike', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Nike', isFeatured: true, sortOrder: 8 } })
   const anker = await prisma.brand.upsert({ where: { slug: 'anker' }, update: {}, create: { name: 'Anker', slug: 'anker', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Anker', isFeatured: false, sortOrder: 9 } })
 
-  // ─── PRODUCTS ─────────────────────────────────────────────────────────
+  // PRODUCTS
   type ProductSeed = {
     sku: string; name: string; slug: string; description: string; shortDescription: string;
     categoryId: string; brandId: string; sellerId: string; basePrice: number; salePrice?: number;
@@ -442,7 +442,7 @@ async function main() {
     }
   }
 
-  // ─── BANNERS ──────────────────────────────────────────────────────────
+  // BANNERS
   await prisma.banner.createMany({
     data: [
       {
@@ -474,7 +474,7 @@ async function main() {
       },
       {
         title: 'Flash Sale',
-        subtitle: 'Up to 30% off on top brands',
+        subtitle: 'Up to 30% off on standout picks',
         imageUrl: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&auto=format',
         linkUrl: '/deals',
         position: 'promo',
@@ -485,7 +485,7 @@ async function main() {
     skipDuplicates: true,
   })
 
-  // ─── FLASH SALE ───────────────────────────────────────────────────────
+  // FLASH SALE
   const flashSale = await prisma.flashSale.upsert({
     where: { id: 'flash-001' },
     update: {},
@@ -507,7 +507,7 @@ async function main() {
     })
   }
 
-  // ─── COUPONS ──────────────────────────────────────────────────────────
+  // COUPONS
   await prisma.coupon.createMany({
     data: [
       { code: 'WELCOME10', name: 'Welcome Discount', type: CouponType.PERCENTAGE, value: 10, minOrderAmount: 1000, maxDiscount: 500, usageLimit: 1000, isActive: true, description: '10% off your first order' },
@@ -517,7 +517,7 @@ async function main() {
     skipDuplicates: true,
   })
 
-  // ─── SAMPLE ORDER ─────────────────────────────────────────────────────
+  // SAMPLE ORDER
   const sampleProduct = await prisma.product.findFirst({ where: { sku: 'APL-AIRPODS-PRO2' } })
   if (sampleProduct) {
     await prisma.order.upsert({

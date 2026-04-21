@@ -84,7 +84,6 @@ export function ProductEditorForm({
     lowStockThreshold: product?.lowStockThreshold?.toString() ?? '5',
     weight: product?.weight?.toString() ?? '',
     categoryId: product?.categoryId ?? '',
-    brandName: product?.brandName ?? '',
     tags: Array.isArray(product?.tags) ? product.tags.join(', ') : '',
     metaTitle: product?.metaTitle ?? '',
     metaDescription: product?.metaDescription ?? '',
@@ -92,6 +91,8 @@ export function ProductEditorForm({
     isFeatured: product?.isFeatured ?? false,
     isNew: product?.isNew ?? true,
     isBestSeller: product?.isBestSeller ?? false,
+    pinnedInNew: product?.pinnedInNew ?? false,
+    pinnedInBestSeller: product?.pinnedInBestSeller ?? false,
   })
 
   const [images, setImages] = useState<ProductImageValue[]>(
@@ -223,7 +224,6 @@ export function ProductEditorForm({
     lowStockThreshold: Number(form.lowStockThreshold || 5),
     weight: form.weight ? Number(form.weight) : null,
     categoryId: form.categoryId,
-    brandName: form.brandName.trim() || null,
     tags: form.tags
       .split(',')
       .map((tag) => tag.trim())
@@ -234,6 +234,8 @@ export function ProductEditorForm({
     isFeatured: form.isFeatured,
     isNew: form.isNew,
     isBestSeller: form.isBestSeller,
+    pinnedInNew: form.isNew ? form.pinnedInNew : false,
+    pinnedInBestSeller: form.isBestSeller ? form.pinnedInBestSeller : false,
     images: images
       .map((image) => ({
         url: image.url.trim(),
@@ -667,19 +669,6 @@ export function ProductEditorForm({
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Brand name</label>
-                <input aria-label="Form input" title="Form input"
-                  value={form.brandName}
-                  onChange={(event) => updateField('brandName', event.target.value)}
-                  className="input-base"
-                  placeholder="Type brand name manually"
-                />
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  Type the brand directly. A matching brand will be reused, or a new one will be created automatically.
-                </p>
-              </div>
-
-              <div>
                 <label className="mb-1.5 block text-sm font-medium">Tags</label>
                 <input aria-label="Form input" title="Form input"
                   value={form.tags}
@@ -693,49 +682,157 @@ export function ProductEditorForm({
 
           <section className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
-            <div className="mt-4 space-y-3">
-              {[
-                ['isActive', 'Published'],
-                ['isFeatured', 'Featured'],
-                ['isNew', 'New arrival'],
-                ['isBestSeller', 'Best seller'],
-              ].map(([key, label]) => (
-                <label key={key} className="flex items-center gap-3 text-sm">
-                  <input aria-label="Form input" title="Form input"
+            <p className="mt-1 text-xs text-muted-foreground">
+              Choose which storefront sections show this product. Enable a section to reveal its pin-to-rotator option.
+            </p>
+
+            <div className="mt-4 space-y-4">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <input
+                  aria-label="Published"
+                  title="Published"
+                  type="checkbox"
+                  checked={form.isActive}
+                  onChange={(event) => updateField('isActive', event.target.checked)}
+                  className="size-4 rounded border-input"
+                />
+                Published
+              </label>
+
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+                <label className="flex items-center gap-3 text-sm font-medium">
+                  <input
+                    aria-label="Show in Featured Products"
+                    title="Show in Featured Products"
                     type="checkbox"
-                    checked={Boolean(form[key as keyof typeof form])}
-                    onChange={(event) => updateField(key, event.target.checked)}
+                    checked={form.isFeatured}
+                    onChange={(event) => updateField('isFeatured', event.target.checked)}
                     className="size-4 rounded border-input"
                   />
-                  {label}
+                  Show in Featured Products
                 </label>
-              ))}
+              </div>
+
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+                <label className="flex items-center gap-3 text-sm font-medium">
+                  <input
+                    aria-label="Show in New Arrivals"
+                    title="Show in New Arrivals"
+                    type="checkbox"
+                    checked={form.isNew}
+                    onChange={(event) => updateField('isNew', event.target.checked)}
+                    className="size-4 rounded border-input"
+                  />
+                  Show in New Arrivals
+                </label>
+                {form.isNew ? (
+                  <label className="mt-3 flex items-center gap-3 border-t border-border/60 pt-3 pl-1 text-xs text-muted-foreground">
+                    <input
+                      aria-label="Pin to New Arrivals rotator"
+                      title="Pin to New Arrivals rotator"
+                      type="checkbox"
+                      checked={form.pinnedInNew}
+                      onChange={(event) => updateField('pinnedInNew', event.target.checked)}
+                      className="size-4 rounded border-input"
+                    />
+                    Pin to New Arrivals rotator (featured spotlight)
+                  </label>
+                ) : null}
+              </div>
+
+              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+                <label className="flex items-center gap-3 text-sm font-medium">
+                  <input
+                    aria-label="Show in Best Sellers"
+                    title="Show in Best Sellers"
+                    type="checkbox"
+                    checked={form.isBestSeller}
+                    onChange={(event) => updateField('isBestSeller', event.target.checked)}
+                    className="size-4 rounded border-input"
+                  />
+                  Show in Best Sellers
+                </label>
+                {form.isBestSeller ? (
+                  <label className="mt-3 flex items-center gap-3 border-t border-border/60 pt-3 pl-1 text-xs text-muted-foreground">
+                    <input
+                      aria-label="Pin to Best Sellers rotator"
+                      title="Pin to Best Sellers rotator"
+                      type="checkbox"
+                      checked={form.pinnedInBestSeller}
+                      onChange={(event) => updateField('pinnedInBestSeller', event.target.checked)}
+                      className="size-4 rounded border-input"
+                    />
+                    Pin to Best Sellers rotator (featured spotlight)
+                  </label>
+                ) : null}
+              </div>
             </div>
           </section>
 
           <section className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">SEO</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Leave everything blank. SEO is generated automatically from the product name, category and price. Only override when you need custom wording.
+            </p>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Meta title</label>
+                <label className="mb-1.5 block text-sm font-medium">Meta title (optional)</label>
                 <input aria-label="Form input" title="Form input"
                   value={form.metaTitle}
                   onChange={(event) => updateField('metaTitle', event.target.value)}
                   className="input-base"
                   placeholder={`${form.name || 'Product name'} price in Bangladesh`}
                 />
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  Leave blank to generate this dynamically from the product name and current price.
-                </p>
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Meta description</label>
+                <label className="mb-1.5 block text-sm font-medium">Meta description (optional)</label>
                 <textarea aria-label="Text area" title="Text area"
                   value={form.metaDescription}
                   onChange={(event) => updateField('metaDescription', event.target.value)}
-                  className="input-base min-h-[120px] resize-y"
+                  className="input-base min-h-[100px] resize-y"
+                  placeholder={`Buy ${form.name || 'product'} in Bangladesh at the best price. Fast delivery and cash on delivery from Boilabin.`}
                 />
+              </div>
+
+              <div className="rounded-xl border border-dashed border-border bg-background/60 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Auto-SEO preview</p>
+                <div className="mt-2 space-y-2 text-xs">
+                  <p>
+                    <span className="font-semibold">Title: </span>
+                    <span className="text-foreground/90">
+                      {form.metaTitle.trim() || (form.name ? `${form.name} price in Bangladesh` : 'Not set')}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-semibold">Description: </span>
+                    <span className="text-foreground/80">
+                      {form.metaDescription.trim() ||
+                        (form.name
+                          ? `Buy ${form.name} in Bangladesh at the best price. Fast delivery, secure checkout, and cash on delivery from Boilabin.`
+                          : 'Not set')}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-semibold">Keywords: </span>
+                    <span className="text-muted-foreground">
+                      {form.name
+                        ? [
+                            form.name,
+                            `${form.name} price in bd`,
+                            `${form.name} price bangladesh`,
+                            `buy ${form.name} online`,
+                            ...form.tags
+                              .split(',')
+                              .map((tag) => tag.trim())
+                              .filter(Boolean),
+                            'boilabin',
+                            'online shopping bangladesh',
+                          ].join(', ')
+                        : 'Not set'}
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </section>

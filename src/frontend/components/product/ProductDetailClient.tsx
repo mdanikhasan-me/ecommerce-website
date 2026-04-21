@@ -163,11 +163,6 @@ export function ProductDetailClient({ product }: { product: any }) {
 
       <div className="flex flex-col gap-5">
         <div>
-          {product.brand && (
-            <Link href={`/brands/${product.brand.slug}`} className="text-sm font-semibold text-primary hover:underline">
-              {product.brand.name}
-            </Link>
-          )}
           <h1 className="mt-1 font-display text-2xl font-bold leading-tight md:text-3xl">
             {product.name}
           </h1>

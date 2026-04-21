@@ -37,7 +37,7 @@ async function stripBg(input, output, { removeColor = 'white', threshold = 20, r
 // Primary mark (purple B on white → transparent bg, keep purple B)
 await stripBg(`${SRC}/IMG_2893.PNG`, `${OUT}/boilabin-mark.png`, { threshold: 28 })
 
-// Light mark (light B on purple → transparent bg, keep light B) — for dark surfaces
+// Light mark (light B on purple → transparent bg, keep light B) ; for dark surfaces
 await stripBg(`${SRC}/IMG_2890.PNG`, `${OUT}/boilabin-mark-light.png`, { removeColor: 'purple', threshold: 55 })
 
 // Wordmark horizontal clean

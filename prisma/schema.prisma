@@ -9,8 +9,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── ENUMS ────────────────────────────────────────────────────────────────────
-
+// ENUMS
 enum Role {
   CUSTOMER
   SELLER
@@ -83,8 +82,7 @@ enum NotificationType {
   SELLER
 }
 
-// ─── USERS & AUTH ─────────────────────────────────────────────────────────────
-
+// USERS & AUTH
 model User {
   id                String    @id @default(cuid())
   name              String?
@@ -158,8 +156,7 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 }
 
-// ─── ADDRESS ──────────────────────────────────────────────────────────────────
-
+// ADDRESS
 model Address {
   id           String   @id @default(cuid())
   userId       String
@@ -179,8 +176,7 @@ model Address {
   orders Order[]
 }
 
-// ─── SELLER ───────────────────────────────────────────────────────────────────
-
+// SELLER
 model Seller {
   id              String       @id @default(cuid())
   userId          String       @unique
@@ -210,8 +206,7 @@ model Seller {
   products Product[]
 }
 
-// ─── CATEGORIES & BRANDS ──────────────────────────────────────────────────────
-
+// CATEGORIES & BRANDS
 model Category {
   id          String   @id @default(cuid())
   name        String
@@ -252,8 +247,7 @@ model Brand {
   @@index([slug])
 }
 
-// ─── PRODUCTS ─────────────────────────────────────────────────────────────────
-
+// PRODUCTS
 model Product {
   id               String   @id @default(cuid())
   sku              String   @unique
@@ -275,10 +269,12 @@ model Product {
   length           Float?
   width            Float?
   height           Float?
-  isActive         Boolean  @default(true)
-  isFeatured       Boolean  @default(false)
-  isNew            Boolean  @default(true)
-  isBestSeller     Boolean  @default(false)
+  isActive            Boolean  @default(true)
+  isFeatured          Boolean  @default(false)
+  isNew               Boolean  @default(true)
+  isBestSeller        Boolean  @default(false)
+  pinnedInNew         Boolean  @default(false)
+  pinnedInBestSeller  Boolean  @default(false)
   tags             String[]
   metaTitle        String?
   metaDescription  String?
@@ -310,6 +306,9 @@ model Product {
   @@index([brandId])
   @@index([sellerId])
   @@index([isActive, isFeatured])
+  @@index([isActive, isNew])
+  @@index([isActive, isBestSeller])
+  @@index([isActive, createdAt])
 }
 
 model ProductView {
@@ -389,8 +388,7 @@ model ProductSpec {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-// ─── FLASH SALES ──────────────────────────────────────────────────────────────
-
+// FLASH SALES
 model FlashSale {
   id          String   @id @default(cuid())
   title       String
@@ -418,8 +416,7 @@ model FlashSaleItem {
   @@unique([flashSaleId, productId])
 }
 
-// ─── CART ─────────────────────────────────────────────────────────────────────
-
+// CART
 model Cart {
   id        String   @id @default(cuid())
   userId    String   @unique
@@ -446,8 +443,7 @@ model CartItem {
   @@unique([cartId, productId, variantId])
 }
 
-// ─── WISHLIST & COMPARE ───────────────────────────────────────────────────────
-
+// WISHLIST & COMPARE
 model Wishlist {
   id        String   @id @default(cuid())
   userId    String   @unique
@@ -492,8 +488,7 @@ model RecentlyViewed {
   @@unique([userId, productId])
 }
 
-// ─── ORDERS ───────────────────────────────────────────────────────────────────
-
+// ORDERS
 model Order {
   id              String        @id @default(cuid())
   orderNumber     String        @unique
@@ -562,8 +557,7 @@ model OrderStatusHistory {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
-// ─── PAYMENT ──────────────────────────────────────────────────────────────────
-
+// PAYMENT
 model Payment {
   id              String        @id @default(cuid())
   orderId         String        @unique
@@ -580,8 +574,7 @@ model Payment {
   order Order @relation(fields: [orderId], references: [id])
 }
 
-// ─── RETURNS & REFUNDS ────────────────────────────────────────────────────────
-
+// RETURNS & REFUNDS
 model ReturnRequest {
   id          String       @id @default(cuid())
   orderId     String       @unique
@@ -600,8 +593,7 @@ model ReturnRequest {
   order Order @relation(fields: [orderId], references: [id])
 }
 
-// ─── REVIEWS ──────────────────────────────────────────────────────────────────
-
+// REVIEWS
 model Review {
   id              String       @id @default(cuid())
   productId       String
@@ -626,8 +618,7 @@ model Review {
   @@index([status])
 }
 
-// ─── COUPONS ──────────────────────────────────────────────────────────────────
-
+// COUPONS
 model Coupon {
   id              String     @id @default(cuid())
   code            String     @unique
@@ -653,8 +644,7 @@ model Coupon {
   @@index([code])
 }
 
-// ─── BANNERS & CONTENT ────────────────────────────────────────────────────────
-
+// BANNERS & CONTENT
 model Banner {
   id          String   @id @default(cuid())
   title       String
@@ -682,8 +672,7 @@ model HomepageSection {
   updatedAt DateTime @updatedAt
 }
 
-// ─── SHIPPING ─────────────────────────────────────────────────────────────────
-
+// SHIPPING
 model ShippingZone {
   id          String   @id @default(cuid())
   name        String
@@ -706,8 +695,7 @@ model ShippingSettings {
   updatedAt       DateTime @updatedAt
 }
 
-// ─── NOTIFICATIONS ────────────────────────────────────────────────────────────
-
+// NOTIFICATIONS
 model Notification {
   id        String           @id @default(cuid())
   userId    String
@@ -723,8 +711,7 @@ model Notification {
   @@index([userId, isRead])
 }
 
-// ─── SETTINGS ─────────────────────────────────────────────────────────────────
-
+// SETTINGS
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique
