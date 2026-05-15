@@ -57,13 +57,14 @@ const FOOTER_PAYMENT_LOGO_CLASSES: Record<string, string> = {
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-foreground text-background">
-      <div className="container-site py-12">
-        <div className="mx-auto grid max-w-[1380px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:justify-between">
-          <div className="max-w-sm lg:pt-1">
-            <Link href="/" className="mb-5 inline-flex items-center gap-3.5" aria-label="Boilabin home">
-              <span className="flex rounded-2xl bg-white p-2 ring-1 ring-white/10">
-                <BoilabinLogo variant="full" size={68} />
+    <footer className="bg-foreground text-background">
+      <div className="container-site py-8 sm:py-10 lg:py-12">
+        <div className="grid w-full grid-cols-1 gap-8 lg:grid-cols-[minmax(360px,1fr)_minmax(0,1.35fr)] lg:items-start lg:gap-12 xl:gap-16 2xl:gap-20">
+          <div className="max-w-[30rem] lg:pt-1">
+            <Link href="/" className="mb-5 inline-flex items-center gap-3" aria-label="Boilabin home">
+              <BoilabinLogo variant="mark" size={68} />
+              <span className="font-display text-[1.55rem] font-bold leading-none tracking-normal text-white">
+                Boilabin
               </span>
             </Link>
             <p className="footer-muted mb-6 text-sm leading-relaxed">
@@ -103,7 +104,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 lg:justify-self-end lg:gap-x-16 xl:grid-cols-3">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3 lg:gap-x-12 xl:gap-x-16 2xl:gap-x-24">
             <div>
               <h4 className="footer-heading mb-4 text-xs font-semibold uppercase tracking-[0.18em]">
                 Shop
@@ -154,7 +155,7 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-site footer-muted py-4 text-xs">
-          <div className="mx-auto flex max-w-[1380px] flex-col items-center justify-between gap-3 sm:flex-row">
+          <div className="flex w-full flex-col items-center justify-between gap-3 sm:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>
               <span className="font-semibold text-[hsl(var(--footer-heading))]">Boilabin</span>

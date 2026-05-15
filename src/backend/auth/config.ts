@@ -11,6 +11,7 @@ type JwtCallbackParams = Parameters<NonNullable<AuthCallbacks['jwt']>>[0]
 type SessionCallbackParams = Parameters<NonNullable<AuthCallbacks['session']>>[0]
 
 export const authConfig = {
+  providers: [],
   session: { strategy: 'jwt' },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {

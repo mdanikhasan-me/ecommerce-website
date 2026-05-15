@@ -12,7 +12,7 @@ interface ProductGridProps {
 
 export function ProductGrid({ title, subtitle, products, viewAllHref }: ProductGridProps) {
   return (
-    <div>
+    <div className="w-full">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h2 className="section-title">{title}</h2>

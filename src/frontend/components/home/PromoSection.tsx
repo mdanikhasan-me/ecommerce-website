@@ -85,7 +85,7 @@ export function PromoSection({
           <div className="container-site">
             <Link
               href={collection.href}
-              className="group grid min-h-[30rem] items-stretch lg:grid-cols-[minmax(0,1.02fr)_minmax(24rem,0.98fr)] lg:gap-8"
+              className="group grid items-stretch lg:min-h-[30rem] lg:grid-cols-[minmax(0,1.02fr)_minmax(24rem,0.98fr)] lg:gap-8"
             >
               <PromoTextPanel
                 collection={collection}
@@ -111,18 +111,18 @@ function PromoTextPanel({
   flashDealMaxDiscount: number
 }) {
   return (
-    <div className="relative flex flex-col justify-center gap-8 py-10 sm:py-12 lg:flex-row lg:items-center lg:gap-10 lg:py-14">
+    <div className="relative flex flex-col justify-center gap-6 py-8 sm:py-10 lg:flex-row lg:items-center lg:gap-10 lg:py-14">
       <div className="flex-1 px-4 sm:px-6 lg:px-0 lg:pr-6 xl:pr-12">
         <div className="max-w-[35rem]">
           <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[hsl(var(--buttermilk))]">
             {collection.label}
           </span>
 
-          <h3 className="mt-4 max-w-[10ch] font-display text-[2.65rem] font-bold leading-[0.92] text-[hsl(var(--buttermilk))] sm:text-[3.4rem] xl:text-[4.15rem]">
+          <h3 className="mt-4 max-w-[10ch] font-display text-[2.2rem] font-bold leading-[0.94] text-[hsl(var(--buttermilk))] sm:text-[3.1rem] xl:text-[4.15rem]">
             {collection.title}
           </h3>
 
-          <p className="mt-4 max-w-lg text-sm leading-7 text-[hsl(var(--buttermilk))]/90 sm:text-[15px]">
+          <p className="mt-4 max-w-lg text-sm leading-6 text-[hsl(var(--buttermilk))]/90 sm:text-[15px] sm:leading-7">
             {collection.copy}
           </p>
 
@@ -149,7 +149,7 @@ function PromoTextPanel({
             </div>
           )}
 
-          <div className="mt-8">
+          <div className="mt-7">
             <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors group-hover:bg-white">
               {collection.cta}
               <ArrowRight className="h-4 w-4" />
@@ -158,7 +158,7 @@ function PromoTextPanel({
         </div>
       </div>
 
-      <div className="flex justify-center px-4 sm:px-6 lg:justify-end lg:px-0 lg:pr-4">
+      <div className="hidden justify-center px-4 sm:px-6 lg:flex lg:justify-end lg:px-0 lg:pr-4">
         <FeaturedProductRotator products={collection.rotatorProducts} />
       </div>
     </div>
@@ -167,7 +167,7 @@ function PromoTextPanel({
 
 function PromoProductsPanel({ collection }: { collection: PromoCollection }) {
   return (
-    <div className="relative py-6 sm:py-8 lg:py-12">
+    <div className="relative hidden py-6 sm:py-8 lg:block lg:py-12">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {collection.products.map((product) => (
           <PromoProductPreview
@@ -238,21 +238,23 @@ function PromoProductPreview({
 export function NewsletterSection() {
   return (
     <section>
-      <div className="container-site py-8 sm:py-10">
-        <div className="overflow-hidden rounded-[2.2rem] border border-black/6 bg-[linear-gradient(135deg,#2f1f42_0%,#5b3c7a_48%,#cbb7a3_168%)] px-6 py-10 text-center shadow-[0_32px_80px_rgba(27,20,18,0.12)] sm:px-10 sm:py-14">
-          <div className="mx-auto max-w-xl">
-            <div className="mb-4 flex items-center justify-center gap-2">
-              <Mail className="h-5 w-5 text-[hsl(var(--buttermilk))]" />
-              <span className="text-[hsl(var(--buttermilk))] text-sm font-semibold uppercase tracking-[0.28em]">Newsletter</span>
+      <div className="container-site pt-4 pb-8 sm:pt-6 sm:pb-10 lg:pb-12">
+        <div className="w-full overflow-hidden rounded-[1.45rem] border border-black/6 bg-[linear-gradient(135deg,#2f1f42_0%,#5b3c7a_52%,#cbb7a3_170%)] px-5 py-8 shadow-[0_22px_54px_rgba(27,20,18,0.11)] sm:rounded-[1.8rem] sm:px-8 lg:px-10 xl:flex xl:items-center xl:justify-between xl:gap-12 xl:px-14 xl:py-10 2xl:px-16">
+          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-[33rem] xl:text-left">
+            <div className="mb-3 flex items-center justify-center gap-2 xl:justify-start">
+              <Mail className="h-4 w-4 text-[hsl(var(--buttermilk))]" />
+              <span className="text-[hsl(var(--buttermilk))] text-xs font-semibold uppercase tracking-[0.26em]">Newsletter</span>
             </div>
-            <h2 className="font-display text-[2.1rem] font-bold leading-[0.94] text-white md:text-[2.9rem]">
+            <h2 className="font-display text-[1.8rem] font-bold leading-[0.96] text-white sm:text-[2.2rem] xl:text-[2.5rem]">
               Get new arrivals and limited deals first.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/76">
               Receive launch alerts, selected offers, and useful updates without the clutter.
             </p>
+          </div>
+          <div className="mx-auto mt-6 w-full max-w-[42rem] xl:mx-0 xl:mt-0 xl:flex-1 2xl:max-w-[48rem]">
             <HomepageNewsletterForm />
-            <p className="mt-3 text-xs text-white/46">No spam. Unsubscribe anytime.</p>
+            <p className="mt-2.5 text-center text-xs text-white/52 xl:text-left">No spam. Unsubscribe anytime.</p>
           </div>
         </div>
       </div>

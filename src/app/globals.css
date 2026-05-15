@@ -225,8 +225,8 @@
     aspect-ratio: 420 / 105;
     background-color: currentColor;
     vertical-align: middle;
-    -webkit-mask-image: url('/assets/branding/boilabin-logo-wordmark.svg');
-    mask-image: url('/assets/branding/boilabin-logo-wordmark.svg');
+    -webkit-mask-image: url('/assets/branding/boilabin-logo-wordmark.png');
+    mask-image: url('/assets/branding/boilabin-logo-wordmark.png');
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center;

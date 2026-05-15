@@ -30,6 +30,13 @@ type AddressForm = z.infer<typeof addressSchema>
 const DIVISIONS = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Sylhet', 'Barisal', 'Rangpur', 'Mymensingh']
 const STEPS = ['Delivery', 'Payment', 'Review']
 const PAYMENT_GATEWAY_OPTIONS = PAYMENT_GATEWAYS
+const PAYMENT_LOGO_CLASSES: Record<string, string> = {
+  'Cash on Delivery': 'h-4 w-auto max-w-[3.5rem]',
+  bKash: 'h-7 w-auto max-w-[4rem]',
+  Nagad: 'h-6 w-auto max-w-[3.8rem]',
+  Visa: 'h-5 w-auto max-w-[3.2rem]',
+  Mastercard: 'h-5 w-auto max-w-[1.8rem]',
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -226,7 +233,7 @@ export default function CheckoutPage() {
                     <label
                       key={gateway.id}
                       className={cn(
-                        'flex items-center gap-4 rounded-xl border-2 p-4 transition-all',
+                        'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border-2 p-4 transition-all sm:gap-4',
                         gateway.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
                         selectedPayment === gateway.id && gateway.isAvailable
                           ? 'border-primary bg-primary/5'
@@ -271,9 +278,12 @@ export default function CheckoutPage() {
                           </p>
                         ) : null}
                       </div>
-                      {gateway.logos?.length ? (
-                        <div className="ml-auto flex flex-shrink-0 items-center">
-                          <div className="flex min-h-12 min-w-[4.9rem] items-center justify-center gap-2 rounded-xl border border-border/70 bg-background px-3 py-2 shadow-sm sm:min-w-[6rem]">
+                      <div className="flex items-center gap-2">
+                        {gateway.logos?.length ? (
+                          <div className={cn(
+                            'flex h-10 w-16 flex-shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border/70 bg-background/80 px-2 shadow-sm sm:w-20',
+                            !gateway.isAvailable && 'grayscale'
+                          )}>
                             {gateway.logos.map((logo) => (
                               <Image
                                 key={`${gateway.id}-${logo.alt}`}
@@ -283,19 +293,17 @@ export default function CheckoutPage() {
                                 height={logo.height}
                                 unoptimized
                                 className={cn(
-                                  'block w-auto object-contain',
-                                  logo.alt === 'Cash on Delivery' && 'h-5',
-                                  logo.alt === 'bKash' && 'h-5.5',
-                                  logo.alt === 'Nagad' && 'h-6',
-                                  logo.alt === 'Visa' && 'h-4.5',
-                                  logo.alt === 'Mastercard' && 'h-5'
+                                  'block object-contain',
+                                  PAYMENT_LOGO_CLASSES[logo.alt] ?? 'h-5 w-auto max-w-[3.5rem]'
                                 )}
                               />
                             ))}
                           </div>
-                        </div>
-                      ) : null}
-                      {selectedPayment === gateway.id && <Check className="h-4 w-4 flex-shrink-0 text-primary" />}
+                        ) : null}
+                        {selectedPayment === gateway.id && gateway.isAvailable ? (
+                          <Check className="h-4 w-4 flex-shrink-0 text-primary" />
+                        ) : null}
+                      </div>
                     </label>
                   ))}
                 </div>

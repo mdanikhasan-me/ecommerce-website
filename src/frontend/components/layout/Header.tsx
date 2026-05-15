@@ -136,10 +136,11 @@ export function Header() {
           <div className="flex min-h-[4.2rem] items-center gap-3 py-3 lg:gap-5">
             <Link
               href="/"
-              className="group flex flex-shrink-0 items-center gap-3"
+              className="group flex flex-shrink-0 items-center gap-2.5 sm:gap-3"
               aria-label="Boilabin home"
             >
-              <BoilabinLogo variant="full" size={50} priority />
+              <BoilabinLogo variant="mark" size={42} priority />
+              <BoilabinLogo variant="wordmark" size={24} className="hidden sm:block" priority />
             </Link>
 
             <div ref={searchRef} className="relative flex-1">

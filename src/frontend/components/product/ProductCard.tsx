@@ -191,8 +191,10 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
           </span>
         </div>
 
-        <div className="mt-3.5 flex items-baseline gap-2">
-          <span className="price-current">{formatPrice(price)}</span>
+        <div className="mt-3.5 flex flex-col items-start gap-1 min-[420px]:flex-row min-[420px]:items-baseline min-[420px]:gap-2">
+          <span className="font-display text-[1.28rem] font-bold leading-tight tracking-tight text-foreground sm:text-[1.48rem] lg:text-[1.62rem]">
+            {formatPrice(price)}
+          </span>
           {product.salePrice && (
             <span className="price-original">{formatPrice(product.basePrice)}</span>
           )}

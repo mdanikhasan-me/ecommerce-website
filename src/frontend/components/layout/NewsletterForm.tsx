@@ -29,7 +29,7 @@ export function HomepageNewsletterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-7 flex flex-col gap-3 sm:flex-row">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row">
       <input
         type="email"
         required
@@ -37,16 +37,15 @@ export function HomepageNewsletterForm() {
         placeholder="Enter your email address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="min-w-0 flex-1 rounded-full border border-white/16 bg-white/10 px-5 py-3.5 text-sm text-white placeholder:text-white/48 transition-all focus:border-white/34 focus:bg-white/14 focus:outline-none"
+        className="min-w-0 flex-1 rounded-full border border-white/18 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/52 transition-all focus:border-white/38 focus:bg-white/14 focus:outline-none"
       />
       <button
         type="submit"
         disabled={submitting}
-        className="flex-shrink-0 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3.5 text-sm font-bold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white disabled:opacity-60"
+        className="flex-shrink-0 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-bold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white disabled:opacity-60"
       >
         {submitting ? '...' : 'Subscribe'}
       </button>
     </form>
   )
 }
-

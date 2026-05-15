@@ -19,7 +19,7 @@ interface FlashSale {
 
 export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
   return (
-    <div>
+    <div className="w-full">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-full border border-[#b74b67]/14 bg-[rgba(174,40,67,0.08)] px-4 py-2 text-[#9f2344]">
