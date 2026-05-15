@@ -4,6 +4,7 @@ import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
+import { z } from 'zod'
 
 type ProductImageInput = {
   url: string
@@ -17,8 +18,8 @@ type ProductVariantInput = {
   salePrice?: number | null
   stockQuantity?: number
   image?: string | null
-  optionName?: string
-  optionValue?: string
+  optionName?: string | null
+  optionValue?: string | null
   isActive?: boolean
 }
 
@@ -46,6 +47,137 @@ export type AdminProductPayload = {
   pinnedInBestSeller?: boolean
   images?: ProductImageInput[]
   variants?: ProductVariantInput[]
+}
+
+const optionalTrimmedString = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .optional()
+    .nullable()
+    .transform((value) => value || null)
+
+const optionalNonNegativeNumber = (label: string) =>
+  z.preprocess(
+    (value) => (value === '' || value === null || value === undefined ? null : value),
+    z.union([z.null(), z.coerce.number().finite(`${label} is invalid`).min(0, `${label} cannot be negative`)]),
+  )
+
+const nonNegativeNumber = (label: string) =>
+  z.coerce.number().finite(`${label} is invalid`).min(0, `${label} cannot be negative`)
+
+const nonNegativeInt = (label: string) =>
+  z.coerce.number().int(`${label} must be a whole number`).min(0, `${label} cannot be negative`)
+
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(500_000)
+  .refine((value) => value.startsWith('/') || value.startsWith('data:image/') || /^https?:\/\//i.test(value), {
+    message: 'Image URL must be a site path, data image, or http(s) URL',
+  })
+
+const productImagePayloadSchema = z.object({
+  url: imageUrlSchema,
+  alt: optionalTrimmedString(160),
+})
+
+const productVariantPayloadSchema = z
+  .object({
+    name: z.string().trim().min(1, 'Variant name is required').max(120),
+    sku: z.string().trim().min(1, 'Variant SKU is required').max(80),
+    price: optionalNonNegativeNumber('Variant price'),
+    salePrice: optionalNonNegativeNumber('Variant sale price'),
+    stockQuantity: nonNegativeInt('Variant stock').optional().default(0),
+    image: optionalTrimmedString(500),
+    optionName: optionalTrimmedString(80),
+    optionValue: optionalTrimmedString(120),
+    isActive: z.boolean().optional().default(true),
+  })
+  .superRefine((variant, ctx) => {
+    if (variant.salePrice !== null && variant.price !== null && variant.salePrice > variant.price) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['salePrice'],
+        message: 'Variant sale price cannot be higher than variant price',
+      })
+    }
+
+    if (Boolean(variant.optionName) !== Boolean(variant.optionValue)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['optionValue'],
+        message: 'Variant option name and value must be filled together',
+      })
+    }
+  })
+
+const productPayloadSchema = z
+  .object({
+    name: z.string().trim().min(1, 'Product name is required').max(180),
+    slug: z.string().trim().max(220).optional().nullable().transform((value) => value || undefined),
+    description: z.string().trim().min(1, 'Product description is required').max(20_000),
+    shortDescription: optionalTrimmedString(280),
+    sku: z.string().trim().min(1, 'SKU is required').max(80),
+    basePrice: nonNegativeNumber('Base price'),
+    salePrice: optionalNonNegativeNumber('Sale price'),
+    costPrice: optionalNonNegativeNumber('Cost price'),
+    stockQuantity: nonNegativeInt('Stock quantity').optional().default(0),
+    lowStockThreshold: nonNegativeInt('Low stock threshold').optional().default(5),
+    weight: optionalNonNegativeNumber('Weight'),
+    categoryId: z.string().trim().min(1, 'Category is required'),
+    tags: z.array(z.string().trim().max(60)).max(30).optional().default([]),
+    metaTitle: optionalTrimmedString(70),
+    metaDescription: optionalTrimmedString(180),
+    isActive: z.boolean().optional().default(true),
+    isFeatured: z.boolean().optional().default(false),
+    isNew: z.boolean().optional().default(true),
+    isBestSeller: z.boolean().optional().default(false),
+    pinnedInNew: z.boolean().optional().default(false),
+    pinnedInBestSeller: z.boolean().optional().default(false),
+    images: z.array(productImagePayloadSchema).max(20).optional().default([]),
+    variants: z.array(productVariantPayloadSchema).max(100).optional().default([]),
+  })
+  .superRefine((payload, ctx) => {
+    if (payload.salePrice !== null && payload.salePrice > payload.basePrice) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['salePrice'],
+        message: 'Sale price cannot be higher than base price',
+      })
+    }
+
+    const variantSkus = new Set<string>()
+    for (const [index, variant] of payload.variants.entries()) {
+      const sku = variant.sku.toLowerCase()
+      if (variantSkus.has(sku)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['variants', index, 'sku'],
+          message: 'Variant SKUs must be unique',
+        })
+        return
+      }
+      variantSkus.add(sku)
+    }
+  })
+
+export function parseAdminProductPayload(input: unknown) {
+  const parsed = productPayloadSchema.safeParse(input)
+
+  if (!parsed.success) {
+    return {
+      success: false as const,
+      error: parsed.error.issues[0]?.message ?? 'Invalid product',
+    }
+  }
+
+  return {
+    success: true as const,
+    data: parsed.data satisfies AdminProductPayload,
+  }
 }
 
 export interface AdminCategoryOption {
@@ -228,12 +360,8 @@ export function normalizeVariants(variants: ProductVariantInput[] | undefined) {
 }
 
 export function validateProductPayload(payload: AdminProductPayload) {
-  if (!payload.name?.trim()) throw new Error('Product name is required')
-  if (!payload.description?.trim()) throw new Error('Product description is required')
-  if (!payload.sku?.trim()) throw new Error('SKU is required')
-  if (!payload.categoryId) throw new Error('Category is required')
-  if (!Number.isFinite(payload.basePrice) || payload.basePrice < 0) throw new Error('Base price is required')
-  if (!Number.isFinite(payload.stockQuantity ?? 0) || (payload.stockQuantity ?? 0) < 0) throw new Error('Stock quantity is invalid')
+  const parsed = parseAdminProductPayload(payload)
+  if (!parsed.success) throw new Error(parsed.error)
 }
 
 async function getOfficialSeller() {

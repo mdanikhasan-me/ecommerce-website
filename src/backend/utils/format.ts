@@ -5,7 +5,7 @@ export function formatPrice(
   locale: string = 'bn-BD'
 ): string {
   if (currency === 'BDT') {
-    return `৳${price.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+    return `Tk ${price.toLocaleString('en-BD', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
   }
   return new Intl.NumberFormat(locale, {
     style: 'currency',

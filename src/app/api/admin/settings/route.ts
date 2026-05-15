@@ -1,36 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { requireAdminSession } from '@/backend/admin/admin-utils'
+import { parseAdminSettingsPayload } from '@/backend/admin/settings-editor'
 import { db } from '@/backend/database'
 
 export async function GET() {
-  const session = await auth()
-  if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+  try {
+    await requireAdminSession()
+
+    const settingsList = await db.setting.findMany()
+    const settings = Object.fromEntries(settingsList.map((s) => [s.key, s.value]))
+
+    return NextResponse.json({ settings })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not load settings'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
-
-  const settingsList = await db.setting.findMany()
-  const settings = Object.fromEntries(settingsList.map((s) => [s.key, s.value]))
-
-  return NextResponse.json({ settings })
 }
 
 export async function PATCH(req: NextRequest) {
-  const session = await auth()
-  if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-  }
+  try {
+    await requireAdminSession()
+    const parsed = parseAdminSettingsPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
+    }
 
-  const { settings } = await req.json()
-
-  await Promise.all(
-    Object.entries(settings as Record<string, string>).map(([key, value]) =>
-      db.setting.upsert({
-        where: { key },
-        update: { value },
-        create: { key, value, group: 'general' },
-      })
+    await Promise.all(
+      parsed.data.map(({ key, value, group }) =>
+        db.setting.upsert({
+          where: { key },
+          update: { value, group },
+          create: { key, value, group },
+        }),
+      ),
     )
-  )
 
-  return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not save settings'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
+  }
 }

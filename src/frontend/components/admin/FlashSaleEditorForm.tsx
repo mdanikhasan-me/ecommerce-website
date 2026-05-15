@@ -57,6 +57,7 @@ export function FlashSaleEditorForm({
     endsAt: toDateTimeLocalValue(flashSale?.endsAt),
     isActive: flashSale?.isActive ?? true,
   })
+  const fieldIdPrefix = flashSale ? `flash-sale-${flashSale.id}` : 'flash-sale-new'
   const [items, setItems] = useState<FlashSaleItemValue[]>(
     flashSale?.items.map((item) => ({
       id: item.id || createRowId(),
@@ -67,7 +68,7 @@ export function FlashSaleEditorForm({
     })) ?? [],
   )
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = (field: keyof typeof form, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -131,8 +132,8 @@ export function FlashSaleEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (submitError: any) {
-      setError(submitError.message || 'Could not save flash sale')
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Could not save flash sale')
     } finally {
       setIsSaving(false)
     }
@@ -156,8 +157,8 @@ export function FlashSaleEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (deleteError: any) {
-      setError(deleteError.message || 'Could not delete flash sale')
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Could not delete flash sale')
     } finally {
       setIsDeleting(false)
     }
@@ -177,8 +178,8 @@ export function FlashSaleEditorForm({
             <h2 className="font-display text-lg font-semibold">Campaign Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Title</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-title`} className="mb-1.5 block text-sm font-medium">Title</label>
+                <input id={`${fieldIdPrefix}-title`}
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
@@ -187,8 +188,8 @@ export function FlashSaleEditorForm({
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Starts at</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-starts-at`} className="mb-1.5 block text-sm font-medium">Starts at</label>
+                  <input id={`${fieldIdPrefix}-starts-at`}
                     type="datetime-local"
                     value={form.startsAt}
                     onChange={(event) => updateField('startsAt', event.target.value)}
@@ -197,8 +198,8 @@ export function FlashSaleEditorForm({
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Ends at</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-ends-at`} className="mb-1.5 block text-sm font-medium">Ends at</label>
+                  <input id={`${fieldIdPrefix}-ends-at`}
                     type="datetime-local"
                     value={form.endsAt}
                     onChange={(event) => updateField('endsAt', event.target.value)}
@@ -226,7 +227,7 @@ export function FlashSaleEditorForm({
                 items.map((item) => (
                   <div key={item.id} className="rounded-2xl border border-border bg-secondary/30 p-4">
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      <select aria-label="Select option" title="Select option"
+                      <select aria-label="Flash sale product"
                         value={item.productId}
                         onChange={(event) => updateItem(item.id, 'productId', event.target.value)}
                         className="input-base text-sm"
@@ -238,7 +239,7 @@ export function FlashSaleEditorForm({
                           </option>
                         ))}
                       </select>
-                      <select aria-label="Select option" title="Select option"
+                      <select aria-label="Discount type"
                         value={item.discountType}
                         onChange={(event) => updateItem(item.id, 'discountType', event.target.value)}
                         className="input-base text-sm"
@@ -246,7 +247,7 @@ export function FlashSaleEditorForm({
                         <option value="PERCENTAGE">Percentage</option>
                         <option value="FIXED">Fixed amount</option>
                       </select>
-                      <input aria-label="Form input" title="Form input"
+                      <input aria-label="Discount value"
                         type="number"
                         min="0"
                         step="0.01"
@@ -255,7 +256,7 @@ export function FlashSaleEditorForm({
                         className="input-base text-sm"
                         placeholder="Discount value"
                       />
-                      <input aria-label="Form input" title="Form input"
+                      <input aria-label="Max quantity"
                         type="number"
                         min="0"
                         value={item.maxQuantity}
@@ -281,8 +282,8 @@ export function FlashSaleEditorForm({
           <section className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <div className="mt-4 space-y-3">
-              <label className="flex items-center gap-3 text-sm">
-                <input aria-label="Form input" title="Form input"
+              <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center gap-3 text-sm">
+                <input id={`${fieldIdPrefix}-active`}
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

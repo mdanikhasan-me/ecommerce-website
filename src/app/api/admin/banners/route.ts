@@ -5,40 +5,22 @@ import {
   persistAdminUpload,
   requireAdminSession,
 } from '@/backend/admin/admin-utils'
-
-function normalizeBannerPayload(payload: any) {
-  const startsAt = payload.startsAt ? new Date(payload.startsAt) : null
-  const endsAt = payload.endsAt ? new Date(payload.endsAt) : null
-  if (startsAt && Number.isNaN(startsAt.getTime())) throw new Error('Start date is invalid')
-  if (endsAt && Number.isNaN(endsAt.getTime())) throw new Error('End date is invalid')
-  if (startsAt && endsAt && startsAt > endsAt) throw new Error('End date must be later than the start date')
-
-  return {
-    title: payload.title?.trim() || '',
-    subtitle: payload.subtitle?.trim() || null,
-    imageUrl: payload.imageUrl?.trim() || '',
-    mobileImageUrl: payload.mobileImageUrl || null,
-    linkUrl: payload.linkUrl?.trim() || null,
-    position: payload.position?.trim() || 'hero',
-    sortOrder: Number(payload.sortOrder ?? 0),
-    isActive: payload.isActive ?? true,
-    startsAt,
-    endsAt,
-  }
-}
+import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
 
 export async function POST(req: NextRequest) {
   try {
     await requireAdminSession()
 
-    const payload = normalizeBannerPayload(await req.json())
+    const parsed = parseAdminBannerPayload(await req.json())
+    if (!parsed.success) throw new Error(parsed.error)
+    const payload = parsed.data
     const imageUrl = await persistAdminUpload(payload.imageUrl, 'banners')
     const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, 'banners')
 
     try {
       const banner = await db.banner.create({
         data: {
-          title: payload.title,
+          title: payload.title ?? '',
           subtitle: payload.subtitle,
           imageUrl: imageUrl ?? '',
           mobileImageUrl,
@@ -56,8 +38,9 @@ export async function POST(req: NextRequest) {
       await cleanupManagedAdminUploads([imageUrl, mobileImageUrl])
       throw error
     }
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Unable to create banner' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unable to create banner'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

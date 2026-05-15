@@ -19,13 +19,24 @@ import {
 } from 'lucide-react'
 import { useCartStore, useWishlistStore, useCompareStore } from '@/frontend/stores'
 import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
+import type { ProductDetailData, VariantData } from '@/backend/types'
 import toast from 'react-hot-toast'
 
-export function ProductDetailClient({ product }: { product: any }) {
+type ProductDetailClientData = Omit<ProductDetailData, 'attributes' | 'specifications' | 'reviews'> & {
+  attributes: Array<{ id?: string; name: string; value: string }>
+  specifications: Array<{ group?: string | null; name: string; value: string; sortOrder?: number }>
+}
+
+type VariantGroupOption = {
+  value: string
+  variant: VariantData
+}
+
+export function ProductDetailClient({ product }: { product: ProductDetailClientData }) {
   const router = useRouter()
   const [isHydrated, setIsHydrated] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
-  const [selectedVariant, setSelectedVariant] = useState<any>(null)
+  const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [isZoomed, setIsZoomed] = useState(false)
   const zoomFrameRef = useRef<HTMLDivElement | null>(null)
@@ -59,6 +70,16 @@ export function ProductDetailClient({ product }: { product: any }) {
     }).catch(() => {})
   }, [product.id])
 
+  useEffect(() => {
+    if (!selectedVariant && product.variants.length > 0) {
+      setSelectedVariant(product.variants[0])
+    }
+  }, [product.variants, selectedVariant])
+
+  useEffect(() => {
+    setQuantity((current) => Math.max(1, Math.min(current, Math.max(stock, 1))))
+  }, [stock])
+
   const handleAddToCart = () => {
     if (!inStock) return
 
@@ -82,6 +103,7 @@ export function ProductDetailClient({ product }: { product: any }) {
   }
 
   const handleBuyNow = () => {
+    if (!inStock) return
     handleAddToCart()
     router.push('/checkout')
   }
@@ -93,7 +115,7 @@ export function ProductDetailClient({ product }: { product: any }) {
     zoomFrameRef.current?.style.setProperty('--zoom-origin', `${x}% ${y}%`)
   }
 
-  const variantGroups: Record<string, { value: string; variant: any }[]> = {}
+  const variantGroups: Record<string, VariantGroupOption[]> = {}
   for (const variant of product.variants) {
     for (const opt of variant.options) {
       if (!variantGroups[opt.name]) variantGroups[opt.name] = []
@@ -135,7 +157,7 @@ export function ProductDetailClient({ product }: { product: any }) {
 
         {galleryImages.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {galleryImages.map((img: any, i: number) => (
+            {galleryImages.map((img, i) => (
               <button
                 type="button"
                 key={i}
@@ -203,7 +225,7 @@ export function ProductDetailClient({ product }: { product: any }) {
               {groupName}:
               {selectedVariant && (
                 <span className="ml-1 font-normal text-muted-foreground">
-                  {selectedVariant.options.find((o: any) => o.name === groupName)?.value}
+                  {selectedVariant.options.find((o) => o.name === groupName)?.value}
                 </span>
               )}
             </p>
@@ -345,15 +367,15 @@ export function ProductDetailClient({ product }: { product: any }) {
             <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
               <span className="font-medium">Secure checkout</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">bKash, Nagad, COD, and cards</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Cash on delivery today. Online payments are enabled after gateway setup.</p>
             </div>
           </div>
         </div>
 
         {product.attributes.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
-            {product.attributes.map((attr: any) => (
-              <div key={attr.id} className="flex items-center gap-2 text-sm">
+            {product.attributes.map((attr) => (
+              <div key={attr.id ?? `${attr.name}-${attr.value}`} className="flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground">{attr.name}:</span>
                 <span className="font-medium">{attr.value}</span>
               </div>

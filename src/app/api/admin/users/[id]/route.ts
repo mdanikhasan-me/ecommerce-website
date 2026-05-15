@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
-
-const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']
+import { parseAdminUserPayload } from '@/backend/admin/user-editor'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -29,9 +28,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     return NextResponse.json({ user })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not load user' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not load user'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }
 
@@ -39,7 +39,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const session = await requireAdminSession()
     const { id } = await params
-    const payload = await req.json()
+    const parsed = parseAdminUserPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
+    }
+
+    const payload = parsed.data
 
     const existingUser = await db.user.findUnique({
       where: { id },
@@ -50,10 +55,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const nextRole = payload.role ?? existingUser.role
-    if (!ROLES.includes(nextRole)) {
-      return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
-    }
-
     const nextActive = payload.isActive ?? existingUser.isActive
 
     if (session.user.id === existingUser.id && !nextActive) {
@@ -67,10 +68,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const user = await db.user.update({
       where: { id: existingUser.id },
       data: {
-        name: payload.name?.trim() || null,
-        phone: payload.phone?.trim() || null,
+        name: payload.name,
+        phone: payload.phone,
         role: nextRole,
-        isActive: Boolean(nextActive),
+        isActive: nextActive,
       },
       include: {
         _count: {
@@ -107,8 +108,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath(`/admin/users/${user.id}`)
 
     return NextResponse.json({ user })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not update user' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not update user'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

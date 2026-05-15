@@ -6,18 +6,21 @@ import {
   normalizeProductImages,
   normalizeTags,
   normalizeVariants,
+  parseAdminProductPayload,
   requireAdminSession,
-  validateProductPayload,
   validateProductRelations,
-  type AdminProductPayload,
 } from '@/backend/admin/product-editor'
 
 export async function POST(req: NextRequest) {
   try {
     await requireAdminSession()
 
-    const payload = (await req.json()) as AdminProductPayload
-    validateProductPayload(payload)
+    const parsed = parseAdminProductPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
+    }
+
+    const payload = parsed.data
     const { sellerId } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name)
@@ -65,8 +68,9 @@ export async function POST(req: NextRequest) {
       await cleanupManagedUploads(uploadedImageUrls)
       throw error
     }
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Unable to create product' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unable to create product'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

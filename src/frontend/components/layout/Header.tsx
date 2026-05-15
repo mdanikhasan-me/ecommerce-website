@@ -139,8 +139,7 @@ export function Header() {
               className="group flex flex-shrink-0 items-center gap-3"
               aria-label="Boilabin home"
             >
-              <BoilabinLogo variant="mark" size={40} priority />
-              <BoilabinLogo variant="wordmark" size={22} className="hidden sm:block" />
+              <BoilabinLogo variant="full" size={50} priority />
             </Link>
 
             <div ref={searchRef} className="relative flex-1">

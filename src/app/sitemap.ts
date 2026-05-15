@@ -25,29 +25,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/returns`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.2 },
   ]
 
-  const products = await db.product.findMany({
-    where: { isActive: true },
-    select: { slug: true, updatedAt: true },
-    orderBy: { updatedAt: 'desc' },
-  })
+  try {
+    const products = await db.product.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    })
 
-  const productPages: MetadataRoute.Sitemap = products.map((p) => ({
-    url: `${SITE_URL}/products/${p.slug}`,
-    lastModified: p.updatedAt,
-    changeFrequency: 'daily',
-    priority: 0.9,
-  }))
+    const productPages: MetadataRoute.Sitemap = products.map((p) => ({
+      url: `${SITE_URL}/products/${p.slug}`,
+      lastModified: p.updatedAt,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    }))
 
-  const categories = await db.category.findMany({
-    select: { slug: true, updatedAt: true },
-  })
+    const categories = await db.category.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    })
 
-  const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
-    url: `${SITE_URL}/category/${c.slug}`,
-    lastModified: c.updatedAt,
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }))
+    const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
+      url: `${SITE_URL}/category/${c.slug}`,
+      lastModified: c.updatedAt,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }))
 
-  return [...staticPages, ...productPages, ...categoryPages]
+    return [...staticPages, ...productPages, ...categoryPages]
+  } catch (error) {
+    console.error('Could not generate dynamic sitemap entries', error)
+    return staticPages
+  }
 }

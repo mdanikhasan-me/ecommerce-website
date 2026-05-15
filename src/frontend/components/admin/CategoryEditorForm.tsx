@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2, Save, Trash2 } from 'lucide-react'
 import { AdminImageField } from './AdminImageField'
 import { toSlug } from './form-utils'
+import { getDescendantCategoryIds } from './category-utils'
 
 interface CategoryOption {
   id: string
@@ -53,6 +54,9 @@ export function CategoryEditorForm({
     parentId: category?.parentId ?? '',
   })
 
+  const fieldIdPrefix = category ? `category-${category.id}` : 'category-new'
+  const categoryId = category?.id
+
   useEffect(() => {
     if (!manualSlug) {
       setForm((current) => ({ ...current, slug: toSlug(current.name) }))
@@ -60,11 +64,18 @@ export function CategoryEditorForm({
   }, [form.name, manualSlug])
 
   const parentOptions = useMemo(
-    () => categories.filter((item) => item.id !== category?.id),
-    [categories, category?.id],
+    () => {
+      if (!categoryId) return categories
+
+      const disallowedIds = getDescendantCategoryIds(categories, categoryId)
+      disallowedIds.add(categoryId)
+
+      return categories.filter((item) => !disallowedIds.has(item.id))
+    },
+    [categories, categoryId],
   )
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = (field: keyof typeof form, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -101,8 +112,8 @@ export function CategoryEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (submitError: any) {
-      setError(submitError.message || 'Could not save category')
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Could not save category')
     } finally {
       setIsSaving(false)
     }
@@ -126,8 +137,8 @@ export function CategoryEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (deleteError: any) {
-      setError(deleteError.message || 'Could not delete category')
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Could not delete category')
     } finally {
       setIsDeleting(false)
     }
@@ -147,8 +158,8 @@ export function CategoryEditorForm({
             <h2 className="font-display text-lg font-semibold">Category Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Name</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-name`} className="mb-1.5 block text-sm font-medium">Name</label>
+                <input id={`${fieldIdPrefix}-name`}
                   value={form.name}
                   onChange={(event) => updateField('name', event.target.value)}
                   className="input-base"
@@ -158,8 +169,8 @@ export function CategoryEditorForm({
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Slug</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-slug`} className="mb-1.5 block text-sm font-medium">Slug</label>
+                  <input id={`${fieldIdPrefix}-slug`}
                     value={form.slug}
                     onChange={(event) => {
                       setManualSlug(true)
@@ -171,8 +182,8 @@ export function CategoryEditorForm({
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">Sort order</label>
+                  <input id={`${fieldIdPrefix}-sort-order`}
                     type="number"
                     value={form.sortOrder}
                     onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -182,8 +193,8 @@ export function CategoryEditorForm({
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea aria-label="Text area" title="Text area"
+                <label htmlFor={`${fieldIdPrefix}-description`} className="mb-1.5 block text-sm font-medium">Description</label>
+                <textarea id={`${fieldIdPrefix}-description`}
                   value={form.description}
                   onChange={(event) => updateField('description', event.target.value)}
                   className="input-base min-h-[140px] resize-y"
@@ -207,8 +218,8 @@ export function CategoryEditorForm({
             <h2 className="font-display text-lg font-semibold">Structure</h2>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Parent category</label>
-                <select aria-label="Select option" title="Select option"
+                <label htmlFor={`${fieldIdPrefix}-parent`} className="mb-1.5 block text-sm font-medium">Parent category</label>
+                <select id={`${fieldIdPrefix}-parent`}
                   value={form.parentId}
                   onChange={(event) => updateField('parentId', event.target.value)}
                   className="input-base"
@@ -223,8 +234,8 @@ export function CategoryEditorForm({
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Icon label</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-icon`} className="mb-1.5 block text-sm font-medium">Icon label</label>
+                <input id={`${fieldIdPrefix}-icon`}
                   value={form.icon}
                   onChange={(event) => updateField('icon', event.target.value)}
                   className="input-base"
@@ -232,8 +243,8 @@ export function CategoryEditorForm({
                 />
               </div>
 
-              <label className="flex items-center gap-3 text-sm">
-                <input aria-label="Form input" title="Form input"
+              <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center gap-3 text-sm">
+                <input id={`${fieldIdPrefix}-active`}
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

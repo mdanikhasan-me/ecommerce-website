@@ -6,30 +6,10 @@ import {
   persistAdminUpload,
   requireAdminSession,
 } from '@/backend/admin/admin-utils'
+import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
 
 interface RouteContext {
   params: Promise<{ id: string }>
-}
-
-function normalizeBannerPayload(payload: any) {
-  const startsAt = payload.startsAt ? new Date(payload.startsAt) : null
-  const endsAt = payload.endsAt ? new Date(payload.endsAt) : null
-  if (startsAt && Number.isNaN(startsAt.getTime())) throw new Error('Start date is invalid')
-  if (endsAt && Number.isNaN(endsAt.getTime())) throw new Error('End date is invalid')
-  if (startsAt && endsAt && startsAt > endsAt) throw new Error('End date must be later than the start date')
-
-  return {
-    title: payload.title?.trim() || '',
-    subtitle: payload.subtitle?.trim() || null,
-    imageUrl: payload.imageUrl?.trim() || '',
-    mobileImageUrl: payload.mobileImageUrl || null,
-    linkUrl: payload.linkUrl?.trim() || null,
-    position: payload.position?.trim() || 'hero',
-    sortOrder: Number(payload.sortOrder ?? 0),
-    isActive: payload.isActive ?? true,
-    startsAt,
-    endsAt,
-  }
 }
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
@@ -42,7 +22,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Banner not found' }, { status: 404 })
     }
 
-    const payload = normalizeBannerPayload(await req.json())
+    const parsed = parseAdminBannerPayload(await req.json())
+    if (!parsed.success) throw new Error(parsed.error)
+    const payload = parsed.data
     const imageUrl = await persistAdminUpload(payload.imageUrl, 'banners')
     const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, 'banners')
     const newUploads = [imageUrl, mobileImageUrl].filter(
@@ -59,7 +41,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       const banner = await db.banner.update({
         where: { id: existingBanner.id },
         data: {
-          title: payload.title,
+          title: payload.title ?? '',
           subtitle: payload.subtitle,
           imageUrl: imageUrl ?? '',
           mobileImageUrl,
@@ -86,9 +68,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       await cleanupManagedAdminUploads(newUploads)
       throw error
     }
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Unable to update banner' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unable to update banner'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }
 
@@ -106,8 +89,9 @@ export async function DELETE(_req: NextRequest, { params }: RouteContext) {
     await cleanupManagedAdminUploads([existingBanner.imageUrl, existingBanner.mobileImageUrl])
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Unable to delete banner' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unable to delete banner'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

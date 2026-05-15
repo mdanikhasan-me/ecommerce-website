@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    const limited = rateLimit(req, { key: 'newsletter:create', limit: 8, windowMs: 60_000 })
+    if (limited) return limited
+
     const body = await req.json().catch(() => ({}))
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
     const source = typeof body.source === 'string' ? body.source.trim().slice(0, 60) : null

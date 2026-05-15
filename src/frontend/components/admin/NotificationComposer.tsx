@@ -4,8 +4,21 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const NOTIFICATION_TYPES = ['SYSTEM', 'ORDER', 'REVIEW', 'PROMOTION']
-const RECIPIENT_TYPES = ['ALL', 'CUSTOMERS', 'USER']
+const NOTIFICATION_TYPES = ['ORDER', 'REVIEW', 'PROMOTION', 'SYSTEM', 'SELLER'] as const
+const RECIPIENT_TYPES = ['ALL', 'CUSTOMERS', 'USER'] as const
+
+interface NotificationComposerFormState {
+  recipientType: string
+  userId: string
+  type: string
+  title: string
+  message: string
+  link: string
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
 
 export function NotificationComposer({
   users,
@@ -13,8 +26,9 @@ export function NotificationComposer({
   users: Array<{ id: string; name: string | null; email: string }>
 }) {
   const router = useRouter()
+  const fieldIdPrefix = 'admin-notification'
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<NotificationComposerFormState>({
     recipientType: 'ALL',
     userId: '',
     type: 'SYSTEM',
@@ -23,7 +37,10 @@ export function NotificationComposer({
     link: '',
   })
 
-  const updateField = (field: string, value: string) => {
+  const updateField = <Field extends keyof NotificationComposerFormState>(
+    field: Field,
+    value: NotificationComposerFormState[Field],
+  ) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -53,8 +70,8 @@ export function NotificationComposer({
         link: '',
       })
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not send notification')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not send notification'))
     } finally {
       setLoading(false)
     }
@@ -71,8 +88,11 @@ export function NotificationComposer({
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Audience</label>
-          <select aria-label="Select option" title="Select option"
+          <label htmlFor={`${fieldIdPrefix}-audience`} className="mb-1.5 block text-sm font-medium">
+            Audience
+          </label>
+          <select
+            id={`${fieldIdPrefix}-audience`}
             value={form.recipientType}
             onChange={(event) => updateField('recipientType', event.target.value)}
             className="input-base"
@@ -85,8 +105,11 @@ export function NotificationComposer({
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Type</label>
-          <select aria-label="Select option" title="Select option"
+          <label htmlFor={`${fieldIdPrefix}-type`} className="mb-1.5 block text-sm font-medium">
+            Type
+          </label>
+          <select
+            id={`${fieldIdPrefix}-type`}
             value={form.type}
             onChange={(event) => updateField('type', event.target.value)}
             className="input-base"
@@ -102,8 +125,11 @@ export function NotificationComposer({
 
       {form.recipientType === 'USER' && (
         <div className="mt-4">
-          <label className="mb-1.5 block text-sm font-medium">Recipient</label>
-          <select aria-label="Select option" title="Select option"
+          <label htmlFor={`${fieldIdPrefix}-recipient`} className="mb-1.5 block text-sm font-medium">
+            Recipient
+          </label>
+          <select
+            id={`${fieldIdPrefix}-recipient`}
             value={form.userId}
             onChange={(event) => updateField('userId', event.target.value)}
             className="input-base"
@@ -121,8 +147,11 @@ export function NotificationComposer({
 
       <div className="mt-4 grid gap-4">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Title</label>
-          <input aria-label="Form input" title="Form input"
+          <label htmlFor={`${fieldIdPrefix}-title`} className="mb-1.5 block text-sm font-medium">
+            Title
+          </label>
+          <input
+            id={`${fieldIdPrefix}-title`}
             value={form.title}
             onChange={(event) => updateField('title', event.target.value)}
             className="input-base"
@@ -130,8 +159,11 @@ export function NotificationComposer({
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Message</label>
-          <textarea aria-label="Text area" title="Text area"
+          <label htmlFor={`${fieldIdPrefix}-message`} className="mb-1.5 block text-sm font-medium">
+            Message
+          </label>
+          <textarea
+            id={`${fieldIdPrefix}-message`}
             value={form.message}
             onChange={(event) => updateField('message', event.target.value)}
             className="input-base min-h-[120px] resize-y"
@@ -139,8 +171,11 @@ export function NotificationComposer({
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Link</label>
-          <input aria-label="Form input" title="Form input"
+          <label htmlFor={`${fieldIdPrefix}-link`} className="mb-1.5 block text-sm font-medium">
+            Link
+          </label>
+          <input
+            id={`${fieldIdPrefix}-link`}
             value={form.link}
             onChange={(event) => updateField('link', event.target.value)}
             className="input-base"

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   if (coupon.startsAt && coupon.startsAt > now) return NextResponse.json({ success: false, error: 'Coupon is not yet active' }, { status: 400 })
   if (coupon.expiresAt && coupon.expiresAt < now) return NextResponse.json({ success: false, error: 'Coupon has expired' }, { status: 400 })
   if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) return NextResponse.json({ success: false, error: 'Coupon usage limit reached' }, { status: 400 })
-  if (amount < coupon.minOrderAmount) return NextResponse.json({ success: false, error: `Minimum order amount is ৳${coupon.minOrderAmount}` }, { status: 400 })
+  if (amount < coupon.minOrderAmount) return NextResponse.json({ success: false, error: `Minimum order amount is Tk ${coupon.minOrderAmount.toLocaleString('en-BD')}` }, { status: 400 })
 
   return NextResponse.json({ success: true, coupon: { id: coupon.id, code: coupon.code, name: coupon.name, type: coupon.type, value: coupon.value, maxDiscount: coupon.maxDiscount } })
 }

@@ -19,17 +19,31 @@ interface HomepageSectionEditorFormProps {
   redirectTo?: string
 }
 
+interface HomepageSectionFormState {
+  type: string
+  title: string
+  subtitle: string
+  config: string
+  isActive: boolean
+  sortOrder: string
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function HomepageSectionEditorForm({
   section,
   redirectTo = '/admin/content',
 }: HomepageSectionEditorFormProps) {
   const router = useRouter()
   const isEditing = Boolean(section)
+  const fieldIdPrefix = section ? `homepage-section-${section.id}` : 'homepage-section-new'
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<HomepageSectionFormState>({
     type: section?.type ?? '',
     title: section?.title ?? '',
     subtitle: section?.subtitle ?? '',
@@ -38,7 +52,10 @@ export function HomepageSectionEditorForm({
     sortOrder: String(section?.sortOrder ?? 0),
   })
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = <Field extends keyof HomepageSectionFormState>(
+    field: Field,
+    value: HomepageSectionFormState[Field],
+  ) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -73,8 +90,8 @@ export function HomepageSectionEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (submitError: any) {
-      setError(submitError.message || 'Could not save section')
+    } catch (submitError: unknown) {
+      setError(getErrorMessage(submitError, 'Could not save section'))
     } finally {
       setIsSaving(false)
     }
@@ -98,8 +115,8 @@ export function HomepageSectionEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (deleteError: any) {
-      setError(deleteError.message || 'Could not delete section')
+    } catch (deleteError: unknown) {
+      setError(getErrorMessage(deleteError, 'Could not delete section'))
     } finally {
       setIsDeleting(false)
     }
@@ -119,8 +136,11 @@ export function HomepageSectionEditorForm({
             <h2 className="font-display text-lg font-semibold">Section Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Type</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-type`} className="mb-1.5 block text-sm font-medium">
+                  Type
+                </label>
+                <input
+                  id={`${fieldIdPrefix}-type`}
                   value={form.type}
                   onChange={(event) => updateField('type', event.target.value)}
                   className="input-base"
@@ -129,24 +149,33 @@ export function HomepageSectionEditorForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Title</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-title`} className="mb-1.5 block text-sm font-medium">
+                  Title
+                </label>
+                <input
+                  id={`${fieldIdPrefix}-title`}
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Subtitle</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-subtitle`} className="mb-1.5 block text-sm font-medium">
+                  Subtitle
+                </label>
+                <input
+                  id={`${fieldIdPrefix}-subtitle`}
                   value={form.subtitle}
                   onChange={(event) => updateField('subtitle', event.target.value)}
                   className="input-base"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Config JSON</label>
-                <textarea aria-label="Text area" title="Text area"
+                <label htmlFor={`${fieldIdPrefix}-config`} className="mb-1.5 block text-sm font-medium">
+                  Config JSON
+                </label>
+                <textarea
+                  id={`${fieldIdPrefix}-config`}
                   value={form.config}
                   onChange={(event) => updateField('config', event.target.value)}
                   className="input-base min-h-[260px] resize-y font-mono text-xs"
@@ -162,16 +191,20 @@ export function HomepageSectionEditorForm({
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">
+                  Sort order
+                </label>
+                <input
+                  id={`${fieldIdPrefix}-sort-order`}
                   type="number"
                   value={form.sortOrder}
                   onChange={(event) => updateField('sortOrder', event.target.value)}
                   className="input-base"
                 />
               </div>
-              <label className="flex items-center gap-3 text-sm">
-                <input aria-label="Form input" title="Form input"
+              <label htmlFor={`${fieldIdPrefix}-is-active`} className="flex items-center gap-3 text-sm">
+                <input
+                  id={`${fieldIdPrefix}-is-active`}
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

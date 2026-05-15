@@ -4,7 +4,7 @@ import { db } from '@/backend/database'
 import Link from 'next/link'
 import { Package, MapPin, Heart, Settings, ChevronRight } from 'lucide-react'
 import { formatPrice } from '@/backend/utils'
-import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
 export const metadata = { title: 'Boilabin Account' }
 
@@ -47,7 +47,9 @@ export default async function AccountPage() {
         {/* Welcome */}
         <div className="mb-8 rounded-[1.75rem] border border-black/8 bg-[linear-gradient(135deg,#2d1b3d_0%,#4a2d66_55%,#c8b49e_175%)] p-6 text-white shadow-[0_18px_42px_rgba(23,18,15,0.12)]">
           <div className="flex items-center gap-3">
-            <BrandWordmark variant="art" aria-label="Boilabin" className="w-[6rem] text-[hsl(var(--buttermilk))]" />
+            <span className="rounded-xl bg-white p-1.5">
+              <BoilabinLogo variant="full" size={54} />
+            </span>
             <span className="rounded-full border border-white/14 bg-white/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/82">
               Account
             </span>

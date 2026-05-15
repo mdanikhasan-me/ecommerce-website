@@ -12,11 +12,11 @@ type LogoProps = {
 }
 
 const VARIANT_MAP: Record<LogoVariant, { src: string; w: number; h: number; alt: string }> = {
-  mark:         { src: BRAND_ASSETS.mark,         w: 1, h: 1,      alt: 'Boilabin' },
-  'mark-light': { src: BRAND_ASSETS.markLight,    w: 1, h: 1,      alt: 'Boilabin' },
-  wordmark:     { src: BRAND_ASSETS.wordmark,     w: 800, h: 180,  alt: 'Boilabin' },
-  full:         { src: BRAND_ASSETS.wordmarkFull, w: 1200, h: 260, alt: 'Boilabin' },
-  lockup:       { src: BRAND_ASSETS.lockup,       w: 480, h: 400,  alt: 'Boilabin' },
+  mark:         { src: BRAND_ASSETS.mark,         w: 510, h: 350, alt: 'Boilabin' },
+  'mark-light': { src: BRAND_ASSETS.markLight,    w: 510, h: 350, alt: 'Boilabin' },
+  wordmark:     { src: BRAND_ASSETS.wordmark,     w: 420, h: 105, alt: 'Boilabin' },
+  full:         { src: BRAND_ASSETS.wordmarkFull, w: 510, h: 455, alt: 'Boilabin' },
+  lockup:       { src: BRAND_ASSETS.lockup,       w: 794, h: 794, alt: 'Boilabin' },
 }
 
 export function BoilabinLogo({ className, variant = 'mark', size = 44, priority }: LogoProps) {

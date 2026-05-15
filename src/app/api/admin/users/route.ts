@@ -1,34 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
+import { buildAdminUserWhere, parseAdminUserListFilters } from '@/backend/admin/user-editor'
 
 export async function GET(req: NextRequest) {
   try {
     await requireAdminSession()
 
     const { searchParams } = new URL(req.url)
-    const page = Math.max(1, Number(searchParams.get('page') || '1'))
-    const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') || '25')))
-    const q = searchParams.get('q')?.trim()
-    const role = searchParams.get('role')?.trim()
-
-    const where: Record<string, unknown> = {}
-    if (q) {
-      where.OR = [
-        { name: { contains: q, mode: 'insensitive' } },
-        { email: { contains: q, mode: 'insensitive' } },
-        { phone: { contains: q, mode: 'insensitive' } },
-      ]
-    }
-    if (role) {
-      where.role = role
-    }
+    const filters = parseAdminUserListFilters(searchParams)
+    const where = buildAdminUserWhere(filters)
 
     const [users, total] = await Promise.all([
       db.user.findMany({
         where,
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: (filters.page - 1) * filters.limit,
+        take: filters.limit,
         orderBy: { createdAt: 'desc' },
         include: {
           _count: {
@@ -45,14 +32,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       users,
       pagination: {
-        page,
-        limit,
+        page: filters.page,
+        limit: filters.limit,
         total,
-        totalPages: Math.max(1, Math.ceil(total / limit)),
+        totalPages: Math.max(1, Math.ceil(total / filters.limit)),
       },
     })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not load users' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not load users'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

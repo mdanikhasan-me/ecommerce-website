@@ -1,25 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { OrderStatus } from '@prisma/client'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
-
-const ALLOWED_STATUSES = new Set<OrderStatus>([
-  'PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED',
-  'CANCELLED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED', 'REFUNDED',
-])
+import { parseAdminOrderStatusPayload } from '@/backend/admin/order-update-editor'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireAdminSession()
     const { id } = await params
-    const { status, note } = await req.json()
-
-    if (!ALLOWED_STATUSES.has(status)) {
-      return NextResponse.json({ error: 'Invalid order status' }, { status: 400 })
+    const parsed = parseAdminOrderStatusPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
-    const safeNote = typeof note === 'string' ? note.trim().slice(0, 500) || null : null
+
+    const { status, note } = parsed.data
 
     const order = await db.order.findUnique({
       where: { id },
@@ -36,13 +31,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const updatedOrder = await db.order.update({
       where: { id },
       data: {
-        status: status as OrderStatus,
+        status,
         deliveredAt: status === 'DELIVERED' ? new Date() : undefined,
         cancelledAt: status === 'CANCELLED' ? new Date() : undefined,
         statusHistory: {
           create: {
-            status: status as OrderStatus,
-            note: safeNote ?? `Status updated to ${status} by admin`,
+            status,
+            note: note ?? `Status updated to ${status} by admin`,
           },
         },
       },
@@ -64,7 +59,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'order',
       entityId: order.id,
       oldValues: { status: order.status },
-      newValues: { status, note: safeNote },
+      newValues: { status, note },
     })
 
     await syncProductSoldCounts(order.items.map((item) => item.productId))
@@ -74,8 +69,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath(`/account/orders/${order.id}`)
 
     return NextResponse.json({ success: true, order: updatedOrder })
-  } catch (error: any) {
-    const isAuth = error?.message === 'Unauthorized'
+  } catch (error: unknown) {
+    const isAuth = error instanceof Error && error.message === 'Unauthorized'
     return NextResponse.json(
       { error: isAuth ? 'Unauthorized' : 'Could not update order status' },
       { status: isAuth ? 403 : 400 },

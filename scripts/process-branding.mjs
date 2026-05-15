@@ -1,57 +1,31 @@
-// One-shot: strip near-white background to alpha, write branding PNGs.
-// Also produces favicon sizes from the mark.
+// Current Boilabin branding source:
+// public/assets/branding/boilabin-logo-full.svg
+//
+// The supplied SVG is the canonical logo asset. The website variants are small
+// SVG crop wrappers around that exact source so the mark, wordmark, compact
+// lockup, and full lockup all stay visually identical to the designer file.
 import sharp from 'sharp'
+import { readFile } from 'node:fs/promises'
 import { mkdir } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-const SRC = 'C:/Users/anikh/Downloads'
-const OUT = resolve('public/assets/branding')
-const APP = resolve('src/app')
+const BRANDING = resolve('public/assets/branding')
+const ICONS = resolve(BRANDING, 'icons')
+const SOURCE = resolve(BRANDING, 'boilabin-logo-full.svg')
 
-await mkdir(OUT, { recursive: true })
+await mkdir(ICONS, { recursive: true })
 
-async function stripBg(input, output, { removeColor = 'white', threshold = 20, resize } = {}) {
-  let pipeline = sharp(input).ensureAlpha()
-  if (resize) pipeline = pipeline.resize({ width: resize, withoutEnlargement: false })
-  const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true })
-  const target = removeColor === 'white' ? [255, 255, 255] : [69, 36, 134] // purple approx
-  for (let i = 0; i < data.length; i += 4) {
-    const dr = Math.abs(data[i] - target[0])
-    const dg = Math.abs(data[i + 1] - target[1])
-    const db = Math.abs(data[i + 2] - target[2])
-    const dist = Math.sqrt(dr * dr + dg * dg + db * db)
-    if (dist < threshold) {
-      data[i + 3] = 0
-    } else if (dist < threshold * 2) {
-      data[i + 3] = Math.round((dist - threshold) / threshold * 255)
-    }
-  }
-  await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } })
-    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
-    .extend({ top: 8, bottom: 8, left: 8, right: 8, background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png({ compressionLevel: 9 })
-    .toFile(output)
-  console.log('wrote', output)
+const svg = await readFile(SOURCE, 'utf8')
+const embeddedPng = svg.match(/data:image\/png;base64,([^"']+)/)
+
+if (!embeddedPng) {
+  throw new Error('Could not find the embedded PNG inside boilabin-logo-full.svg')
 }
 
-// Primary mark (purple B on white → transparent bg, keep purple B)
-await stripBg(`${SRC}/IMG_2893.PNG`, `${OUT}/boilabin-mark.png`, { threshold: 28 })
+const sourceImage = Buffer.from(embeddedPng[1], 'base64')
 
-// Light mark (light B on purple → transparent bg, keep light B) ; for dark surfaces
-await stripBg(`${SRC}/IMG_2890.PNG`, `${OUT}/boilabin-mark-light.png`, { removeColor: 'purple', threshold: 55 })
+await sharp(sourceImage).resize(32, 32, { fit: 'contain', background: '#ffffff' }).png().toFile(resolve(ICONS, 'favicon-32x32.png'))
+await sharp(sourceImage).resize(180, 180, { fit: 'contain', background: '#ffffff' }).png().toFile(resolve(ICONS, 'apple-touch-icon.png'))
+await sharp(sourceImage).resize(512, 512, { fit: 'contain', background: '#ffffff' }).png().toFile(resolve(ICONS, 'app-icon-512.png'))
 
-// Wordmark horizontal clean
-await stripBg(`${SRC}/IMG_2899.PNG`, `${OUT}/boilabin-wordmark.png`, { threshold: 22 })
-
-// Wordmark+mark horizontal (detailed)
-await stripBg(`${SRC}/IMG_2896.PNG`, `${OUT}/boilabin-wordmark-full.png`, { threshold: 24 })
-
-// Vertical lockup
-await stripBg(`${SRC}/IMG_2895.PNG`, `${OUT}/boilabin-lockup.png`, { threshold: 22 })
-
-// Favicons from mark
-await sharp(`${OUT}/boilabin-mark.png`).resize(32, 32).png().toFile(`${OUT}/favicon-32.png`)
-await sharp(`${OUT}/boilabin-mark.png`).resize(180, 180).png().toFile(`${APP}/apple-icon.png`)
-await sharp(`${OUT}/boilabin-mark.png`).resize(512, 512).png().toFile(`${APP}/icon.png`)
-
-console.log('done')
+console.log('Updated Boilabin icons from public/assets/branding/boilabin-logo-full.svg')

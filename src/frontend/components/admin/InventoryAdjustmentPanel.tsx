@@ -21,8 +21,13 @@ interface InventoryAdjustmentPanelProps {
   }
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelProps) {
   const router = useRouter()
+  const fieldIdPrefix = `inventory-${product.id}`
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [note, setNote] = useState('')
@@ -74,8 +79,8 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
       setOpen(false)
       setNote('')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not update inventory')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update inventory'))
     } finally {
       setLoading(false)
     }
@@ -103,8 +108,11 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
             <form onSubmit={handleSubmit} className="mt-5 space-y-5">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Product stock</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-product-stock`} className="mb-1.5 block text-sm font-medium">
+                    Product stock
+                  </label>
+                  <input
+                    id={`${fieldIdPrefix}-product-stock`}
                     type="number"
                     min="0"
                     value={stockQuantity}
@@ -113,8 +121,11 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Low stock threshold</label>
-                  <input aria-label="Form input" title="Form input"
+                  <label htmlFor={`${fieldIdPrefix}-low-stock-threshold`} className="mb-1.5 block text-sm font-medium">
+                    Low stock threshold
+                  </label>
+                  <input
+                    id={`${fieldIdPrefix}-low-stock-threshold`}
                     type="number"
                     min="0"
                     value={lowStockThreshold}
@@ -125,8 +136,11 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Adjustment note</label>
-                <textarea aria-label="Text area" title="Text area"
+                <label htmlFor={`${fieldIdPrefix}-note`} className="mb-1.5 block text-sm font-medium">
+                  Adjustment note
+                </label>
+                <textarea
+                  id={`${fieldIdPrefix}-note`}
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
                   className="input-base min-h-[110px] resize-y"
@@ -150,10 +164,14 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
                         <div>
                           <p className="font-medium">{variant.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {variant.sku} · {variant.isActive ? 'Active' : 'Inactive'}
+                            {variant.sku} - {variant.isActive ? 'Active' : 'Inactive'}
                           </p>
                         </div>
-                        <input aria-label="Form input" title="Form input"
+                        <label className="sr-only" htmlFor={`${fieldIdPrefix}-variant-${variant.id}`}>
+                          Stock for {variant.name}
+                        </label>
+                        <input
+                          id={`${fieldIdPrefix}-variant-${variant.id}`}
                           type="number"
                           min="0"
                           value={variant.stockQuantity}

@@ -1,58 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
-
-function req(value: unknown, max: number): string | null {
-  if (typeof value !== 'string') return null
-  const t = value.trim()
-  if (!t || t.length > max) return null
-  return t
-}
-
-function opt(value: unknown, max: number): string | null {
-  if (typeof value !== 'string') return null
-  const t = value.trim()
-  if (!t) return null
-  return t.slice(0, max)
-}
+import { parseAddressPayload } from '@/backend/account/address'
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const body = await request.json()
-    const fullName = req(body.fullName, 120)
-    const phone = req(body.phone, 20)
-    const addressLine1 = req(body.addressLine1, 200)
-    const city = req(body.city, 80)
-    const district = req(body.district, 80)
-    const division = req(body.division, 80)
-
-    if (!fullName || !phone || !addressLine1 || !city || !district || !division) {
-      return NextResponse.json({ error: 'Missing required address fields' }, { status: 400 })
-    }
-    if (!/^[0-9+\-()\s]+$/.test(phone)) {
-      return NextResponse.json({ error: 'Invalid phone number' }, { status: 400 })
+    const parsed = parseAddressPayload(await request.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
 
-    if (body.isDefault) {
-      await db.address.updateMany({ where: { userId: session.user.id }, data: { isDefault: false } })
-    }
+    const address = await db.$transaction(async (tx) => {
+      if (parsed.data.isDefault) {
+        await tx.address.updateMany({ where: { userId: session.user.id }, data: { isDefault: false } })
+      }
 
-    const address = await db.address.create({
-      data: {
-        userId: session.user.id,
-        fullName,
-        phone,
-        addressLine1,
-        addressLine2: opt(body.addressLine2, 200),
-        city,
-        district,
-        division,
-        postalCode: opt(body.postalCode, 20),
-        isDefault: Boolean(body.isDefault),
-      },
+      return tx.address.create({
+        data: {
+          userId: session.user.id,
+          ...parsed.data,
+        },
+      })
     })
 
     return NextResponse.json({ address }, { status: 201 })

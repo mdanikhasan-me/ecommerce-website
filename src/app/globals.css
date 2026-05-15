@@ -222,11 +222,11 @@
 
   .brand-wordmark-art {
     display: inline-block;
-    aspect-ratio: 800 / 180;
+    aspect-ratio: 420 / 105;
     background-color: currentColor;
     vertical-align: middle;
-    -webkit-mask-image: url('/assets/branding/boilabin-wordmark.png');
-    mask-image: url('/assets/branding/boilabin-wordmark.png');
+    -webkit-mask-image: url('/assets/branding/boilabin-logo-wordmark.svg');
+    mask-image: url('/assets/branding/boilabin-logo-wordmark.svg');
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center;

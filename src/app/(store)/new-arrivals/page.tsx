@@ -15,6 +15,9 @@ export default async function NewArrivalsPage() {
       images: { where: { isPrimary: true }, take: 1 },
       category: { select: { name: true, slug: true } },
     },
+  }).catch((error) => {
+    console.error('Could not load new arrivals', error)
+    return []
   })
 
   return (

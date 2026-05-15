@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function NotificationRowActions({
   notificationId,
   isRead,
@@ -30,8 +34,8 @@ export function NotificationRowActions({
 
       toast.success(isRead ? 'Marked as unread' : 'Marked as read')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not update notification')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update notification'))
     } finally {
       setLoading(null)
     }
@@ -53,8 +57,8 @@ export function NotificationRowActions({
 
       toast.success('Notification deleted')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not delete notification')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not delete notification'))
     } finally {
       setLoading(null)
     }

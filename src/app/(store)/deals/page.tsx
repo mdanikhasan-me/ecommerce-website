@@ -33,7 +33,10 @@ export default async function DealsPage() {
         category: { select: { name: true, slug: true } },
       },
     }),
-  ])
+  ]).catch((error) => {
+    console.error('Could not load deals page data', error)
+    return [null, []] as const
+  })
 
   return (
     <div className="min-h-screen">

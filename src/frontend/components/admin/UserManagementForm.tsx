@@ -25,9 +25,21 @@ interface UserManagementFormProps {
 
 const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']
 
+interface UserManagementFormState {
+  name: string
+  phone: string
+  role: string
+  isActive: boolean
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function UserManagementForm({ user }: UserManagementFormProps) {
   const router = useRouter()
-  const [form, setForm] = useState({
+  const fieldIdPrefix = `admin-user-${user.id}`
+  const [form, setForm] = useState<UserManagementFormState>({
     name: user.name ?? '',
     phone: user.phone ?? '',
     role: user.role,
@@ -35,7 +47,10 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
   })
   const [isSaving, setIsSaving] = useState(false)
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = <Field extends keyof UserManagementFormState>(
+    field: Field,
+    value: UserManagementFormState[Field],
+  ) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -57,8 +72,8 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
 
       toast.success('User updated')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not update user')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update user'))
     } finally {
       setIsSaving(false)
     }
@@ -76,8 +91,11 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Full name</label>
-            <input aria-label="Form input" title="Form input"
+            <label htmlFor={`${fieldIdPrefix}-name`} className="mb-1.5 block text-sm font-medium">
+              Full name
+            </label>
+            <input
+              id={`${fieldIdPrefix}-name`}
               value={form.name}
               onChange={(event) => updateField('name', event.target.value)}
               className="input-base"
@@ -85,12 +103,17 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Email</label>
-            <input aria-label="Form input" title="Form input" value={user.email} disabled className="input-base opacity-70" />
+            <label htmlFor={`${fieldIdPrefix}-email`} className="mb-1.5 block text-sm font-medium">
+              Email
+            </label>
+            <input id={`${fieldIdPrefix}-email`} value={user.email} disabled className="input-base opacity-70" />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Phone</label>
-            <input aria-label="Form input" title="Form input"
+            <label htmlFor={`${fieldIdPrefix}-phone`} className="mb-1.5 block text-sm font-medium">
+              Phone
+            </label>
+            <input
+              id={`${fieldIdPrefix}-phone`}
               value={form.phone}
               onChange={(event) => updateField('phone', event.target.value)}
               className="input-base"
@@ -98,8 +121,11 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium">Role</label>
-            <select aria-label="Select option" title="Select option"
+            <label htmlFor={`${fieldIdPrefix}-role`} className="mb-1.5 block text-sm font-medium">
+              Role
+            </label>
+            <select
+              id={`${fieldIdPrefix}-role`}
               value={form.role}
               onChange={(event) => updateField('role', event.target.value)}
               className="input-base"
@@ -113,8 +139,12 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
           </div>
         </div>
 
-        <label className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm">
-          <input aria-label="Form input" title="Form input"
+        <label
+          htmlFor={`${fieldIdPrefix}-is-active`}
+          className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm"
+        >
+          <input
+            id={`${fieldIdPrefix}-is-active`}
             type="checkbox"
             checked={form.isActive}
             onChange={(event) => updateField('isActive', event.target.checked)}

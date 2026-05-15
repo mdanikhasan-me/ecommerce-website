@@ -2,17 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
+import { parseAdminInventoryPayload } from '@/backend/admin/inventory-editor'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireAdminSession()
     const { id } = await params
-    const payload = await req.json()
-
-    const note = payload.note?.trim()
-    if (!note) {
-      return NextResponse.json({ error: 'Adjustment note is required' }, { status: 400 })
+    const parsed = parseAdminInventoryPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
+
+    const payload = parsed.data
 
     const product = await db.product.findUnique({
       where: { id },
@@ -33,38 +34,34 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    const nextStockQuantity = Number(payload.stockQuantity)
-    const nextLowStockThreshold = Number(payload.lowStockThreshold)
-
-    if (!Number.isFinite(nextStockQuantity) || nextStockQuantity < 0) {
-      return NextResponse.json({ error: 'Stock quantity is invalid' }, { status: 400 })
-    }
-
-    if (!Number.isFinite(nextLowStockThreshold) || nextLowStockThreshold < 0) {
-      return NextResponse.json({ error: 'Low stock threshold is invalid' }, { status: 400 })
-    }
-
-    const variantUpdates = Array.isArray(payload.variants) ? payload.variants : []
     const existingVariantMap = new Map(product.variants.map((variant) => [variant.id, variant]))
 
-    for (const variant of variantUpdates) {
+    for (const variant of payload.variants) {
       if (!existingVariantMap.has(variant.id)) {
         return NextResponse.json({ error: 'One or more variants do not belong to this product' }, { status: 400 })
-      }
-
-      const nextVariantStock = Number(variant.stockQuantity)
-      if (!Number.isFinite(nextVariantStock) || nextVariantStock < 0) {
-        return NextResponse.json({ error: 'Variant stock is invalid' }, { status: 400 })
       }
     }
 
     const updatedProduct = await db.$transaction(async (tx) => {
-      const nextProduct = await tx.product.update({
+      await tx.product.update({
         where: { id: product.id },
         data: {
-          stockQuantity: nextStockQuantity,
-          lowStockThreshold: nextLowStockThreshold,
+          stockQuantity: payload.stockQuantity,
+          lowStockThreshold: payload.lowStockThreshold,
         },
+      })
+
+      for (const variant of payload.variants) {
+        await tx.productVariant.update({
+          where: { id: variant.id },
+          data: {
+            stockQuantity: variant.stockQuantity,
+          },
+        })
+      }
+
+      return tx.product.findUniqueOrThrow({
+        where: { id: product.id },
         include: {
           variants: {
             orderBy: { sortOrder: 'asc' },
@@ -78,17 +75,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           },
         },
       })
-
-      for (const variant of variantUpdates) {
-        await tx.productVariant.update({
-          where: { id: variant.id },
-          data: {
-            stockQuantity: Number(variant.stockQuantity),
-          },
-        })
-      }
-
-      return nextProduct
     })
 
     await logAdminAudit({
@@ -106,12 +92,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         })),
       },
       newValues: {
-        stockQuantity: nextStockQuantity,
-        lowStockThreshold: nextLowStockThreshold,
-        note,
-        variants: variantUpdates.map((variant: { id: string; stockQuantity: number }) => ({
+        stockQuantity: payload.stockQuantity,
+        lowStockThreshold: payload.lowStockThreshold,
+        note: payload.note,
+        variants: payload.variants.map((variant) => ({
           id: variant.id,
-          stockQuantity: Number(variant.stockQuantity),
+          stockQuantity: variant.stockQuantity,
         })),
       },
     })
@@ -121,8 +107,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath(`/admin/products/${product.id}`)
 
     return NextResponse.json({ product: updatedProduct })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not update inventory' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not update inventory'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

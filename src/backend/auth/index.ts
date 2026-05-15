@@ -4,16 +4,15 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { db } from '@/backend/database'
-import { Role } from '@prisma/client'
+import { authConfig } from '@/backend/auth/config'
+import type { NextAuthConfig } from 'next-auth'
+
+type AuthEvents = NonNullable<NextAuthConfig['events']>
+type SignInEventParams = Parameters<NonNullable<AuthEvents['signIn']>>[0]
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  session: { strategy: 'jwt' },
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: '/auth/login',
-    error: '/auth/error',
-  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -51,24 +50,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
-      if (user) {
-        token.id = user.id
-        token.role = (user as any).role
-      }
-      return token
-    },
-    async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.role = token.role as Role
-      }
-      return session
-    },
-  },
   events: {
-    async signIn({ user, isNewUser }: { user: any; isNewUser?: boolean }) {
+    async signIn({ user, isNewUser }: SignInEventParams) {
       if (isNewUser && user.id) {
         await db.cart.create({ data: { userId: user.id } })
         await db.wishlist.create({ data: { userId: user.id } })

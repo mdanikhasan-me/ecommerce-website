@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 const SUBJECTS = new Set([
   'Order Issue',
@@ -16,6 +17,9 @@ function clean(value: unknown, max: number): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const limited = rateLimit(req, { key: 'contact:create', limit: 5, windowMs: 60_000 })
+    if (limited) return limited
+
     const body = await req.json()
     const name = clean(body.name, 120)
     const email = clean(body.email, 254)

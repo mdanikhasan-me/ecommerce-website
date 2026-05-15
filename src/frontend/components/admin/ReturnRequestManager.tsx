@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const RETURN_STATUSES = ['REQUESTED', 'APPROVED', 'REJECTED', 'PICKED_UP', 'INSPECTED', 'REFUNDED']
+const RETURN_STATUSES = ['REQUESTED', 'APPROVED', 'REJECTED', 'PICKED_UP', 'INSPECTED', 'REFUNDED'] as const
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
 
 export function ReturnRequestManager({
   requestId,
@@ -18,6 +22,7 @@ export function ReturnRequestManager({
   notes: string | null
 }) {
   const router = useRouter()
+  const fieldIdPrefix = `return-${requestId}`
   const [status, setStatus] = useState(currentStatus)
   const [amount, setAmount] = useState(refundAmount?.toString() ?? '')
   const [adminNotes, setAdminNotes] = useState(notes ?? '')
@@ -45,8 +50,8 @@ export function ReturnRequestManager({
 
       toast.success('Return request updated')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not update return request')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update return request'))
     } finally {
       setLoading(false)
     }
@@ -63,8 +68,15 @@ export function ReturnRequestManager({
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Return status</label>
-          <select aria-label="Select option" title="Select option" value={status} onChange={(event) => setStatus(event.target.value)} className="input-base">
+          <label htmlFor={`${fieldIdPrefix}-status`} className="mb-1.5 block text-sm font-medium">
+            Return status
+          </label>
+          <select
+            id={`${fieldIdPrefix}-status`}
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            className="input-base"
+          >
             {RETURN_STATUSES.map((value) => (
               <option key={value} value={value}>
                 {value.replace('_', ' ')}
@@ -73,8 +85,11 @@ export function ReturnRequestManager({
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-medium">Refund amount</label>
-          <input aria-label="Form input" title="Form input"
+          <label htmlFor={`${fieldIdPrefix}-refund-amount`} className="mb-1.5 block text-sm font-medium">
+            Refund amount
+          </label>
+          <input
+            id={`${fieldIdPrefix}-refund-amount`}
             type="number"
             min="0"
             step="0.01"
@@ -87,8 +102,11 @@ export function ReturnRequestManager({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium">Admin notes</label>
-        <textarea aria-label="Text area" title="Text area"
+        <label htmlFor={`${fieldIdPrefix}-notes`} className="mb-1.5 block text-sm font-medium">
+          Admin notes
+        </label>
+        <textarea
+          id={`${fieldIdPrefix}-notes`}
           value={adminNotes}
           onChange={(event) => setAdminNotes(event.target.value)}
           className="input-base min-h-[130px] resize-y"

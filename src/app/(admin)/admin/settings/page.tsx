@@ -32,6 +32,10 @@ const SETTINGS_GROUPS = [
   },
 ]
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export default function AdminSettingsPage() {
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
@@ -40,9 +44,15 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then((r) => r.json())
-      .then((data) => { setValues(data.settings ?? {}); setLoading(false) })
-      .catch(() => setLoading(false))
+      .then(async (response) => {
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data.error || 'Could not load settings')
+        }
+        setValues(data.settings ?? {})
+      })
+      .catch((error: unknown) => toast.error(getErrorMessage(error, 'Could not load settings')))
+      .finally(() => setLoading(false))
   }, [])
 
   const handleSave = async () => {
@@ -53,10 +63,13 @@ export default function AdminSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ settings: values }),
       })
-      if (!res.ok) throw new Error()
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save settings')
+      }
       toast.success('Settings saved successfully')
-    } catch {
-      toast.error('Failed to save settings')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Failed to save settings'))
     } finally {
       setSaving(false)
     }
@@ -107,12 +120,15 @@ export default function AdminSettingsPage() {
           <h2 className="font-semibold text-base">{currentGroup?.label}</h2>
           {currentGroup?.fields.map((field) => (
             <div key={field.key}>
-              <label className="text-sm font-medium mb-1.5 block">{field.label}</label>
+              <label htmlFor={`setting-${field.key}`} className="text-sm font-medium mb-1.5 block">
+                {field.label}
+              </label>
               {'description' in field && field.description && (
                 <p className="text-xs text-muted-foreground mb-2">{field.description}</p>
               )}
               {field.type === 'toggle' ? (
                 <button type="button"
+                  id={`setting-${field.key}`}
                   aria-label={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
                   aria-pressed={values[field.key] === 'true'}
                   title={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
@@ -133,7 +149,8 @@ export default function AdminSettingsPage() {
                   />
                 </button>
               ) : (
-                <input aria-label="Form input" title="Form input"
+                <input
+                  id={`setting-${field.key}`}
                   type={field.type}
                   value={values[field.key] ?? ''}
                   onChange={(e) =>

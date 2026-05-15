@@ -1,13 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { OrderStatus, PaymentMethod, type Prisma } from '@prisma/client'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { generateOrderNumber } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 const AVAILABLE_PAYMENT_METHODS = new Set(
   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
 )
+
+type OrderRequestItem = {
+  productId?: unknown
+  variantId?: unknown
+  quantity?: unknown
+  imageUrl?: unknown
+}
+
+type OrderRequestAddress = {
+  fullName?: unknown
+  phone?: unknown
+  addressLine1?: unknown
+  addressLine2?: unknown
+  city?: unknown
+  district?: unknown
+  division?: unknown
+  postalCode?: unknown
+}
+
+function isPaymentMethod(value: unknown): value is PaymentMethod {
+  return typeof value === 'string' && Object.values(PaymentMethod).includes(value as PaymentMethod)
+}
+
+function isOrderStatus(value: unknown): value is OrderStatus {
+  return typeof value === 'string' && Object.values(OrderStatus).includes(value as OrderStatus)
+}
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -19,8 +47,9 @@ export async function GET(req: NextRequest) {
   const limit = 20
   const skip = (page - 1) * limit
 
-  const where: any = isAdmin ? {} : { userId: session.user.id }
-  if (sp.get('status')) where.status = sp.get('status')
+  const where: Prisma.OrderWhereInput = isAdmin ? {} : { userId: session.user.id }
+  const status = sp.get('status')
+  if (isOrderStatus(status)) where.status = status
 
   const [orders, total] = await Promise.all([
     db.order.findMany({
@@ -55,11 +84,14 @@ function sanitizeString(value: unknown, max: number) {
 
 export async function POST(req: NextRequest) {
   try {
+    const limited = rateLimit(req, { key: 'orders:create', limit: 10, windowMs: 60_000 })
+    if (limited) return limited
+
     const session = await auth()
     const body = await req.json()
     const { items, address, paymentMethod, notes, couponCode, isGuestOrder, guestEmail, guestPhone } = body
 
-    if (!AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
+    if (!isPaymentMethod(paymentMethod) || !AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
       return NextResponse.json(
         { error: 'This payment method is not configured yet. Please use an active checkout method.' },
         { status: 400 }
@@ -70,7 +102,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
     }
 
-    if (!address || !address.fullName || !address.phone || !address.addressLine1 || !address.city || !address.district || !address.division) {
+    const orderItems = items as OrderRequestItem[]
+    const orderAddress = address as OrderRequestAddress | null | undefined
+
+    if (!orderAddress || !orderAddress.fullName || !orderAddress.phone || !orderAddress.addressLine1 || !orderAddress.city || !orderAddress.district || !orderAddress.division) {
       return NextResponse.json({ error: 'Delivery address is incomplete' }, { status: 400 })
     }
 
@@ -81,8 +116,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch products + variants server-side; ignore client-supplied prices
-    const productIds: string[] = Array.from(new Set(items.map((i: any) => String(i.productId)).filter(Boolean)))
-    const variantIds: string[] = Array.from(new Set(items.map((i: any) => i.variantId).filter(Boolean).map(String)))
+    const productIds = Array.from(new Set(orderItems.map((item) => String(item.productId ?? '')).filter(Boolean)))
+    const variantIds = Array.from(new Set(orderItems.map((item) => item.variantId).filter(Boolean).map(String)))
 
     const [products, variants] = await Promise.all([
       db.product.findMany({
@@ -94,7 +129,7 @@ export async function POST(req: NextRequest) {
             where: { id: { in: variantIds } },
             select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true },
           })
-        : Promise.resolve([] as any[]),
+        : Promise.resolve([]),
     ])
 
     const productMap = new Map(products.map((p) => [p.id, p]))
@@ -115,7 +150,7 @@ export async function POST(req: NextRequest) {
     const preparedItems: PreparedItem[] = []
     let subtotal = 0
 
-    for (const raw of items) {
+    for (const raw of orderItems) {
       const qty = Math.max(1, Math.floor(Number(raw.quantity) || 0))
       if (qty <= 0) {
         return NextResponse.json({ error: 'Invalid item quantity' }, { status: 400 })
@@ -181,7 +216,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Coupon usage limit reached' }, { status: 400 })
       }
       if (subtotal < coupon.minOrderAmount) {
-        return NextResponse.json({ error: `Minimum order amount is ৳${coupon.minOrderAmount}` }, { status: 400 })
+        return NextResponse.json({ error: `Minimum order amount is Tk ${coupon.minOrderAmount.toLocaleString('en-BD')}` }, { status: 400 })
       }
 
       // Enforce per-user limit (authenticated only)
@@ -207,14 +242,14 @@ export async function POST(req: NextRequest) {
     const total = Math.max(0, subtotal - discount + shippingFee)
 
     const safeAddress = {
-      fullName: sanitizeString(address.fullName, 120),
-      phone: sanitizeString(address.phone, 20),
-      addressLine1: sanitizeString(address.addressLine1, 200),
-      addressLine2: address.addressLine2 ? sanitizeString(address.addressLine2, 200) : null,
-      city: sanitizeString(address.city, 80),
-      district: sanitizeString(address.district, 80),
-      division: sanitizeString(address.division, 80),
-      postalCode: address.postalCode ? sanitizeString(address.postalCode, 20) : null,
+      fullName: sanitizeString(orderAddress.fullName, 120),
+      phone: sanitizeString(orderAddress.phone, 20),
+      addressLine1: sanitizeString(orderAddress.addressLine1, 200),
+      addressLine2: orderAddress.addressLine2 ? sanitizeString(orderAddress.addressLine2, 200) : null,
+      city: sanitizeString(orderAddress.city, 80),
+      district: sanitizeString(orderAddress.district, 80),
+      division: sanitizeString(orderAddress.division, 80),
+      postalCode: orderAddress.postalCode ? sanitizeString(orderAddress.postalCode, 20) : null,
     }
 
     let userId = session?.user?.id
@@ -268,7 +303,7 @@ export async function POST(req: NextRequest) {
           shippingFee,
           discount,
           total,
-          paymentMethod: paymentMethod as any,
+          paymentMethod,
           couponId: couponId ?? undefined,
           notes: notes ? sanitizeString(notes, 500) : undefined,
           isGuestOrder: !session?.user,
@@ -287,7 +322,7 @@ export async function POST(req: NextRequest) {
         data: {
           orderId: created.id,
           amount: total,
-          method: paymentMethod as any,
+          method: paymentMethod,
           status: 'PENDING',
         },
       })
@@ -308,9 +343,9 @@ export async function POST(req: NextRequest) {
     }).catch(() => {})
 
     return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber, subtotal, shippingFee, discount, total }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Order creation error:', error)
-    if (typeof error?.message === 'string' && error.message.startsWith('INSUFFICIENT_STOCK:')) {
+    if (error instanceof Error && error.message.startsWith('INSUFFICIENT_STOCK:')) {
       return NextResponse.json({ error: `Insufficient stock for "${error.message.split(':')[1]}"` }, { status: 409 })
     }
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })

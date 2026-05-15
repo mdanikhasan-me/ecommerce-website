@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Pencil, Trash2, MapPin, Loader2, X, Check } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface Address {
   id: string
@@ -17,6 +18,18 @@ interface Address {
   isDefault: boolean
 }
 
+type AddressForm = {
+  fullName: string
+  phone: string
+  addressLine1: string
+  addressLine2: string
+  city: string
+  district: string
+  division: string
+  postalCode: string
+  isDefault: boolean
+}
+
 export function AddressManager({ addresses: initial }: { addresses: Address[] }) {
   const router = useRouter()
   const [showForm, setShowForm] = useState(false)
@@ -24,7 +37,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const [loading, setLoading] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<AddressForm>({
     fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false,
   })
 
@@ -53,9 +66,17 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
         method: editing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+      }).then(async (response) => {
+        if (!response.ok) {
+          const data = await response.json().catch(() => null)
+          throw new Error(data?.error || 'Could not save address')
+        }
       })
       resetForm()
       router.refresh()
+      toast.success(editing ? 'Address updated' : 'Address saved')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not save address')
     } finally {
       setLoading(false)
     }
@@ -64,14 +85,23 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const handleDelete = async (id: string) => {
     setDeletingId(id)
     try {
-      await fetch(`/api/account/addresses/${id}`, { method: 'DELETE' })
+      const response = await fetch(`/api/account/addresses/${id}`, { method: 'DELETE' })
+      if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        throw new Error(data?.error || 'Could not delete address')
+      }
       router.refresh()
+      toast.success('Address deleted')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not delete address')
     } finally {
       setDeletingId(null)
     }
   }
 
-  const update = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }))
+  const update = <Field extends keyof AddressForm>(field: Field, value: AddressForm[Field]) => {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
   const formIdPrefix = editing ? `address-form-${editing.id}` : 'address-form-new'
 
   return (

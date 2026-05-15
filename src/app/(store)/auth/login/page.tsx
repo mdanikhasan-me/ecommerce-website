@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
 function LoginForm() {
@@ -50,9 +49,8 @@ function LoginForm() {
       <div className="w-full max-w-[400px]">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <BoilabinLogo variant="mark" size={36} priority />
-            <BrandWordmark variant="art" aria-label="Boilabin" className="w-[7rem] text-foreground" />
+          <Link href="/" className="inline-flex">
+            <BoilabinLogo variant="full" size={82} priority />
           </Link>
         </div>
 
@@ -149,7 +147,7 @@ function LoginForm() {
           </button>
 
           <p className="text-center text-sm text-muted-foreground mt-5">
-            New to <span className="inline-flex align-middle"><BrandWordmark variant="art" aria-label="Boilabin" className="w-[4.2rem] align-[-0.1em] text-foreground" /></span>?{' '}
+            New to <span className="font-semibold text-foreground">Boilabin</span>?{' '}
             <Link href={`/auth/register${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold hover:underline">
               Create an account
             </Link>

@@ -61,7 +61,14 @@ export default function CheckoutPage() {
 
   if (items.length === 0) return null
 
-  const onAddressSubmit = () => setStep(1)
+  const onAddressSubmit = (data: AddressForm) => {
+    if (!session && !data.email) {
+      toast.error('Email is required for guest checkout')
+      return
+    }
+
+    setStep(1)
+  }
 
   const placeOrder = async () => {
     const addressData = getValues()
@@ -149,53 +156,53 @@ export default function CheckoutPage() {
                 <form onSubmit={handleSubmit(onAddressSubmit)} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-1 block">Full Name *</label>
-                      <input aria-label="Arif Rahman" title="Arif Rahman" {...register('fullName')} placeholder="Arif Rahman" className="input-base" />
+                      <label htmlFor="checkout-full-name" className="text-sm font-medium mb-1 block">Full Name *</label>
+                      <input id="checkout-full-name" {...register('fullName')} placeholder="Arif Rahman" className="input-base" />
                       {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-1 block">Phone *</label>
-                      <input aria-label="01712345678" title="01712345678" {...register('phone')} placeholder="01712345678" className="input-base" />
+                      <label htmlFor="checkout-phone" className="text-sm font-medium mb-1 block">Phone *</label>
+                      <input id="checkout-phone" {...register('phone')} placeholder="01712345678" className="input-base" />
                       {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                     </div>
                   </div>
 
                   {!session && (
                     <div>
-                      <label className="text-sm font-medium mb-1 block">Email (for order updates)</label>
-                      <input aria-label="you@example.com" title="you@example.com" {...register('email')} type="email" placeholder="you@example.com" className="input-base" />
+                      <label htmlFor="checkout-email" className="text-sm font-medium mb-1 block">Email *</label>
+                      <input id="checkout-email" {...register('email')} type="email" placeholder="you@example.com" className="input-base" />
                       {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
                     </div>
                   )}
 
                   <div>
-                    <label className="text-sm font-medium mb-1 block">Address Line 1 *</label>
-                    <input aria-label="House/Flat number, Road, Area" title="House/Flat number, Road, Area" {...register('addressLine1')} placeholder="House/Flat number, Road, Area" className="input-base" />
+                    <label htmlFor="checkout-address-line-1" className="text-sm font-medium mb-1 block">Address Line 1 *</label>
+                    <input id="checkout-address-line-1" {...register('addressLine1')} placeholder="House/Flat number, Road, Area" className="input-base" />
                     {errors.addressLine1 && <p className="text-xs text-destructive mt-1">{errors.addressLine1.message}</p>}
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium mb-1 block">Address Line 2</label>
-                    <input aria-label="Landmark (optional)" title="Landmark (optional)" {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base" />
+                    <label htmlFor="checkout-address-line-2" className="text-sm font-medium mb-1 block">Address Line 2</label>
+                    <input id="checkout-address-line-2" {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-1 block">Division *</label>
-                      <select aria-label="Select option" title="Select option" {...register('division')} className="input-base">
+                      <label htmlFor="checkout-division" className="text-sm font-medium mb-1 block">Division *</label>
+                      <select id="checkout-division" {...register('division')} className="input-base">
                         <option value="">Select Division</option>
                         {DIVISIONS.map((d) => <option key={d} value={d}>{d}</option>)}
                       </select>
                       {errors.division && <p className="text-xs text-destructive mt-1">{errors.division.message}</p>}
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-1 block">District *</label>
-                      <input aria-label="e.g. Dhaka" title="e.g. Dhaka" {...register('district')} placeholder="e.g. Dhaka" className="input-base" />
+                      <label htmlFor="checkout-district" className="text-sm font-medium mb-1 block">District *</label>
+                      <input id="checkout-district" {...register('district')} placeholder="e.g. Dhaka" className="input-base" />
                       {errors.district && <p className="text-xs text-destructive mt-1">{errors.district.message}</p>}
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-1 block">City *</label>
-                      <input aria-label="e.g. Dhaka City" title="e.g. Dhaka City" {...register('city')} placeholder="e.g. Dhaka City" className="input-base" />
+                      <label htmlFor="checkout-city" className="text-sm font-medium mb-1 block">City *</label>
+                      <input id="checkout-city" {...register('city')} placeholder="e.g. Dhaka City" className="input-base" />
                       {errors.city && <p className="text-xs text-destructive mt-1">{errors.city.message}</p>}
                     </div>
                   </div>
@@ -227,7 +234,7 @@ export default function CheckoutPage() {
                         gateway.isAvailable ? 'hover:border-primary/30' : 'bg-muted/25'
                       )}
                     >
-                      <input aria-label="Form input" title="Form input"
+                      <input aria-label={gateway.name}
                         type="radio"
                         name="payment"
                         value={gateway.id}
@@ -294,8 +301,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-4">
-                  <label className="text-sm font-medium mb-1 block">Order Note (optional)</label>
-                  <textarea aria-label="Text area" title="Text area"
+                  <label htmlFor="checkout-order-note" className="text-sm font-medium mb-1 block">Order Note (optional)</label>
+                  <textarea id="checkout-order-note"
                     value={orderNote}
                     onChange={(e) => setOrderNote(e.target.value)}
                     placeholder="Any special instructions..."

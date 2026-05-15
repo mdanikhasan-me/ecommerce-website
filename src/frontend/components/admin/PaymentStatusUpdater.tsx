@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const PAYMENT_STATUSES = ['PENDING', 'PAID', 'FAILED', 'REFUNDED', 'PARTIALLY_REFUNDED']
+const PAYMENT_STATUSES = ['PENDING', 'PAID', 'FAILED', 'REFUNDED', 'PARTIALLY_REFUNDED'] as const
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
 
 export function PaymentStatusUpdater({
   orderId,
@@ -36,8 +40,8 @@ export function PaymentStatusUpdater({
 
       toast.success('Payment status updated')
       router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Could not update payment status')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update payment status'))
     } finally {
       setLoading(false)
     }
@@ -49,7 +53,11 @@ export function PaymentStatusUpdater({
         Update payment status
       </p>
       <div className="flex flex-col gap-2">
-        <select aria-label="Select option" title="Select option"
+        <label htmlFor={`payment-status-${orderId}`} className="sr-only">
+          Payment status
+        </label>
+        <select
+          id={`payment-status-${orderId}`}
           value={status}
           onChange={(event) => setStatus(event.target.value)}
           className="input-base text-sm"
@@ -60,7 +68,11 @@ export function PaymentStatusUpdater({
             </option>
           ))}
         </select>
-        <input aria-label="Form input" title="Form input"
+        <label htmlFor={`payment-status-note-${orderId}`} className="sr-only">
+          Payment note
+        </label>
+        <input
+          id={`payment-status-note-${orderId}`}
           value={note}
           onChange={(event) => setNote(event.target.value)}
           placeholder="Payment note"

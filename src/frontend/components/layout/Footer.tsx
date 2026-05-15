@@ -11,7 +11,6 @@ import {
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
-import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 
 const SOCIAL_LINKS = [
   { icon: Facebook, href: FACEBOOK_URL, label: 'Facebook' },
@@ -63,14 +62,9 @@ export function Footer() {
         <div className="mx-auto grid max-w-[1380px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:justify-between">
           <div className="max-w-sm lg:pt-1">
             <Link href="/" className="mb-5 inline-flex items-center gap-3.5" aria-label="Boilabin home">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.03] ring-1 ring-white/10">
-                <BoilabinLogo variant="mark-light" size={34} />
+              <span className="flex rounded-2xl bg-white p-2 ring-1 ring-white/10">
+                <BoilabinLogo variant="full" size={68} />
               </span>
-              <BrandWordmark
-                variant="art"
-                aria-label="Boilabin"
-                className="w-[8rem] text-[hsl(var(--footer-heading))] sm:w-[8.7rem]"
-              />
             </Link>
             <p className="footer-muted mb-6 text-sm leading-relaxed">
               Bangladesh&apos;s premium online store. Quality products, fast delivery, and a shopping
@@ -163,11 +157,7 @@ export function Footer() {
           <div className="mx-auto flex max-w-[1380px] flex-col items-center justify-between gap-3 sm:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>
-              <BrandWordmark
-                variant="art"
-                aria-label="Boilabin"
-                className="w-[4.2rem] text-[hsl(var(--footer-heading))] align-[-0.16em]"
-              />
+              <span className="font-semibold text-[hsl(var(--footer-heading))]">Boilabin</span>
               <span>All rights reserved.</span>
             </p>
             <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">

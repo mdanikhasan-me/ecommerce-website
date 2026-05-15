@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
-
-const RECIPIENT_TYPES = ['USER', 'CUSTOMERS', 'ALL']
+import {
+  parseAdminNotificationPayload,
+  resolveNotificationAudienceWhere,
+} from '@/backend/admin/notification-editor'
 
 export async function GET() {
   try {
@@ -18,41 +19,35 @@ export async function GET() {
     })
 
     return NextResponse.json({ notifications })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not load notifications' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not load notifications'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     await requireAdminSession()
-    const payload = await req.json()
-
-    if (!RECIPIENT_TYPES.includes(payload.recipientType)) {
-      return NextResponse.json({ error: 'Recipient type is invalid' }, { status: 400 })
-    }
-    if (!payload.title?.trim()) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 })
-    }
-    if (!payload.message?.trim()) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+    const parsed = parseAdminNotificationPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
 
+    const payload = parsed.data
     let userIds: string[] = []
     if (payload.recipientType === 'USER') {
-      if (!payload.userId) {
+      const user = await db.user.findUnique({
+        where: { id: payload.userId ?? '' },
+        select: { id: true, isActive: true },
+      })
+      if (!user?.isActive) {
         return NextResponse.json({ error: 'Select a user' }, { status: 400 })
       }
-      userIds = [payload.userId]
+      userIds = [user.id]
     } else {
-      const where: Prisma.UserWhereInput =
-        payload.recipientType === 'CUSTOMERS'
-          ? { role: 'CUSTOMER', isActive: true }
-          : { isActive: true }
-
       const users = await db.user.findMany({
-        where,
+        where: resolveNotificationAudienceWhere(payload.recipientType),
         select: { id: true },
       })
       userIds = users.map((user) => user.id)
@@ -65,16 +60,17 @@ export async function POST(req: NextRequest) {
     await db.notification.createMany({
       data: userIds.map((userId) => ({
         userId,
-        type: payload.type || 'SYSTEM',
-        title: payload.title.trim(),
-        message: payload.message.trim(),
-        link: payload.link?.trim() || null,
+        type: payload.type,
+        title: payload.title,
+        message: payload.message,
+        link: payload.link,
       })),
     })
 
     return NextResponse.json({ success: true, count: userIds.length })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not send notifications' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not send notifications'
+    const status = message === 'Unauthorized' ? 401 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

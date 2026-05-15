@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
-
-const PAYMENT_STATUSES = ['PENDING', 'PAID', 'FAILED', 'REFUNDED', 'PARTIALLY_REFUNDED']
+import { parseAdminPaymentStatusPayload } from '@/backend/admin/order-update-editor'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await requireAdminSession()
     const { id } = await params
-    const { status, note } = await req.json()
-
-    if (!PAYMENT_STATUSES.includes(status)) {
-      return NextResponse.json({ error: 'Invalid payment status' }, { status: 400 })
+    const parsed = parseAdminPaymentStatusPayload(await req.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
+
+    const { status, note } = parsed.data
 
     const order = await db.order.findUnique({
       where: { id },
@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           statusHistory: {
             create: {
               status: order.status,
-              note: note?.trim() || `Payment status updated to ${status} by admin`,
+              note: note ?? `Payment status updated to ${status} by admin`,
             },
           },
         },
@@ -78,7 +78,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'order',
       entityId: order.id,
       oldValues: { paymentStatus: order.paymentStatus },
-      newValues: { paymentStatus: status, note: note || null },
+      newValues: { paymentStatus: status, note },
     })
 
     revalidatePath('/admin/orders')
@@ -86,8 +86,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath(`/account/orders/${order.id}`)
 
     return NextResponse.json({ success: true, order: updatedOrder })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 403 : 400
-    return NextResponse.json({ error: error.message || 'Could not update payment status' }, { status })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Could not update payment status'
+    const status = message === 'Unauthorized' ? 403 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 
 export async function GET(req: NextRequest) {
@@ -7,7 +8,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(50, parseInt(sp.get('limit') ?? '24'))
   const skip = (page - 1) * limit
 
-  const where: any = { isActive: true }
+  const where: Prisma.ProductWhereInput = { isActive: true }
 
   // Wishlist / multi-ID lookup
   const ids = sp.get('ids')
@@ -22,13 +23,18 @@ export async function GET(req: NextRequest) {
       { tags: { has: sp.get('q')!.toLowerCase() } },
     ]
   }
-  if (sp.get('category')) where.category = { slug: sp.get('category') }
+  const category = sp.get('category')
+  if (category) where.category = { slug: category }
   if (sp.get('featured') === 'true') where.isFeatured = true
   if (sp.get('new') === 'true') where.isNew = true
-  if (sp.get('minPrice')) where.basePrice = { ...where.basePrice, gte: parseFloat(sp.get('minPrice')!) }
-  if (sp.get('maxPrice')) where.basePrice = { ...where.basePrice, lte: parseFloat(sp.get('maxPrice')!) }
+  const priceFilter: Prisma.FloatFilter<'Product'> = {}
+  const minPrice = Number(sp.get('minPrice'))
+  const maxPrice = Number(sp.get('maxPrice'))
+  if (Number.isFinite(minPrice)) priceFilter.gte = minPrice
+  if (Number.isFinite(maxPrice)) priceFilter.lte = maxPrice
+  if (priceFilter.gte !== undefined || priceFilter.lte !== undefined) where.basePrice = priceFilter
 
-  let orderBy: any = { soldCount: 'desc' }
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   const sort = sp.get('sort')
   if (sort === 'newest') orderBy = { createdAt: 'desc' }
   else if (sort === 'price_asc') orderBy = { basePrice: 'asc' }
@@ -54,4 +60,3 @@ export async function GET(req: NextRequest) {
     totalPages: Math.ceil(total / limit),
   })
 }
-

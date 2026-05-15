@@ -47,8 +47,9 @@ export function BannerEditorForm({
     startsAt: toDateTimeLocalValue(banner?.startsAt),
     endsAt: toDateTimeLocalValue(banner?.endsAt),
   })
+  const fieldIdPrefix = banner ? `banner-${banner.id}` : 'banner-new'
 
-  const updateField = (field: string, value: string | boolean) => {
+  const updateField = (field: keyof typeof form, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
 
@@ -87,8 +88,8 @@ export function BannerEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (submitError: any) {
-      setError(submitError.message || 'Could not save banner')
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Could not save banner')
     } finally {
       setIsSaving(false)
     }
@@ -112,8 +113,8 @@ export function BannerEditorForm({
 
       router.push(redirectTo)
       router.refresh()
-    } catch (deleteError: any) {
-      setError(deleteError.message || 'Could not delete banner')
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Could not delete banner')
     } finally {
       setIsDeleting(false)
     }
@@ -133,9 +134,9 @@ export function BannerEditorForm({
             <h2 className="font-display text-lg font-semibold">Banner Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Title</label>
+                <label htmlFor={`${fieldIdPrefix}-title`} className="mb-1.5 block text-sm font-medium">Title</label>
                 <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the large headline on the storefront.</p>
-                <input aria-label="Form input" title="Form input"
+                <input id={`${fieldIdPrefix}-title`}
                   value={form.title}
                   onChange={(event) => updateField('title', event.target.value)}
                   className="input-base"
@@ -143,9 +144,9 @@ export function BannerEditorForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Subtitle</label>
+                <label htmlFor={`${fieldIdPrefix}-subtitle`} className="mb-1.5 block text-sm font-medium">Subtitle</label>
                 <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the smaller supporting text.</p>
-                <input aria-label="Form input" title="Form input"
+                <input id={`${fieldIdPrefix}-subtitle`}
                   value={form.subtitle}
                   onChange={(event) => updateField('subtitle', event.target.value)}
                   className="input-base"
@@ -153,8 +154,8 @@ export function BannerEditorForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Link URL</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-link`} className="mb-1.5 block text-sm font-medium">Link URL</label>
+                <input id={`${fieldIdPrefix}-link`}
                   value={form.linkUrl}
                   onChange={(event) => updateField('linkUrl', event.target.value)}
                   className="input-base"
@@ -188,13 +189,12 @@ export function BannerEditorForm({
             <h2 className="font-display text-lg font-semibold">Placement</h2>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Position</label>
+                <label htmlFor={`${fieldIdPrefix}-position`} className="mb-1.5 block text-sm font-medium">Position</label>
                 <p className="mb-1.5 text-xs text-muted-foreground">
                   Controls where this banner shows on the storefront.
                 </p>
                 <select
-                  aria-label="Banner position"
-                  title="Banner position"
+                  id={`${fieldIdPrefix}-position`}
                   value={form.position}
                   onChange={(event) => updateField('position', event.target.value)}
                   className="input-base"
@@ -207,8 +207,8 @@ export function BannerEditorForm({
                 </select>
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Sort order</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">Sort order</label>
+                <input id={`${fieldIdPrefix}-sort-order`}
                   type="number"
                   value={form.sortOrder}
                   onChange={(event) => updateField('sortOrder', event.target.value)}
@@ -216,8 +216,8 @@ export function BannerEditorForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Starts at</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-starts-at`} className="mb-1.5 block text-sm font-medium">Starts at</label>
+                <input id={`${fieldIdPrefix}-starts-at`}
                   type="datetime-local"
                   value={form.startsAt}
                   onChange={(event) => updateField('startsAt', event.target.value)}
@@ -225,16 +225,16 @@ export function BannerEditorForm({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Ends at</label>
-                <input aria-label="Form input" title="Form input"
+                <label htmlFor={`${fieldIdPrefix}-ends-at`} className="mb-1.5 block text-sm font-medium">Ends at</label>
+                <input id={`${fieldIdPrefix}-ends-at`}
                   type="datetime-local"
                   value={form.endsAt}
                   onChange={(event) => updateField('endsAt', event.target.value)}
                   className="input-base"
                 />
               </div>
-              <label className="flex items-center gap-3 text-sm">
-                <input aria-label="Form input" title="Form input"
+              <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center gap-3 text-sm">
+                <input id={`${fieldIdPrefix}-active`}
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(event) => updateField('isActive', event.target.checked)}

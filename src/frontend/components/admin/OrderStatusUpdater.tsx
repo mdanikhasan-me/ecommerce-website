@@ -4,7 +4,22 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED', 'REFUNDED']
+const ORDER_STATUSES = [
+  'PENDING',
+  'CONFIRMED',
+  'PACKED',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+  'RETURN_REQUESTED',
+  'RETURNED',
+  'REFUND_REQUESTED',
+  'REFUNDED',
+] as const
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
 
 export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
   const [status, setStatus] = useState(currentStatus)
@@ -21,11 +36,14 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, note }),
       })
-      if (!res.ok) throw new Error()
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not update order status')
+      }
       toast.success('Order status updated')
       router.refresh()
-    } catch {
-      toast.error('Failed to update status')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not update order status'))
     } finally {
       setLoading(false)
     }
@@ -33,7 +51,11 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
 
   return (
     <div className="flex items-center gap-2">
-      <select aria-label="Select option" title="Select option"
+      <label htmlFor={`order-status-${orderId}`} className="sr-only">
+        Order status
+      </label>
+      <select
+        id={`order-status-${orderId}`}
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         className="input-base w-44 text-sm"
@@ -42,7 +64,12 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
           <option key={s} value={s}>{s.replace('_', ' ')}</option>
         ))}
       </select>
-      <input aria-label="Note (optional)" title="Note (optional)"
+      <label htmlFor={`order-status-note-${orderId}`} className="sr-only">
+        Order status note
+      </label>
+      <input
+        id={`order-status-note-${orderId}`}
+        aria-label="Order status note"
         placeholder="Note (optional)"
         value={note}
         onChange={(e) => setNote(e.target.value)}

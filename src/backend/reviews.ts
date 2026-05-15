@@ -1,9 +1,41 @@
 import { db } from '@/backend/database'
+import { z } from 'zod'
 
 export type ReviewAccessState = {
   canReview: boolean
   hasDeliveredPurchase: boolean
   existingReviewStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | null
+}
+
+const reviewPayloadSchema = z.object({
+  productId: z.string().trim().min(1, 'Product is required'),
+  rating: z.coerce.number().int('Rating must be 1 to 5').min(1, 'Rating must be 1 to 5').max(5, 'Rating must be 1 to 5'),
+  title: z
+    .string()
+    .trim()
+    .max(120, 'Review title is too long')
+    .optional()
+    .nullable()
+    .transform((value) => value || null),
+  body: z.string().trim().min(20, 'Review must be at least 20 characters').max(4000, 'Review is too long'),
+})
+
+export type ReviewPayload = z.infer<typeof reviewPayloadSchema>
+
+export function parseReviewPayload(input: unknown) {
+  const parsed = reviewPayloadSchema.safeParse(input)
+
+  if (!parsed.success) {
+    return {
+      success: false as const,
+      error: parsed.error.issues[0]?.message ?? 'Invalid review',
+    }
+  }
+
+  return {
+    success: true as const,
+    data: parsed.data,
+  }
 }
 
 export async function getApprovedReviewStats(productId: string) {

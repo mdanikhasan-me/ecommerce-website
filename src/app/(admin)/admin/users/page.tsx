@@ -1,4 +1,5 @@
 import { db } from '@/backend/database'
+import { ADMIN_MANAGED_ROLES, buildAdminUserWhere, parseAdminUserListFilters } from '@/backend/admin/user-editor'
 import { formatDate } from '@/backend/utils'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
@@ -7,19 +8,17 @@ interface Props { searchParams: Promise<{ page?: string; q?: string; role?: stri
 export const metadata = { title: 'Admin Users' }
 
 export default async function AdminUsersPage({ searchParams }: Props) {
-  const filters = await searchParams
-  const page = Math.max(1, parseInt(filters.page ?? '1'))
+  const rawFilters = await searchParams
+  const filterParams = new URLSearchParams()
+  if (rawFilters.page) filterParams.set('page', rawFilters.page)
+  if (rawFilters.q) filterParams.set('q', rawFilters.q)
+  if (rawFilters.role) filterParams.set('role', rawFilters.role)
+
+  const filters = parseAdminUserListFilters(filterParams)
+  const page = filters.page
   const limit = 25
   const skip = (page - 1) * limit
-
-  const where: any = {}
-  if (filters.q) {
-    where.OR = [
-      { name: { contains: filters.q, mode: 'insensitive' } },
-      { email: { contains: filters.q, mode: 'insensitive' } },
-    ]
-  }
-  if (filters.role) where.role = filters.role
+  const where = buildAdminUserWhere(filters)
 
   const [users, total] = await Promise.all([
     db.user.findMany({
@@ -52,8 +51,11 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <input aria-label="Search name or email..." title="Search name or email..." name="q" defaultValue={filters.q} placeholder="Search name or email..." className="input-base max-w-xs" />
           <select aria-label="Role" title="Role" name="role" defaultValue={filters.role} className="input-base w-40">
             <option value="">All Roles</option>
-            <option value="CUSTOMER">Customer</option>
-            <option value="ADMIN">Admin</option>
+            {ADMIN_MANAGED_ROLES.map((role) => (
+              <option key={role} value={role}>
+                {role.replace('_', ' ')}
+              </option>
+            ))}
           </select>
           <button type="submit" className="btn-primary px-4">Filter</button>
         </form>

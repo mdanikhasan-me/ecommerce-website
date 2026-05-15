@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation'
 import { Check, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function ReviewModerationActions({
   reviewId,
   currentStatus,
@@ -23,11 +27,14 @@ export function ReviewModerationActions({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: action === 'approve' ? 'APPROVED' : 'REJECTED' }),
       })
-      if (!res.ok) throw new Error()
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Could not moderate review')
+      }
       toast.success(action === 'approve' ? 'Review approved' : 'Review rejected')
       router.refresh()
-    } catch {
-      toast.error('Action failed')
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Could not moderate review'))
     } finally {
       setLoading(null)
     }
