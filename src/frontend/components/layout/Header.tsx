@@ -106,20 +106,32 @@ export function Header() {
   }, [])
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const query = searchQuery.trim()
+    if (!query) {
       setSuggestions([])
       return
     }
 
+    const controller = new AbortController()
     const timeout = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(searchQuery)}`)
+        const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`, {
+          signal: controller.signal,
+        })
+        if (!res.ok) return
         const data = await res.json()
         setSuggestions(data.suggestions || [])
-      } catch {}
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          setSuggestions([])
+        }
+      }
     }, 300)
 
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout)
+      controller.abort()
+    }
   }, [searchQuery])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -456,6 +468,117 @@ export function Header() {
               </div>
 
               <div className="space-y-3 p-3">
+                <section className="rounded-[1.25rem] border border-border bg-card p-3">
+                  {session ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 px-1 pb-2">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
+                          {session.user.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={session.user.image}
+                              alt=""
+                              className="h-full w-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <span className="text-sm font-semibold text-primary">
+                              {session.user.name?.[0]?.toUpperCase() ?? 'U'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">{session.user.name ?? 'My Account'}</p>
+                          <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-2 rounded-2xl border border-primary/15 bg-primary/8 px-3 py-3 text-sm font-semibold text-primary"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <LayoutDashboard className="h-4 w-4 shrink-0" />
+                            <span className="truncate">Admin</span>
+                          </Link>
+                        ) : null}
+                        <Link
+                          href="/account"
+                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <User className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Account</span>
+                        </Link>
+                        <Link
+                          href="/account/orders"
+                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <Package className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Orders</span>
+                        </Link>
+                        <Link
+                          href="/wishlist"
+                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <Heart className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Wishlist</span>
+                        </Link>
+                        <Link
+                          href="/compare"
+                          className="flex items-center justify-between gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <span className="flex min-w-0 items-center gap-2">
+                            <BarChart2 className="h-4 w-4 shrink-0" />
+                            <span className="truncate">Compare</span>
+                          </span>
+                          {compareCount > 0 ? (
+                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-white">
+                              {compareCount > 9 ? '9+' : compareCount}
+                            </span>
+                          ) : null}
+                        </Link>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          signOut({ callbackUrl: '/' })
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm font-semibold text-destructive"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href="/auth/login"
+                        className="btn-primary justify-center"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <User className="h-4 w-4" />
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/compare"
+                        className="flex items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <BarChart2 className="h-4 w-4" />
+                        Compare
+                      </Link>
+                    </div>
+                  )}
+                </section>
+
                 <section className="overflow-hidden rounded-[1.25rem] border border-border bg-card">
                   <button
                     type="button"

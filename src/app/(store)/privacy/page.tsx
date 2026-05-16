@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/backend/seo'
 import { CONTACT_EMAIL } from '@/shared/contact'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
-export const metadata: Metadata = { title: 'Boilabin Privacy Policy' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Privacy Policy',
+  'Learn what customer information Boilabin collects, how it is used, and how account and order data is protected.',
+  '/privacy',
+)
 
 export default function PrivacyPage() {
   return (
@@ -20,7 +25,7 @@ export default function PrivacyPage() {
               <li>Account details such as name, email, phone number, and password hash</li>
               <li>Delivery addresses and order history</li>
               <li>Product preferences and storefront activity</li>
-              <li>Payment method metadata processed through secure gateways</li>
+              <li>Payment and fulfillment details needed to complete cash on delivery orders</li>
               <li>Device and browser information used for analytics and fraud prevention</li>
             </ul>
           ),
@@ -45,8 +50,7 @@ export default function PrivacyPage() {
             <>
               <p>
                 Boilabin uses HTTPS and other common security measures to protect data in transit.
-                Passwords are stored as hashes, and payment details are processed through payment
-                partners instead of being stored directly by us.
+                Passwords are stored as hashes, and we do not store card or mobile wallet numbers.
               </p>
               <p>
                 Data is retained only as long as it is needed for order history, customer service,

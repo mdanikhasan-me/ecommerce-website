@@ -1,9 +1,9 @@
 import { promises as fs } from 'fs'
-import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
+import { resolveManagedPublicUploadPath } from '@/backend/admin/admin-utils'
 import { z } from 'zod'
 
 type ProductImageInput = {
@@ -282,7 +282,9 @@ function isManagedUpload(url: string) {
 export async function deleteManagedUpload(url: string) {
   if (!isManagedUpload(url)) return
 
-  const filePath = path.join(process.cwd(), 'public', url.replace(/^\//, ''))
+  const filePath = resolveManagedPublicUploadPath(url, '/uploads/products/')
+  if (!filePath) return
+
   await fs.rm(filePath, { force: true })
 }
 

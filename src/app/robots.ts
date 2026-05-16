@@ -13,12 +13,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/'],
+        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/', '/cart/'],
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/'],
+        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/', '/cart/'],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

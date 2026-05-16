@@ -1,13 +1,15 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { generatePageMetadata } from '@/backend/seo'
 import { db } from '@/backend/database'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
 
-export const metadata: Metadata = {
-  title: 'Boilabin Categories',
-  description: 'Browse every shopping category on Boilabin.',
-}
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Categories',
+  'Browse Boilabin shopping categories and subcategories for products available across Bangladesh.',
+  '/category',
+)
 
 export const revalidate = 300
 

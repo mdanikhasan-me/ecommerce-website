@@ -1,10 +1,15 @@
 import { db } from '@/backend/database'
+import { generatePageMetadata } from '@/backend/seo'
 import { FlashSaleSection } from '@/frontend/components/home/FlashSaleSection'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { Zap } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Boilabin Flash Deals', description: 'Best deals and flash sales on Boilabin' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Flash Deals',
+  'Shop active Boilabin flash deals and sale products while stock is available.',
+  '/deals',
+)
 export const revalidate = 60
 
 export default async function DealsPage() {

@@ -5,6 +5,7 @@ import { CountdownTimer } from '@/frontend/components/ui/CountdownTimer'
 
 interface FlashSaleItem {
   product: any
+  discountType: 'PERCENTAGE' | 'FIXED'
   discountValue: number
   maxQuantity?: number | null
   soldQuantity: number
@@ -18,6 +19,16 @@ interface FlashSale {
 }
 
 export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
+  const getFlashSaleProduct = (item: FlashSaleItem) => {
+    const currentPrice = item.product.salePrice ?? item.product.basePrice
+    const salePrice =
+      item.discountType === 'PERCENTAGE'
+        ? Math.max(0, currentPrice - (currentPrice * item.discountValue) / 100)
+        : Math.max(0, currentPrice - item.discountValue)
+
+    return { ...item.product, salePrice }
+  }
+
   return (
     <div className="w-full">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -54,7 +65,7 @@ export function FlashSaleSection({ flashSale }: { flashSale: FlashSale }) {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {flashSale.items.map((item) => (
           <div key={item.product.id} className="relative">
-            <ProductCard product={item.product} />
+            <ProductCard product={getFlashSaleProduct(item)} />
             {item.maxQuantity && item.soldQuantity > 0 && (
               <div className="mt-1 px-3">
                 {(() => {

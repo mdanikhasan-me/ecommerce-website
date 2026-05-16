@@ -42,7 +42,6 @@ async function getHomeData() {
     newArrivalsPinned,
     bestSellersPinned,
     flashSale,
-    saleProducts,
   ] = await Promise.all([
       db.banner.findMany({ where: { isActive: true, position: 'hero' }, orderBy: { sortOrder: 'asc' } }),
       db.category.findMany({
@@ -112,15 +111,6 @@ async function getHomeData() {
           },
         },
       }),
-      db.product.findMany({
-        where: { isActive: true, salePrice: { not: null } },
-        take: 20,
-        orderBy: { updatedAt: 'desc' },
-        include: {
-          images: { where: { isPrimary: true }, take: 1 },
-          category: { select: { name: true, slug: true } },
-        },
-      }),
     ])
 
   return {
@@ -132,7 +122,6 @@ async function getHomeData() {
     newArrivalsPinned,
     bestSellersPinned,
     flashSale,
-    saleProducts,
   }
 }
 
@@ -146,7 +135,6 @@ export default async function HomePage() {
     newArrivalsPinned,
     bestSellersPinned,
     flashSale,
-    saleProducts,
   } = await getHomeData()
 
   const newArrivalRotatorProducts = newArrivalsPinned.length > 0 ? newArrivalsPinned : newArrivals

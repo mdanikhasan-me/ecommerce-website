@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
+import {
+  buildEffectivePriceWhere,
+  getEffectivePriceSortDirection,
+  parsePriceParam,
+  sortProductsByEffectivePrice,
+} from '@/backend/catalog/product-price-filter'
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
@@ -8,47 +14,56 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(50, parseInt(sp.get('limit') ?? '24'))
   const skip = (page - 1) * limit
 
-  const where: Prisma.ProductWhereInput = { isActive: true }
+  const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true }]
 
   // Wishlist / multi-ID lookup
   const ids = sp.get('ids')
   if (ids) {
     const idList = ids.split(',').map((s) => s.trim()).filter(Boolean)
-    if (idList.length > 0) where.id = { in: idList }
+    if (idList.length > 0) andClauses.push({ id: { in: idList } })
   }
 
   if (sp.get('q')) {
-    where.OR = [
-      { name: { contains: sp.get('q')!, mode: 'insensitive' } },
-      { tags: { has: sp.get('q')!.toLowerCase() } },
-    ]
+    andClauses.push({
+      OR: [
+        { name: { contains: sp.get('q')!, mode: 'insensitive' } },
+        { tags: { has: sp.get('q')!.toLowerCase() } },
+      ],
+    })
   }
   const category = sp.get('category')
-  if (category) where.category = { slug: category }
-  if (sp.get('featured') === 'true') where.isFeatured = true
-  if (sp.get('new') === 'true') where.isNew = true
-  const priceFilter: Prisma.FloatFilter<'Product'> = {}
-  const minPrice = Number(sp.get('minPrice'))
-  const maxPrice = Number(sp.get('maxPrice'))
-  if (Number.isFinite(minPrice)) priceFilter.gte = minPrice
-  if (Number.isFinite(maxPrice)) priceFilter.lte = maxPrice
-  if (priceFilter.gte !== undefined || priceFilter.lte !== undefined) where.basePrice = priceFilter
+  if (category) andClauses.push({ category: { slug: category } })
+  if (sp.get('featured') === 'true') andClauses.push({ isFeatured: true })
+  if (sp.get('new') === 'true') andClauses.push({ isNew: true })
+  const effectivePriceWhere = buildEffectivePriceWhere(
+    parsePriceParam(sp.get('minPrice')),
+    parsePriceParam(sp.get('maxPrice')),
+  )
+  if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
+  const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
+  const effectivePriceSort = getEffectivePriceSortDirection(sp.get('sort'))
 
   let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   const sort = sp.get('sort')
   if (sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (sort === 'price_asc') orderBy = { basePrice: 'asc' }
-  else if (sort === 'price_desc') orderBy = { basePrice: 'desc' }
   else if (sort === 'rating') orderBy = { rating: 'desc' }
 
+  const productInclude = {
+    images: { where: { isPrimary: true }, take: 1 },
+    category: { select: { name: true, slug: true } },
+  } satisfies Prisma.ProductInclude
+
   const [products, total] = await Promise.all([
-    db.product.findMany({
-      where, orderBy, skip, take: limit,
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
-        category: { select: { name: true, slug: true } },
-      },
-    }),
+    effectivePriceSort
+      ? db.product.findMany({
+          where,
+          orderBy: { id: 'asc' },
+          include: productInclude,
+        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit))
+      : db.product.findMany({
+          where, orderBy, skip, take: limit,
+          include: productInclude,
+        }),
     db.product.count({ where }),
   ])
 

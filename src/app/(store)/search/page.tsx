@@ -3,6 +3,12 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
+import {
+  buildEffectivePriceWhere,
+  getEffectivePriceSortDirection,
+  parsePriceParam,
+  sortProductsByEffectivePrice,
+} from '@/backend/catalog/product-price-filter'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
 
@@ -97,31 +103,41 @@ async function getSearchResults(params: SearchParams) {
 
   // Hard filters applied as additional AND clauses
   if (params.category) andClauses.push({ category: { slug: params.category } })
-  if (params.minPrice) andClauses.push({ basePrice: { gte: parseFloat(params.minPrice) } })
-  if (params.maxPrice) andClauses.push({ basePrice: { lte: parseFloat(params.maxPrice) } })
+  const effectivePriceWhere = buildEffectivePriceWhere(
+    parsePriceParam(params.minPrice),
+    parsePriceParam(params.maxPrice),
+  )
+  if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
   if (params.inStock === 'true') andClauses.push({ stockQuantity: { gt: 0 } })
   if (params.rating) andClauses.push({ rating: { gte: parseFloat(params.rating) } })
   if (params.featured === 'true') andClauses.push({ isFeatured: true })
 
   const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
+  const effectivePriceSort = getEffectivePriceSortDirection(params.sort)
 
   let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   if (params.sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (params.sort === 'price_asc') orderBy = { basePrice: 'asc' }
-  else if (params.sort === 'price_desc') orderBy = { basePrice: 'desc' }
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
+  const productInclude = {
+    images: { where: { isPrimary: true }, take: 1 },
+    category: { select: { name: true, slug: true } },
+  } satisfies Prisma.ProductInclude
+
   const [products, total, categories] = await Promise.all([
-    db.product.findMany({
-      where,
-      orderBy,
-      skip,
-      take: limit,
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
-        category: { select: { name: true, slug: true } },
-      },
-    }),
+    effectivePriceSort
+      ? db.product.findMany({
+          where,
+          orderBy: { id: 'asc' },
+          include: productInclude,
+        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit))
+      : db.product.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit,
+          include: productInclude,
+        }),
     db.product.count({ where }),
     db.category.findMany({ where: { isActive: true }, select: { name: true, slug: true }, orderBy: { name: 'asc' } }),
   ])

@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/backend/seo'
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
-export const metadata: Metadata = { title: 'Boilabin Returns and Refund Policy' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Returns and Refund Policy',
+  'Read Boilabin return eligibility, refund timelines, exclusions, and support steps before requesting a return.',
+  '/returns',
+)
 
 export default function ReturnsPage() {
   return (
@@ -57,10 +62,8 @@ export default function ReturnsPage() {
             <>
               <div className="grid gap-3 md:grid-cols-2">
                 {[
-                  ['bKash and Nagad', '1 to 2 business days'],
                   ['Bank transfer', '3 to 5 business days'],
-                  ['Credit and debit card', '5 to 7 business days'],
-                  ['Cash on delivery', 'Bank transfer within 3 to 5 business days'],
+                  ['Cash on delivery orders', 'Bank transfer within 3 to 5 business days'],
                 ].map(([method, time]) => (
                   <div
                     key={method}

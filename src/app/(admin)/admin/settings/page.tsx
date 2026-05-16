@@ -25,6 +25,8 @@ const SETTINGS_GROUPS = [
   },
 ]
 
+const EDITABLE_SETTING_KEYS = SETTINGS_GROUPS.flatMap((group) => group.fields.map((field) => field.key))
+
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
 }
@@ -51,10 +53,13 @@ export default function AdminSettingsPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
+      const editableValues = Object.fromEntries(
+        EDITABLE_SETTING_KEYS.map((key) => [key, values[key] ?? ''])
+      )
       const res = await fetch('/api/admin/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ settings: values }),
+        body: JSON.stringify({ settings: editableValues }),
       })
       const data = await res.json()
       if (!res.ok) {

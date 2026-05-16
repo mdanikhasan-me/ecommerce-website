@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/backend/seo'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
-export const metadata: Metadata = { title: 'About Boilabin' }
+export const metadata: Metadata = generatePageMetadata(
+  'About Boilabin',
+  'Learn how Boilabin is building a clearer, more reliable online shopping experience for customers in Bangladesh.',
+  '/about',
+)
 
 export default function AboutPage() {
   return (

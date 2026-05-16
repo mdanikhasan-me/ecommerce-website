@@ -14,6 +14,10 @@ export async function requireAdminSession() {
   return session
 }
 
+export function isSuperAdminRole(role: string | null | undefined) {
+  return role === 'SUPER_ADMIN'
+}
+
 export async function logAdminAudit(input: {
   userId?: string | null
   action: string
@@ -57,6 +61,20 @@ export function isManagedAdminUpload(url: string) {
   return url.startsWith('/uploads/admin/')
 }
 
+export function resolveManagedPublicUploadPath(url: string, managedPrefix: string) {
+  if (!url.startsWith(managedPrefix)) return null
+
+  const publicRoot = path.resolve(process.cwd(), 'public')
+  const uploadRoot = path.resolve(publicRoot, managedPrefix.replace(/^\/+|\/+$/g, ''))
+  const filePath = path.resolve(publicRoot, url.replace(/^\/+/, ''))
+
+  if (filePath !== uploadRoot && !filePath.startsWith(`${uploadRoot}${path.sep}`)) {
+    return null
+  }
+
+  return filePath
+}
+
 export async function persistAdminUpload(url: string | null | undefined, folder: string) {
   const cleaned = url?.trim()
   if (!cleaned) return null
@@ -76,7 +94,9 @@ export async function persistAdminUpload(url: string | null | undefined, folder:
 export async function deleteManagedAdminUpload(url: string | null | undefined) {
   if (!url || !isManagedAdminUpload(url)) return
 
-  const filePath = path.join(process.cwd(), 'public', url.replace(/^\//, ''))
+  const filePath = resolveManagedPublicUploadPath(url, '/uploads/admin/')
+  if (!filePath) return
+
   await fs.rm(filePath, { force: true })
 }
 
@@ -92,4 +112,3 @@ export async function deleteReplacedAdminUploads(
   const removed = previousUrls.filter((url) => url && isManagedAdminUpload(url) && !nextSet.has(url))
   await cleanupManagedAdminUploads(removed)
 }
-

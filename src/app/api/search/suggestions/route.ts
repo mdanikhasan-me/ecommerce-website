@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(req, { key: 'search:suggestions', limit: 60, windowMs: 60_000 })
+  if (limited) return limited
+
   const q = req.nextUrl.searchParams.get('q')?.trim()
   if (!q || q.length < 2) return NextResponse.json({ suggestions: [] })
 

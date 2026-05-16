@@ -1,9 +1,14 @@
 import { db } from '@/backend/database'
+import { generatePageMetadata } from '@/backend/seo'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Boilabin New Arrivals' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin New Arrivals',
+  'Explore the newest products added to Boilabin, with clear prices and delivery across Bangladesh.',
+  '/new-arrivals',
+)
 export const revalidate = 300
 
 export default async function NewArrivalsPage() {

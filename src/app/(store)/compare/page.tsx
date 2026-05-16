@@ -10,6 +10,7 @@ import { calculateDiscount, cn, formatPrice, getStockStatus } from '@/backend/ut
 
 type CompareProduct = {
   id: string
+  sku: string
   name: string
   slug: string
   description: string
@@ -22,8 +23,6 @@ type CompareProduct = {
   images: { url: string; isPrimary: boolean }[]
   category: { name: string; slug: string }
 }
-
-const COMPARE_LABEL_COLUMN_WIDTH = 148
 
 function getCompareDescription(product: CompareProduct) {
   const rawDescription = product.shortDescription?.trim() || product.description?.trim() || ''
@@ -324,7 +323,7 @@ export default function ComparePage() {
                             originalPrice: product.basePrice,
                             image: primaryImage,
                             stockQuantity: product.stockQuantity,
-                            sku: `SKU-${product.id.slice(0, 6)}`,
+                            sku: product.sku,
                           })
                           toast.success('Added to cart')
                           openCart()

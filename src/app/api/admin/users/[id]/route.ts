@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
-import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
+import { isSuperAdminRole, logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminUserPayload } from '@/backend/admin/user-editor'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -56,6 +56,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const nextRole = payload.role ?? existingUser.role
     const nextActive = payload.isActive ?? existingUser.isActive
+    const actorIsSuperAdmin = isSuperAdminRole(session.user.role)
+
+    if (!actorIsSuperAdmin && (isSuperAdminRole(existingUser.role) || isSuperAdminRole(nextRole))) {
+      return NextResponse.json(
+        { error: 'Only a super admin can manage super admin access' },
+        { status: 403 }
+      )
+    }
 
     if (session.user.id === existingUser.id && !nextActive) {
       return NextResponse.json({ error: 'You cannot deactivate your own account' }, { status: 400 })

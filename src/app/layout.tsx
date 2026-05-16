@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     template: '%s, Boilabin',
   },
   description:
-    'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery, bKash and Nagad accepted.',
+    'Shop electronics, fashion, home appliances and more in Bangladesh. Free delivery on orders over Tk 2,000, with cash on delivery available.',
   keywords: ['online shopping bangladesh', 'buy online bd', 'best price bangladesh', 'price in bd', 'boilabin'],
   authors: [{ name: 'Boilabin' }],
   creator: 'Boilabin',

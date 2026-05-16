@@ -9,6 +9,7 @@ export function SortSelect({ current, options }: { current: string; options: Sor
       onChange={(e) => {
         const url = new URL(window.location.href)
         url.searchParams.set('sort', e.target.value)
+        url.searchParams.delete('page')
         window.location.href = url.toString()
       }}
       className="text-sm border border-input rounded-lg px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"

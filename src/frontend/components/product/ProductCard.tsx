@@ -41,7 +41,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
       originalPrice: product.basePrice,
       image: primaryImage ?? '',
       stockQuantity: product.stockQuantity,
-      sku: `SKU-${product.id.slice(0, 6)}`,
+      sku: product.sku,
     })
     toast.success('Added to cart')
     openCart()
@@ -56,8 +56,8 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
 
   if (layout === 'list') {
     return (
-      <Link href={`/products/${product.slug}`} className={cn('product-card flex gap-4 p-4 md:p-5', className)}>
-        <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-[1.1rem] bg-[#eee6db]">
+      <div className={cn('product-card flex gap-4 p-4 md:p-5', className)}>
+        <Link href={`/products/${product.slug}`} className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-[1.1rem] bg-[#eee6db]">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -68,9 +68,11 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
               sizes="112px"
             />
           )}
-        </div>
+        </Link>
         <div className="flex-1 min-w-0">
-          <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-6 text-foreground">{product.name}</h3>
+          <Link href={`/products/${product.slug}`} className="transition-colors hover:text-primary">
+            <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-6 text-foreground">{product.name}</h3>
+          </Link>
           <div className="flex items-center gap-1 mt-1">
             <Star className="h-3 w-3 star-filled" />
             <span className="text-[12px] font-semibold text-foreground/80">{product.rating.toFixed(1)}</span>
@@ -93,39 +95,39 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
             Add to Cart
           </button>
         </div>
-      </Link>
+      </div>
     )
   }
 
   return (
-    <Link
-      href={`/products/${product.slug}`}
-      className={cn('product-card group block', className)}
-    >
-      <div className="relative aspect-square overflow-hidden rounded-t-[1.35rem] bg-[#eee6db]">
-        {primaryImage ? (
-          <Image
-            src={primaryImage}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.045]"
-            quality={84}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-            <Eye className="h-8 w-8" />
+    <div className={cn('product-card group block', className)}>
+      <div className="relative overflow-hidden rounded-t-[1.35rem] bg-[#eee6db]">
+        <Link href={`/products/${product.slug}`} className="relative block aspect-square">
+          {primaryImage ? (
+            <Image
+              src={primaryImage}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.045]"
+              quality={84}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+              <Eye className="h-8 w-8" />
+            </div>
+          )}
+
+          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {discount > 0 && <span className="badge-sale">{discount}% off</span>}
+            {product.isNew && <span className="badge-new">New</span>}
+            {product.isBestSeller && <span className="badge-bestseller">Best Seller</span>}
           </div>
-        )}
 
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {discount > 0 && <span className="badge-sale">{discount}% off</span>}
-          {product.isNew && <span className="badge-new">New</span>}
-          {product.isBestSeller && <span className="badge-bestseller">Best Seller</span>}
-        </div>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.08)_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        </Link>
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.08)_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        <div className="absolute right-2 top-2 flex translate-x-10 flex-col gap-1.5 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+        <div className="absolute right-2 top-2 flex flex-col gap-1.5 opacity-100 transition-all duration-300 sm:translate-x-10 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
           <button title="Add to wishlist" type="button"
             onClick={handleWishlist}
             className={cn(
@@ -162,7 +164,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         </div>
 
         {inStock && (
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
+          <div className="absolute bottom-0 left-0 right-0 translate-y-0 transition-transform duration-300 sm:translate-y-full sm:group-hover:translate-y-0">
             <button type="button"
               onClick={handleAddToCart}
               className="flex w-full items-center justify-center gap-2 bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
@@ -174,7 +176,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         )}
       </div>
 
-      <div className="p-4">
+      <Link href={`/products/${product.slug}`} className="block p-4">
         <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-foreground transition-colors group-hover:text-primary">
           {product.name}
         </h3>
@@ -201,8 +203,8 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
         </div>
 
         <p className={cn('mt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
-      </div>
-    </Link>
+      </Link>
+    </div>
   )
 }
 

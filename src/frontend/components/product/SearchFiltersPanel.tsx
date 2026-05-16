@@ -8,39 +8,63 @@ import { cn } from '@/backend/utils'
 interface Props {
   categories: { name: string; slug: string }[]
   searchParams: Record<string, string | undefined>
+  basePath?: string
+  preserveOnClear?: string[]
   onNavigate?: () => void
 }
 
-export function SearchFiltersPanel({ categories, searchParams, onNavigate }: Props) {
+export function SearchFiltersPanel({
+  categories,
+  searchParams,
+  basePath = '/search',
+  preserveOnClear = ['q'],
+  onNavigate,
+}: Props) {
   const router = useRouter()
   const [minPrice, setMinPrice] = useState(searchParams.minPrice ?? '')
   const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice ?? '')
 
-  const applyFilter = (key: string, value: string | undefined) => {
-    const sp = new URLSearchParams(searchParams as Record<string, string>)
-    if (value) sp.set(key, value)
-    else sp.delete(key)
-    sp.delete('page')
-    router.push(`/search?${sp.toString()}`)
+  const pushFilters = (sp: URLSearchParams) => {
+    const query = sp.toString()
+    router.push(query ? `${basePath}?${query}` : basePath)
     onNavigate?.()
   }
 
+  const createSearchParams = () => {
+    const sp = new URLSearchParams()
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (value) sp.set(key, value)
+    }
+    return sp
+  }
+
+  const applyFilter = (key: string, value: string | undefined) => {
+    const sp = createSearchParams()
+    if (value) sp.set(key, value)
+    else sp.delete(key)
+    sp.delete('page')
+    pushFilters(sp)
+  }
+
   const applyPriceRange = (nextMin: string, nextMax: string) => {
-    const sp = new URLSearchParams(searchParams as Record<string, string>)
+    const sp = createSearchParams()
     if (nextMin) sp.set('minPrice', nextMin)
     else sp.delete('minPrice')
     if (nextMax) sp.set('maxPrice', nextMax)
     else sp.delete('maxPrice')
     sp.delete('page')
-    router.push(`/search?${sp.toString()}`)
-    onNavigate?.()
+    pushFilters(sp)
   }
 
   const clearAll = () => {
     const sp = new URLSearchParams()
-    if (searchParams.q) sp.set('q', searchParams.q)
-    router.push(`/search?${sp.toString()}`)
-    onNavigate?.()
+    for (const key of preserveOnClear) {
+      const value = searchParams[key]
+      if (value) sp.set(key, value)
+    }
+    setMinPrice('')
+    setMaxPrice('')
+    pushFilters(sp)
   }
 
   const hasFilters = !!(
@@ -64,26 +88,28 @@ export function SearchFiltersPanel({ categories, searchParams, onNavigate }: Pro
         )}
       </div>
 
-      <div>
-        <h4 className="mb-2 text-sm font-semibold">Category</h4>
-        <div className="space-y-1.5">
-          {categories.map((cat) => (
-            <label key={cat.slug} className="group flex cursor-pointer items-center gap-2">
-              <input
-                type="radio"
-                name="category"
-                checked={searchParams.category === cat.slug}
-                onChange={() => applyFilter('category', cat.slug)}
-                aria-label={`Filter by category ${cat.name}`}
-                className="accent-primary"
-              />
-              <span className={cn('text-sm transition-colors group-hover:text-primary', searchParams.category === cat.slug && 'font-medium text-primary')}>
-                {cat.name}
-              </span>
-            </label>
-          ))}
+      {categories.length > 0 && (
+        <div>
+          <h4 className="mb-2 text-sm font-semibold">Category</h4>
+          <div className="space-y-1.5">
+            {categories.map((cat) => (
+              <label key={cat.slug} className="group flex cursor-pointer items-center gap-2">
+                <input
+                  type="radio"
+                  name="category"
+                  checked={searchParams.category === cat.slug}
+                  onChange={() => applyFilter('category', cat.slug)}
+                  aria-label={`Filter by category ${cat.name}`}
+                  className="accent-primary"
+                />
+                <span className={cn('text-sm transition-colors group-hover:text-primary', searchParams.category === cat.slug && 'font-medium text-primary')}>
+                  {cat.name}
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div>
         <h4 className="mb-2 text-sm font-semibold">Price Range (Tk)</h4>

@@ -73,6 +73,23 @@ function computeShipping(subtotal: number) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
 }
 
+type ActiveFlashSaleItem = {
+  id: string
+  productId: string
+  discountType: 'PERCENTAGE' | 'FIXED'
+  discountValue: number
+  maxQuantity: number | null
+  soldQuantity: number
+}
+
+function applyFlashSaleDiscount(unitPrice: number, item: ActiveFlashSaleItem) {
+  if (item.discountType === 'PERCENTAGE') {
+    return Math.max(0, unitPrice - (unitPrice * item.discountValue) / 100)
+  }
+
+  return Math.max(0, unitPrice - item.discountValue)
+}
+
 function sanitizeString(value: unknown, max: number) {
   if (typeof value !== 'string') return ''
   return value.trim().slice(0, max)
@@ -113,10 +130,11 @@ export async function POST(req: NextRequest) {
     const productIds = Array.from(new Set(orderItems.map((item) => String(item.productId ?? '')).filter(Boolean)))
     const variantIds = Array.from(new Set(orderItems.map((item) => item.variantId).filter(Boolean).map(String)))
 
-    const [products, variants] = await Promise.all([
+    const now = new Date()
+    const [products, variants, flashSaleItems] = await Promise.all([
       db.product.findMany({
         where: { id: { in: productIds } },
-        select: { id: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
+        select: { id: true, categoryId: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
       }),
       variantIds.length
         ? db.productVariant.findMany({
@@ -124,24 +142,48 @@ export async function POST(req: NextRequest) {
             select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true },
           })
         : Promise.resolve([]),
+      db.flashSaleItem.findMany({
+        where: {
+          productId: { in: productIds },
+          flashSale: { isActive: true, startsAt: { lte: now }, endsAt: { gt: now } },
+        },
+        select: {
+          id: true,
+          productId: true,
+          discountType: true,
+          discountValue: true,
+          maxQuantity: true,
+          soldQuantity: true,
+        },
+      }),
     ])
 
     const productMap = new Map(products.map((p) => [p.id, p]))
     const variantMap = new Map(variants.map((v) => [v.id, v]))
+    const flashSaleMap = new Map<string, ActiveFlashSaleItem>()
+    for (const item of flashSaleItems) {
+      const existing = flashSaleMap.get(item.productId)
+      if (!existing || applyFlashSaleDiscount(productMap.get(item.productId)?.salePrice ?? productMap.get(item.productId)?.basePrice ?? 0, item) < applyFlashSaleDiscount(productMap.get(item.productId)?.salePrice ?? productMap.get(item.productId)?.basePrice ?? 0, existing)) {
+        flashSaleMap.set(item.productId, item)
+      }
+    }
 
     type PreparedItem = {
       productId: string
       variantId: string | null
       productName: string
       productSku: string
+      categoryId: string
       variantName: string | null
       price: number
       quantity: number
       total: number
       imageUrl: string | null
+      flashSaleItemId: string | null
     }
 
     const preparedItems: PreparedItem[] = []
+    const flashSaleQuantities = new Map<string, number>()
     let subtotal = 0
 
     for (const raw of orderItems) {
@@ -175,6 +217,15 @@ export async function POST(req: NextRequest) {
         unitPrice = variant.salePrice ?? variant.price ?? unitPrice
       }
 
+      const flashSaleItem = flashSaleMap.get(product.id) ?? null
+      if (flashSaleItem) {
+        unitPrice = applyFlashSaleDiscount(unitPrice, flashSaleItem)
+        flashSaleQuantities.set(
+          flashSaleItem.id,
+          (flashSaleQuantities.get(flashSaleItem.id) ?? 0) + qty
+        )
+      }
+
       const lineTotal = unitPrice * qty
       subtotal += lineTotal
       preparedItems.push({
@@ -182,12 +233,21 @@ export async function POST(req: NextRequest) {
         variantId,
         productName: product.name,
         productSku: product.sku,
+        categoryId: product.categoryId,
         variantName,
         price: unitPrice,
         quantity: qty,
         total: lineTotal,
         imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl : null,
+        flashSaleItemId: flashSaleItem?.id ?? null,
       })
+    }
+
+    for (const [flashSaleItemId, quantity] of flashSaleQuantities) {
+      const item = flashSaleItems.find((entry) => entry.id === flashSaleItemId)
+      if (item?.maxQuantity && item.soldQuantity + quantity > item.maxQuantity) {
+        return NextResponse.json({ error: 'One or more flash sale items are sold out' }, { status: 409 })
+      }
     }
 
     // Validate coupon server-side (if provided)
@@ -213,6 +273,21 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Minimum order amount is Tk ${coupon.minOrderAmount.toLocaleString('en-BD')}` }, { status: 400 })
       }
 
+      const productIdSet = new Set(coupon.productIds)
+      const categoryIdSet = new Set(coupon.categoryIds)
+      const hasRestrictions = productIdSet.size > 0 || categoryIdSet.size > 0
+      const eligibleSubtotal = hasRestrictions
+        ? preparedItems.reduce((sum, item) => {
+            return productIdSet.has(item.productId) || categoryIdSet.has(item.categoryId)
+              ? sum + item.total
+              : sum
+          }, 0)
+        : subtotal
+
+      if (hasRestrictions && eligibleSubtotal <= 0) {
+        return NextResponse.json({ error: 'This coupon does not apply to the items in your cart' }, { status: 400 })
+      }
+
       if (coupon.perUserLimit) {
         const userUsage = await db.order.count({
           where: { userId: session.user.id, couponId: coupon.id, status: { not: 'CANCELLED' } },
@@ -223,10 +298,10 @@ export async function POST(req: NextRequest) {
       }
 
       if (coupon.type === 'PERCENTAGE') {
-        discount = (subtotal * coupon.value) / 100
+        discount = (eligibleSubtotal * coupon.value) / 100
         if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount)
       } else if (coupon.type === 'FIXED') {
-        discount = Math.min(coupon.value, subtotal)
+        discount = Math.min(coupon.value, eligibleSubtotal)
       }
       couponId = coupon.id
     }
@@ -290,10 +365,27 @@ export async function POST(req: NextRequest) {
           couponId: couponId ?? undefined,
           notes: notes ? sanitizeString(notes, 500) : undefined,
           isGuestOrder: false,
-          items: { create: preparedItems },
+          items: {
+            create: preparedItems.map(({ categoryId, flashSaleItemId, ...line }) => line),
+          },
           statusHistory: { create: [{ status: 'PENDING', note: 'Order placed' }] },
         },
       })
+
+      for (const [flashSaleItemId, quantity] of flashSaleQuantities) {
+        const item = flashSaleItems.find((entry) => entry.id === flashSaleItemId)
+        const updated = await tx.flashSaleItem.updateMany({
+          where: {
+            id: flashSaleItemId,
+            ...(item?.maxQuantity ? { soldQuantity: { lte: item.maxQuantity - quantity } } : {}),
+          },
+          data: { soldQuantity: { increment: quantity } },
+        })
+
+        if (updated.count === 0) {
+          throw new Error('FLASH_SALE_SOLD_OUT')
+        }
+      }
 
       if (couponId) {
         await tx.coupon.update({ where: { id: couponId }, data: { usageCount: { increment: 1 } } })
@@ -328,6 +420,9 @@ export async function POST(req: NextRequest) {
     console.error('Order creation error:', error)
     if (error instanceof Error && error.message.startsWith('INSUFFICIENT_STOCK:')) {
       return NextResponse.json({ error: `Insufficient stock for "${error.message.split(':')[1]}"` }, { status: 409 })
+    }
+    if (error instanceof Error && error.message === 'FLASH_SALE_SOLD_OUT') {
+      return NextResponse.json({ error: 'One or more flash sale items are sold out' }, { status: 409 })
     }
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }

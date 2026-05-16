@@ -20,7 +20,7 @@ export const SEO = {
   defaultTitle: 'Boilabin, Shop Quality Products Online in Bangladesh',
   titleTemplate: '%s, Boilabin',
   defaultDescription:
-    'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery, bKash, and Nagad accepted.',
+    'Shop electronics, fashion, home appliances and more in Bangladesh. Free delivery on orders over Tk 2,000, with cash on delivery available.',
 
   baseKeywords: [
     'online shopping bangladesh',

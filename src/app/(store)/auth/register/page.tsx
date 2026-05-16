@@ -7,18 +7,24 @@ import { signIn } from 'next-auth/react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
+
+const MIN_PASSWORD_LENGTH = 8
 
 function RegisterForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'))
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (form.password.length < 6) { toast.error('Password must be at least 6 characters'); return }
+    if (form.password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`)
+      return
+    }
     setLoading(true)
     try {
       const res = await fetch('/api/auth/register', {
@@ -68,7 +74,7 @@ function RegisterForm() {
             <div>
               <label htmlFor="register-password" className="text-sm font-medium mb-1.5 block">Password</label>
               <div className="relative">
-                <input id="register-password" name="password" type={showPassword ? 'text' : 'password'} title="Password" placeholder="Create a password" value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} required className="input-base pr-10" autoComplete="new-password" minLength={6} />
+                <input id="register-password" name="password" type={showPassword ? 'text' : 'password'} title="Password" placeholder="Create a password" value={form.password} onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))} required className="input-base pr-10" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} />
                 <button
                   type="button"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -79,7 +85,7 @@ function RegisterForm() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Minimum 6 characters</p>
+              <p className="text-xs text-muted-foreground mt-1">Minimum {MIN_PASSWORD_LENGTH} characters</p>
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full h-11 gap-2">
               {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</> : 'Create Account'}

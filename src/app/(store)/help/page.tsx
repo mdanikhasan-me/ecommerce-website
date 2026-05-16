@@ -11,10 +11,15 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
+import { generatePageMetadata } from '@/backend/seo'
 import { BRAND_ASSETS } from '@/shared/assets'
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 
-export const metadata: Metadata = { title: 'Boilabin Help Center' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Help Center',
+  'Find help with Boilabin orders, delivery, returns, payments, accounts, and support requests.',
+  '/help',
+)
 
 const HELP_LINKS = [
   { icon: PackageCheck, label: 'Track order', href: '/track-order' },

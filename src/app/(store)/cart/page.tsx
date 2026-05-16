@@ -3,34 +3,49 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Minus, Plus, Trash2, ShoppingBag, Tag, ArrowRight, ChevronRight } from 'lucide-react'
+import { Check, Minus, Plus, Trash2, ShoppingBag, Tag, ArrowRight, ChevronRight } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
 import { formatPrice, calculateShipping, applyCoupon } from '@/backend/utils'
 import toast from 'react-hot-toast'
-import type { Metadata } from 'next'
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getSubtotal } = useCartStore()
-  const [couponCode, setCouponCode] = useState('')
-  const [coupon, setCoupon] = useState<any>(null)
+  const {
+    items,
+    appliedCoupon,
+    removeItem,
+    updateQuantity,
+    getSubtotal,
+    setAppliedCoupon,
+    clearAppliedCoupon,
+  } = useCartStore()
+  const [couponCode, setCouponCode] = useState(appliedCoupon?.code ?? '')
   const [applyingCoupon, setApplyingCoupon] = useState(false)
 
   const subtotal = getSubtotal()
   const shippingFee = calculateShipping(subtotal)
-  const discount = coupon ? applyCoupon(subtotal, coupon) : 0
+  const discount = appliedCoupon ? applyCoupon(subtotal, appliedCoupon) : 0
   const total = subtotal + shippingFee - discount
 
   const handleApplyCoupon = async () => {
-    if (!couponCode.trim()) return
+    const code = couponCode.trim().toUpperCase()
+    if (!code) return
     setApplyingCoupon(true)
     try {
-      const res = await fetch(`/api/coupons/validate?code=${couponCode}&amount=${subtotal}`)
+      const productIds = items.map((item) => item.productId).join(',')
+      const res = await fetch(`/api/coupons/validate?code=${encodeURIComponent(code)}&amount=${subtotal}&productIds=${encodeURIComponent(productIds)}`)
       const data = await res.json()
-      if (!res.ok || !data.success) { toast.error(data.error || 'Invalid coupon'); return }
-      setCoupon(data.coupon)
+      if (!res.ok || !data.success) {
+        toast.error(data.error || 'Invalid coupon')
+        return
+      }
+      setAppliedCoupon(data.coupon)
+      setCouponCode(data.coupon.code)
       toast.success(`Coupon applied! You save ${formatPrice(applyCoupon(subtotal, data.coupon))}`)
-    } catch { toast.error('Failed to validate coupon') }
-    finally { setApplyingCoupon(false) }
+    } catch {
+      toast.error('Failed to validate coupon')
+    } finally {
+      setApplyingCoupon(false)
+    }
   }
 
   if (items.length === 0) {
@@ -48,7 +63,6 @@ export default function CartPage() {
 
   return (
     <div className="container-site py-8">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <Link href="/" className="hover:text-foreground">Home</Link>
         <ChevronRight className="h-3.5 w-3.5" />
@@ -60,7 +74,6 @@ export default function CartPage() {
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Items */}
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <div key={`${item.productId}-${item.variantId}`} className="bg-card border border-border rounded-2xl p-4 flex gap-4">
@@ -124,36 +137,44 @@ export default function CartPage() {
           ))}
         </div>
 
-        {/* Summary */}
         <div>
           <div className="bg-card border border-border rounded-2xl p-5 sticky top-24">
             <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
 
-            {/* Coupon */}
             <div className="mb-5">
               <p className="text-sm font-medium mb-2 flex items-center gap-1.5">
                 <Tag className="h-4 w-4 text-primary" /> Coupon Code
               </p>
               <div className="flex gap-2">
-                <input aria-label="Enter code" title="Enter code"
+                <input
+                  aria-label="Enter code"
+                  title="Enter code"
                   type="text"
                   placeholder="Enter code"
                   value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value.toUpperCase())
+                    if (appliedCoupon) clearAppliedCoupon()
+                  }}
                   className="input-base"
                 />
                 <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode} className="btn-outline px-3 flex-shrink-0 text-sm">
                   {applyingCoupon ? '...' : 'Apply'}
                 </button>
               </div>
-              {coupon && (
-                <p className="text-xs text-green-600 mt-1 font-medium">
-                  ✓ {coupon.name} applied, {formatPrice(discount)} off
-                </p>
+              {appliedCoupon && (
+                <div className="mt-2 flex items-center justify-between gap-3 text-xs text-green-600">
+                  <p className="flex items-center gap-1 font-medium">
+                    <Check className="h-3.5 w-3.5" />
+                    {appliedCoupon.name} applied, {formatPrice(discount)} off
+                  </p>
+                  <button type="button" onClick={clearAppliedCoupon} className="font-semibold hover:underline">
+                    Remove
+                  </button>
+                </div>
               )}
             </div>
 
-            {/* Totals */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal ({items.reduce((a, i) => a + i.quantity, 0)} items)</span>
@@ -166,7 +187,7 @@ export default function CartPage() {
               {discount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Coupon Discount</span>
-                  <span>−{formatPrice(discount)}</span>
+                  <span>-{formatPrice(discount)}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-base pt-3 border-t border-border">
@@ -180,7 +201,7 @@ export default function CartPage() {
             </Link>
 
             <p className="text-xs text-muted-foreground text-center mt-3">
-              Secure checkout with bKash, Nagad, and cash on delivery
+              Secure checkout with cash on delivery
             </p>
           </div>
         </div>

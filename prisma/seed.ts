@@ -17,7 +17,6 @@ async function main() {
       { key: 'currency', value: 'BDT', group: 'general' },
       { key: 'currency_symbol', value: '৳', group: 'general' },
       { key: 'seller_mode', value: 'false', group: 'features' },
-      { key: 'guest_checkout', value: 'true', group: 'features' },
       { key: 'low_stock_alert', value: '5', group: 'inventory' },
     ],
     skipDuplicates: true,
@@ -109,17 +108,17 @@ async function main() {
   const wearables = await prisma.category.upsert({ where: { slug: 'wearables' }, update: {}, create: { name: 'Wearables', slug: 'wearables', icon: 'Watch', parentId: electronics.id, sortOrder: 4 } })
 
   const fashion = await prisma.category.upsert({ where: { slug: 'fashion' }, update: {}, create: { name: 'Fashion', slug: 'fashion', icon: 'Shirt', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&auto=format', sortOrder: 2 } })
-  const mensFashion = await prisma.category.upsert({ where: { slug: 'mens-fashion' }, update: {}, create: { name: "Men's Fashion", slug: 'mens-fashion', parentId: fashion.id, sortOrder: 1 } })
-  const womensFashion = await prisma.category.upsert({ where: { slug: 'womens-fashion' }, update: {}, create: { name: "Women's Fashion", slug: 'womens-fashion', parentId: fashion.id, sortOrder: 2 } })
+  await prisma.category.upsert({ where: { slug: 'mens-fashion' }, update: {}, create: { name: "Men's Fashion", slug: 'mens-fashion', parentId: fashion.id, sortOrder: 1 } })
+  await prisma.category.upsert({ where: { slug: 'womens-fashion' }, update: {}, create: { name: "Women's Fashion", slug: 'womens-fashion', parentId: fashion.id, sortOrder: 2 } })
 
   const homeAppliances = await prisma.category.upsert({ where: { slug: 'home-appliances' }, update: {}, create: { name: 'Home & Appliances', slug: 'home-appliances', icon: 'Home', image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&auto=format', sortOrder: 3 } })
-  const kitchen = await prisma.category.upsert({ where: { slug: 'kitchen' }, update: {}, create: { name: 'Kitchen', slug: 'kitchen', parentId: homeAppliances.id, sortOrder: 1 } })
+  await prisma.category.upsert({ where: { slug: 'kitchen' }, update: {}, create: { name: 'Kitchen', slug: 'kitchen', parentId: homeAppliances.id, sortOrder: 1 } })
 
-  const beauty = await prisma.category.upsert({ where: { slug: 'beauty-health' }, update: {}, create: { name: 'Beauty & Health', slug: 'beauty-health', icon: 'Sparkles', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&auto=format', sortOrder: 4 } })
+  await prisma.category.upsert({ where: { slug: 'beauty-health' }, update: {}, create: { name: 'Beauty & Health', slug: 'beauty-health', icon: 'Sparkles', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&auto=format', sortOrder: 4 } })
   const sports = await prisma.category.upsert({ where: { slug: 'sports-fitness' }, update: {}, create: { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'Dumbbell', image: 'https://images.unsplash.com/photo-1461896836934-bd45ba5b363f?w=400&auto=format', sortOrder: 5 } })
-  const books = await prisma.category.upsert({ where: { slug: 'books-stationery' }, update: {}, create: { name: 'Books & Stationery', slug: 'books-stationery', icon: 'BookOpen', image: 'https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&auto=format', sortOrder: 6 } })
+  await prisma.category.upsert({ where: { slug: 'books-stationery' }, update: {}, create: { name: 'Books & Stationery', slug: 'books-stationery', icon: 'BookOpen', image: 'https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&auto=format', sortOrder: 6 } })
   const gaming = await prisma.category.upsert({ where: { slug: 'gaming' }, update: {}, create: { name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&auto=format', sortOrder: 7 } })
-  const babyKids = await prisma.category.upsert({ where: { slug: 'baby-kids' }, update: {}, create: { name: 'Baby & Kids', slug: 'baby-kids', icon: 'Baby', image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&auto=format', sortOrder: 8 } })
+  await prisma.category.upsert({ where: { slug: 'baby-kids' }, update: {}, create: { name: 'Baby & Kids', slug: 'baby-kids', icon: 'Baby', image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&auto=format', sortOrder: 8 } })
 
   // BRANDS
   const apple = await prisma.brand.upsert({ where: { slug: 'apple' }, update: {}, create: { name: 'Apple', slug: 'apple', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Apple', isFeatured: true, sortOrder: 1 } })

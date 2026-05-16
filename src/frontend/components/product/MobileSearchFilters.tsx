@@ -7,9 +7,18 @@ import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersP
 type MobileSearchFiltersProps = {
   categories: { name: string; slug: string }[]
   searchParams: Record<string, string | undefined>
+  basePath?: string
+  preserveOnClear?: string[]
+  label?: string
 }
 
-export function MobileSearchFilters({ categories, searchParams }: MobileSearchFiltersProps) {
+export function MobileSearchFilters({
+  categories,
+  searchParams,
+  basePath,
+  preserveOnClear,
+  label = 'Search',
+}: MobileSearchFiltersProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -34,7 +43,7 @@ export function MobileSearchFilters({ categories, searchParams }: MobileSearchFi
           <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-hidden rounded-t-[1.5rem] bg-background shadow-[0_-24px_54px_rgba(23,18,15,0.22)]">
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
-                <p className="section-kicker text-[10px]">Search</p>
+                <p className="section-kicker text-[10px]">{label}</p>
                 <h2 className="font-display text-lg font-semibold">Filters</h2>
               </div>
               <button
@@ -50,6 +59,8 @@ export function MobileSearchFilters({ categories, searchParams }: MobileSearchFi
               <SearchFiltersPanel
                 categories={categories}
                 searchParams={searchParams}
+                basePath={basePath}
+                preserveOnClear={preserveOnClear}
                 onNavigate={() => setOpen(false)}
               />
             </div>

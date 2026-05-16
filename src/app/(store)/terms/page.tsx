@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/backend/seo'
 import { CONTACT_EMAIL } from '@/shared/contact'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
-export const metadata: Metadata = { title: 'Boilabin Terms of Service' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Terms of Service',
+  'Review the Boilabin shopping terms covering accounts, orders, product information, payments, returns, and platform use.',
+  '/terms',
+)
 
 export default function TermsPage() {
   return (
@@ -59,8 +64,8 @@ export default function TermsPage() {
                 shown during checkout apply to the order you place.
               </p>
               <p>
-                Cash on delivery may be offered depending on the order and delivery area. Online
-                payment methods are only considered complete after successful confirmation.
+                Cash on delivery is currently the active checkout method. Any future online payment
+                method will only be considered complete after successful confirmation.
               </p>
             </>
           ),

@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { MapPin, CreditCard, Truck, Check, Loader2 } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
-import { formatPrice, calculateShipping, cn } from '@/backend/utils'
+import { formatPrice, calculateShipping, applyCoupon, cn } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import toast from 'react-hot-toast'
 
@@ -41,7 +41,7 @@ const PAYMENT_LOGO_CLASSES: Record<string, string> = {
 export default function CheckoutPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
-  const { items, getSubtotal, clearCart } = useCartStore()
+  const { items, appliedCoupon, getSubtotal, clearCart } = useCartStore()
   const [step, setStep] = useState(0)
   const [selectedPayment, setSelectedPayment] = useState(
     () => PAYMENT_GATEWAY_OPTIONS.find((gateway) => gateway.isAvailable)?.id ?? 'CASH_ON_DELIVERY'
@@ -55,7 +55,8 @@ export default function CheckoutPage() {
 
   const subtotal = getSubtotal()
   const shippingFee = calculateShipping(subtotal)
-  const total = subtotal + shippingFee
+  const discount = appliedCoupon ? applyCoupon(subtotal, appliedCoupon) : 0
+  const total = subtotal + shippingFee - discount
   const paymentGateways = PAYMENT_GATEWAY_OPTIONS
   const selectedGateway = paymentGateways.find((gateway) => gateway.id === selectedPayment)
   const hasAvailablePaymentGateway = paymentGateways.some((gateway) => gateway.isAvailable)
@@ -74,7 +75,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0 || status === 'loading' || status === 'unauthenticated') return null
 
-  const onAddressSubmit = (data: AddressForm) => {
+  const onAddressSubmit = () => {
     if (!session) {
       router.replace('/auth/login?callbackUrl=/checkout&reason=checkout')
       return
@@ -110,6 +111,7 @@ export default function CheckoutPage() {
           paymentMethod: selectedPayment,
           subtotal,
           shippingFee,
+          couponCode: appliedCoupon?.code,
           total,
           notes: orderNote,
           isGuestOrder: false,
@@ -385,6 +387,12 @@ export default function CheckoutPage() {
                   <span className="text-muted-foreground">Shipping</span>
                   {shippingFee === 0 ? <span className="text-green-600 font-medium">Free</span> : <span>{formatPrice(shippingFee)}</span>}
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Coupon Discount</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-base pt-2 border-t border-border">
                   <span>Total</span>
                   <span>{formatPrice(total)}</span>

@@ -8,7 +8,7 @@ import {
   MapPin,
   Phone,
 } from 'lucide-react'
-import { PAYMENT_ASSETS } from '@/shared/assets'
+import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
@@ -17,13 +17,9 @@ const SOCIAL_LINKS = [
   { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
 ]
 
-const FOOTER_PAYMENT_METHODS = [
-  PAYMENT_ASSETS.CASH_ON_DELIVERY,
-  PAYMENT_ASSETS.BKASH,
-  PAYMENT_ASSETS.NAGAD,
-  PAYMENT_ASSETS.VISA,
-  PAYMENT_ASSETS.MASTERCARD,
-]
+const FOOTER_PAYMENT_METHODS = PAYMENT_GATEWAYS
+  .filter((gateway) => gateway.isAvailable)
+  .flatMap((gateway) => gateway.logos ?? [])
 
 const FOOTER_PAYMENT_LOGO_CLASSES: Record<string, string> = {
   'Cash on Delivery': 'h-[0.9rem] w-auto',

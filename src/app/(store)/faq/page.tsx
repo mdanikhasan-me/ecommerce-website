@@ -1,15 +1,19 @@
-'use client'
+import type { Metadata } from 'next'
+import { FAQContent, type FAQSection } from '@/frontend/components/content/FAQContent'
+import { JsonLd, generateFAQJsonLd, generatePageMetadata } from '@/backend/seo'
 
-import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { cn } from '@/backend/utils'
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin FAQ',
+  'Answers about Boilabin orders, delivery, payments, returns, product authenticity, and account support.',
+  '/faq',
+)
 
-const FAQS = [
+const FAQS: FAQSection[] = [
   {
     category: 'Orders and Delivery',
     items: [
       { q: 'How long does delivery take?', a: 'Delivery within Dhaka city takes 1 to 2 business days. Other divisions take 2 to 4 business days. Remote areas may take up to 5 business days.' },
-      { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 70 inside Dhaka and Tk 150 outside Dhaka.' },
+      { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 60.' },
       { q: 'Can I track my order?', a: "Yes. Once your order is shipped, you'll receive a tracking number via email or SMS. You can also track it from My Account and Orders." },
       { q: 'Can I change or cancel my order?', a: 'Orders can be modified or cancelled within 1 hour of placement. After that, contact our support team as soon as possible.' },
     ],
@@ -17,8 +21,8 @@ const FAQS = [
   {
     category: 'Payments',
     items: [
-      { q: 'What payment methods do you accept?', a: 'We accept Cash on Delivery, bKash, and Nagad at checkout.' },
-      { q: 'Is it safe to pay online on Boilabin?', a: 'Absolutely. All payments are encrypted with TLS and HTTPS. We never store card details. bKash and Nagad use OTP verification.' },
+      { q: 'What payment methods do you accept?', a: 'Cash on Delivery is available now. Online payment options are shown at checkout when they are available.' },
+      { q: 'Is it safe to pay online on Boilabin?', a: 'Yes. Checkout uses HTTPS, and Boilabin does not store card details. Any online payment option shown at checkout is handled through its payment provider.' },
       { q: 'Do I get a digital receipt?', a: 'Yes, an order confirmation with full payment details is sent to your email immediately after checkout.' },
     ],
   },
@@ -41,52 +45,29 @@ const FAQS = [
   {
     category: 'Account and Security',
     items: [
-      { q: 'How do I reset my password?', a: "Click Forgot Password on the login page and enter your email. You'll receive a reset link within a few minutes." },
+      { q: 'How do I get help with my password?', a: 'Contact support with the email address on your account. The team will help you recover access safely.' },
       { q: 'Can I shop without creating an account?', a: 'You can browse products without an account, but you must sign in or create an account before placing an order.' },
       { q: 'Is my personal data safe?', a: 'Yes. We follow strict data protection practices. Your data is never sold to third parties. See our Privacy Policy for full details.' },
     ],
   },
 ]
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div className="border-b border-border last:border-0">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 py-4 text-left"
-      >
-        <span className="pr-4 text-sm font-medium">{q}</span>
-        <ChevronDown className={cn('h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
-      </button>
-      {open && <div className="pb-4 text-sm leading-relaxed text-muted-foreground">{a}</div>}
-    </div>
-  )
-}
-
 export default function FAQPage() {
+  const faqItems = FAQS.flatMap((section) => section.items.map((item) => ({
+    question: item.q,
+    answer: item.a,
+  })))
+
   return (
     <div className="container-site py-12 lg:py-16">
+      <JsonLd data={generateFAQJsonLd(faqItems)} />
       <div className="mx-auto max-w-4xl">
         <div className="mx-auto mb-10 max-w-2xl text-center">
           <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Frequently Asked Questions</h1>
           <p className="text-muted-foreground">Everything you need to know about shopping on Boilabin.</p>
         </div>
 
-        <div className="space-y-8">
-          {FAQS.map((section) => (
-            <div key={section.category}>
-              <h2 className="mb-3 text-center font-display text-lg font-semibold text-foreground">{section.category}</h2>
-              <div className="rounded-[24px] border border-border/70 bg-card px-5 shadow-sm">
-                {section.items.map((item) => (
-                  <FAQItem key={item.q} q={item.q} a={item.a} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <FAQContent sections={FAQS} />
 
         <div className="mt-10 rounded-[24px] border border-border/70 bg-secondary/55 p-6 text-center">
           <p className="mb-1 font-semibold">Still have questions?</p>

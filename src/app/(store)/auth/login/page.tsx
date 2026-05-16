@@ -7,11 +7,12 @@ import { signIn } from 'next-auth/react'
 import { Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
 
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'))
   const reason = searchParams.get('reason')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -89,8 +90,8 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="login-password" className="text-sm font-medium">Password</label>
-                <Link href="/auth/forgot-password" className="text-xs text-accent hover:underline">
-                  Forgot password?
+                <Link href="/contact" className="text-xs text-accent hover:underline">
+                  Need help?
                 </Link>
               </div>
               <div className="relative">

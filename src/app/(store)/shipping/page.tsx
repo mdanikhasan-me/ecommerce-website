@@ -1,11 +1,17 @@
 import { Truck, Clock, MapPin, CreditCard } from 'lucide-react'
 import type { Metadata } from 'next'
+import { generatePageMetadata } from '@/backend/seo'
+import { siteConfig } from '@/backend/config/site'
 
-export const metadata: Metadata = { title: 'Boilabin Shipping Information' }
+export const metadata: Metadata = generatePageMetadata(
+  'Boilabin Shipping Information',
+  `Boilabin delivery costs Tk ${siteConfig.shipping.baseFee}, with free shipping on orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}.`,
+  '/shipping',
+)
 
 const ZONES = [
-  { zone: 'Dhaka', fee: 'Tk 70', time: '1 to 2 days' },
-  { zone: 'Outside Dhaka', fee: 'Tk 150', time: '2 to 5 days' },
+  { zone: 'Bangladesh', fee: `Tk ${siteConfig.shipping.baseFee}`, time: '1 to 5 days' },
+  { zone: `Orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}`, fee: 'Free', time: '1 to 5 days' },
 ]
 
 export default function ShippingPage() {
@@ -17,9 +23,9 @@ export default function ShippingPage() {
 
         <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[
-            { icon: Truck, title: 'Free Delivery', desc: 'On all orders over Tk 2,000' },
+            { icon: Truck, title: 'Free Delivery', desc: `On all orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}` },
             { icon: Clock, title: 'Fast Shipping', desc: 'Dhaka city orders in 1 to 2 days' },
-            { icon: MapPin, title: 'Simple Rates', desc: 'Dhaka Tk 70, outside Dhaka Tk 150' },
+            { icon: MapPin, title: 'Simple Rate', desc: `Tk ${siteConfig.shipping.baseFee} for paid delivery` },
             { icon: CreditCard, title: 'COD Available', desc: 'Cash on delivery at no extra cost' },
           ].map((item) => (
             <div key={item.title} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">

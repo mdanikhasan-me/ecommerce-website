@@ -16,12 +16,24 @@ export interface CartItem {
   sku: string
 }
 
+export interface CartCoupon {
+  id: string
+  code: string
+  name: string
+  type: string
+  value: number
+  maxDiscount?: number | null
+}
+
 interface CartState {
   items: CartItem[]
+  appliedCoupon: CartCoupon | null
   isOpen: boolean
   addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void
   removeItem: (productId: string, variantId?: string) => void
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void
+  setAppliedCoupon: (coupon: CartCoupon) => void
+  clearAppliedCoupon: () => void
   clearCart: () => void
   toggleCart: () => void
   openCart: () => void
@@ -34,6 +46,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      appliedCoupon: null,
       isOpen: false,
 
       addItem: (item) => {
@@ -47,6 +60,7 @@ export const useCartStore = create<CartState>()(
               existing.stockQuantity
             )
             return {
+              appliedCoupon: null,
               items: state.items.map((i) =>
                 i.productId === item.productId && i.variantId === item.variantId
                   ? { ...i, quantity: newQty }
@@ -55,6 +69,7 @@ export const useCartStore = create<CartState>()(
             }
           }
           return {
+            appliedCoupon: null,
             items: [...state.items, { ...item, quantity: item.quantity ?? 1 }],
           }
         })
@@ -62,6 +77,7 @@ export const useCartStore = create<CartState>()(
 
       removeItem: (productId, variantId) => {
         set((state) => ({
+          appliedCoupon: null,
           items: state.items.filter(
             (i) => !(i.productId === productId && i.variantId === variantId)
           ),
@@ -74,6 +90,7 @@ export const useCartStore = create<CartState>()(
           return
         }
         set((state) => ({
+          appliedCoupon: null,
           items: state.items.map((i) =>
             i.productId === productId && i.variantId === variantId
               ? { ...i, quantity: Math.min(quantity, i.stockQuantity) }
@@ -82,7 +99,9 @@ export const useCartStore = create<CartState>()(
         }))
       },
 
-      clearCart: () => set({ items: [] }),
+      setAppliedCoupon: (coupon) => set({ appliedCoupon: coupon }),
+      clearAppliedCoupon: () => set({ appliedCoupon: null }),
+      clearCart: () => set({ items: [], appliedCoupon: null }),
       toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),

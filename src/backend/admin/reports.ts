@@ -126,12 +126,13 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
   }
 }
 
-function escapeCsvValue(value: unknown) {
+export function escapeCsvValue(value: unknown) {
   const text = String(value ?? '')
-  if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-    return `"${text.replace(/"/g, '""')}"`
+  const safeText = /^[=+\-@]/.test(text.trimStart()) ? `'${text}` : text
+  if (safeText.includes(',') || safeText.includes('"') || safeText.includes('\n')) {
+    return `"${safeText.replace(/"/g, '""')}"`
   }
-  return text
+  return safeText
 }
 
 function buildCsv(rows: Array<Record<string, unknown>>) {

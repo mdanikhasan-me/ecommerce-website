@@ -1,6 +1,7 @@
 // PRODUCT TYPES
 export interface ProductCardData {
   id: string
+  sku: string
   name: string
   slug: string
   basePrice: number

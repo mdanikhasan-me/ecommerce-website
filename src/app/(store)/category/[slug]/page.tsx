@@ -2,13 +2,31 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
+import { SortSelect } from '@/frontend/components/search/SortSelect'
+import {
+  buildEffectivePriceWhere,
+  getEffectivePriceSortDirection,
+  parsePriceParam,
+  sortProductsByEffectivePrice,
+} from '@/backend/catalog/product-price-filter'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generateCategoryMetadata,
+  generateItemListJsonLd,
+} from '@/backend/seo'
 import type { Metadata } from 'next'
+import { Prisma } from '@prisma/client'
 
 type CategorySearchParams = {
+  category?: string
   sort?: string
   minPrice?: string
   maxPrice?: string
+  rating?: string
+  inStock?: string
   page?: string
 }
 
@@ -19,11 +37,32 @@ interface Props {
 
 export const revalidate = 300
 
+const SORT_OPTIONS = [
+  { value: 'popular', label: 'Most Popular' },
+  { value: 'newest', label: 'Newest First' },
+  { value: 'price_asc', label: 'Price: Low to High' },
+  { value: 'price_desc', label: 'Price: High to Low' },
+  { value: 'rating', label: 'Highest Rated' },
+]
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const category = await db.category.findUnique({ where: { slug } })
+  const category = await db.category.findUnique({
+    where: { slug },
+    select: { id: true, name: true, slug: true, description: true },
+  })
   if (!category) return { title: 'Category Not Found' }
-  return { title: `Boilabin ${category.name}`, description: category.description ?? `Shop ${category.name} products` }
+
+  const productCount = await db.product.count({
+    where: { categoryId: category.id, isActive: true },
+  })
+
+  return generateCategoryMetadata({
+    name: category.name,
+    slug: category.slug,
+    description: category.description,
+    productCount,
+  })
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -40,34 +79,74 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const limit = 24
   const skip = (page - 1) * limit
 
-  // Include all descendant categories
-  const categoryIds = [category.id, ...category.children.map((c) => c.id)]
+  const selectedChild = resolvedSearchParams.category
+    ? category.children.find((child) => child.slug === resolvedSearchParams.category)
+    : null
 
-  const where: any = { isActive: true, categoryId: { in: categoryIds } }
-  if (resolvedSearchParams.minPrice) where.basePrice = { ...where.basePrice, gte: parseFloat(resolvedSearchParams.minPrice) }
-  if (resolvedSearchParams.maxPrice) where.basePrice = { ...where.basePrice, lte: parseFloat(resolvedSearchParams.maxPrice) }
+  // Include all direct child categories unless a child category filter is selected.
+  const categoryIds = selectedChild ? [selectedChild.id] : [category.id, ...category.children.map((c) => c.id)]
 
-  let orderBy: any = { soldCount: 'desc' }
+  const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true, categoryId: { in: categoryIds } }]
+  const minPrice = parsePriceParam(resolvedSearchParams.minPrice)
+  const maxPrice = parsePriceParam(resolvedSearchParams.maxPrice)
+  const rating = parseNumberParam(resolvedSearchParams.rating)
+  const effectivePriceWhere = buildEffectivePriceWhere(minPrice, maxPrice)
+
+  if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
+  if (resolvedSearchParams.inStock === 'true') andClauses.push({ stockQuantity: { gt: 0 } })
+  if (rating !== null) andClauses.push({ rating: { gte: rating } })
+  const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
+  const effectivePriceSort = getEffectivePriceSortDirection(resolvedSearchParams.sort)
+
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   if (resolvedSearchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (resolvedSearchParams.sort === 'price_asc') orderBy = { basePrice: 'asc' }
-  else if (resolvedSearchParams.sort === 'price_desc') orderBy = { basePrice: 'desc' }
   else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const [products, total] = await Promise.all([
-    db.product.findMany({
-      where, orderBy, skip, take: limit,
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
-        category: { select: { name: true, slug: true } },
-      },
-    }),
-    db.product.count({ where }),
-  ])
+  const productInclude = {
+    images: { where: { isPrimary: true }, take: 1 },
+    category: { select: { name: true, slug: true } },
+  } satisfies Prisma.ProductInclude
+
+  const [products, total] = effectivePriceSort
+    ? await Promise.all([
+        db.product.findMany({
+          where,
+          orderBy: { id: 'asc' },
+          include: productInclude,
+        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit)),
+        db.product.count({ where }),
+      ])
+    : await Promise.all([
+        db.product.findMany({
+          where, orderBy, skip, take: limit,
+          include: productInclude,
+        }),
+        db.product.count({ where }),
+      ])
 
   const totalPages = Math.ceil(total / limit)
+  const filterCategories = category.children.map((child) => ({ name: child.name, slug: child.slug }))
+  const categoryPath = `/category/${slug}`
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Categories', url: '/category' },
+    { name: category.name, url: categoryPath },
+  ])
+  const itemListJsonLd = generateItemListJsonLd(
+    `${category.name} products`,
+    products.map((product, index) => ({
+      name: product.name,
+      slug: product.slug,
+      basePrice: product.basePrice,
+      salePrice: product.salePrice,
+      image: product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url,
+      position: skip + index + 1,
+    })),
+  )
 
   return (
     <div className="container-site py-8">
+      <JsonLd data={[breadcrumbJsonLd, itemListJsonLd]} />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
         <Link href="/">Home</Link>
@@ -106,10 +185,30 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <SearchFiltersPanel categories={[]} searchParams={resolvedSearchParams as Record<string, string>} />
+          <SearchFiltersPanel
+            categories={filterCategories}
+            searchParams={resolvedSearchParams}
+            basePath={categoryPath}
+            preserveOnClear={[]}
+          />
         </aside>
 
         <div className="flex-1 min-w-0">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">{total} results</p>
+            <div className="flex items-center gap-2">
+              <MobileSearchFilters
+                categories={filterCategories}
+                searchParams={resolvedSearchParams}
+                basePath={categoryPath}
+                preserveOnClear={[]}
+                label="Category"
+              />
+              <span className="text-sm font-medium">Sort by:</span>
+              <SortSelect current={resolvedSearchParams.sort ?? 'popular'} options={SORT_OPTIONS} />
+            </div>
+          </div>
+
           {products.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">Empty shelf</p>
@@ -127,7 +226,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <a
                       key={p}
-                      href={`/category/${slug}?page=${p}`}
+                      href={buildPageUrl(categoryPath, resolvedSearchParams, p)}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'}`}
                     >
                       {p}
@@ -141,4 +240,19 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       </div>
     </div>
   )
+}
+
+function parseNumberParam(value: string | undefined): number | null {
+  if (!value) return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function buildPageUrl(basePath: string, params: Record<string, string | undefined>, page: number): string {
+  const sp = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value) sp.set(key, value)
+  }
+  sp.set('page', String(page))
+  return `${basePath}?${sp.toString()}`
 }

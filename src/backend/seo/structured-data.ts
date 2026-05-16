@@ -15,6 +15,7 @@
  */
 
 import { SEO } from './constants'
+import { siteConfig } from '@/backend/config/site'
 
 // Product JSON-LD
 interface ProductJsonLdInput {
@@ -67,7 +68,7 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: '0',
+          value: siteConfig.shipping.baseFee.toString(),
           currency: 'BDT',
         },
         shippingDestination: {
@@ -206,9 +207,9 @@ export function generateLocalBusinessJsonLd() {
     email: SEO.organization.email,
     telephone: SEO.organization.phone,
     address: SEO.organization.address,
-    priceRange: '৳৳',
+    priceRange: 'Tk',
     currenciesAccepted: 'BDT',
-    paymentAccepted: 'Cash, bKash, Nagad, Credit Card, Debit Card',
+    paymentAccepted: 'Cash on Delivery',
     areaServed: {
       '@type': 'Country',
       name: 'Bangladesh',
