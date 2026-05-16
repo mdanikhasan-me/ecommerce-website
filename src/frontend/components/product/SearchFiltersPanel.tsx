@@ -8,9 +8,10 @@ import { cn } from '@/backend/utils'
 interface Props {
   categories: { name: string; slug: string }[]
   searchParams: Record<string, string | undefined>
+  onNavigate?: () => void
 }
 
-export function SearchFiltersPanel({ categories, searchParams }: Props) {
+export function SearchFiltersPanel({ categories, searchParams, onNavigate }: Props) {
   const router = useRouter()
   const [minPrice, setMinPrice] = useState(searchParams.minPrice ?? '')
   const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice ?? '')
@@ -21,6 +22,7 @@ export function SearchFiltersPanel({ categories, searchParams }: Props) {
     else sp.delete(key)
     sp.delete('page')
     router.push(`/search?${sp.toString()}`)
+    onNavigate?.()
   }
 
   const applyPriceRange = (nextMin: string, nextMax: string) => {
@@ -31,12 +33,14 @@ export function SearchFiltersPanel({ categories, searchParams }: Props) {
     else sp.delete('maxPrice')
     sp.delete('page')
     router.push(`/search?${sp.toString()}`)
+    onNavigate?.()
   }
 
   const clearAll = () => {
     const sp = new URLSearchParams()
     if (searchParams.q) sp.set('q', searchParams.q)
     router.push(`/search?${sp.toString()}`)
+    onNavigate?.()
   }
 
   const hasFilters = !!(
@@ -131,24 +135,37 @@ export function SearchFiltersPanel({ categories, searchParams }: Props) {
       <div>
         <h4 className="mb-2 text-sm font-semibold">Minimum Rating</h4>
         <div className="space-y-1.5">
-          {[4, 3, 2].map((rating) => (
-            <label key={rating} className="group flex cursor-pointer items-center gap-2">
-              <input
-                type="radio"
-                name="rating"
-                checked={searchParams.rating === String(rating)}
-                onChange={() => applyFilter('rating', String(rating))}
-                aria-label={`Minimum rating ${rating} stars`}
-                className="accent-primary"
-              />
+          {[4, 3, 2].map((rating) => {
+            const selected = searchParams.rating === String(rating)
+
+            return (
+            <button
+              key={rating}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              aria-label={selected ? `Clear minimum rating ${rating} stars` : `Minimum rating ${rating} stars`}
+              onClick={() => applyFilter('rating', selected ? undefined : String(rating))}
+              className="group flex w-full cursor-pointer items-center gap-2 text-left"
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'flex h-3.5 w-3.5 items-center justify-center rounded-full border transition-colors',
+                  selected ? 'border-primary' : 'border-muted-foreground/60 group-hover:border-primary'
+                )}
+              >
+                {selected ? <span className="h-2 w-2 rounded-full bg-primary" /> : null}
+              </span>
               <div className="flex items-center gap-1">
                 {Array(rating).fill(0).map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 star-filled" />
                 ))}
                 <span className="text-sm text-muted-foreground">and up</span>
               </div>
-            </label>
-          ))}
+            </button>
+            )
+          })}
         </div>
       </div>
 

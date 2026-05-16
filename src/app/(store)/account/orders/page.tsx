@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
-import { Package, ChevronRight } from 'lucide-react'
+import { CalendarDays, ChevronRight, Package, ReceiptText } from 'lucide-react'
 
 export const metadata = { title: 'Boilabin Orders' }
 
@@ -44,9 +44,15 @@ export default async function AccountOrdersPage({
   })
 
   return (
-    <div className="container-site py-8">
-      <div className="max-w-4xl">
-        <h1 className="font-display text-2xl font-bold mb-6">My Orders</h1>
+    <div className="container-site py-8 lg:py-10">
+      <div className="max-w-5xl">
+        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="section-kicker">Account</p>
+            <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em]">My Orders</h1>
+          </div>
+          <p className="text-sm text-muted-foreground">{orders.length} order{orders.length === 1 ? '' : 's'} shown</p>
+        </div>
         {filter && (
           <p className="mb-4 text-sm text-muted-foreground">
             Showing results for &quot;{filter}&quot; &middot;{' '}
@@ -64,31 +70,67 @@ export default async function AccountOrdersPage({
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Link key={order.id} href={`/account/orders/${order.id}`} className="block bg-card border border-border rounded-2xl p-5 hover:border-primary/30 transition-all hover:shadow-sm">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <p className="font-mono font-bold text-sm">{order.orderNumber}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{formatDate(order.createdAt)}</p>
+              <Link
+                key={order.id}
+                href={`/account/orders/${order.id}`}
+                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-[0_18px_44px_rgba(23,18,15,0.08)]"
+              >
+                <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:p-5">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 font-mono text-xs font-bold tracking-[0.04em] text-foreground">
+                        <ReceiptText className="h-3.5 w-3.5 text-primary" />
+                        {order.orderNumber}
+                      </span>
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold ${STATUS_COLORS[order.status] ?? 'bg-secondary text-foreground'}`}>
+                        {order.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <CalendarDays className="h-3.5 w-3.5" />
+                      {formatDate(order.createdAt)}
+                    </p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">{formatPrice(order.total)}</p>
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold mt-1 ${STATUS_COLORS[order.status] ?? 'bg-secondary text-foreground'}`}>
-                      {order.status.replace('_', ' ')}
-                    </span>
+
+                  <div className="flex items-center justify-between gap-4 sm:block sm:text-right">
+                    <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">Total</p>
+                    <p className="mt-1 font-display text-xl font-bold tracking-[-0.03em]">{formatPrice(order.total)}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 text-sm text-muted-foreground">
-                    {order.items.map((item, i) => (
-                      <span key={i}>
-                        {item.productName}
-                        {i < order.items.length - 1 && <>, </>}
-                      </span>
-                    ))}
-                    {order._count.items > 3 && <span> +{order._count.items - 3} more</span>}
+                <div className="border-t border-border bg-secondary/35 px-4 py-3 sm:px-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-2">
+                      {order.items.map((item, index) => (
+                        <div
+                          key={`${item.productName}-${index}`}
+                          className="relative h-10 w-10 overflow-hidden rounded-xl border-2 border-card bg-background"
+                        >
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+                      {order.items.map((item, i) => (
+                        <span key={i}>
+                          {item.productName}
+                          {i < order.items.length - 1 && <>, </>}
+                        </span>
+                      ))}
+                      {order._count.items > 3 && <span> +{order._count.items - 3} more</span>}
+                    </p>
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-white">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </div>
               </Link>
             ))}

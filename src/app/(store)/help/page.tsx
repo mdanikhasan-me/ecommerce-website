@@ -1,132 +1,138 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
   CreditCard,
-  Headphones,
-  HelpCircle,
-  Mail,
-  Package,
+  PackageCheck,
+  Phone,
   RefreshCcw,
-  Shield,
+  ShieldCheck,
+  Truck,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
-import { CONTACT_EMAIL } from '@/shared/contact'
+import { BRAND_ASSETS } from '@/shared/assets'
+import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 
 export const metadata: Metadata = { title: 'Boilabin Help Center' }
 
-const HELP_TOPICS = [
-  {
-    icon: Package,
-    title: 'Orders & Delivery',
-    desc: 'Track orders, delivery windows, and shipping details without hunting through multiple pages.',
-    href: '/faq#orders',
-  },
-  {
-    icon: CreditCard,
-    title: 'Payments',
-    desc: 'See supported payment methods, checkout guidance, receipts, and transaction-related answers.',
-    href: '/faq#payments',
-  },
-  {
-    icon: RefreshCcw,
-    title: 'Returns & Refunds',
-    desc: 'Review return rules, refund timing, and the exact steps to send an item back smoothly.',
-    href: '/returns',
-  },
-  {
-    icon: Shield,
-    title: 'Account & Security',
-    desc: 'Find help with sign-in, account settings, privacy, and protecting your account access.',
-    href: '/faq#account',
-  },
-  {
-    icon: HelpCircle,
-    title: 'FAQ',
-    desc: 'Browse the most common questions first if you want the fastest route to an answer.',
-    href: '/faq',
-  },
-  {
-    icon: Headphones,
-    title: 'Contact Support',
-    desc: 'Reach our team directly when you need help with an order, payment, or account issue.',
-    href: '/contact',
-  },
+const HELP_LINKS = [
+  { icon: PackageCheck, label: 'Track order', href: '/track-order' },
+  { icon: RefreshCcw, label: 'Returns', href: '/returns' },
+  { icon: Truck, label: 'Shipping', href: '/shipping' },
+  { icon: CreditCard, label: 'Payments', href: '/faq#payments' },
+  { icon: ShieldCheck, label: 'Account help', href: '/faq#account' },
 ]
 
 export default function HelpPage() {
   return (
-    <div className="container-site py-10 sm:py-12">
-      <section className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-black/8 bg-card">
-        <div className="grid gap-0 lg:grid-cols-[1.15fr_1.85fr]">
-          <div className="border-b border-black/6 bg-[linear-gradient(180deg,rgba(247,242,228,0.7),rgba(247,242,228,0.32))] p-7 sm:p-10 lg:border-b-0 lg:border-r">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-foreground/46">
-              Help Center
-            </p>
-            <h1 className="mt-4 max-w-sm font-display text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-[3rem]">
-              Clear support, without the clutter.
-            </h1>
-            <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground sm:text-[15px]">
-              Pick the topic that matches what you need. Everything here is organized to get you to
-              the right answer quickly, without heavy layouts or noisy visuals.
-            </p>
+    <main className="bg-background">
+      <section className="container-site py-8 sm:py-10 lg:py-12">
+        <div className="overflow-hidden rounded-[2rem] bg-[#17111b] text-white shadow-[0_24px_80px_rgba(28,15,35,0.18)]">
+          <div className="grid lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="relative p-6 sm:p-9 lg:p-12">
+              <Image
+                src={BRAND_ASSETS.mark}
+                alt=""
+                width={260}
+                height={180}
+                className="pointer-events-none absolute -right-14 top-8 h-auto w-56 opacity-[0.08] sm:w-72 lg:right-8"
+                priority
+              />
 
-            <div className="mt-8 rounded-[1.5rem] border border-black/7 bg-background/78 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-background">
-                  <Mail className="h-5 w-5" />
+              <div className="relative max-w-2xl">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">
+                  Boilabin Support
+                </p>
+                <h1 className="mt-5 max-w-xl font-display text-4xl font-semibold tracking-[-0.045em] text-white sm:text-5xl lg:text-[4.35rem] lg:leading-[0.9]">
+                  Help that feels built for your order.
+                </h1>
+                <p className="mt-5 max-w-xl text-sm leading-7 text-white/[0.72] sm:text-base">
+                  Delivery, returns, payments, and account help in one calm place.
+                </p>
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link href="/track-order" className="btn-primary justify-center bg-white text-[#241232] hover:bg-white/90">
+                    Track My Order
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="btn-outline justify-center border-white/20 bg-white/[0.05] text-white hover:bg-white/10"
+                  >
+                    Contact Us
+                  </Link>
                 </div>
+              </div>
+
+              <div className="relative mt-9 grid gap-3 sm:grid-cols-3">
+                {[
+                  ['Support hours', '24/7'],
+                  ['Delivery', 'Anywhere'],
+                  ['Direct reply', CONTACT_EMAIL],
+                ].map(([label, value]) => (
+                  <div key={label} className="border-l border-white/[0.15] pl-4">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">{label}</p>
+                    <p className="mt-2 break-words text-sm font-medium text-white">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <aside className="border-t border-white/10 bg-[#211927] p-5 sm:p-7 lg:border-l lg:border-t-0 lg:p-8">
+              <div className="flex h-full flex-col justify-between gap-7">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Need a direct reply?</p>
-                  <p className="text-xs text-muted-foreground">Most support emails are answered within a few hours.</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/[0.45]">
+                    Support Desk
+                  </p>
+                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-white">
+                    Choose the next step.
+                  </h2>
+
+                  <div className="mt-6 divide-y divide-white/10 rounded-[1.35rem] border border-white/10 bg-white/[0.05]">
+                    {HELP_LINKS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="group flex items-center justify-between gap-4 px-4 py-4"
+                      >
+                        <span className="flex min-w-0 items-center gap-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#28133a]">
+                            <item.icon className="h-4 w-4" />
+                          </span>
+                          <span className="truncate text-sm font-semibold text-white">{item.label}</span>
+                        </span>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-white/[0.45] transition-transform group-hover:translate-x-1 group-hover:text-white" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[1.35rem] border border-white/10 bg-[#17111b] p-4">
+                  <p className="text-sm font-semibold text-white">Need a direct reply?</p>
+                  <p className="mt-2 text-sm leading-6 text-white/[0.72]">
+                    Send the order number and issue from the contact page.
+                  </p>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                    <Link href="/contact" className="btn-primary justify-center bg-white text-[#241232] hover:bg-white/90">
+                      Contact Us
+                    </Link>
+                    <a
+                      href={`tel:${CONTACT_PHONE}`}
+                      className="btn-outline justify-center border-white/20 bg-white/[0.05] text-white hover:bg-white/10"
+                    >
+                      <Phone className="h-4 w-4" />
+                      Call
+                    </a>
+                  </div>
                 </div>
               </div>
-
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <a href={`mailto:${CONTACT_EMAIL}`} className="btn-primary justify-center sm:flex-1">
-                  Email Support
-                </a>
-                <Link href="/contact" className="btn-outline justify-center sm:flex-1">
-                  Open Contact Form
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 sm:p-6 lg:p-7">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-              {HELP_TOPICS.map((topic, index) => (
-                <Link
-                  key={topic.title}
-                  href={topic.href}
-                  className="group rounded-[1.5rem] border border-black/8 bg-background p-5 transition-colors duration-200 hover:border-foreground/16 hover:bg-[hsl(var(--buttermilk)/0.2)]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-black/7 bg-[hsl(var(--buttermilk)/0.48)] text-foreground/82 transition-colors duration-200 group-hover:bg-foreground group-hover:text-background">
-                      <topic.icon className="h-5 w-5" />
-                    </div>
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/34">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-
-                  <div className="mt-6">
-                    <h2 className="text-[1rem] font-semibold tracking-[-0.02em] text-foreground">
-                      {topic.title}
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{topic.desc}</p>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between border-t border-black/6 pt-4 text-sm font-medium text-foreground/72">
-                    <span>Open topic</span>
-                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                  </div>
-                </Link>
-              ))}
-            </div>
+            </aside>
           </div>
         </div>
       </section>
-    </div>
+
+      <div className="pb-8 lg:pb-12" />
+    </main>
   )
 }

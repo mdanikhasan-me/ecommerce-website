@@ -40,7 +40,7 @@ const PAYMENT_LOGO_CLASSES: Record<string, string> = {
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const { items, getSubtotal, clearCart } = useCartStore()
   const [step, setStep] = useState(0)
   const [selectedPayment, setSelectedPayment] = useState(
@@ -66,11 +66,17 @@ export default function CheckoutPage() {
     }
   }, [items.length, router])
 
-  if (items.length === 0) return null
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.replace('/auth/login?callbackUrl=/checkout&reason=checkout')
+    }
+  }, [router, status])
+
+  if (items.length === 0 || status === 'loading' || status === 'unauthenticated') return null
 
   const onAddressSubmit = (data: AddressForm) => {
-    if (!session && !data.email) {
-      toast.error('Email is required for guest checkout')
+    if (!session) {
+      router.replace('/auth/login?callbackUrl=/checkout&reason=checkout')
       return
     }
 
@@ -106,8 +112,7 @@ export default function CheckoutPage() {
           shippingFee,
           total,
           notes: orderNote,
-          isGuestOrder: !session,
-          guestEmail: !session ? addressData.email : undefined,
+          isGuestOrder: false,
         }),
       })
 
@@ -125,27 +130,30 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="container-site py-8">
-      <div className="max-w-5xl">
-        <h1 className="font-display text-2xl font-bold mb-8">Checkout</h1>
+    <div className="container-site py-6 sm:py-8 lg:py-10">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-7 flex flex-col gap-1 sm:mb-8">
+          <p className="section-kicker">Secure checkout</p>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">Checkout</h1>
+        </div>
 
         {/* Steps */}
-        <div className="flex items-center mb-10">
+        <div className="mb-8 flex items-center rounded-2xl border border-border/80 bg-card px-4 py-4 shadow-[0_12px_28px_rgba(23,18,15,0.04)] sm:mb-10 sm:px-5">
           {STEPS.map((s, i) => (
             <div key={s} className="flex items-center flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <div className={cn(
-                  'h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all',
+                  'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all',
                   i < step ? 'bg-primary text-white' : i === step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
                 )}>
                   {i < step ? <Check className="h-4 w-4" /> : i + 1}
                 </div>
-                <span className={cn('text-sm font-medium hidden sm:block', i <= step ? 'text-foreground' : 'text-muted-foreground')}>
+                <span className={cn('hidden truncate text-sm font-medium sm:block', i <= step ? 'text-foreground' : 'text-muted-foreground')}>
                   {s}
                 </span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={cn('flex-1 h-0.5 mx-4 transition-colors', i < step ? 'bg-primary' : 'bg-border')} />
+                <div className={cn('mx-3 h-0.5 flex-1 rounded-full transition-colors sm:mx-4', i < step ? 'bg-primary' : 'bg-border')} />
               )}
             </div>
           ))}
@@ -155,7 +163,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2">
             {/* Step 0: Delivery */}
             {step === 0 && (
-              <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)] sm:p-6">
                 <h2 className="font-display font-semibold text-lg mb-5 flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-primary" /> Delivery Address
                 </h2>
@@ -173,14 +181,6 @@ export default function CheckoutPage() {
                       {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                     </div>
                   </div>
-
-                  {!session && (
-                    <div>
-                      <label htmlFor="checkout-email" className="text-sm font-medium mb-1 block">Email *</label>
-                      <input id="checkout-email" {...register('email')} type="email" placeholder="you@example.com" className="input-base" />
-                      {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
-                    </div>
-                  )}
 
                   <div>
                     <label htmlFor="checkout-address-line-1" className="text-sm font-medium mb-1 block">Address Line 1 *</label>
@@ -223,7 +223,7 @@ export default function CheckoutPage() {
 
             {/* Step 1: Payment */}
             {step === 1 && (
-              <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)] sm:p-6">
                 <h2 className="font-display font-semibold text-lg mb-5 flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-primary" /> Payment Method
                 </h2>
@@ -233,7 +233,7 @@ export default function CheckoutPage() {
                     <label
                       key={gateway.id}
                       className={cn(
-                        'grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border-2 p-4 transition-all sm:gap-4',
+                        'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl border-2 p-4 transition-all sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-4',
                         gateway.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
                         selectedPayment === gateway.id && gateway.isAvailable
                           ? 'border-primary bg-primary/5'
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                           </p>
                         ) : null}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="col-start-2 flex items-center gap-2 sm:col-start-auto">
                         {gateway.logos?.length ? (
                           <div className={cn(
                             'flex h-10 w-16 flex-shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border/70 bg-background/80 px-2 shadow-sm sm:w-20',
@@ -319,7 +319,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <div className="flex gap-3 mt-5">
+                <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row">
                   <button type="button" onClick={() => setStep(0)} className="btn-outline flex-1">Back</button>
                   <button type="button"
                     onClick={() => {
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
             {/* Step 2: Review */}
             {step === 2 && (
               <div className="space-y-4">
-                <div className="bg-card border border-border rounded-2xl p-5">
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)]">
                   <h3 className="font-semibold mb-3">Order Items ({items.length})</h3>
                   <div className="space-y-3">
                     {items.map((item) => (
@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-col-reverse gap-3 sm:flex-row">
                   <button type="button" onClick={() => setStep(1)} className="btn-outline flex-1">Back</button>
                   <button type="button" onClick={placeOrder} disabled={submitting} className="btn-primary flex-1 flex items-center justify-center gap-2">
                     {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Placing Order...</> : 'Place Order'}
@@ -374,7 +374,7 @@ export default function CheckoutPage() {
 
           {/* Summary */}
           <div>
-            <div className="bg-card border border-border rounded-2xl p-5 sticky top-24">
+            <div className="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)]">
               <h3 className="font-display font-semibold mb-4">Order Summary</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">

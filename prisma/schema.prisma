@@ -42,7 +42,6 @@ enum PaymentMethod {
   CASH_ON_DELIVERY
   BKASH
   NAGAD
-  SSLCOMMERZ
   STRIPE
   BANK_TRANSFER
 }

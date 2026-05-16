@@ -17,13 +17,6 @@ const SETTINGS_GROUPS = [
     ],
   },
   {
-    id: 'features',
-    label: 'Feature Flags',
-    fields: [
-      { key: 'guest_checkout', label: 'Allow Guest Checkout', type: 'toggle', description: 'Let customers checkout without creating an account' },
-    ],
-  },
-  {
     id: 'inventory',
     label: 'Inventory',
     fields: [

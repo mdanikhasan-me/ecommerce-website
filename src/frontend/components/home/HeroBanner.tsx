@@ -116,10 +116,10 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
               isTransitioning ? 'translate-x-5 opacity-0' : 'translate-x-0 opacity-100'
             )}
           >
-            <div className="container-site flex h-full items-end py-8 sm:items-center sm:py-12 lg:py-14">
-              <div className="max-w-[34rem] sm:p-2">
+            <div className="container-site flex h-full items-end py-7 sm:items-center sm:py-12 lg:py-14">
+              <div className="max-w-[19rem] sm:max-w-[34rem] sm:p-2">
                 {title ? (
-                  <h2 className={cn('mt-4 text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem]', heroTitleClass)}>
+                  <h2 className={cn('mt-4 text-[1.95rem] sm:text-[3.2rem] lg:text-[4.2rem]', heroTitleClass)}>
                     {title}
                   </h2>
                 ) : null}
@@ -150,7 +150,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Previous slide"
                 title="Previous slide"
                 onClick={prev}
-                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 group-hover:flex"
+                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -159,7 +159,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Next slide"
                 title="Next slide"
                 onClick={next}
-                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 group-hover:flex"
+                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>

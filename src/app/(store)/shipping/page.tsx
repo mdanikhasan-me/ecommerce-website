@@ -4,10 +4,8 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Boilabin Shipping Information' }
 
 const ZONES = [
-  { zone: 'Dhaka City', fee: 'Tk 60', time: '1 to 2 days' },
-  { zone: 'Dhaka Division', fee: 'Tk 80', time: '2 to 3 days' },
-  { zone: 'Chittagong Division', fee: 'Tk 100', time: '2 to 4 days' },
-  { zone: 'Other Divisions', fee: 'Tk 120', time: '3 to 5 days' },
+  { zone: 'Dhaka', fee: 'Tk 70', time: '1 to 2 days' },
+  { zone: 'Outside Dhaka', fee: 'Tk 150', time: '2 to 5 days' },
 ]
 
 export default function ShippingPage() {
@@ -21,7 +19,7 @@ export default function ShippingPage() {
           {[
             { icon: Truck, title: 'Free Delivery', desc: 'On all orders over Tk 2,000' },
             { icon: Clock, title: 'Fast Shipping', desc: 'Dhaka city orders in 1 to 2 days' },
-            { icon: MapPin, title: 'Nationwide', desc: 'We deliver across all of Bangladesh' },
+            { icon: MapPin, title: 'Simple Rates', desc: 'Dhaka Tk 70, outside Dhaka Tk 150' },
             { icon: CreditCard, title: 'COD Available', desc: 'Cash on delivery at no extra cost' },
           ].map((item) => (
             <div key={item.title} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">

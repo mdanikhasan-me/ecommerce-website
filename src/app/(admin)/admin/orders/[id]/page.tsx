@@ -29,9 +29,11 @@ export default async function AdminOrderDetailPage({ params }: Props) {
 
   return (
     <div className="max-w-5xl space-y-5">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-xl font-bold">Order {order.orderNumber}</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="break-words font-mono text-lg font-bold tracking-[0.04em] sm:text-xl">
+            Order {order.orderNumber}
+          </h1>
           <p className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
         </div>
         <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
@@ -43,7 +45,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <div className="border-b border-border px-5 py-4 font-semibold">Order Items</div>
             <div className="divide-y divide-border">
               {order.items.map((item) => (
-                <div key={item.id} className="flex gap-4 p-4">
+                <div key={item.id} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-4">
                   <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-secondary">
                     {item.imageUrl && (
                       <Image
@@ -62,7 +64,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                     )}
                     <p className="text-xs font-mono text-muted-foreground">{item.productSku}</p>
                   </div>
-                  <div className="text-right text-sm">
+                  <div className="col-span-2 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm sm:col-span-1 sm:block sm:border-t-0 sm:pt-0 sm:text-right">
                     <p className="font-semibold">{formatPrice(item.total)}</p>
                     <p className="text-muted-foreground">
                       {formatPrice(item.price)} x {item.quantity}

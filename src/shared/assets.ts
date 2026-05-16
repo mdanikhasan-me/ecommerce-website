@@ -42,12 +42,6 @@ export const PAYMENT_ASSETS = {
     width: 1000,
     height: 618,
   },
-  SSLCOMMERZ: {
-    src: '/assets/payments/sslcommerz.svg',
-    alt: 'SSLCommerz',
-    width: 152,
-    height: 34,
-  },
   STRIPE: {
     src: '/assets/payments/stripe.svg',
     alt: 'Stripe',

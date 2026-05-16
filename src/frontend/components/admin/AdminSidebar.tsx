@@ -10,7 +10,7 @@ import {
 import { cn } from '@/backend/utils'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 
-const NAV_ITEMS = [
+export const ADMIN_NAV_ITEMS = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
   { label: 'Products', href: '/admin/products', icon: Package },
@@ -28,11 +28,17 @@ const NAV_ITEMS = [
   { label: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-export function AdminSidebar() {
+export function AdminSidebar({
+  className,
+  onNavigate,
+}: {
+  className?: string
+  onNavigate?: () => void
+}) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-60 bg-foreground text-background flex flex-col flex-shrink-0 overflow-y-auto">
+    <aside className={cn('w-60 bg-foreground text-background flex flex-col flex-shrink-0 overflow-y-auto', className)}>
       {/* Logo */}
       <div className="p-5 border-b border-white/10">
         <Link href="/admin/dashboard" className="flex items-center gap-2.5">
@@ -49,12 +55,13 @@ export function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-3">
         <p className="text-white/40 text-xs font-semibold uppercase tracking-widest px-3 mb-2">Main Menu</p>
-        {NAV_ITEMS.map((item) => {
+        {ADMIN_NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
           return (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 mb-0.5',
                 isActive

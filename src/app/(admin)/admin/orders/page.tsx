@@ -1,7 +1,7 @@
 import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
-import { ShoppingBag } from 'lucide-react'
+import { Search, ShoppingBag } from 'lucide-react'
 
 interface Props {
   searchParams: Promise<{ page?: string; status?: string; q?: string }>
@@ -62,15 +62,27 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
-        <form className="flex flex-wrap gap-3 flex-1">
-          <input aria-label="Search by order # or email..." title="Search by order # or email..." name="q" defaultValue={filters.q} placeholder="Search by order # or email..." className="input-base max-w-xs" />
-          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base w-44">
+      <div className="bg-card border border-border rounded-xl p-4">
+        <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto_auto]">
+          <input
+            aria-label="Search by order number or email"
+            title="Search by order number or email"
+            name="q"
+            type="search"
+            enterKeyHint="search"
+            defaultValue={filters.q}
+            placeholder="Order ID or email"
+            className="input-base w-full"
+          />
+          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base w-full">
             <option value="">All Status</option>
             {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
-          <button type="submit" className="btn-primary px-4">Filter</button>
-          <Link href="/admin/orders" className="btn-outline px-4">Clear</Link>
+          <button type="submit" className="btn-primary justify-center px-4">
+            <Search className="h-4 w-4" />
+            Search
+          </button>
+          <Link href="/admin/orders" className="btn-outline justify-center px-4">Clear</Link>
         </form>
       </div>
 
@@ -100,7 +112,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
               ) : orders.map((order) => (
                 <tr key={order.id} className="hover:bg-secondary/50 transition-colors">
                   <td className="px-4 py-3">
-                    <span className="font-mono font-semibold text-xs">{order.orderNumber}</span>
+                    <span className="font-mono text-xs font-semibold tracking-[0.04em]">{order.orderNumber}</span>
                     <p className="text-xs text-muted-foreground capitalize">{order.paymentMethod.replace('_', ' ')}</p>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">

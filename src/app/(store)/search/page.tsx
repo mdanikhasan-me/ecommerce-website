@@ -1,5 +1,6 @@
 import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
 import type { Metadata } from 'next'
@@ -162,9 +163,10 @@ export default async function SearchPage({ searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">{total} results</p>
             <div className="flex items-center gap-2">
+              <MobileSearchFilters categories={categories} searchParams={params} />
               <span className="text-sm font-medium">Sort by:</span>
               <SortSelect current={params.sort ?? 'popular'} options={SORT_OPTIONS} />
             </div>

@@ -50,10 +50,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="bg-card rounded-xl border border-border p-5">
         <div className="flex items-center gap-4 mb-6">
-          <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-primary font-display font-bold text-2xl">
-              {(user.name?.[0] ?? 'U').toUpperCase()}
-            </span>
+          <div className="flex size-16 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
+            {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <span className="font-display text-2xl font-bold text-primary">
+                {(user.name?.[0] ?? 'U').toUpperCase()}
+              </span>
+            )}
           </div>
           <div>
             <p className="font-display font-semibold text-lg">{user.name ?? 'User'}</p>

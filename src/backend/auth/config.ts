@@ -4,6 +4,7 @@ import type { NextAuthConfig } from 'next-auth'
 type UserWithRole = {
   id?: string
   role?: Role
+  image?: string | null
 }
 
 type AuthCallbacks = NonNullable<NextAuthConfig['callbacks']>
@@ -24,6 +25,7 @@ export const authConfig = {
         const userWithRole = user as UserWithRole
         token.id = userWithRole.id ?? user.id
         token.role = userWithRole.role ?? 'CUSTOMER'
+        token.picture = userWithRole.image ?? token.picture
       }
 
       return token
@@ -32,6 +34,7 @@ export const authConfig = {
       if (token && session.user) {
         session.user.id = token.id
         session.user.role = token.role
+        session.user.image = token.picture ?? null
       }
 
       return session

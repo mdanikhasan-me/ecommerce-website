@@ -45,14 +45,6 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Coming soon',
   },
   {
-    id: 'SSLCOMMERZ',
-    name: 'Card / Online Banking',
-    logos: [PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD],
-    isAvailable: false,
-    description: 'Visa, Mastercard, internet banking',
-    badge: 'Coming soon',
-  },
-  {
     id: 'STRIPE',
     name: 'International Card',
     logos: [PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD],

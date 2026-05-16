@@ -73,10 +73,6 @@ function computeShipping(subtotal: number) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
 }
 
-function isValidEmail(value: unknown): value is string {
-  return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254
-}
-
 function sanitizeString(value: unknown, max: number) {
   if (typeof value !== 'string') return ''
   return value.trim().slice(0, max)
@@ -88,8 +84,12 @@ export async function POST(req: NextRequest) {
     if (limited) return limited
 
     const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Please sign in or create an account before placing an order' }, { status: 401 })
+    }
+
     const body = await req.json()
-    const { items, address, paymentMethod, notes, couponCode, isGuestOrder, guestEmail, guestPhone } = body
+    const { items, address, paymentMethod, notes, couponCode } = body
 
     if (!isPaymentMethod(paymentMethod) || !AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
       return NextResponse.json(
@@ -107,12 +107,6 @@ export async function POST(req: NextRequest) {
 
     if (!orderAddress || !orderAddress.fullName || !orderAddress.phone || !orderAddress.addressLine1 || !orderAddress.city || !orderAddress.district || !orderAddress.division) {
       return NextResponse.json({ error: 'Delivery address is incomplete' }, { status: 400 })
-    }
-
-    if (!session?.user) {
-      if (!isValidEmail(guestEmail)) {
-        return NextResponse.json({ error: 'A valid email is required for guest checkout' }, { status: 400 })
-      }
     }
 
     // Fetch products + variants server-side; ignore client-supplied prices
@@ -219,8 +213,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Minimum order amount is Tk ${coupon.minOrderAmount.toLocaleString('en-BD')}` }, { status: 400 })
       }
 
-      // Enforce per-user limit (authenticated only)
-      if (coupon.perUserLimit && session?.user?.id) {
+      if (coupon.perUserLimit) {
         const userUsage = await db.order.count({
           where: { userId: session.user.id, couponId: coupon.id, status: { not: 'CANCELLED' } },
         })
@@ -252,17 +245,7 @@ export async function POST(req: NextRequest) {
       postalCode: orderAddress.postalCode ? sanitizeString(orderAddress.postalCode, 20) : null,
     }
 
-    let userId = session?.user?.id
-
-    if (!userId) {
-      const email = (guestEmail as string).toLowerCase().trim()
-      const guestUser = await db.user.upsert({
-        where: { email },
-        update: {},
-        create: { email, name: safeAddress.fullName, role: 'CUSTOMER' },
-      })
-      userId = guestUser.id
-    }
+    const userId = session.user.id
 
     const orderNumber = generateOrderNumber()
 
@@ -306,9 +289,7 @@ export async function POST(req: NextRequest) {
           paymentMethod,
           couponId: couponId ?? undefined,
           notes: notes ? sanitizeString(notes, 500) : undefined,
-          isGuestOrder: !session?.user,
-          guestEmail: !session?.user ? (guestEmail as string).toLowerCase().trim() : undefined,
-          guestPhone: !session?.user && typeof guestPhone === 'string' ? sanitizeString(guestPhone, 20) : undefined,
+          isGuestOrder: false,
           items: { create: preparedItems },
           statusHistory: { create: [{ status: 'PENDING', note: 'Order placed' }] },
         },

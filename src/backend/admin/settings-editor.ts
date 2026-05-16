@@ -6,7 +6,6 @@ export const ADMIN_SETTING_DEFINITIONS = [
   { key: 'site_email', group: 'general' },
   { key: 'site_phone', group: 'general' },
   { key: 'site_address', group: 'general' },
-  { key: 'guest_checkout', group: 'features' },
   { key: 'low_stock_alert', group: 'inventory' },
 ] as const
 
@@ -26,9 +25,6 @@ const settingValueSchemas = {
     .max(30)
     .regex(/^[0-9+\-()\s]*$/, 'Contact phone is invalid'),
   site_address: z.string().trim().max(240),
-  guest_checkout: z
-    .enum(['true', 'false'])
-    .catch('false'),
   low_stock_alert: z.coerce
     .number()
     .int('Low stock threshold must be a whole number')

@@ -9,7 +9,7 @@ const FAQS = [
     category: 'Orders and Delivery',
     items: [
       { q: 'How long does delivery take?', a: 'Delivery within Dhaka city takes 1 to 2 business days. Other divisions take 2 to 4 business days. Remote areas may take up to 5 business days.' },
-      { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, a flat fee of Tk 60 applies for Dhaka city. Other locations have rates from Tk 80 to Tk 120.' },
+      { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 70 inside Dhaka and Tk 150 outside Dhaka.' },
       { q: 'Can I track my order?', a: "Yes. Once your order is shipped, you'll receive a tracking number via email or SMS. You can also track it from My Account and Orders." },
       { q: 'Can I change or cancel my order?', a: 'Orders can be modified or cancelled within 1 hour of placement. After that, contact our support team as soon as possible.' },
     ],
@@ -42,7 +42,7 @@ const FAQS = [
     category: 'Account and Security',
     items: [
       { q: 'How do I reset my password?', a: "Click Forgot Password on the login page and enter your email. You'll receive a reset link within a few minutes." },
-      { q: 'Can I shop without creating an account?', a: 'Yes. Guest checkout is available. However, an account lets you track orders, save addresses, and earn rewards.' },
+      { q: 'Can I shop without creating an account?', a: 'You can browse products without an account, but you must sign in or create an account before placing an order.' },
       { q: 'Is my personal data safe?', a: 'Yes. We follow strict data protection practices. Your data is never sold to third parties. See our Privacy Policy for full details.' },
     ],
   },
