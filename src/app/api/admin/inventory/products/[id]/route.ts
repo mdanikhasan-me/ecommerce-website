@@ -3,9 +3,14 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminInventoryPayload } from '@/backend/admin/inventory-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const session = await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminInventoryPayload(await req.json())
@@ -108,8 +113,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ product: updatedProduct })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not update inventory'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not update inventory')
     return NextResponse.json({ error: message }, { status })
   }
 }

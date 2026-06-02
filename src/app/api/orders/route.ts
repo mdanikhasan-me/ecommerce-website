@@ -3,9 +3,12 @@ import { OrderStatus, PaymentMethod, type Prisma } from '@prisma/client'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { generateOrderNumber } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import { rateLimit } from '@/backend/security/rate-limit'
+import { protectMutationRequest } from '@/backend/security/request-guard'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 const AVAILABLE_PAYMENT_METHODS = new Set(
   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
@@ -97,6 +100,9 @@ function sanitizeString(value: unknown, max: number) {
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const limited = rateLimit(req, { key: 'orders:create', limit: 10, windowMs: 60_000 })
     if (limited) return limited
 
@@ -133,7 +139,7 @@ export async function POST(req: NextRequest) {
     const now = new Date()
     const [products, variants, flashSaleItems] = await Promise.all([
       db.product.findMany({
-        where: { id: { in: productIds } },
+        where: getBuyerVisibleProductWhere({ id: { in: productIds } }),
         select: { id: true, categoryId: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
       }),
       variantIds.length
@@ -329,7 +335,10 @@ export async function POST(req: NextRequest) {
       // Re-check + decrement stock using conditional update
       for (const line of preparedItems) {
         const updated = await tx.product.updateMany({
-          where: { id: line.productId, isActive: true, stockQuantity: { gte: line.quantity } },
+          where: getBuyerVisibleProductWhere({
+            id: line.productId,
+            stockQuantity: { gte: line.quantity },
+          }),
           data: {
             stockQuantity: { decrement: line.quantity },
           },
@@ -417,13 +426,45 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber, subtotal, shippingFee, discount, total }, { status: 201 })
   } catch (error: unknown) {
-    console.error('Order creation error:', error)
     if (error instanceof Error && error.message.startsWith('INSUFFICIENT_STOCK:')) {
+      logSecurityEvent({
+        type: 'server_error',
+        severity: 'warn',
+        route: req.nextUrl.pathname,
+        method: req.method,
+        statusCode: 409,
+        errorCode: 'insufficient_stock',
+        metadata: {
+          feature: 'order_creation',
+        },
+      })
       return NextResponse.json({ error: `Insufficient stock for "${error.message.split(':')[1]}"` }, { status: 409 })
     }
     if (error instanceof Error && error.message === 'FLASH_SALE_SOLD_OUT') {
+      logSecurityEvent({
+        type: 'server_error',
+        severity: 'warn',
+        route: req.nextUrl.pathname,
+        method: req.method,
+        statusCode: 409,
+        errorCode: 'flash_sale_sold_out',
+        metadata: {
+          feature: 'order_creation',
+        },
+      })
       return NextResponse.json({ error: 'One or more flash sale items are sold out' }, { status: 409 })
     }
+    logSecurityEvent({
+      type: 'server_error',
+      severity: 'error',
+      route: req.nextUrl.pathname,
+      method: req.method,
+      statusCode: 500,
+      errorCode: 'order_creation_failed',
+      metadata: {
+        feature: 'order_creation',
+      },
+    })
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 })
   }
 }

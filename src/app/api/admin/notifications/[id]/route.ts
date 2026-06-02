@@ -3,9 +3,14 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminNotificationReadPayload } from '@/backend/admin/notification-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminNotificationReadPayload(await req.json())
@@ -21,14 +26,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath('/admin/notifications')
     return NextResponse.json({ notification })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not update notification'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not update notification')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -37,8 +44,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     revalidatePath('/admin/notifications')
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not delete notification'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not delete notification')
     return NextResponse.json({ error: message }, { status })
   }
 }

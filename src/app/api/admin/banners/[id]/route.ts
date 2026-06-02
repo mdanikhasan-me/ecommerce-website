@@ -7,6 +7,9 @@ import {
   requireAdminSession,
 } from '@/backend/admin/admin-utils'
 import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -14,6 +17,9 @@ interface RouteContext {
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -59,8 +65,18 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
           [existingBanner.imageUrl, existingBanner.mobileImageUrl],
           [imageUrl, mobileImageUrl],
         )
-      } catch (cleanupError) {
-        console.error('Could not delete replaced banner images', cleanupError)
+      } catch {
+        logSecurityEvent({
+          type: 'admin_upload_cleanup_failed',
+          severity: 'warn',
+          route: req.nextUrl.pathname,
+          method: req.method,
+          statusCode: 200,
+          errorCode: 'banner_image_cleanup_failed',
+          metadata: {
+            feature: 'admin_banner',
+          },
+        })
       }
 
       return NextResponse.json({ banner })
@@ -69,14 +85,16 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       throw error
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to update banner'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to update banner')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: RouteContext) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -90,8 +108,7 @@ export async function DELETE(_req: NextRequest, { params }: RouteContext) {
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to delete banner'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to delete banner')
     return NextResponse.json({ error: message }, { status })
   }
 }

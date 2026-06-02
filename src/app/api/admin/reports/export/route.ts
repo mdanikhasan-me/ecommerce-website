@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildAdminReportCsv, parseAdminReportRange } from '@/backend/admin/reports'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
+import { toSafeClientError } from '@/backend/security/client-error'
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,8 +24,8 @@ export async function GET(req: NextRequest) {
         'Content-Disposition': `attachment; filename="${type}-report-${timestamp}.csv"`,
       },
     })
-  } catch (error: any) {
-    const status = error.message === 'Unauthorized' ? 401 : 400
-    return NextResponse.json({ error: error.message || 'Could not export report' }, { status })
+  } catch (error: unknown) {
+    const { message, status } = toSafeClientError(error, 'Could not export report')
+    return NextResponse.json({ error: message }, { status })
   }
 }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { rateLimit } from '@/backend/security/rate-limit'
 
 export async function GET(req: NextRequest) {
@@ -19,20 +21,20 @@ export async function GET(req: NextRequest) {
   ]
 
   const matchedCategories = await db.category.findMany({
-    where: { OR: nameOR },
+    where: { isActive: true, OR: nameOR },
     select: { id: true },
   })
 
   const categoryIds = matchedCategories.map((c) => c.id)
 
-  const productOR: object[] = []
+  const productOR: Prisma.ProductWhereInput[] = []
   if (categoryIds.length > 0) productOR.push({ categoryId: { in: categoryIds } })
   productOR.push({ name: { contains: q, mode: 'insensitive' } })
   for (const w of words) productOR.push({ name: { contains: w, mode: 'insensitive' } })
   if (words.length > 0) productOR.push({ tags: { hasSome: words } })
 
   const products = await db.product.findMany({
-    where: { isActive: true, OR: productOR },
+    where: getBuyerVisibleProductWhere({ OR: productOR }),
     select: { name: true, slug: true },
     take: 6,
     orderBy: { soldCount: 'desc' },

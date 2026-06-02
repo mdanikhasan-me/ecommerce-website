@@ -50,21 +50,64 @@ const UPLOAD_PROFILES: Record<string, UploadProfile> = {
   },
 }
 
+export const MAX_IMAGE_UPLOAD_BYTES = 8 * 1024 * 1024
+export const MAX_DECODED_IMAGE_PIXELS = 24_000_000
+export const MAX_IMAGE_DIMENSION = 8_000
+
+const SAFE_UPLOAD_ERROR = 'Invalid image upload payload'
+const UPLOAD_TOO_LARGE_ERROR = 'Image upload is too large'
+const UNSUPPORTED_IMAGE_ERROR = 'Unsupported image type'
+const IMAGE_DIMENSIONS_TOO_LARGE_ERROR = 'Image dimensions are too large'
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
+const ALLOWED_IMAGE_FORMATS_BY_MIME = new Map([
+  ['image/jpeg', 'jpeg'],
+  ['image/jpg', 'jpeg'],
+  ['image/png', 'png'],
+  ['image/webp', 'webp'],
+  ['image/gif', 'gif'],
+])
+
 function parseImageDataUrl(dataUrl: string) {
-  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/)
+  const match = dataUrl.match(/^data:([^;,]+);base64,([\s\S]+)$/)
   if (!match) return null
 
+  const mimeType = match[1].trim().toLowerCase()
+  if (!ALLOWED_IMAGE_FORMATS_BY_MIME.has(mimeType)) {
+    throw new Error(UNSUPPORTED_IMAGE_ERROR)
+  }
+
+  const base64 = match[2].replace(/\s/g, '')
+  if (!base64 || base64.length % 4 === 1 || !BASE64_PATTERN.test(base64)) {
+    return null
+  }
+
+  const estimatedBytes = Math.floor((base64.length * 3) / 4)
+  if (estimatedBytes > MAX_IMAGE_UPLOAD_BYTES + 2) {
+    throw new Error(UPLOAD_TOO_LARGE_ERROR)
+  }
+
+  const buffer = Buffer.from(base64, 'base64')
+  if (buffer.byteLength === 0) return null
+  if (buffer.byteLength > MAX_IMAGE_UPLOAD_BYTES) {
+    throw new Error(UPLOAD_TOO_LARGE_ERROR)
+  }
+
   return {
-    mimeType: match[1],
-    buffer: Buffer.from(match[2], 'base64'),
+    mimeType,
+    buffer,
   }
 }
 
 function extensionForMime(mimeType: string) {
-  if (mimeType.includes('png')) return 'png'
-  if (mimeType.includes('jpeg') || mimeType.includes('jpg')) return 'jpg'
-  if (mimeType.includes('webp')) return 'webp'
-  if (mimeType.includes('gif')) return 'gif'
+  const format = ALLOWED_IMAGE_FORMATS_BY_MIME.get(mimeType)
+  if (format === 'jpeg') return 'jpg'
+  return format ?? 'png'
+}
+
+function outputFormatForExtension(extension: string): 'jpeg' | 'png' | 'webp' | 'gif' {
+  if (extension === 'jpg') return 'jpeg'
+  if (extension === 'webp') return 'webp'
+  if (extension === 'gif') return 'gif'
   return 'png'
 }
 
@@ -73,13 +116,63 @@ function getUploadProfile(kind: string) {
 }
 
 function buildPipeline(buffer: Buffer, profile: UploadProfile) {
-  return sharp(buffer)
+  return sharp(buffer, { failOn: 'error', limitInputPixels: MAX_DECODED_IMAGE_PIXELS + 1 })
     .rotate()
     .resize(profile.maxWidth, profile.maxHeight, {
       fit: 'inside',
       withoutEnlargement: true,
     })
     .sharpen(profile.sharpenSigma)
+}
+
+export async function validateImageUploadPayload(dataUrl: string) {
+  const parsed = parseImageDataUrl(dataUrl)
+  if (!parsed) {
+    throw new Error(SAFE_UPLOAD_ERROR)
+  }
+
+  const expectedFormat = ALLOWED_IMAGE_FORMATS_BY_MIME.get(parsed.mimeType)
+  if (!expectedFormat) {
+    throw new Error(UNSUPPORTED_IMAGE_ERROR)
+  }
+
+  try {
+    const metadata = await sharp(parsed.buffer, {
+      failOn: 'error',
+      limitInputPixels: MAX_DECODED_IMAGE_PIXELS + 1,
+    }).metadata()
+
+    const width = metadata.width ?? 0
+    const height = metadata.pageHeight ?? metadata.height ?? 0
+    const pages = metadata.pages ?? 1
+    const pixelCount = width * height * pages
+
+    if (!width || !height || !metadata.format) {
+      throw new Error(SAFE_UPLOAD_ERROR)
+    }
+    if (metadata.format !== expectedFormat) {
+      throw new Error(UNSUPPORTED_IMAGE_ERROR)
+    }
+    if (
+      width > MAX_IMAGE_DIMENSION ||
+      height > MAX_IMAGE_DIMENSION ||
+      pixelCount > MAX_DECODED_IMAGE_PIXELS
+    ) {
+      throw new Error(IMAGE_DIMENSIONS_TOO_LARGE_ERROR)
+    }
+  } catch (error) {
+    if (error instanceof Error && [
+      UNSUPPORTED_IMAGE_ERROR,
+      IMAGE_DIMENSIONS_TOO_LARGE_ERROR,
+      SAFE_UPLOAD_ERROR,
+    ].includes(error.message)) {
+      throw error
+    }
+
+    throw new Error(SAFE_UPLOAD_ERROR)
+  }
+
+  return parsed
 }
 
 export async function persistOptimizedImageUpload(input: {
@@ -89,10 +182,7 @@ export async function persistOptimizedImageUpload(input: {
   publicPathPrefix: string
   profile: string
 }) {
-  const parsed = parseImageDataUrl(input.dataUrl)
-  if (!parsed) {
-    throw new Error('Invalid image upload payload')
-  }
+  const parsed = await validateImageUploadPayload(input.dataUrl)
 
   const profile = getUploadProfile(input.profile)
   const outputDir = path.join(process.cwd(), 'public', ...input.directorySegments)
@@ -114,14 +204,18 @@ export async function persistOptimizedImageUpload(input: {
 
     return `${input.publicPathPrefix}/${webpFilename}`
   } catch {
-    const ext = extensionForMime(parsed.mimeType)
-    const fallbackFilename = `${baseFileName}.${ext}`
-    const fallbackPath = path.join(outputDir, fallbackFilename)
+    try {
+      const ext = extensionForMime(parsed.mimeType)
+      const fallbackFilename = `${baseFileName}.${ext}`
+      const fallbackPath = path.join(outputDir, fallbackFilename)
 
-    await buildPipeline(parsed.buffer, profile)
-      .toFormat(ext === 'jpg' ? 'jpeg' : ext, { quality: profile.fallbackQuality })
-      .toFile(fallbackPath)
+      await buildPipeline(parsed.buffer, profile)
+        .toFormat(outputFormatForExtension(ext), { quality: profile.fallbackQuality })
+        .toFile(fallbackPath)
 
-    return `${input.publicPathPrefix}/${fallbackFilename}`
+      return `${input.publicPathPrefix}/${fallbackFilename}`
+    } catch {
+      throw new Error(SAFE_UPLOAD_ERROR)
+    }
   }
 }

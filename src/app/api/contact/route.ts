@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { rateLimit } from '@/backend/security/rate-limit'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const SUBJECTS = new Set([
   'Order Issue',
@@ -17,6 +18,9 @@ function clean(value: unknown, max: number): string {
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const limited = rateLimit(req, { key: 'contact:create', limit: 5, windowMs: 60_000 })
     if (limited) return limited
 

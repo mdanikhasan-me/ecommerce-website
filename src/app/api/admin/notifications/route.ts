@@ -5,6 +5,8 @@ import {
   parseAdminNotificationPayload,
   resolveNotificationAudienceWhere,
 } from '@/backend/admin/notification-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function GET() {
   try {
@@ -20,14 +22,16 @@ export async function GET() {
 
     return NextResponse.json({ notifications })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not load notifications'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not load notifications')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const parsed = parseAdminNotificationPayload(await req.json())
     if (!parsed.success) {
@@ -69,8 +73,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, count: userIds.length })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not send notifications'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not send notifications')
     return NextResponse.json({ error: message }, { status })
   }
 }

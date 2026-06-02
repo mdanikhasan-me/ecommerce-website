@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminCouponPayload, resolveCouponMutationError, validateCouponRelations } from '@/backend/admin/coupon-editor'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
 
     const parsed = parseAdminCouponPayload(await req.json())

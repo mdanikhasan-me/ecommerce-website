@@ -3,19 +3,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { recordProductView } from '@/backend/commerce-stats'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const VIEWER_COOKIE = 'boilabin_viewer'
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const blocked = protectMutationRequest(req)
+  if (blocked) return blocked
+
   const { id } = await params
 
-  const product = await db.product.findUnique({
-    where: { id },
-    select: { id: true, isActive: true },
+  const product = await db.product.findFirst({
+    where: getBuyerVisibleProductWhere({ id }),
+    select: { id: true },
   })
 
-  if (!product?.isActive) {
+  if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 })
   }
 

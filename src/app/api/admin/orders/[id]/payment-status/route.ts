@@ -3,9 +3,14 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminPaymentStatusPayload } from '@/backend/admin/order-update-editor'
+import { toSafeClientErrorMessage } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const session = await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminPaymentStatusPayload(await req.json())
@@ -87,7 +92,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ success: true, order: updatedOrder })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not update payment status'
+    const message = toSafeClientErrorMessage(error, 'Could not update payment status')
     const status = message === 'Unauthorized' ? 403 : 400
     return NextResponse.json({ error: message }, { status })
   }

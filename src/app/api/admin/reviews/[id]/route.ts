@@ -4,9 +4,14 @@ import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { db } from '@/backend/database'
 import { syncProductReviewStats } from '@/backend/reviews'
 import { parseAdminReviewModerationPayload } from '@/backend/admin/review-moderation'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminReviewModerationPayload(await req.json())
@@ -27,8 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return NextResponse.json({ error: 'Review not found' }, { status: 404 })
     }
-    const message = error instanceof Error ? error.message : 'Could not moderate review'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not moderate review')
     return NextResponse.json({ error: message }, { status })
   }
 }

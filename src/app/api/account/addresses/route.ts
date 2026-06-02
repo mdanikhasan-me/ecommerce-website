@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { parseAddressPayload } from '@/backend/account/address'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function POST(request: NextRequest) {
   try {
+    const blocked = protectMutationRequest(request)
+    if (blocked) return blocked
+
     const session = await auth()
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

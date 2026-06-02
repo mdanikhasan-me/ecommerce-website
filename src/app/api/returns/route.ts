@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { protectMutationRequest } from '@/backend/security/request-guard'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 const RETURN_WINDOW_DAYS = 7
 
@@ -18,6 +20,9 @@ function getReturnDeadline(deliveredAt: Date) {
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Please sign in to request a return' }, { status: 401 })
@@ -86,8 +91,18 @@ export async function POST(req: NextRequest) {
     revalidatePath('/admin/orders')
 
     return NextResponse.json({ request }, { status: 201 })
-  } catch (error) {
-    console.error('Return request error:', error)
+  } catch {
+    logSecurityEvent({
+      type: 'server_error',
+      severity: 'error',
+      route: req.nextUrl.pathname,
+      method: req.method,
+      statusCode: 500,
+      errorCode: 'return_request_create_failed',
+      metadata: {
+        feature: 'returns',
+      },
+    })
     return NextResponse.json({ error: 'Could not create return request' }, { status: 500 })
   }
 }

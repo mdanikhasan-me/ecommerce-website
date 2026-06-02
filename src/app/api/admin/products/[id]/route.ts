@@ -12,6 +12,9 @@ import {
   requireAdminSession,
   validateProductRelations,
 } from '@/backend/admin/product-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -19,6 +22,9 @@ interface RouteContext {
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -99,20 +105,32 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
     try {
       await deleteRemovedProductImages(existingImageUrls, nextImageUrls)
-    } catch (cleanupError) {
-      console.error('Could not delete replaced product images', cleanupError)
+    } catch {
+      logSecurityEvent({
+        type: 'admin_upload_cleanup_failed',
+        severity: 'warn',
+        route: req.nextUrl.pathname,
+        method: req.method,
+        statusCode: 200,
+        errorCode: 'product_image_cleanup_failed',
+        metadata: {
+          feature: 'admin_product',
+        },
+      })
     }
 
     return NextResponse.json({ product })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to update product'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to update product')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: RouteContext) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -143,8 +161,7 @@ export async function DELETE(_req: NextRequest, { params }: RouteContext) {
       })
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to delete product'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to delete product')
     return NextResponse.json({ error: message }, { status })
   }
 }

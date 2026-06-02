@@ -4,6 +4,7 @@ import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 export async function requireAdminSession() {
   const session = await auth()
@@ -26,16 +27,33 @@ export async function logAdminAudit(input: {
   oldValues?: unknown
   newValues?: unknown
 }) {
-  await db.auditLog.create({
-    data: {
-      userId: input.userId ?? null,
-      action: input.action,
-      entity: input.entity,
-      entityId: input.entityId ?? null,
-      oldValues: input.oldValues as any,
-      newValues: input.newValues as any,
-    },
-  }).catch(() => {})
+  try {
+    await db.auditLog.create({
+      data: {
+        userId: input.userId ?? null,
+        action: input.action,
+        entity: input.entity,
+        entityId: input.entityId ?? null,
+        oldValues: input.oldValues as any,
+        newValues: input.newValues as any,
+      },
+    })
+  } catch (error) {
+    const errorCode = typeof (error as { code?: unknown }).code === 'string'
+      ? (error as { code: string }).code
+      : undefined
+
+    logSecurityEvent({
+      type: 'admin_audit_log_write_failed',
+      severity: 'error',
+      errorCode: errorCode ?? 'audit_log_write_failed',
+      metadata: {
+        action: input.action,
+        entity: input.entity,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      },
+    })
+  }
 }
 
 export async function ensureUniqueSlug(rawSlug: string, excludeId?: string) {

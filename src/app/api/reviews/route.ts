@@ -3,9 +3,13 @@ import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { parseReviewPayload, syncProductReviewStats } from '@/backend/reviews'
 import { rateLimit } from '@/backend/security/rate-limit'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const limited = rateLimit(req, { key: 'reviews:create', limit: 6, windowMs: 60_000 })
     if (limited) return limited
 

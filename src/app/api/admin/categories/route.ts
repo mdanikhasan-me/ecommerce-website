@@ -7,9 +7,14 @@ import {
   requireAdminSession,
 } from '@/backend/admin/admin-utils'
 import { assertValidCategoryParent, parseAdminCategoryPayload } from '@/backend/admin/category-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
 
     const parsed = parseAdminCategoryPayload(await req.json())
@@ -40,8 +45,7 @@ export async function POST(req: NextRequest) {
       throw error
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to create category'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to create category')
     return NextResponse.json({ error: message }, { status })
   }
 }

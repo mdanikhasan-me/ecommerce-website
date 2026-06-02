@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminSettingsPayload } from '@/backend/admin/settings-editor'
 import { db } from '@/backend/database'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function GET() {
   try {
@@ -12,14 +14,16 @@ export async function GET() {
 
     return NextResponse.json({ settings })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not load settings'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not load settings')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const parsed = parseAdminSettingsPayload(await req.json())
     if (!parsed.success) {
@@ -38,8 +42,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not save settings'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not save settings')
     return NextResponse.json({ error: message }, { status })
   }
 }

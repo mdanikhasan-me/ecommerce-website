@@ -5,6 +5,7 @@ import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { parseAdminOrderStatusPayload } from '@/backend/admin/order-update-editor'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const ALLOWED_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ['CONFIRMED', 'CANCELLED'],
@@ -25,6 +26,9 @@ function canTransitionOrderStatus(current: OrderStatus, next: OrderStatus) {
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const session = await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminOrderStatusPayload(await req.json())

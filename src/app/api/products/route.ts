@@ -4,9 +4,11 @@ import { db } from '@/backend/database'
 import {
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
+  orderProductsById,
   parsePriceParam,
-  sortProductsByEffectivePrice,
+  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
@@ -14,7 +16,7 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(50, parseInt(sp.get('limit') ?? '24'))
   const skip = (page - 1) * limit
 
-  const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true }]
+  const andClauses: Prisma.ProductWhereInput[] = [getBuyerVisibleProductWhere()]
 
   // Wishlist / multi-ID lookup
   const ids = sp.get('ids')
@@ -58,8 +60,18 @@ export async function GET(req: NextRequest) {
       ? db.product.findMany({
           where,
           orderBy: { id: 'asc' },
-          include: productInclude,
-        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit))
+          select: { id: true, basePrice: true, salePrice: true },
+        }).then(async (items) => {
+          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
+          if (pageIds.length === 0) return []
+
+          const pageProducts = await db.product.findMany({
+            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
+            include: productInclude,
+          })
+
+          return orderProductsById(pageProducts, pageIds)
+        })
       : db.product.findMany({
           where, orderBy, skip, take: limit,
           include: productInclude,

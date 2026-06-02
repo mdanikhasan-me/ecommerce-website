@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { db } from '@/backend/database'
 import { z } from 'zod'
 import { rateLimit } from '@/backend/security/rate-limit'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -13,6 +14,9 @@ const registerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const limited = rateLimit(req, { key: 'auth:register', limit: 5, windowMs: 60_000 })
     if (limited) return limited
 

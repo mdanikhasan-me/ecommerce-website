@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { buildAdminUserWhere, parseAdminUserListFilters } from '@/backend/admin/user-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
 
 export async function GET(req: NextRequest) {
   try {
@@ -39,8 +40,7 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not load users'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not load users')
     return NextResponse.json({ error: message }, { status })
   }
 }

@@ -2,17 +2,34 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowRight, CheckCircle, CreditCard, MapPin, Package } from 'lucide-react'
 
+import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { generateNoIndexPageMetadata } from '@/backend/seo'
 import { formatPrice } from '@/backend/utils'
+import type { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ orderNumber: string }>
 }
 
+export const metadata: Metadata = generateNoIndexPageMetadata(
+  'Order Confirmation',
+  'Private Boilabin order confirmation.',
+  '/order/confirmation',
+)
+
 export default async function OrderConfirmationPage({ params }: Props) {
   const { orderNumber } = await params
-  const order = await db.order.findUnique({
-    where: { orderNumber },
+  const session = await auth()
+
+  if (!session?.user) notFound()
+
+  const isOrderAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
+  const order = await db.order.findFirst({
+    where: {
+      orderNumber,
+      ...(isOrderAdmin ? {} : { userId: session.user.id }),
+    },
     include: {
       items: true,
       address: true,

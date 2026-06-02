@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')?.trim().toUpperCase()
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
   if (coupon.productIds.length > 0 || coupon.categoryIds.length > 0) {
     const cartProducts = productIds.length
       ? await db.product.findMany({
-          where: { id: { in: productIds } },
+          where: getBuyerVisibleProductWhere({ id: { in: productIds } }),
           select: { id: true, categoryId: true },
         })
       : []

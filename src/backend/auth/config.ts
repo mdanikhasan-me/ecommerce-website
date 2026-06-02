@@ -1,5 +1,7 @@
 import type { Role } from '@prisma/client'
 import type { NextAuthConfig } from 'next-auth'
+import { getAuthHostConfigurationWarnings, shouldTrustAuthHost } from '@/backend/auth/host'
+import { logSecurityEvent } from '@/backend/security/security-log'
 
 type UserWithRole = {
   id?: string
@@ -11,10 +13,24 @@ type AuthCallbacks = NonNullable<NextAuthConfig['callbacks']>
 type JwtCallbackParams = Parameters<NonNullable<AuthCallbacks['jwt']>>[0]
 type SessionCallbackParams = Parameters<NonNullable<AuthCallbacks['session']>>[0]
 
+const authHostWarnings = getAuthHostConfigurationWarnings()
+
+if (process.env.NODE_ENV === 'production' && authHostWarnings.length > 0) {
+  logSecurityEvent({
+    type: 'auth_host_configuration_warning',
+    severity: 'warn',
+    errorCode: 'auth_host_configuration_warning',
+    metadata: {
+      warnings: authHostWarnings,
+    },
+  })
+}
+
 export const authConfig = {
   providers: [],
   session: { strategy: 'jwt' },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  trustHost: shouldTrustAuthHost(),
   pages: {
     signIn: '/auth/login',
     error: '/auth/error',

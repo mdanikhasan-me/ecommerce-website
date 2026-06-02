@@ -1,6 +1,7 @@
 import { CouponType } from '@prisma/client'
 import { z } from 'zod'
 import { db } from '@/backend/database'
+import { toSafeClientErrorMessage } from '@/backend/security/client-error'
 
 const optionalTrimmedString = (max: number) =>
   z
@@ -106,5 +107,5 @@ export function resolveCouponMutationError(error: unknown, fallback: string) {
     return 'Coupon code already exists'
   }
 
-  return error instanceof Error ? error.message : fallback
+  return toSafeClientErrorMessage(error, fallback)
 }

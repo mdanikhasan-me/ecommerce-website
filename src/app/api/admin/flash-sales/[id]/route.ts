@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminFlashSalePayload, validateFlashSaleProducts } from '@/backend/admin/flash-sale-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -9,6 +11,9 @@ interface RouteContext {
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -41,14 +46,16 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
     return NextResponse.json({ flashSale })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to update flash sale'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to update flash sale')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: RouteContext) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     await requireAdminSession()
     const { id } = await params
 
@@ -60,8 +67,7 @@ export async function DELETE(_req: NextRequest, { params }: RouteContext) {
     await db.flashSale.delete({ where: { id: existingFlashSale.id } })
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unable to delete flash sale'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Unable to delete flash sale')
     return NextResponse.json({ error: message }, { status })
   }
 }

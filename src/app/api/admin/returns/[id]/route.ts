@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminReturnPayload, resolveReturnOrderStatus } from '@/backend/admin/return-editor'
+import { toSafeClientError } from '@/backend/security/client-error'
+import { protectMutationRequest } from '@/backend/security/request-guard'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -42,14 +44,16 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ request })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not load return request'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not load return request')
     return NextResponse.json({ error: message }, { status })
   }
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const blocked = protectMutationRequest(req)
+    if (blocked) return blocked
+
     const session = await requireAdminSession()
     const { id } = await params
     const parsed = parseAdminReturnPayload(await req.json())
@@ -143,8 +147,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     return NextResponse.json({ request: requestRecord })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Could not update return request'
-    const status = message === 'Unauthorized' ? 401 : 400
+    const { message, status } = toSafeClientError(error, 'Could not update return request')
     return NextResponse.json({ error: message }, { status })
   }
 }
