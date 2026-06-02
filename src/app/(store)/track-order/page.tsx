@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { generatePageMetadata } from '@/backend/seo'
+import { generateNoIndexPageMetadata } from '@/backend/seo'
 import { TrackOrderLookup } from '@/frontend/components/content/TrackOrderLookup'
 
-export const metadata: Metadata = generatePageMetadata(
+export const metadata: Metadata = generateNoIndexPageMetadata(
   'Track Your Boilabin Order',
   'Track a Boilabin order by order number and view the latest order status from your account.',
   '/track-order',
