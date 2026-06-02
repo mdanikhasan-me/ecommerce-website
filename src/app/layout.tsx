@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Sora, DM_Mono, Poppins } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { BRAND_ASSETS } from '@/shared/assets'
+import { getSiteUrl } from '@/backend/seo'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -33,7 +34,7 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'),
+  metadataBase: new URL(getSiteUrl()),
   icons: {
     icon: [
       { url: BRAND_ASSETS.icons.favicon32, sizes: '32x32', type: 'image/png' },
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_BD',
-    url: process.env.NEXT_PUBLIC_SITE_URL,
+    url: getSiteUrl(),
     siteName: 'Boilabin',
     title: 'Boilabin, Shop Quality Products Online in Bangladesh',
     description: 'Shop electronics, fashion, home appliances and more at the best prices in Bangladesh.',

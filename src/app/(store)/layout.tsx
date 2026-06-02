@@ -1,6 +1,6 @@
 import { Header } from '@/frontend/components/layout/Header'
 import { Footer } from '@/frontend/components/layout/Footer'
-import { CartDrawer } from '@/frontend/components/cart/CartDrawer'
+import { LazyCartDrawer } from '@/frontend/components/cart/LazyCartDrawer'
 import { Providers } from '@/frontend/components/ui/Providers'
 
 export default function StoreLayout({
@@ -14,7 +14,7 @@ export default function StoreLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <CartDrawer />
+        <LazyCartDrawer />
       </div>
     </Providers>
   )
