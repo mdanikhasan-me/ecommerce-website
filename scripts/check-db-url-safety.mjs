@@ -1,10 +1,11 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-const ENV_FILES = ['.env', '.env.local']
-const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
+export const ENV_FILES = ['.env', '.env.local']
+export const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
 
-function parseEnvFile(path) {
+export function parseEnvFile(path) {
   if (!existsSync(path)) return {}
 
   const values = {}
@@ -31,14 +32,18 @@ function parseEnvFile(path) {
   return values
 }
 
-function loadEnv() {
-  return ENV_FILES.reduce((acc, file) => ({
+export function loadEnv({
+  cwd = process.cwd(),
+  files = ENV_FILES,
+  baseEnv = process.env,
+} = {}) {
+  return files.reduce((acc, file) => ({
     ...acc,
-    ...parseEnvFile(resolve(process.cwd(), file)),
-  }), { ...process.env })
+    ...parseEnvFile(resolve(cwd, file)),
+  }), { ...baseEnv })
 }
 
-function classifyDatabaseUrl(value) {
+export function classifyDatabaseUrl(value) {
   if (!value?.trim()) return 'missing'
 
   try {
@@ -52,7 +57,7 @@ function classifyDatabaseUrl(value) {
   }
 }
 
-function normalizeDatabaseIdentity(value) {
+export function normalizeDatabaseIdentity(value) {
   if (!value?.trim()) return null
 
   try {
@@ -70,26 +75,59 @@ function normalizeDatabaseIdentity(value) {
   }
 }
 
-const env = loadEnv()
-const databaseUrl = classifyDatabaseUrl(env.DATABASE_URL)
-const shadowDatabaseUrl = classifyDatabaseUrl(env.SHADOW_DATABASE_URL)
-const databaseIdentity = normalizeDatabaseIdentity(env.DATABASE_URL)
-const shadowDatabaseIdentity = normalizeDatabaseIdentity(env.SHADOW_DATABASE_URL)
-const shadowDatabaseSeparate = Boolean(
-  databaseIdentity &&
-  shadowDatabaseIdentity &&
-  databaseIdentity !== shadowDatabaseIdentity,
-)
-const requireLocal = process.argv.includes('--require-local')
-const safeForLocalMigration = databaseUrl === 'local' && shadowDatabaseUrl === 'local' && shadowDatabaseSeparate
+export function evaluateDatabaseSafety(env) {
+  const databaseUrl = classifyDatabaseUrl(env.DATABASE_URL)
+  const shadowDatabaseUrl = classifyDatabaseUrl(env.SHADOW_DATABASE_URL)
+  const databaseIdentity = normalizeDatabaseIdentity(env.DATABASE_URL)
+  const shadowDatabaseIdentity = normalizeDatabaseIdentity(env.SHADOW_DATABASE_URL)
+  const shadowDatabaseSeparate = Boolean(
+    databaseIdentity &&
+    shadowDatabaseIdentity &&
+    databaseIdentity !== shadowDatabaseIdentity,
+  )
+  const safeForLocalMigration = databaseUrl === 'local' && shadowDatabaseUrl === 'local' && shadowDatabaseSeparate
 
-console.log('Database URL safety check: no database connection attempted.')
-console.log(`DATABASE_URL: ${databaseUrl}`)
-console.log(`SHADOW_DATABASE_URL: ${shadowDatabaseUrl}`)
-console.log(`Shadow database separate: ${shadowDatabaseSeparate ? 'yes' : 'no'}`)
-console.log(`Local migration ready: ${safeForLocalMigration ? 'yes' : 'no'}`)
+  return {
+    databaseUrl,
+    shadowDatabaseUrl,
+    shadowDatabaseSeparate,
+    safeForLocalMigration,
+  }
+}
 
-if (requireLocal && !safeForLocalMigration) {
-  console.error('Refusing to continue: DATABASE_URL and SHADOW_DATABASE_URL must both be local and separate.')
-  process.exit(1)
+export function printDatabaseSafetyReport(result, log = console.log) {
+  log('Database URL safety check: no database connection attempted.')
+  log(`DATABASE_URL: ${result.databaseUrl}`)
+  log(`SHADOW_DATABASE_URL: ${result.shadowDatabaseUrl}`)
+  log(`Shadow database separate: ${result.shadowDatabaseSeparate ? 'yes' : 'no'}`)
+  log(`Local migration ready: ${result.safeForLocalMigration ? 'yes' : 'no'}`)
+}
+
+export function runDbUrlSafetyCli({
+  argv = process.argv.slice(2),
+  cwd = process.cwd(),
+  baseEnv = process.env,
+  stdout = console.log,
+  stderr = console.error,
+} = {}) {
+  const env = loadEnv({ cwd, baseEnv })
+  const result = evaluateDatabaseSafety(env)
+  const requireLocal = argv.includes('--require-local')
+
+  printDatabaseSafetyReport(result, stdout)
+
+  if (requireLocal && !result.safeForLocalMigration) {
+    stderr('Refusing to continue: DATABASE_URL and SHADOW_DATABASE_URL must both be local and separate.')
+    return 1
+  }
+
+  return 0
+}
+
+function isCliEntrypoint() {
+  return Boolean(process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href)
+}
+
+if (isCliEntrypoint()) {
+  process.exit(runDbUrlSafetyCli())
 }

@@ -272,6 +272,15 @@ npm run db:require-local
 
 This command only classifies URLs. It does not connect to PostgreSQL.
 
+For local Prisma commands that should use `.env.local` over `.env`, use the guarded local Prisma wrappers:
+
+```bash
+npm run db:prisma:local:validate
+npm run db:prisma:local:generate
+```
+
+These wrappers load `.env` first, then `.env.local` as the local override, run the same URL-shape safety classification, and refuse to execute unless the app and shadow DB URLs are local and separate. This still does not prove PostgreSQL is installed or running.
+
 ### Recommended local-only migration generation flow
 
 Use this flow only when intentionally creating a reviewed local migration:
@@ -279,7 +288,7 @@ Use this flow only when intentionally creating a reviewed local migration:
 ```bash
 cp .env.local.example .env.local
 npm run db:url:safety
-npm run db:validate
+npm run db:prisma:local:validate
 npm run db:migrate:local -- --name add_product_lifecycle
 ```
 
@@ -361,8 +370,10 @@ npm run typecheck         # Type-check project
 npm test                  # Run tests
 npm run db:url:safety     # Classify DB URLs without connecting or printing secrets
 npm run db:require-local   # Fail unless DB URLs are local and separate; no DB connection
-npm run db:validate       # Validate Prisma schema without mutating the database
-npm run db:generate       # Generate Prisma client
+npm run db:validate       # Plain Prisma validate; does not load .env.local guardrail
+npm run db:generate       # Plain Prisma generate; does not load .env.local guardrail
+npm run db:prisma:local:validate # Guarded local Prisma validate with .env.local override
+npm run db:prisma:local:generate # Guarded local Prisma generate with .env.local override
 npm run db:migrate:local  # Local-only Prisma migrate dev with URL safety check
 npm run db:migrate        # Mutates DB; only use with verified local URLs
 npm run db:push           # Mutates DB without migration history; avoid for controlled migrations
