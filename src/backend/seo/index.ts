@@ -11,11 +11,26 @@
  */
 
 export { SEO } from './constants'
+export {
+  canonicalUrl,
+  getSiteUrl,
+  normalizeSiteUrl,
+  toAbsoluteUrl,
+} from './urls'
+
+export {
+  hasFacetedCategoryParams,
+  indexableRobots,
+  noIndexFollowRobots,
+  noIndexNoFollowRobots,
+} from './robots'
 
 export {
   generateProductMetadata,
   generateCategoryMetadata,
   generatePageMetadata,
+  generateNoIndexPageMetadata,
+  generateSearchMetadata,
 } from './metadata'
 
 export {

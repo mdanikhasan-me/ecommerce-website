@@ -6,6 +6,8 @@
 
 import type { Metadata } from 'next'
 import { SEO } from './constants'
+import { canonicalUrl, toAbsoluteUrl } from './urls'
+import { noIndexFollowRobots } from './robots'
 
 function formatBdt(value: number) {
   return new Intl.NumberFormat('en-BD').format(value)
@@ -30,8 +32,10 @@ interface ProductMeta {
 
 export function generateProductMetadata(product: ProductMeta): Metadata {
   const price = product.salePrice ?? product.basePrice
-  const primaryImage = product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url
-  const url = `${SEO.siteUrl}/products/${product.slug}`
+  const primaryImage = toAbsoluteUrl(
+    product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url,
+  )
+  const url = canonicalUrl(`/products/${product.slug}`)
 
   const desc =
     product.shortDescription ??
@@ -95,10 +99,11 @@ interface CategoryMeta {
   slug: string
   description?: string | null
   productCount?: number
+  indexable?: boolean
 }
 
 export function generateCategoryMetadata(category: CategoryMeta): Metadata {
-  const url = `${SEO.siteUrl}/category/${category.slug}`
+  const url = canonicalUrl(`/category/${category.slug}`)
   const desc =
     category.description ??
     `Shop ${category.name} at the best prices in Bangladesh. ${category.productCount ? `${category.productCount}+ products` : 'Wide selection'} with free delivery on orders over Tk 2,000.`
@@ -122,7 +127,7 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
       locale: SEO.locale,
       type: 'website',
     },
-    robots: SEO.robots,
+    robots: category.indexable === false ? noIndexFollowRobots : SEO.robots,
   }
 }
 
@@ -130,8 +135,9 @@ export function generatePageMetadata(
   title: string,
   description: string,
   path: string = '',
+  options: { indexable?: boolean } = {},
 ): Metadata {
-  const url = `${SEO.siteUrl}${path}`
+  const url = canonicalUrl(path || '/')
   return {
     title,
     description,
@@ -144,6 +150,28 @@ export function generatePageMetadata(
       locale: SEO.locale,
       type: 'website',
     },
-    robots: SEO.robots,
+    robots: options.indexable === false ? noIndexFollowRobots : SEO.robots,
+  }
+}
+
+export function generateNoIndexPageMetadata(
+  title: string,
+  description: string,
+  path: string,
+): Metadata {
+  return generatePageMetadata(title, description, path, { indexable: false })
+}
+
+export function generateSearchMetadata(params: { q?: string | string[] | undefined } = {}): Metadata {
+  const q = Array.isArray(params.q) ? params.q[0] : params.q
+  const query = q?.trim()
+  const title = query ? `Search: "${query}"` : 'Search Products'
+  const description = query
+    ? `Search results for "${query}" on Boilabin.`
+    : 'Search Boilabin products by name, category, and price.'
+
+  return {
+    ...generatePageMetadata(title, description, '/search', { indexable: false }),
+    alternates: { canonical: canonicalUrl('/search') },
   }
 }

@@ -1,6 +1,16 @@
 import type { MetadataRoute } from 'next'
+import { canonicalUrl } from '@/backend/seo'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'
+const DISALLOW_RULES = [
+  '/admin/',
+  '/api/',
+  '/account/',
+  '/checkout/',
+  '/auth/',
+  '/cart/',
+  '/order/',
+  '/track-order',
+]
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,19 +18,19 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/', '/cart/'],
+        disallow: DISALLOW_RULES,
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/', '/cart/'],
+        disallow: DISALLOW_RULES,
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
-        disallow: ['/admin/', '/api/', '/account/', '/checkout/', '/auth/', '/cart/'],
+        disallow: DISALLOW_RULES,
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: canonicalUrl('/sitemap.xml'),
   }
 }

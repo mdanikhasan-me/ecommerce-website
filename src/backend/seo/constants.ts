@@ -1,5 +1,7 @@
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 import { BRAND_ASSETS } from '@/shared/assets'
+import { getSiteUrl, toAbsoluteUrl } from '@/backend/seo/urls'
+import { indexableRobots } from '@/backend/seo/robots'
 
 /**
  * SEO Constants
@@ -8,9 +10,11 @@ import { BRAND_ASSETS } from '@/shared/assets'
  * Optimized for Bangladesh e-commerce with bilingual support.
  */
 
+const siteUrl = getSiteUrl()
+
 export const SEO = {
   siteName: 'Boilabin',
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com',
+  siteUrl,
   locale: 'en_BD',
   alternateLocale: 'bn_BD',
   currency: 'BDT',
@@ -37,8 +41,8 @@ export const SEO = {
   organization: {
     name: 'Boilabin',
     legalName: 'Boilabin',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com',
-    logo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'}${BRAND_ASSETS.mark}`,
+    url: siteUrl,
+    logo: toAbsoluteUrl(BRAND_ASSETS.mark, siteUrl) ?? `${siteUrl}/`,
     email: CONTACT_EMAIL,
     phone: CONTACT_PHONE,
     address: {
@@ -55,7 +59,7 @@ export const SEO = {
     type: 'website' as const,
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://boilabin.com'}/opengraph-image`,
+        url: toAbsoluteUrl('/opengraph-image', siteUrl) ?? `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: 'Boilabin, Shop Quality Products Online in Bangladesh',
@@ -69,15 +73,5 @@ export const SEO = {
     creator: '@boilabin',
   },
 
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large' as const,
-      'max-snippet': -1,
-    },
-  },
+  robots: indexableRobots,
 } as const

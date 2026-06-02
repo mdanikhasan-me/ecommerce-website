@@ -16,6 +16,11 @@
 
 import { SEO } from './constants'
 import { siteConfig } from '@/backend/config/site'
+import { canonicalUrl, toAbsoluteUrl } from './urls'
+import {
+  getProductAvailabilityForJsonLd,
+  type ProductLifecycleState,
+} from '@/backend/catalog/product-visibility'
 
 // Product JSON-LD
 interface ProductJsonLdInput {
@@ -30,6 +35,7 @@ interface ProductJsonLdInput {
   rating?: number
   reviewCount?: number
   stockQuantity?: number
+  lifecycleState?: ProductLifecycleState
   reviews?: {
     rating: number
     body: string
@@ -40,23 +46,27 @@ interface ProductJsonLdInput {
 
 export function generateProductJsonLd(product: ProductJsonLdInput) {
   const price = product.salePrice ?? product.basePrice
-  const availability =
-    (product.stockQuantity ?? 1) > 0
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock'
+  const productUrl = canonicalUrl(`/products/${product.slug}`)
+  const images = product.images
+    .map((image) => toAbsoluteUrl(image.url))
+    .filter((url): url is string => Boolean(url))
+  const availability = getProductAvailabilityForJsonLd({
+    stockQuantity: product.stockQuantity,
+    lifecycleState: product.lifecycleState,
+  })
 
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description: product.description,
-    image: product.images.map((i) => i.url),
+    ...(images.length > 0 ? { image: images } : {}),
     sku: product.sku ?? product.slug,
-    url: `${SEO.siteUrl}/products/${product.slug}`,
+    url: productUrl,
     category: product.category.name,
     offers: {
       '@type': 'Offer',
-      url: `${SEO.siteUrl}/products/${product.slug}`,
+      url: productUrl,
       priceCurrency: 'BDT',
       price: price.toFixed(2),
       availability,
@@ -147,7 +157,7 @@ export function generateBreadcrumbJsonLd(items: BreadcrumbItem[]) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${SEO.siteUrl}${item.url}`,
+      item: canonicalUrl(item.url),
     })),
   }
 }
@@ -159,8 +169,8 @@ export function generateOrganizationJsonLd() {
     '@type': 'Organization',
     name: SEO.organization.name,
     legalName: SEO.organization.legalName,
-    url: SEO.organization.url,
-    logo: SEO.organization.logo,
+    url: canonicalUrl('/'),
+    logo: toAbsoluteUrl(SEO.organization.logo) ?? SEO.organization.logo,
     email: SEO.organization.email,
     telephone: SEO.organization.phone,
     address: SEO.organization.address,
@@ -181,14 +191,14 @@ export function generateWebsiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SEO.siteName,
-    url: SEO.siteUrl,
+    url: canonicalUrl('/'),
     description: SEO.defaultDescription,
     inLanguage: ['en', 'bn'],
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${SEO.siteUrl}/search?q={search_term_string}`,
+        urlTemplate: `${canonicalUrl('/search')}?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -201,9 +211,9 @@ export function generateLocalBusinessJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'OnlineStore',
     name: SEO.organization.name,
-    url: SEO.organization.url,
-    logo: SEO.organization.logo,
-    image: SEO.organization.logo,
+    url: canonicalUrl('/'),
+    logo: toAbsoluteUrl(SEO.organization.logo) ?? SEO.organization.logo,
+    image: toAbsoluteUrl(SEO.organization.logo) ?? SEO.organization.logo,
     email: SEO.organization.email,
     telephone: SEO.organization.phone,
     address: SEO.organization.address,
@@ -263,8 +273,8 @@ export function generateItemListJsonLd(
       item: {
         '@type': 'Product',
         name: p.name,
-        url: `${SEO.siteUrl}/products/${p.slug}`,
-        image: p.image,
+        url: canonicalUrl(`/products/${p.slug}`),
+        ...(toAbsoluteUrl(p.image) ? { image: toAbsoluteUrl(p.image) } : {}),
         offers: {
           '@type': 'Offer',
           priceCurrency: 'BDT',
