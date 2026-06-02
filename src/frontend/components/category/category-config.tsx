@@ -1,5 +1,4 @@
 import {
-  Baby,
   BookOpen,
   ChefHat,
   Dumbbell,
@@ -8,6 +7,7 @@ import {
   MonitorSmartphone,
   Shirt,
   Sparkles,
+  ToyBrick,
 } from 'lucide-react'
 
 type CategoryIcon = typeof MonitorSmartphone
@@ -102,16 +102,27 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     glowClass: 'bg-[radial-gradient(circle_at_top_right,rgba(92,99,255,0.14)_0%,transparent_56%)]',
     linkClass: 'text-[#26318e]',
   },
+  'toys-collectibles': {
+    icon: ToyBrick,
+    eyebrow: 'Play and collectibles',
+    summary: 'Hot Wheels, LEGO sets, diecast models, action figures, and collectible cards for focused browsing.',
+    accent: '#0f8f85',
+    accentDark: '#10554f',
+    surface: '#edfbf9',
+    border: '#c7eee9',
+    glowClass: 'bg-[radial-gradient(circle_at_top_right,rgba(15,143,133,0.14)_0%,transparent_56%)]',
+    linkClass: 'text-[#10554f]',
+  },
   'baby-kids': {
-    icon: Baby,
-    eyebrow: 'Family essentials',
-    summary: 'Baby care, toys, and practical kids essentials designed for faster browsing.',
-    accent: '#1da4c7',
-    accentDark: '#19586d',
-    surface: '#eefaff',
-    border: '#ceeff9',
-    glowClass: 'bg-[radial-gradient(circle_at_top_right,rgba(29,164,199,0.14)_0%,transparent_56%)]',
-    linkClass: 'text-[#19586d]',
+    icon: ToyBrick,
+    eyebrow: 'Play and collectibles',
+    summary: 'Legacy category route fallback for toys, model cars, figures, building sets, and cards.',
+    accent: '#0f8f85',
+    accentDark: '#10554f',
+    surface: '#edfbf9',
+    border: '#c7eee9',
+    glowClass: 'bg-[radial-gradient(circle_at_top_right,rgba(15,143,133,0.14)_0%,transparent_56%)]',
+    linkClass: 'text-[#10554f]',
   },
 }
 

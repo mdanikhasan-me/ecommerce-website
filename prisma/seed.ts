@@ -118,7 +118,12 @@ async function main() {
   const sports = await prisma.category.upsert({ where: { slug: 'sports-fitness' }, update: {}, create: { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'Dumbbell', image: 'https://images.unsplash.com/photo-1461896836934-bd45ba5b363f?w=400&auto=format', sortOrder: 5 } })
   await prisma.category.upsert({ where: { slug: 'books-stationery' }, update: {}, create: { name: 'Books & Stationery', slug: 'books-stationery', icon: 'BookOpen', image: 'https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&auto=format', sortOrder: 6 } })
   const gaming = await prisma.category.upsert({ where: { slug: 'gaming' }, update: {}, create: { name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&auto=format', sortOrder: 7 } })
-  await prisma.category.upsert({ where: { slug: 'baby-kids' }, update: {}, create: { name: 'Baby & Kids', slug: 'baby-kids', icon: 'Baby', image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&auto=format', sortOrder: 8 } })
+  const toysCollectibles = await prisma.category.upsert({ where: { slug: 'toys-collectibles' }, update: {}, create: { name: 'Toys & Collectibles', slug: 'toys-collectibles', icon: 'ToyBrick', image: '/assets/categories/gaming.jpg', sortOrder: 8 } })
+  await prisma.category.upsert({ where: { slug: 'hot-wheels' }, update: {}, create: { name: 'Hot Wheels', slug: 'hot-wheels', parentId: toysCollectibles.id, sortOrder: 1 } })
+  await prisma.category.upsert({ where: { slug: 'lego-sets' }, update: {}, create: { name: 'LEGO Sets', slug: 'lego-sets', parentId: toysCollectibles.id, sortOrder: 2 } })
+  await prisma.category.upsert({ where: { slug: 'diecast-models' }, update: {}, create: { name: 'Diecast Models', slug: 'diecast-models', parentId: toysCollectibles.id, sortOrder: 3 } })
+  await prisma.category.upsert({ where: { slug: 'action-figures' }, update: {}, create: { name: 'Action Figures', slug: 'action-figures', parentId: toysCollectibles.id, sortOrder: 4 } })
+  await prisma.category.upsert({ where: { slug: 'collectible-cards' }, update: {}, create: { name: 'Collectible Cards', slug: 'collectible-cards', parentId: toysCollectibles.id, sortOrder: 5 } })
 
   // BRANDS
   const apple = await prisma.brand.upsert({ where: { slug: 'apple' }, update: {}, create: { name: 'Apple', slug: 'apple', logo: 'https://placehold.co/120x60/f5f5f5/333?text=Apple', isFeatured: true, sortOrder: 1 } })

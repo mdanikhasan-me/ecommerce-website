@@ -6,7 +6,8 @@ const CATEGORY_PHOTO_ASSETS: Record<string, string> = {
   'sports-fitness': '/assets/categories/sports-fitness.jpg',
   'books-stationery': '/assets/categories/books-stationery.jpg',
   gaming: '/assets/categories/gaming.jpg',
-  'baby-kids': '/assets/categories/baby-kids.jpg',
+  'toys-collectibles': '/assets/categories/gaming.jpg',
+  'baby-kids': '/assets/categories/gaming.jpg',
 }
 
 type CategoryImageInput = {
