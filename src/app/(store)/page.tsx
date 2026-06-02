@@ -9,6 +9,12 @@ import { ProductCardSkeleton } from '@/frontend/components/product/ProductCard'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
 import { getVisibleCategoryProductCounts } from '@/backend/catalog/category-product-counts'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import {
+  createHomepageDevFallbackData,
+  shouldUseHomepageDevFallbackBeforeDb,
+  shouldUseHomepageDevFallback,
+  warnHomepageDevFallback,
+} from '@/backend/storefront/homepage-dev-fallback'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -34,7 +40,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-async function getHomeData() {
+async function getHomeDataFromDb() {
   const now = new Date()
   const categoriesPromise = db.category.findMany({
     where: { isActive: true, parentId: null },
@@ -109,10 +115,10 @@ async function getHomeData() {
     },
   })
 
-  const categories = await categoriesPromise
-  const categoryProductCountsPromise = getVisibleCategoryProductCounts(categories)
+  const categoryProductCountsPromise = categoriesPromise.then((categories) => getVisibleCategoryProductCounts(categories))
 
   const [
+    categories,
     banners,
     categoryProductCounts,
     featured,
@@ -122,6 +128,7 @@ async function getHomeData() {
     bestSellersPinned,
     flashSale,
   ] = await Promise.all([
+    categoriesPromise,
     bannersPromise,
     categoryProductCountsPromise,
     featuredPromise,
@@ -144,6 +151,24 @@ async function getHomeData() {
     newArrivalsPinned,
     bestSellersPinned,
     flashSale,
+  }
+}
+
+async function getHomeData() {
+  if (await shouldUseHomepageDevFallbackBeforeDb()) {
+    warnHomepageDevFallback()
+    return createHomepageDevFallbackData()
+  }
+
+  try {
+    return await getHomeDataFromDb()
+  } catch (error) {
+    if (shouldUseHomepageDevFallback(error)) {
+      warnHomepageDevFallback()
+      return createHomepageDevFallbackData()
+    }
+
+    throw error
   }
 }
 
