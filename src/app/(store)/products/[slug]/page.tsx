@@ -5,6 +5,10 @@ import { Suspense, cache } from 'react'
 
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import {
+  getBuyerVisibleProductWhere,
+  getPublicProductDetailWhere,
+} from '@/backend/catalog/product-visibility'
 import { type ReviewAccessState } from '@/backend/reviews'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
@@ -14,6 +18,7 @@ import {
   generateBreadcrumbJsonLd,
   generateProductJsonLd,
   generateProductMetadata,
+  noIndexNoFollowRobots,
 } from '@/backend/seo'
 
 interface Props {
@@ -23,8 +28,8 @@ interface Props {
 export const revalidate = 60
 
 const getProduct = cache(async (slug: string) => {
-  return db.product.findUnique({
-    where: { slug, isActive: true },
+  return db.product.findFirst({
+    where: getPublicProductDetailWhere(slug),
     include: {
       images: {
         select: { url: true, alt: true, isPrimary: true, sortOrder: true },
@@ -72,11 +77,10 @@ const getReviewDistribution = cache(async (productId: string) => {
 
 const getRelatedProducts = cache(async (categoryId: string, productId: string) => {
   return db.product.findMany({
-    where: {
+    where: getBuyerVisibleProductWhere({
       categoryId,
       id: { not: productId },
-      isActive: true,
-    },
+    }),
     take: 4,
     include: {
       images: { where: { isPrimary: true }, take: 1 },
@@ -89,7 +93,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await getProduct(slug)
 
-  if (!product) return { title: 'Product Not Found' }
+  if (!product) return { title: 'Product Not Found', robots: noIndexNoFollowRobots }
 
   return generateProductMetadata({
     name: product.name,

@@ -8,14 +8,17 @@ import { SortSelect } from '@/frontend/components/search/SortSelect'
 import {
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
+  orderProductsById,
   parsePriceParam,
-  sortProductsByEffectivePrice,
+  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import {
   JsonLd,
   generateBreadcrumbJsonLd,
   generateCategoryMetadata,
   generateItemListJsonLd,
+  hasFacetedCategoryParams,
 } from '@/backend/seo'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
@@ -45,16 +48,17 @@ const SORT_OPTIONS = [
   { value: 'rating', label: 'Highest Rated' },
 ]
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
+  const resolvedSearchParams = (await searchParams) ?? {}
   const category = await db.category.findUnique({
-    where: { slug },
+    where: { slug, isActive: true },
     select: { id: true, name: true, slug: true, description: true },
   })
-  if (!category) return { title: 'Category Not Found' }
+  if (!category) return { title: 'Category Not Found', robots: { index: false, follow: false } }
 
   const productCount = await db.product.count({
-    where: { categoryId: category.id, isActive: true },
+    where: getBuyerVisibleProductWhere({ categoryId: category.id }),
   })
 
   return generateCategoryMetadata({
@@ -62,6 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     slug: category.slug,
     description: category.description,
     productCount,
+    indexable: !hasFacetedCategoryParams(resolvedSearchParams),
   })
 }
 
@@ -86,7 +91,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   // Include all direct child categories unless a child category filter is selected.
   const categoryIds = selectedChild ? [selectedChild.id] : [category.id, ...category.children.map((c) => c.id)]
 
-  const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true, categoryId: { in: categoryIds } }]
+  const andClauses: Prisma.ProductWhereInput[] = [
+    getBuyerVisibleProductWhere({ categoryId: { in: categoryIds } }),
+  ]
   const minPrice = parsePriceParam(resolvedSearchParams.minPrice)
   const maxPrice = parsePriceParam(resolvedSearchParams.maxPrice)
   const rating = parseNumberParam(resolvedSearchParams.rating)
@@ -112,8 +119,18 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         db.product.findMany({
           where,
           orderBy: { id: 'asc' },
-          include: productInclude,
-        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit)),
+          select: { id: true, basePrice: true, salePrice: true },
+        }).then(async (items) => {
+          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
+          if (pageIds.length === 0) return []
+
+          const pageProducts = await db.product.findMany({
+            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
+            include: productInclude,
+          })
+
+          return orderProductsById(pageProducts, pageIds)
+        }),
         db.product.count({ where }),
       ])
     : await Promise.all([

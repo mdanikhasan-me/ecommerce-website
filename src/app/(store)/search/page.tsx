@@ -6,9 +6,12 @@ import { SortSelect } from '@/frontend/components/search/SortSelect'
 import {
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
+  orderProductsById,
   parsePriceParam,
-  sortProductsByEffectivePrice,
+  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { generateSearchMetadata } from '@/backend/seo'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
 
@@ -23,11 +26,7 @@ interface Props {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = await searchParams
-  const q = params.q
-  return {
-    title: q ? `Search: "${q}"` : 'All Products',
-    description: q ? `Search results for "${q}"` : 'Browse all products',
-  }
+  return generateSearchMetadata(params)
 }
 
 /**
@@ -54,7 +53,7 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
   ]
 
   const matchedCategories = await db.category.findMany({
-    where: { OR: catNameOR },
+    where: { isActive: true, OR: catNameOR },
     select: { id: true },
   })
   const categoryIds = matchedCategories.map((c) => c.id)
@@ -93,7 +92,7 @@ async function getSearchResults(params: SearchParams) {
   const limit = 24
   const skip = (page - 1) * limit
 
-  const andClauses: Prisma.ProductWhereInput[] = [{ isActive: true }]
+  const andClauses: Prisma.ProductWhereInput[] = [getBuyerVisibleProductWhere()]
 
   // Text search; resolved to direct ID lookups
   if (params.q?.trim()) {
@@ -129,8 +128,18 @@ async function getSearchResults(params: SearchParams) {
       ? db.product.findMany({
           where,
           orderBy: { id: 'asc' },
-          include: productInclude,
-        }).then((items) => sortProductsByEffectivePrice(items, effectivePriceSort).slice(skip, skip + limit))
+          select: { id: true, basePrice: true, salePrice: true },
+        }).then(async (items) => {
+          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
+          if (pageIds.length === 0) return []
+
+          const pageProducts = await db.product.findMany({
+            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
+            include: productInclude,
+          })
+
+          return orderProductsById(pageProducts, pageIds)
+        })
       : db.product.findMany({
           where,
           orderBy,

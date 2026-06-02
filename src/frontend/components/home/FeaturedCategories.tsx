@@ -11,7 +11,12 @@ interface Category {
   icon?: string | null
   image?: string | null
   description?: string | null
+  productCount: number
   children: { id: string; name: string; slug: string }[]
+}
+
+function formatProductCount(count: number) {
+  return `${count} ${count === 1 ? 'product' : 'products'}`
 }
 
 export function FeaturedCategories({ categories }: { categories: Category[] }) {
@@ -73,9 +78,14 @@ function MobileCategoryTile({ category }: { category: Category }) {
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.04)_8%,rgba(15,23,42,0.14)_50%,rgba(15,23,42,0.78)_100%)]" />
 
       <div className="relative z-10 mt-auto flex items-end justify-between gap-2 p-3.5">
-        <p className="max-w-[72%] text-[1.05rem] font-semibold leading-5 text-white drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
-          {category.name}
-        </p>
+        <div className="max-w-[72%]">
+          <p className="text-[1.05rem] font-semibold leading-5 text-white drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
+            {category.name}
+          </p>
+          <p className="mt-0.5 text-[0.72rem] font-medium leading-4 text-white/85 drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
+            {formatProductCount(category.productCount)}
+          </p>
+        </div>
 
         <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)]">
           <ArrowRight className="h-4 w-4" />
@@ -112,9 +122,14 @@ function CategoryTile({ category }: { category: Category }) {
       <div className={`absolute inset-x-0 top-0 h-24 opacity-60 ${config?.glowClass ?? ''}`} />
 
       <div className="relative z-10 mt-auto flex items-end justify-between gap-3 p-4">
-        <p className="max-w-[72%] text-[1.22rem] font-semibold leading-6 text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
-          {category.name}
-        </p>
+        <div className="max-w-[72%]">
+          <p className="text-[1.22rem] font-semibold leading-6 text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+            {category.name}
+          </p>
+          <p className="mt-1 text-[0.78rem] font-medium leading-4 text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+            {formatProductCount(category.productCount)}
+          </p>
+        </div>
 
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
           <ArrowRight className="h-4 w-4" />

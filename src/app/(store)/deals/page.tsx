@@ -1,5 +1,7 @@
 import { db } from '@/backend/database'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { generatePageMetadata } from '@/backend/seo'
+import { logSecurityEvent } from '@/backend/security/security-log'
 import { FlashSaleSection } from '@/frontend/components/home/FlashSaleSection'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { Zap } from 'lucide-react'
@@ -18,6 +20,9 @@ export default async function DealsPage() {
       where: { isActive: true, endsAt: { gt: new Date() }, startsAt: { lte: new Date() } },
       include: {
         items: {
+          where: {
+            product: getBuyerVisibleProductWhere(),
+          },
           include: {
             product: {
               include: {
@@ -30,7 +35,7 @@ export default async function DealsPage() {
       },
     }),
     db.product.findMany({
-      where: { isActive: true, salePrice: { not: null } },
+      where: getBuyerVisibleProductWhere({ salePrice: { not: null } }),
       orderBy: { soldCount: 'desc' },
       take: 16,
       include: {
@@ -38,8 +43,18 @@ export default async function DealsPage() {
         category: { select: { name: true, slug: true } },
       },
     }),
-  ]).catch((error) => {
-    console.error('Could not load deals page data', error)
+  ]).catch(() => {
+    logSecurityEvent({
+      type: 'server_page_data_load_failed',
+      severity: 'error',
+      route: '/deals',
+      statusCode: 200,
+      errorCode: 'deals_page_data_load_failed',
+      metadata: {
+        feature: 'deals',
+        fallback: 'empty_deals',
+      },
+    })
     return [null, []] as const
   })
 

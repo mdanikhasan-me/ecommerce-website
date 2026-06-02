@@ -36,6 +36,12 @@ export function buildEffectivePriceWhere(
 
 export type EffectivePriceSortDirection = 'asc' | 'desc'
 
+type EffectivePriceProduct = {
+  id: string
+  basePrice: number
+  salePrice?: number | null
+}
+
 export function getEffectivePriceSortDirection(
   sort: string | null | undefined,
 ): EffectivePriceSortDirection | null {
@@ -45,7 +51,7 @@ export function getEffectivePriceSortDirection(
 }
 
 export function sortProductsByEffectivePrice<
-  T extends { id: string; basePrice: number; salePrice?: number | null },
+  T extends EffectivePriceProduct,
 >(products: T[], direction: EffectivePriceSortDirection): T[] {
   const multiplier = direction === 'asc' ? 1 : -1
 
@@ -56,5 +62,26 @@ export function sortProductsByEffectivePrice<
 
     if (priceDiff !== 0) return priceDiff
     return a.id.localeCompare(b.id)
+  })
+}
+
+export function selectEffectivePricePage<T extends EffectivePriceProduct>(
+  products: T[],
+  direction: EffectivePriceSortDirection,
+  skip: number,
+  take: number,
+): T[] {
+  return sortProductsByEffectivePrice(products, direction).slice(skip, skip + take)
+}
+
+export function orderProductsById<T extends { id: string }>(
+  products: T[],
+  orderedIds: string[],
+): T[] {
+  const productById = new Map(products.map((product) => [product.id, product]))
+
+  return orderedIds.flatMap((id) => {
+    const product = productById.get(id)
+    return product ? [product] : []
   })
 }
