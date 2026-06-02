@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { getCspReportOnlyHeader } from '@/backend/security/csp'
 
 const SESSION_COOKIE_PREFIXES = [
   'authjs.session-token',
@@ -7,6 +8,15 @@ const SESSION_COOKIE_PREFIXES = [
   'next-auth.session-token',
   '__Secure-next-auth.session-token',
 ]
+
+function withOptionalCspReportOnly(req: NextRequest, response: NextResponse) {
+  const cspHeader = getCspReportOnlyHeader(req.nextUrl.pathname)
+  if (cspHeader) {
+    response.headers.set(cspHeader.key, cspHeader.value)
+  }
+
+  return response
+}
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -16,22 +26,27 @@ export default function middleware(req: NextRequest) {
 
   if (pathname.startsWith('/admin')) {
     if (!hasSessionCookie) {
-      return NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url))
+      return withOptionalCspReportOnly(
+        req,
+        NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)),
+      )
     }
   }
 
   if (pathname.startsWith('/account')) {
     if (!hasSessionCookie) {
-      return NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url))
+      return withOptionalCspReportOnly(
+        req,
+        NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)),
+      )
     }
   }
 
-  return NextResponse.next()
+  return withOptionalCspReportOnly(req, NextResponse.next())
 }
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/account/:path*',
+    '/((?!_next/static|_next/image|assets/|uploads/|favicon.ico|apple-touch-icon.png).*)',
   ],
 }
