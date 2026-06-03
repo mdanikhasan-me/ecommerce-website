@@ -1,13 +1,18 @@
 export const DEFAULT_SEARCH_PAGE = 1
 export const MAX_SEARCH_PAGE = 1000
+export const DEFAULT_CATALOG_LIMIT = 24
+export const MAX_CATALOG_LIMIT = 50
 export const MAX_SEARCH_QUERY_LENGTH = 120
 export const MAX_SEARCH_SLUG_LENGTH = 80
 export const MAX_SEARCH_PRICE = 10_000_000
+export const MAX_PRODUCT_ID_LENGTH = 80
+export const MAX_PRODUCT_IDS = 50
 
 export const SEARCH_SORT_OPTIONS = ['popular', 'newest', 'price_asc', 'price_desc', 'rating'] as const
 export type SearchSort = (typeof SEARCH_SORT_OPTIONS)[number]
 
 export type RawSearchParams = Record<string, string | string[] | undefined>
+type ParamSource = RawSearchParams | URLSearchParams
 
 export type SanitizedSearchParams = Record<string, string | undefined> & {
   q?: string
@@ -34,11 +39,33 @@ export type ParsedSearchParams = {
   queryParams: SanitizedSearchParams
 }
 
+export type ParsedCategorySearchParams = {
+  category?: string
+  minPrice: number | null
+  maxPrice: number | null
+  rating: number | null
+  inStock: boolean
+  sort: SearchSort
+  page: number
+  queryParams: SanitizedSearchParams
+}
+
+export type ParsedProductApiParams = ParsedSearchParams & {
+  ids: string[]
+  limit: number
+  isNew: boolean
+}
+
 const SEARCH_SORT_SET = new Set<string>(SEARCH_SORT_OPTIONS)
 
-function firstParam(value: string | string[] | undefined): string | undefined {
+export function firstParam(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0]
   return value
+}
+
+function readParam(params: ParamSource, key: string): string | undefined {
+  if (params instanceof URLSearchParams) return params.get(key) ?? undefined
+  return firstParam(params[key])
 }
 
 function normalizeSearchText(value: string | undefined): string | undefined {
@@ -66,6 +93,15 @@ function normalizePage(value: string | undefined): number {
   return Math.min(parsed, MAX_SEARCH_PAGE)
 }
 
+function normalizeLimit(value: string | undefined): number {
+  const normalized = value?.trim()
+  if (!normalized || !/^\d+$/.test(normalized)) return DEFAULT_CATALOG_LIMIT
+
+  const parsed = Number(normalized)
+  if (!Number.isSafeInteger(parsed) || parsed < 1) return DEFAULT_CATALOG_LIMIT
+  return Math.min(parsed, MAX_CATALOG_LIMIT)
+}
+
 function normalizePrice(value: string | undefined): number | null {
   const normalized = value?.trim()
   if (!normalized) return null
@@ -89,20 +125,33 @@ function normalizeSort(value: string | undefined): SearchSort {
   return normalized && SEARCH_SORT_SET.has(normalized) ? (normalized as SearchSort) : 'popular'
 }
 
+function normalizeIds(value: string | undefined): string[] {
+  if (!value) return []
+
+  return Array.from(
+    new Set(
+      value
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0 && id.length <= MAX_PRODUCT_ID_LENGTH && /^[A-Za-z0-9_-]+$/.test(id)),
+    ),
+  ).slice(0, MAX_PRODUCT_IDS)
+}
+
 function stringParam(value: number | null): string | undefined {
   return value === null ? undefined : String(value)
 }
 
-export function parseSearchParams(params: RawSearchParams = {}): ParsedSearchParams {
-  const q = normalizeSearchText(firstParam(params.q))
-  const category = normalizeSlug(firstParam(params.category))
-  const minPrice = normalizePrice(firstParam(params.minPrice))
-  const maxPrice = normalizePrice(firstParam(params.maxPrice))
-  const rating = normalizeRating(firstParam(params.rating))
-  const inStock = firstParam(params.inStock)?.trim() === 'true'
-  const sort = normalizeSort(firstParam(params.sort))
-  const page = normalizePage(firstParam(params.page))
-  const featured = firstParam(params.featured)?.trim() === 'true'
+export function parseSearchParams(params: ParamSource = {}): ParsedSearchParams {
+  const q = normalizeSearchText(readParam(params, 'q'))
+  const category = normalizeSlug(readParam(params, 'category'))
+  const minPrice = normalizePrice(readParam(params, 'minPrice'))
+  const maxPrice = normalizePrice(readParam(params, 'maxPrice'))
+  const rating = normalizeRating(readParam(params, 'rating'))
+  const inStock = readParam(params, 'inStock')?.trim() === 'true'
+  const sort = normalizeSort(readParam(params, 'sort'))
+  const page = normalizePage(readParam(params, 'page'))
+  const featured = readParam(params, 'featured')?.trim() === 'true'
 
   const queryParams: SanitizedSearchParams = {}
   if (q) queryParams.q = q
@@ -126,5 +175,43 @@ export function parseSearchParams(params: RawSearchParams = {}): ParsedSearchPar
     page,
     featured,
     queryParams,
+  }
+}
+
+export function parseCategorySearchParams(params: RawSearchParams = {}): ParsedCategorySearchParams {
+  const parsed = parseSearchParams(params)
+  const queryParams: SanitizedSearchParams = {}
+
+  if (parsed.category) queryParams.category = parsed.category
+  if (parsed.minPrice !== null) queryParams.minPrice = stringParam(parsed.minPrice)
+  if (parsed.maxPrice !== null) queryParams.maxPrice = stringParam(parsed.maxPrice)
+  if (parsed.rating !== null) queryParams.rating = stringParam(parsed.rating)
+  if (parsed.inStock) queryParams.inStock = 'true'
+  if (parsed.sort !== 'popular') queryParams.sort = parsed.sort
+  if (parsed.page !== DEFAULT_SEARCH_PAGE) queryParams.page = String(parsed.page)
+
+  return {
+    category: parsed.category,
+    minPrice: parsed.minPrice,
+    maxPrice: parsed.maxPrice,
+    rating: parsed.rating,
+    inStock: parsed.inStock,
+    sort: parsed.sort,
+    page: parsed.page,
+    queryParams,
+  }
+}
+
+export function parseProductApiParams(params: ParamSource): ParsedProductApiParams {
+  const parsed = parseSearchParams(params)
+  const ids = normalizeIds(readParam(params, 'ids'))
+  const limit = normalizeLimit(readParam(params, 'limit'))
+  const isNew = readParam(params, 'new')?.trim() === 'true'
+
+  return {
+    ...parsed,
+    ids,
+    limit,
+    isNew,
   }
 }
