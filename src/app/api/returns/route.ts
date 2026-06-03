@@ -5,12 +5,7 @@ import { db } from '@/backend/database'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { parseBuyerReturnRequestPayload } from '@/backend/orders/buyer-validation'
-
-const RETURN_WINDOW_DAYS = 7
-
-function getReturnDeadline(deliveredAt: Date) {
-  return new Date(deliveredAt.getTime() + RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000)
-}
+import { createBuyerReturnRequest, type BuyerReturnDb } from '@/backend/orders/buyer-return-request'
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,64 +29,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
 
-    const order = await db.order.findFirst({
-      where: { id: parsed.data.orderId, userId: session.user.id },
-      include: {
-        returnRequest: true,
-        statusHistory: {
-          where: { status: 'DELIVERED' },
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
-      },
+    const result = await createBuyerReturnRequest({
+      database: db as unknown as BuyerReturnDb,
+      userId: session.user.id,
+      payload: parsed.data,
+      revalidate: revalidatePath,
     })
 
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
-    if (order.returnRequest) {
-      return NextResponse.json({ error: 'A return request already exists for this order' }, { status: 409 })
-    }
-
-    const deliveredAt = order.deliveredAt ?? order.statusHistory[0]?.createdAt
-    if (order.status !== 'DELIVERED' || !deliveredAt) {
-      return NextResponse.json({ error: 'Returns are available only after delivery' }, { status: 403 })
-    }
-
-    if (Date.now() > getReturnDeadline(deliveredAt).getTime()) {
-      return NextResponse.json({ error: 'The 7 day return window has closed' }, { status: 403 })
-    }
-
-    const request = await db.returnRequest.create({
-      data: {
-        orderId: order.id,
-        userId: session.user.id,
-        reason: parsed.data.reason,
-        description: parsed.data.description,
-        images: [],
-      },
-    })
-
-    await db.order.update({
-      where: { id: order.id },
-      data: {
-        status: 'RETURN_REQUESTED',
-        statusHistory: {
-          create: {
-            status: 'RETURN_REQUESTED',
-            note: 'Return requested by customer',
-          },
-        },
-      },
-    })
-
-    revalidatePath(`/account/orders/${order.id}`)
-    revalidatePath('/account/orders')
-    revalidatePath('/admin/returns')
-    revalidatePath('/admin/orders')
-
-    return NextResponse.json({ request }, { status: 201 })
+    return NextResponse.json(result.payload, { status: 201 })
   } catch {
     logSecurityEvent({
       type: 'server_error',
