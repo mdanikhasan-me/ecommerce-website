@@ -234,10 +234,31 @@ describe('admin report export sensitivity metadata', () => {
     const componentSource = adminReportExportLinkSource()
 
     assert.match(componentSource, /^'use client'/)
+    assert.match(componentSource, /href=\{href\}/)
+    assert.match(componentSource, /aria-label=\{`\$\{label\}: \$\{reportSensitivityLabel\}`\}/)
+    assert.match(componentSource, /title=\{warningLabel\}/)
     assert.match(componentSource, /window\.confirm\(confirmationMessage\)/)
     assert.match(componentSource, /event\.preventDefault\(\)/)
     assert.match(componentSource, /buildAdminReportExportConfirmationMessage/)
     assert.doesNotMatch(componentSource, /fetch\(/)
     assert.doesNotMatch(componentSource, /buildAdminReportCsv|getAdminReportData|db\./)
+  })
+
+  it('keeps confirmation copy metadata-driven without assuming CSV payload contents', () => {
+    const componentSource = adminReportExportLinkSource()
+
+    assert.match(componentSource, /label,/)
+    assert.match(componentSource, /reportSensitivityLabel,/)
+    assert.match(componentSource, /warningLabel,/)
+    assert.match(componentSource, /Only continue if you are prepared to handle the export securely\./)
+    assert.doesNotMatch(componentSource, /orderNumber|paymentStatus|stockQuantity|soldCount/)
+  })
+
+  it('keeps the confirmation guard as navigation-only UI, not route enforcement', () => {
+    const componentSource = adminReportExportLinkSource()
+
+    assert.match(componentSource, /<Link/)
+    assert.doesNotMatch(componentSource, /router\.push|redirect\(|NextResponse|Response\.json/)
+    assert.doesNotMatch(componentSource, /permission|role|session|auth/)
   })
 })

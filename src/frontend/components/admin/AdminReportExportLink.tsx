@@ -38,6 +38,8 @@ export function AdminReportExportLink({
     <Link
       href={href}
       className="btn-outline text-xs"
+      aria-label={`${label}: ${reportSensitivityLabel}`}
+      title={warningLabel}
       onClick={(event) => {
         if (!window.confirm(confirmationMessage)) {
           event.preventDefault()
