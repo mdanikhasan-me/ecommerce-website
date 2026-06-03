@@ -7,26 +7,21 @@ import {
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
   orderProductsById,
-  parsePriceParam,
   selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { parseSearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
 import { generateSearchMetadata } from '@/backend/seo'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
 
-type SearchParams = {
-  q?: string; category?: string; minPrice?: string; maxPrice?: string;
-  rating?: string; inStock?: string; sort?: string; page?: string; featured?: string;
-}
-
 interface Props {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<RawSearchParams>
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const params = await searchParams
-  return generateSearchMetadata(params)
+  const params = parseSearchParams(await searchParams)
+  return generateSearchMetadata(params.queryParams)
 }
 
 /**
@@ -87,29 +82,30 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
   return { OR: productOR }
 }
 
-async function getSearchResults(params: SearchParams) {
-  const page = Math.max(1, parseInt(params.page ?? '1'))
+async function getSearchResults(rawParams: RawSearchParams) {
+  const params = parseSearchParams(rawParams)
+  const page = params.page
   const limit = 24
   const skip = (page - 1) * limit
 
   const andClauses: Prisma.ProductWhereInput[] = [getBuyerVisibleProductWhere()]
 
   // Text search; resolved to direct ID lookups
-  if (params.q?.trim()) {
-    const textWhere = await resolveTextWhere(params.q.trim())
+  if (params.q) {
+    const textWhere = await resolveTextWhere(params.q)
     andClauses.push(textWhere)
   }
 
   // Hard filters applied as additional AND clauses
   if (params.category) andClauses.push({ category: { slug: params.category } })
   const effectivePriceWhere = buildEffectivePriceWhere(
-    parsePriceParam(params.minPrice),
-    parsePriceParam(params.maxPrice),
+    params.minPrice,
+    params.maxPrice,
   )
   if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
-  if (params.inStock === 'true') andClauses.push({ stockQuantity: { gt: 0 } })
-  if (params.rating) andClauses.push({ rating: { gte: parseFloat(params.rating) } })
-  if (params.featured === 'true') andClauses.push({ isFeatured: true })
+  if (params.inStock) andClauses.push({ stockQuantity: { gt: 0 } })
+  if (params.rating !== null) andClauses.push({ rating: { gte: params.rating } })
+  if (params.featured) andClauses.push({ isFeatured: true })
 
   const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
   const effectivePriceSort = getEffectivePriceSortDirection(params.sort)
@@ -151,12 +147,12 @@ async function getSearchResults(params: SearchParams) {
     db.category.findMany({ where: { isActive: true }, select: { name: true, slug: true }, orderBy: { name: 'asc' } }),
   ])
 
-  return { products, total, categories, page, totalPages: Math.ceil(total / limit) }
+  return { products, total, categories, page, totalPages: Math.ceil(total / limit), params }
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const params = await searchParams
-  const { products, total, categories, page, totalPages } = await getSearchResults(params)
+  const rawParams = await searchParams
+  const { products, total, categories, page, totalPages, params } = await getSearchResults(rawParams)
 
   const SORT_OPTIONS = [
     { value: 'popular', label: 'Most Popular' },
@@ -184,16 +180,16 @@ export default async function SearchPage({ searchParams }: Props) {
 
       <div className="flex gap-8">
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <SearchFiltersPanel categories={categories} searchParams={params} />
+          <SearchFiltersPanel categories={categories} searchParams={params.queryParams} />
         </aside>
 
         <div className="flex-1 min-w-0">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">{total} results</p>
             <div className="flex items-center gap-2">
-              <MobileSearchFilters categories={categories} searchParams={params} />
+              <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
               <span className="text-sm font-medium">Sort by:</span>
-              <SortSelect current={params.sort ?? 'popular'} options={SORT_OPTIONS} />
+              <SortSelect current={params.sort} options={SORT_OPTIONS} />
             </div>
           </div>
 
@@ -214,18 +210,18 @@ export default async function SearchPage({ searchParams }: Props) {
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-10">
                   {page > 1 && (
-                    <PaginationLink href={buildPageUrl(params, page - 1)}>Prev</PaginationLink>
+                    <PaginationLink href={buildPageUrl(params.queryParams, page - 1)}>Prev</PaginationLink>
                   )}
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     const p = Math.max(1, Math.min(page - 2 + i, totalPages - 4 + i))
                     return (
-                      <PaginationLink key={p} href={buildPageUrl(params, p)} active={p === page}>
+                      <PaginationLink key={p} href={buildPageUrl(params.queryParams, p)} active={p === page}>
                         {p}
                       </PaginationLink>
                     )
                   })}
                   {page < totalPages && (
-                    <PaginationLink href={buildPageUrl(params, page + 1)}>Next</PaginationLink>
+                    <PaginationLink href={buildPageUrl(params.queryParams, page + 1)}>Next</PaginationLink>
                   )}
                 </div>
               )}
