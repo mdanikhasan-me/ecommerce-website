@@ -1,5 +1,108 @@
 import { db } from '@/backend/database'
 
+export type AdminReportExportType = 'orders' | 'products' | 'customers'
+
+export type AdminReportFieldSensitivity =
+  | 'non-sensitive-operational'
+  | 'customer-pii'
+  | 'business-sensitive'
+  | 'payment-order-sensitive'
+  | 'unknown-needs-policy'
+
+interface AdminReportExportFieldMetadata {
+  name: string
+  sensitivity: AdminReportFieldSensitivity
+  label: string
+}
+
+interface AdminReportExportMetadata {
+  type: AdminReportExportType
+  label: string
+  reportSensitivityLabel: string
+  permissionLabel: string
+  warningLabel: string
+  containsCustomerPii: boolean
+  containsBusinessSensitiveData: boolean
+  containsPaymentOrOrderSensitiveData: boolean
+  fields: readonly AdminReportExportFieldMetadata[]
+}
+
+export const ADMIN_REPORT_EXPORT_METADATA = {
+  orders: {
+    type: 'orders',
+    label: 'Orders CSV',
+    reportSensitivityLabel: 'Customer and order/payment sensitive',
+    permissionLabel: 'Customer/order export permission recommended',
+    warningLabel: 'Contains customer data plus order and payment-status details.',
+    containsCustomerPii: true,
+    containsBusinessSensitiveData: false,
+    containsPaymentOrOrderSensitiveData: true,
+    fields: [
+      {
+        name: 'orderNumber',
+        sensitivity: 'payment-order-sensitive',
+        label: 'Order identifier',
+      },
+      { name: 'customer', sensitivity: 'customer-pii', label: 'Customer name' },
+      { name: 'email', sensitivity: 'customer-pii', label: 'Customer email' },
+      { name: 'status', sensitivity: 'payment-order-sensitive', label: 'Order status' },
+      {
+        name: 'paymentStatus',
+        sensitivity: 'payment-order-sensitive',
+        label: 'Payment status',
+      },
+      { name: 'total', sensitivity: 'payment-order-sensitive', label: 'Order total' },
+      {
+        name: 'createdAt',
+        sensitivity: 'non-sensitive-operational',
+        label: 'Created timestamp',
+      },
+    ],
+  },
+  products: {
+    type: 'products',
+    label: 'Products CSV',
+    reportSensitivityLabel: 'Business-sensitive inventory and sales data',
+    permissionLabel: 'Catalog/business export permission recommended',
+    warningLabel: 'Contains stock, sales, SKU, and catalog status details.',
+    containsCustomerPii: false,
+    containsBusinessSensitiveData: true,
+    containsPaymentOrOrderSensitiveData: false,
+    fields: [
+      { name: 'name', sensitivity: 'non-sensitive-operational', label: 'Product name' },
+      { name: 'sku', sensitivity: 'unknown-needs-policy', label: 'Product SKU' },
+      { name: 'category', sensitivity: 'non-sensitive-operational', label: 'Category name' },
+      { name: 'stockQuantity', sensitivity: 'business-sensitive', label: 'Stock quantity' },
+      { name: 'soldCount', sensitivity: 'business-sensitive', label: 'Sold count' },
+      { name: 'isActive', sensitivity: 'business-sensitive', label: 'Catalog active status' },
+    ],
+  },
+  customers: {
+    type: 'customers',
+    label: 'Customers CSV',
+    reportSensitivityLabel: 'Highest PII risk customer account export',
+    permissionLabel: 'Customer PII export permission recommended',
+    warningLabel: 'Contains customer identity, contact, account, and activity data.',
+    containsCustomerPii: true,
+    containsBusinessSensitiveData: false,
+    containsPaymentOrOrderSensitiveData: false,
+    fields: [
+      { name: 'name', sensitivity: 'customer-pii', label: 'Customer name' },
+      { name: 'email', sensitivity: 'customer-pii', label: 'Customer email' },
+      { name: 'phone', sensitivity: 'customer-pii', label: 'Customer phone' },
+      { name: 'role', sensitivity: 'unknown-needs-policy', label: 'Account role' },
+      { name: 'isActive', sensitivity: 'unknown-needs-policy', label: 'Account active status' },
+      { name: 'orders', sensitivity: 'customer-pii', label: 'Order activity count' },
+      { name: 'reviews', sensitivity: 'customer-pii', label: 'Review activity count' },
+      {
+        name: 'createdAt',
+        sensitivity: 'unknown-needs-policy',
+        label: 'Account created timestamp',
+      },
+    ],
+  },
+} satisfies Record<AdminReportExportType, AdminReportExportMetadata>
+
 export function parseAdminReportRange(from?: string | null, to?: string | null) {
   const now = new Date()
   const fallbackFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
@@ -146,7 +249,7 @@ function buildCsv(rows: Array<Record<string, unknown>>) {
 }
 
 export async function buildAdminReportCsv(
-  type: 'orders' | 'products' | 'customers',
+  type: AdminReportExportType,
   range: { from: Date; to: Date },
 ) {
   if (type === 'orders') {
