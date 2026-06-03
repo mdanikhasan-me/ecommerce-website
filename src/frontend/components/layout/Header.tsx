@@ -86,6 +86,7 @@ export function Header() {
   const { getItemCount, openCart } = useCartStore()
   const { items: compareItems } = useCompareStore()
   const searchRef = useRef<HTMLDivElement>(null)
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
   const cartCount = mounted ? getItemCount() : 0
   const compareCount = mounted ? compareItems.length : 0
 
@@ -103,6 +104,24 @@ export function Header() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+
+      setShowSuggestions(false)
+      setHoveredCategory(null)
+
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+        setExpandedMobileCategory(null)
+        mobileMenuButtonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMobileMenuOpen])
 
   useEffect(() => {
     const query = searchQuery.trim()
@@ -347,6 +366,7 @@ export function Header() {
               )}
 
               <button
+                ref={mobileMenuButtonRef}
                 type="button"
                 aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}

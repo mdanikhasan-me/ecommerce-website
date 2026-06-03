@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { AdminHeader } from '@/frontend/components/admin/AdminHeader'
 import { AdminSidebar } from '@/frontend/components/admin/AdminSidebar'
@@ -13,6 +13,17 @@ type AdminShellProps = {
 
 export function AdminShell({ user, unreadCount, children }: AdminShellProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isMenuOpen) return
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMenuOpen])
 
   return (
     <div className="flex h-screen overflow-hidden bg-secondary">

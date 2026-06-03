@@ -174,7 +174,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['samsung', 'galaxy', 'android', 'flagship', 's-pen'],
       rating: 4.7, reviewCount: 98, soldCount: 67,
-      imageUrl: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=800&auto=format',
+      imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format',
       specifications: [
         { group: 'Display', name: 'Screen Size', value: '6.8 inches' },
         { group: 'Display', name: 'Technology', value: 'Dynamic AMOLED 2X, 120Hz' },
@@ -384,7 +384,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['tablet', 'samsung', 'android', 's-pen', 'flagship'],
       rating: 4.7, reviewCount: 143, soldCount: 78,
-      imageUrl: 'https://images.unsplash.com/photo-1673841464843-af1c5c8b8c54?w=800&auto=format',
+      imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format',
     },
     {
       sku: 'XIA-REDMI-NOTE13PRO', name: 'Xiaomi Redmi Note 13 Pro 256GB', slug: 'xiaomi-redmi-note-13-pro-256gb',
@@ -461,7 +461,7 @@ async function main() {
       {
         title: 'Galaxy S24 Ultra',
         subtitle: 'Galaxy AI is here. Experience the future.',
-        imageUrl: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=1600&auto=format',
+        imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=1600&auto=format',
         linkUrl: '/products/samsung-galaxy-s24-ultra-256gb',
         position: 'hero',
         sortOrder: 2,

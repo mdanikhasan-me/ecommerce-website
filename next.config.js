@@ -40,6 +40,7 @@ const nextConfig = {
     ],
     // Improve image quality and format support
     formats: ['image/webp', 'image/avif'],
+    qualities: [75, 82, 84, 90, 92],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Optimize caching
