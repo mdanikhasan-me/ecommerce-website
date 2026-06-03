@@ -29,6 +29,13 @@ describe('post-Flash runtime stability config', () => {
   it('allows the image qualities used by active storefront components', () => {
     assert.deepEqual(nextConfig.images?.qualities, [75, 82, 84, 90, 92])
   })
+
+  it('keeps split hero images from advertising hidden variants as full viewport', () => {
+    const source = readFileSync(join(process.cwd(), 'src/frontend/components/home/HeroBanner.tsx'), 'utf8')
+
+    assert.match(source, /sizes="\(max-width: 639px\) 100vw, 0px"/)
+    assert.match(source, /sizes="\(max-width: 639px\) 0px, 100vw"/)
+  })
 })
 
 describe('known broken seeded image URLs', () => {

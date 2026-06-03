@@ -88,7 +88,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 'object-cover transition-all duration-700 sm:hidden',
                 isTransitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100'
               )}
-              sizes="100vw"
+              sizes="(max-width: 639px) 100vw, 0px"
             />
           ) : null}
           {hasDesktopImage ? (
@@ -103,7 +103,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 'hidden object-cover transition-all duration-700 sm:block',
                 isTransitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100'
               )}
-              sizes="100vw"
+              sizes="(max-width: 639px) 0px, 100vw"
             />
           ) : null}
 
