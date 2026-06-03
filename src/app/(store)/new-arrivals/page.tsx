@@ -12,6 +12,7 @@ export const metadata: Metadata = generatePageMetadata(
   '/new-arrivals',
 )
 export const revalidate = 300
+const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw'
 
 export default async function NewArrivalsPage() {
   const products = await db.product.findMany({
@@ -53,7 +54,14 @@ export default async function NewArrivalsPage() {
         <div className="text-center py-20 text-muted-foreground">No new arrivals yet. Check back soon!</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {products.map((p) => <ProductCard key={p.id} product={p} />)}
+          {products.map((p, index) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              priority={index === 0}
+              imageSizes={NEW_ARRIVAL_IMAGE_SIZES}
+            />
+          ))}
         </div>
       )}
     </div>

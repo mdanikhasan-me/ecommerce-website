@@ -19,6 +19,8 @@ interface Props {
   searchParams: Promise<RawSearchParams>
 }
 
+const SEARCH_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 26vw, 20vw'
+
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = parseSearchParams(await searchParams)
   return generateSearchMetadata(params.queryParams)
@@ -202,8 +204,13 @@ export default async function SearchPage({ searchParams }: Props) {
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {products.map((product, index) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    priority={index === 0}
+                    imageSizes={SEARCH_PRODUCT_IMAGE_SIZES}
+                  />
                 ))}
               </div>
 

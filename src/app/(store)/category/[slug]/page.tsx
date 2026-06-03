@@ -37,6 +37,7 @@ const SORT_OPTIONS = [
   { value: 'price_desc', label: 'Price: High to Low' },
   { value: 'rating', label: 'Highest Rated' },
 ]
+const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 26vw, 20vw'
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -225,7 +226,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                {products.map((p) => <ProductCard key={p.id} product={p} />)}
+                {products.map((p, index) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    priority={index === 0}
+                    imageSizes={CATEGORY_PRODUCT_IMAGE_SIZES}
+                  />
+                ))}
               </div>
 
               {totalPages > 1 && (

@@ -13,9 +13,19 @@ interface ProductCardProps {
   product: ProductCardData
   className?: string
   layout?: 'grid' | 'list'
+  priority?: boolean
+  imageSizes?: string
 }
 
-export function ProductCard({ product, className, layout = 'grid' }: ProductCardProps) {
+const DEFAULT_GRID_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+
+export function ProductCard({
+  product,
+  className,
+  layout = 'grid',
+  priority = false,
+  imageSizes = DEFAULT_GRID_IMAGE_SIZES,
+}: ProductCardProps) {
   const router = useRouter()
   const addItem = useCartStore((state) => state.addItem)
   const openCart = useCartStore((state) => state.openCart)
@@ -63,6 +73,7 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
               src={primaryImage}
               alt={product.name}
               fill
+              priority={priority}
               className="object-cover"
               quality={82}
               sizes="112px"
@@ -108,9 +119,10 @@ export function ProductCard({ product, className, layout = 'grid' }: ProductCard
               src={primaryImage}
               alt={product.name}
               fill
+              priority={priority}
               className="object-cover transition-transform duration-700 group-hover:scale-[1.045]"
               quality={84}
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              sizes={imageSizes}
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-muted-foreground">

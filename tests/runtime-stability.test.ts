@@ -11,6 +11,13 @@ import {
   createKnownBrokenImageRepairPlan,
   repairKnownBrokenImageUrls,
 } from '../scripts/repair-known-broken-image-urls.mjs'
+import {
+  DEFAULT_SMOKE_PROBES,
+  createNextSmokeCommand,
+  hasUnsafeApiLeak,
+  isExpectedStatus,
+  parseSmokeArgs,
+} from '../scripts/local-runtime-smoke.mjs'
 
 const require = createRequire(import.meta.url)
 const nextConfig = require('../next.config.js') as {
@@ -35,6 +42,68 @@ describe('post-Flash runtime stability config', () => {
 
     assert.match(source, /sizes="\(max-width: 639px\) 100vw, 0px"/)
     assert.match(source, /sizes="\(max-width: 639px\) 0px, 100vw"/)
+  })
+
+  it('lets public listing pages mark only one product-card image as the LCP candidate', () => {
+    const productCard = readFileSync(join(process.cwd(), 'src/frontend/components/product/ProductCard.tsx'), 'utf8')
+    const categoryPage = readFileSync(join(process.cwd(), 'src/app/(store)/category/[slug]/page.tsx'), 'utf8')
+    const searchPage = readFileSync(join(process.cwd(), 'src/app/(store)/search/page.tsx'), 'utf8')
+    const newArrivalsPage = readFileSync(join(process.cwd(), 'src/app/(store)/new-arrivals/page.tsx'), 'utf8')
+
+    assert.match(productCard, /priority\?: boolean/)
+    assert.match(productCard, /priority=\{priority\}/)
+    assert.match(productCard, /imageSizes\?: string/)
+    assert.match(productCard, /sizes=\{imageSizes\}/)
+    assert.match(categoryPage, /priority=\{index === 0\}/)
+    assert.match(searchPage, /priority=\{index === 0\}/)
+    assert.match(newArrivalsPage, /priority=\{index === 0\}/)
+  })
+})
+
+describe('local runtime smoke helper', () => {
+  it('parses safe local smoke modes and ports', () => {
+    assert.deepEqual(
+      parseSmokeArgs(['--mode', 'start', '--host', '127.0.0.1', '--port', '3111']),
+      {
+        mode: 'start',
+        host: '127.0.0.1',
+        port: 3111,
+        startupTimeoutMs: 90_000,
+        requestTimeoutMs: 20_000,
+      },
+    )
+    assert.throws(() => parseSmokeArgs(['--mode', 'deploy']), /Unsupported smoke mode/)
+    assert.throws(() => parseSmokeArgs(['--port', '0']), /Smoke port/)
+  })
+
+  it('creates direct Next commands for local-only dev and start smoke runs', () => {
+    const command = createNextSmokeCommand({ mode: 'dev', host: '127.0.0.1', port: 3110 })
+
+    assert.equal(command.command, process.execPath)
+    assert.match(command.args[0], /node_modules[\\/]next[\\/]dist[\\/]bin[\\/]next$/)
+    assert.deepEqual(command.args.slice(1), ['dev', '--hostname', '127.0.0.1', '--port', '3110'])
+  })
+
+  it('keeps explicit status contracts and JSON leak detection stable', () => {
+    assert.equal(isExpectedStatus(200, [200]), true)
+    assert.equal(isExpectedStatus(404, [200]), false)
+    assert.equal(isExpectedStatus(503, undefined), false)
+    assert.equal(isExpectedStatus(307, undefined), true)
+
+    assert.equal(hasUnsafeApiLeak('{"error":"Invalid request"}', 'application/json'), false)
+    assert.equal(hasUnsafeApiLeak('{"error":"PrismaClient failed"}', 'application/json'), true)
+    assert.equal(hasUnsafeApiLeak('{"stack":"Error: failed\\n    at route (app/api/x.ts:1:1)"}', 'application/json'), true)
+    assert.equal(hasUnsafeApiLeak('<html>PrismaClient text in HTML</html>', 'text/html'), false)
+  })
+
+  it('covers only safe prelaunch smoke routes and removed Flash endpoints', () => {
+    const paths = DEFAULT_SMOKE_PROBES.map((probe) => probe.path)
+
+    assert.ok(paths.includes('/deals'))
+    assert.ok(paths.includes('/api/admin/flash-sales'))
+    assert.ok(paths.includes('/api/products/bad%24id/view'))
+    assert.ok(paths.includes('/api/returns'))
+    assert.equal(paths.some((path) => path.includes('/api/orders') && path !== '/api/products?page=bad&limit=100000'), false)
   })
 })
 

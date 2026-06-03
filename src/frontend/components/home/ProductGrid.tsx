@@ -10,6 +10,8 @@ interface ProductGridProps {
   viewAllHref?: string
 }
 
+const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw'
+
 export function ProductGrid({ title, subtitle, products, viewAllHref }: ProductGridProps) {
   return (
     <div className="w-full">
@@ -30,7 +32,7 @@ export function ProductGrid({ title, subtitle, products, viewAllHref }: ProductG
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} imageSizes={HOME_PRODUCT_IMAGE_SIZES} />
         ))}
       </div>
     </div>
