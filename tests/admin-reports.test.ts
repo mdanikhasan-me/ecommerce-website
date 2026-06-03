@@ -8,6 +8,13 @@ import {
   escapeCsvValue,
   parseAdminReportRange,
 } from '@/backend/admin/reports'
+import {
+  ADMIN_EXPORT_AUDIT_METHOD,
+  ADMIN_EXPORT_AUDIT_ROUTE,
+  buildAdminExportAuditEvent,
+  isAdminReportExportType,
+} from '@/backend/admin/export-audit-log'
+import { sanitizeSecurityEvent } from '@/backend/security/security-log'
 
 const adminReportsPageSource = () =>
   readFileSync(join(process.cwd(), 'src/app/(admin)/admin/reports/page.tsx'), 'utf8')
@@ -277,5 +284,87 @@ describe('admin report export sensitivity metadata', () => {
     assert.match(guideSource, /future provider\/security decision/)
     assert.match(guideSource, /operational guidance, not legal advice/)
     assert.doesNotMatch(guideSource, /DATABASE_URL|SHADOW_DATABASE_URL|password|token|secret/i)
+  })
+})
+
+describe('admin export audit event helper', () => {
+  it('builds a sanitized no-DB event from static export metadata', () => {
+    const event = buildAdminExportAuditEvent({
+      result: 'success',
+      reportType: 'orders',
+      statusCode: 200,
+      actorRole: 'SUPER_ADMIN',
+      timestamp: '2026-06-04T10:00:00.000Z',
+    })
+
+    assert.equal(event.type, 'admin_export_success')
+    assert.equal(event.timestamp, '2026-06-04T10:00:00.000Z')
+    assert.equal(event.severity, 'info')
+    assert.equal(event.route, ADMIN_EXPORT_AUDIT_ROUTE)
+    assert.equal(event.method, ADMIN_EXPORT_AUDIT_METHOD)
+    assert.equal(event.statusCode, 200)
+    assert.equal(event.userRole, 'SUPER_ADMIN')
+    assert.deepEqual(event.metadata, {
+      result: 'success',
+      reportTypeValid: true,
+      reportType: 'orders',
+      containsCustomerPii: ADMIN_REPORT_EXPORT_METADATA.orders.containsCustomerPii,
+      containsBusinessSensitiveData:
+        ADMIN_REPORT_EXPORT_METADATA.orders.containsBusinessSensitiveData,
+      containsPaymentOrOrderSensitiveData:
+        ADMIN_REPORT_EXPORT_METADATA.orders.containsPaymentOrOrderSensitiveData,
+    })
+
+    const sanitized = sanitizeSecurityEvent(event)
+    assert.equal(sanitized.type, event.type)
+    assert.equal(sanitized.route, event.route)
+    assert.equal(sanitized.method, event.method)
+    assert.equal(sanitized.statusCode, event.statusCode)
+    assert.equal(sanitized.userRole, event.userRole)
+    assert.equal(sanitized.metadata?.reportType, 'orders')
+  })
+
+  it('omits invalid report types and unsupported actor details', () => {
+    const event = buildAdminExportAuditEvent({
+      result: 'blocked',
+      reportType: 'orders?customer=should-not-appear',
+      statusCode: 400,
+      errorCode: 'invalid_export_type',
+      actorRole: 'admin@example.test',
+      timestamp: '2026-06-04T10:00:00.000Z',
+      actorEmail: 'admin@example.test',
+      actorName: 'Admin Person',
+      actorId: 'user_123',
+      orderNumber: 'ORDER-123',
+      csvRow: 'raw,row,data',
+    } as Parameters<typeof buildAdminExportAuditEvent>[0] & Record<string, unknown>)
+
+    assert.equal(event.type, 'admin_export_failure')
+    assert.equal(event.severity, 'warn')
+    assert.equal(event.route, '/api/admin/reports/export')
+    assert.equal(event.statusCode, 400)
+    assert.equal(event.errorCode, 'invalid_export_type')
+    assert.equal(event.userRole, undefined)
+    assert.deepEqual(event.metadata, {
+      result: 'blocked',
+      reportTypeValid: false,
+    })
+
+    const serialized = JSON.stringify(event)
+    assert(!serialized.includes('?'))
+    assert(!serialized.includes('should-not-appear'))
+    assert(!serialized.includes('admin@example.test'))
+    assert(!serialized.includes('Admin Person'))
+    assert(!serialized.includes('user_123'))
+    assert(!serialized.includes('ORDER-123'))
+    assert(!serialized.includes('raw,row,data'))
+  })
+
+  it('accepts only the current report export type enum', () => {
+    assert.equal(isAdminReportExportType('orders'), true)
+    assert.equal(isAdminReportExportType('products'), true)
+    assert.equal(isAdminReportExportType('customers'), true)
+    assert.equal(isAdminReportExportType('returns'), false)
+    assert.equal(isAdminReportExportType('orders?from=2026-01-01'), false)
   })
 })
