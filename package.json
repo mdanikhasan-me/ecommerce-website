@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "test": "tsx --test tests/**/*.test.ts",
+    "admin:password:local": "node scripts/set-local-admin-password.mjs",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
     "db:url:safety": "node scripts/check-db-url-safety.mjs",
