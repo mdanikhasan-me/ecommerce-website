@@ -1,0 +1,10 @@
+# Project-scoped Codex coordination settings for Boilabin.
+#
+# Subagents should be explicitly requested by the user or the task prompt.
+# Prefer read-heavy subagents for Explorer, Guardian, Validator, and Docs Auditor work.
+# Keep one writer only: the coordinator or a single Implementer performs edits.
+# Deeper recursive delegation is intentionally disabled for this one VS Code workflow.
+
+[agents]
+max_threads = 5
+max_depth = 1
