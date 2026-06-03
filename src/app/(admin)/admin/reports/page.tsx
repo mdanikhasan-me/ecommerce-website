@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { TrendingUp, ShoppingBag, Users, Package } from 'lucide-react'
+import { AdminReportExportLink } from '@/frontend/components/admin/AdminReportExportLink'
 import {
   ADMIN_REPORT_EXPORT_METADATA,
   getAdminReportData,
@@ -121,9 +122,12 @@ export default async function AdminReportsPage({ searchParams }: Props) {
         <div className="flex flex-wrap gap-3">
           {exportLinks.map((item) => (
             <div key={item.type} className="max-w-52 space-y-1">
-              <Link href={item.href} className="btn-outline text-xs">
-                {item.label}
-              </Link>
+              <AdminReportExportLink
+                href={item.href}
+                label={item.label}
+                reportSensitivityLabel={item.metadata.reportSensitivityLabel}
+                warningLabel={item.metadata.warningLabel}
+              />
               <p className="text-xs font-medium text-muted-foreground">
                 {item.metadata.reportSensitivityLabel}
               </p>

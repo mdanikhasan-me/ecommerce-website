@@ -1,11 +1,22 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { describe, it } from 'node:test'
+import { join } from 'node:path'
 
 import {
   ADMIN_REPORT_EXPORT_METADATA,
   escapeCsvValue,
   parseAdminReportRange,
 } from '@/backend/admin/reports'
+
+const adminReportsPageSource = () =>
+  readFileSync(join(process.cwd(), 'src/app/(admin)/admin/reports/page.tsx'), 'utf8')
+
+const adminReportExportLinkSource = () =>
+  readFileSync(
+    join(process.cwd(), 'src/frontend/components/admin/AdminReportExportLink.tsx'),
+    'utf8',
+  )
 
 type AdminReportMetadataKey = keyof typeof ADMIN_REPORT_EXPORT_METADATA
 
@@ -206,5 +217,27 @@ describe('admin report export sensitivity metadata', () => {
         assert.match(uiCopy, term)
       }
     }
+  })
+
+  it('wires export confirmation through existing metadata without changing export hrefs', () => {
+    const pageSource = adminReportsPageSource()
+
+    assert.match(pageSource, /AdminReportExportLink/)
+    assert.match(pageSource, /reportSensitivityLabel=\{item\.metadata\.reportSensitivityLabel\}/)
+    assert.match(pageSource, /warningLabel=\{item\.metadata\.warningLabel\}/)
+    assert.match(pageSource, /href: `\/api\/admin\/reports\/export\?type=orders&\$\{exportQuery\}`/)
+    assert.match(pageSource, /href: `\/api\/admin\/reports\/export\?type=products&\$\{exportQuery\}`/)
+    assert.match(pageSource, /href: `\/api\/admin\/reports\/export\?type=customers&\$\{exportQuery\}`/)
+  })
+
+  it('keeps the export confirmation client-side and cancelable without route calls', () => {
+    const componentSource = adminReportExportLinkSource()
+
+    assert.match(componentSource, /^'use client'/)
+    assert.match(componentSource, /window\.confirm\(confirmationMessage\)/)
+    assert.match(componentSource, /event\.preventDefault\(\)/)
+    assert.match(componentSource, /buildAdminReportExportConfirmationMessage/)
+    assert.doesNotMatch(componentSource, /fetch\(/)
+    assert.doesNotMatch(componentSource, /buildAdminReportCsv|getAdminReportData|db\./)
   })
 })
