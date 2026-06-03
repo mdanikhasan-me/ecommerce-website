@@ -5,6 +5,7 @@ import { db } from '@/backend/database'
 import { recordProductView } from '@/backend/commerce-stats'
 import { parsePublicId } from '@/backend/api/public-input'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const VIEWER_COOKIE = 'boilabin_viewer'
@@ -13,6 +14,9 @@ const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const blocked = protectMutationRequest(req)
   if (blocked) return blocked
+
+  const limited = rateLimit(req, { key: 'products:view', limit: 120, windowMs: 60_000 })
+  if (limited) return limited
 
   const { id: rawId } = await params
   const id = parsePublicId(rawId)

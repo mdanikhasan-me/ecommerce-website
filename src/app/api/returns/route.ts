@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { rateLimit } from '@/backend/security/rate-limit'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { parseBuyerReturnRequestPayload } from '@/backend/orders/buyer-validation'
 import { createBuyerReturnRequest, type BuyerReturnDb } from '@/backend/orders/buyer-return-request'
@@ -11,6 +12,9 @@ export async function POST(req: NextRequest) {
   try {
     const blocked = protectMutationRequest(req)
     if (blocked) return blocked
+
+    const limited = rateLimit(req, { key: 'returns:create', limit: 10, windowMs: 60_000 })
+    if (limited) return limited
 
     const session = await auth()
     if (!session?.user?.id) {

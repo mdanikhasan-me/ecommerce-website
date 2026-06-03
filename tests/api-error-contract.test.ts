@@ -373,6 +373,35 @@ test('reviews POST blocked-origin branch returns before auth or database access'
   assert.equal(warnings.length, 1)
 })
 
+test('contact, newsletter, and register blocked-origin branches return before database access', async () => {
+  const cases = [
+    () => postContact(createJsonPost('/api/contact', {}, { origin: 'https://evil.example.test' })),
+    () => postNewsletter(createJsonPost('/api/newsletter', {}, { origin: 'https://evil.example.test' })),
+    () => postRegister(createJsonPost('/api/auth/register', {}, { origin: 'https://evil.example.test' })),
+  ]
+
+  for (const createRequest of cases) {
+    const { result: response, warnings } = await captureWarnings(createRequest)
+
+    assert.equal(response.status, 403)
+    assert.deepEqual(await response.json(), { error: 'Invalid request origin' })
+    assert.equal(warnings.length, 1)
+  }
+})
+
+test('product view blocked-origin branch returns before auth or database access', async () => {
+  const { result: response, warnings } = await captureWarnings(async () => (
+    postProductView(
+      createJsonPost('/api/products/product_1/view', {}, { origin: 'https://evil.example.test' }),
+      { params: Promise.resolve({ id: 'product_1' }) },
+    )
+  ))
+
+  assert.equal(response.status, 403)
+  assert.deepEqual(await response.json(), { error: 'Invalid request origin' })
+  assert.equal(warnings.length, 1)
+})
+
 test('order creation blocked-origin branch returns before auth or database access', async () => {
   const { result: response, warnings } = await captureWarnings(async () => (
     postOrder(createJsonPost('/api/orders', { items: [] }, {
@@ -385,6 +414,34 @@ test('order creation blocked-origin branch returns before auth or database acces
   assert.equal(warnings.length, 1)
 })
 
+test('product view rate limit returns the shared 429 contract before product lookup', async () => {
+  const ip = '203.0.113.210'
+  const options = { key: 'products:view', limit: 120, windowMs: 60_000 }
+  const createLimitRequest = () => new NextRequest('http://localhost:3000/api/products/product_1/view', {
+    method: 'POST',
+    headers: {
+      'x-forwarded-for': ip,
+    },
+  })
+
+  for (let i = 0; i < 120; i += 1) {
+    assert.equal(rateLimit(createLimitRequest(), options), null)
+  }
+
+  const { result: response, warnings } = await captureWarnings(async () => (
+    postProductView(
+      createJsonPost('/api/products/../../bad/view', {}, { 'x-forwarded-for': ip }),
+      { params: Promise.resolve({ id: '../../bad' }) },
+    )
+  ))
+
+  assert.equal(response.status, 429)
+  assert.deepEqual(await response.json(), { error: 'Too many requests. Please try again shortly.' })
+  assert.equal(response.headers.get('X-RateLimit-Limit'), '120')
+  assert.equal(response.headers.get('X-RateLimit-Remaining'), '0')
+  assert.equal(warnings.length, 1)
+})
+
 test('return request blocked-origin branch returns before auth or database access', async () => {
   const { result: response, warnings } = await captureWarnings(async () => (
     postReturnRequest(createJsonPost('/api/returns', { orderId: 'order_123', reason: 'Wrong item' }, {
@@ -394,5 +451,30 @@ test('return request blocked-origin branch returns before auth or database acces
 
   assert.equal(response.status, 403)
   assert.deepEqual(await response.json(), { error: 'Invalid request origin' })
+  assert.equal(warnings.length, 1)
+})
+
+test('return request rate limit returns the shared 429 contract before authenticated work', async () => {
+  const ip = '203.0.113.211'
+  const options = { key: 'returns:create', limit: 10, windowMs: 60_000 }
+  const createLimitRequest = () => new NextRequest('http://localhost:3000/api/returns', {
+    method: 'POST',
+    headers: {
+      'x-forwarded-for': ip,
+    },
+  })
+
+  for (let i = 0; i < 10; i += 1) {
+    assert.equal(rateLimit(createLimitRequest(), options), null)
+  }
+
+  const { result: response, warnings } = await captureWarnings(async () => (
+    postReturnRequest(createJsonPost('/api/returns', {}, { 'x-forwarded-for': ip }))
+  ))
+
+  assert.equal(response.status, 429)
+  assert.deepEqual(await response.json(), { error: 'Too many requests. Please try again shortly.' })
+  assert.equal(response.headers.get('X-RateLimit-Limit'), '10')
+  assert.equal(response.headers.get('X-RateLimit-Remaining'), '0')
   assert.equal(warnings.length, 1)
 })
