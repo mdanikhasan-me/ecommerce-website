@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { parseBuyerReturnRequestPayload } from '@/backend/orders/buyer-validation'
 
 const RETURN_WINDOW_DAYS = 7
-
-const returnRequestSchema = z.object({
-  orderId: z.string().min(1),
-  reason: z.string().trim().min(3).max(120),
-  description: z.string().trim().max(1000).optional().or(z.literal('')),
-})
 
 function getReturnDeadline(deliveredAt: Date) {
   return new Date(deliveredAt.getTime() + RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000)
@@ -28,9 +22,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please sign in to request a return' }, { status: 401 })
     }
 
-    const parsed = returnRequestSchema.safeParse(await req.json())
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid return request' }, { status: 400 })
+    }
+
+    const parsed = parseBuyerReturnRequestPayload(body)
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid return request' }, { status: 400 })
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
 
     const order = await db.order.findFirst({
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
         orderId: order.id,
         userId: session.user.id,
         reason: parsed.data.reason,
-        description: parsed.data.description || null,
+        description: parsed.data.description,
         images: [],
       },
     })

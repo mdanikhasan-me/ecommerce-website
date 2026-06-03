@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OrderStatus, PaymentMethod, type Prisma } from '@prisma/client'
+import { OrderStatus, type Prisma } from '@prisma/client'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
@@ -9,32 +9,11 @@ import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { parseBuyerOrderPayload } from '@/backend/orders/buyer-validation'
 
 const AVAILABLE_PAYMENT_METHODS = new Set(
   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
 )
-
-type OrderRequestItem = {
-  productId?: unknown
-  variantId?: unknown
-  quantity?: unknown
-  imageUrl?: unknown
-}
-
-type OrderRequestAddress = {
-  fullName?: unknown
-  phone?: unknown
-  addressLine1?: unknown
-  addressLine2?: unknown
-  city?: unknown
-  district?: unknown
-  division?: unknown
-  postalCode?: unknown
-}
-
-function isPaymentMethod(value: unknown): value is PaymentMethod {
-  return typeof value === 'string' && Object.values(PaymentMethod).includes(value as PaymentMethod)
-}
 
 function isOrderStatus(value: unknown): value is OrderStatus {
   return typeof value === 'string' && Object.values(OrderStatus).includes(value as OrderStatus)
@@ -76,11 +55,6 @@ function computeShipping(subtotal: number) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
 }
 
-function sanitizeString(value: unknown, max: number) {
-  if (typeof value !== 'string') return ''
-  return value.trim().slice(0, max)
-}
-
 export async function POST(req: NextRequest) {
   try {
     const blocked = protectMutationRequest(req)
@@ -94,30 +68,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please sign in or create an account before placing an order' }, { status: 401 })
     }
 
-    const body = await req.json()
-    const { items, address, paymentMethod, notes, couponCode } = body
-
-    if (!isPaymentMethod(paymentMethod) || !AVAILABLE_PAYMENT_METHODS.has(paymentMethod)) {
-      return NextResponse.json(
-        { error: 'This payment method is not configured yet. Please use an active checkout method.' },
-        { status: 400 }
-      )
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid order request' }, { status: 400 })
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+    const parsedPayload = parseBuyerOrderPayload(body, AVAILABLE_PAYMENT_METHODS)
+    if (!parsedPayload.success) {
+      return NextResponse.json({ error: parsedPayload.error }, { status: 400 })
     }
 
-    const orderItems = items as OrderRequestItem[]
-    const orderAddress = address as OrderRequestAddress | null | undefined
-
-    if (!orderAddress || !orderAddress.fullName || !orderAddress.phone || !orderAddress.addressLine1 || !orderAddress.city || !orderAddress.district || !orderAddress.division) {
-      return NextResponse.json({ error: 'Delivery address is incomplete' }, { status: 400 })
-    }
+    const { items: orderItems, address: safeAddress, paymentMethod, notes, couponCode } = parsedPayload.data
 
     // Fetch products + variants server-side; ignore client-supplied prices
-    const productIds = Array.from(new Set(orderItems.map((item) => String(item.productId ?? '')).filter(Boolean)))
-    const variantIds = Array.from(new Set(orderItems.map((item) => item.variantId).filter(Boolean).map(String)))
+    const productIds = Array.from(new Set(orderItems.map((item) => item.productId)))
+    const variantIds = Array.from(
+      new Set(orderItems.map((item) => item.variantId).filter((id): id is string => Boolean(id))),
+    )
 
     const [products, variants] = await Promise.all([
       db.product.findMany({
@@ -152,12 +121,9 @@ export async function POST(req: NextRequest) {
     let subtotal = 0
 
     for (const raw of orderItems) {
-      const qty = Math.max(1, Math.floor(Number(raw.quantity) || 0))
-      if (qty <= 0) {
-        return NextResponse.json({ error: 'Invalid item quantity' }, { status: 400 })
-      }
+      const qty = raw.quantity
 
-      const product = productMap.get(String(raw.productId))
+      const product = productMap.get(raw.productId)
       if (!product || !product.isActive) {
         return NextResponse.json({ error: 'One or more products are no longer available' }, { status: 400 })
       }
@@ -170,7 +136,7 @@ export async function POST(req: NextRequest) {
       let variantName: string | null = null
 
       if (raw.variantId) {
-        const variant = variantMap.get(String(raw.variantId))
+        const variant = variantMap.get(raw.variantId)
         if (!variant || variant.productId !== product.id) {
           return NextResponse.json({ error: 'Invalid product variant' }, { status: 400 })
         }
@@ -194,14 +160,14 @@ export async function POST(req: NextRequest) {
         price: unitPrice,
         quantity: qty,
         total: lineTotal,
-        imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl : null,
+        imageUrl: raw.imageUrl,
       })
     }
 
     // Validate coupon server-side (if provided)
     let discount = 0
     let couponId: string | null = null
-    const code = typeof couponCode === 'string' ? couponCode.trim().toUpperCase() : ''
+    const code = couponCode ?? ''
     if (code) {
       const coupon = await db.coupon.findUnique({ where: { code } })
       const now = new Date()
@@ -257,17 +223,6 @@ export async function POST(req: NextRequest) {
     const shippingFee = computeShipping(subtotal)
     const total = Math.max(0, subtotal - discount + shippingFee)
 
-    const safeAddress = {
-      fullName: sanitizeString(orderAddress.fullName, 120),
-      phone: sanitizeString(orderAddress.phone, 20),
-      addressLine1: sanitizeString(orderAddress.addressLine1, 200),
-      addressLine2: orderAddress.addressLine2 ? sanitizeString(orderAddress.addressLine2, 200) : null,
-      city: sanitizeString(orderAddress.city, 80),
-      district: sanitizeString(orderAddress.district, 80),
-      division: sanitizeString(orderAddress.division, 80),
-      postalCode: orderAddress.postalCode ? sanitizeString(orderAddress.postalCode, 20) : null,
-    }
-
     const userId = session.user.id
 
     const orderNumber = generateOrderNumber()
@@ -314,7 +269,7 @@ export async function POST(req: NextRequest) {
           total,
           paymentMethod,
           couponId: couponId ?? undefined,
-          notes: notes ? sanitizeString(notes, 500) : undefined,
+          notes,
           isGuestOrder: false,
           items: {
             create: preparedItems.map(({ categoryId, ...line }) => line),

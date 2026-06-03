@@ -6,8 +6,10 @@ import { POST as postRegister } from '@/app/api/auth/register/route'
 import { POST as postContact } from '@/app/api/contact/route'
 import { GET as getCouponValidation } from '@/app/api/coupons/validate/route'
 import { POST as postNewsletter } from '@/app/api/newsletter/route'
+import { POST as postOrder } from '@/app/api/orders/route'
 import { POST as postProductView } from '@/app/api/products/[id]/view/route'
 import { GET as getReviews, POST as postReview } from '@/app/api/reviews/route'
+import { POST as postReturnRequest } from '@/app/api/returns/route'
 import { GET as getSearchSuggestions } from '@/app/api/search/suggestions/route'
 import { POST as postCspReport } from '@/app/api/security/csp-report/route'
 import { rateLimit } from '@/backend/security/rate-limit'
@@ -362,6 +364,30 @@ test('product view invalid id returns not found before database lookup', async (
 test('reviews POST blocked-origin branch returns before auth or database access', async () => {
   const { result: response, warnings } = await captureWarnings(async () => (
     postReview(createJsonPost('/api/reviews', { productId: 'p1', rating: 5, body: 'This is a useful review body.' }, {
+      origin: 'https://evil.example.test',
+    }))
+  ))
+
+  assert.equal(response.status, 403)
+  assert.deepEqual(await response.json(), { error: 'Invalid request origin' })
+  assert.equal(warnings.length, 1)
+})
+
+test('order creation blocked-origin branch returns before auth or database access', async () => {
+  const { result: response, warnings } = await captureWarnings(async () => (
+    postOrder(createJsonPost('/api/orders', { items: [] }, {
+      origin: 'https://evil.example.test',
+    }))
+  ))
+
+  assert.equal(response.status, 403)
+  assert.deepEqual(await response.json(), { error: 'Invalid request origin' })
+  assert.equal(warnings.length, 1)
+})
+
+test('return request blocked-origin branch returns before auth or database access', async () => {
+  const { result: response, warnings } = await captureWarnings(async () => (
+    postReturnRequest(createJsonPost('/api/returns', { orderId: 'order_123', reason: 'Wrong item' }, {
       origin: 'https://evil.example.test',
     }))
   ))
