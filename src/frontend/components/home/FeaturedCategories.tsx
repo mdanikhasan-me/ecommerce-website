@@ -29,7 +29,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="section-kicker">Browse Categories</p>
-          <h2 className="mt-3 section-title max-w-[12ch]">
+          <h2 className="mt-3 section-title max-w-[12ch] sm:max-w-none">
             Shop by category
           </h2>
         </div>
@@ -62,7 +62,7 @@ function MobileCategoryTile({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-[0.93] min-h-[162px] overflow-hidden rounded-[26px] border border-black/6 bg-[#f5efe6] shadow-[0_18px_38px_-34px_rgba(15,23,42,0.16)]"
+      className="group relative isolate flex aspect-[0.93] min-h-[162px] min-w-0 overflow-hidden rounded-[26px] border border-black/6 bg-[#f5efe6] shadow-[0_18px_38px_-34px_rgba(15,23,42,0.16)]"
     >
       <div className="absolute inset-0">
         <Image
@@ -104,7 +104,7 @@ function CategoryTile({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-square min-h-[196px] overflow-hidden rounded-[28px] border border-black/6 bg-[#f5efe6] shadow-[0_20px_48px_-38px_rgba(15,23,42,0.16)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-38px_rgba(15,23,42,0.22)]"
+      className="group relative isolate flex aspect-square min-h-[196px] min-w-0 overflow-hidden rounded-[28px] border border-black/6 bg-[#f5efe6] shadow-[0_20px_48px_-38px_rgba(15,23,42,0.16)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-38px_rgba(15,23,42,0.22)]"
     >
       <div className="absolute inset-0">
         <Image
