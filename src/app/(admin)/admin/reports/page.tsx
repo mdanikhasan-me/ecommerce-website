@@ -1,6 +1,10 @@
 import Link from 'next/link'
 import { TrendingUp, ShoppingBag, Users, Package } from 'lucide-react'
-import { getAdminReportData, parseAdminReportRange } from '@/backend/admin/reports'
+import {
+  ADMIN_REPORT_EXPORT_METADATA,
+  getAdminReportData,
+  parseAdminReportRange,
+} from '@/backend/admin/reports'
 import { formatPrice, formatDate } from '@/backend/utils'
 
 export const metadata = { title: 'Admin Analytics' }
@@ -24,6 +28,26 @@ export default async function AdminReportsPage({ searchParams }: Props) {
     { value: 'revenue', label: 'Revenue' },
     { value: 'products', label: 'Products' },
     { value: 'customers', label: 'Customers' },
+  ]
+  const exportLinks = [
+    {
+      type: 'orders',
+      label: 'Export Orders CSV',
+      href: `/api/admin/reports/export?type=orders&${exportQuery}`,
+      metadata: ADMIN_REPORT_EXPORT_METADATA.orders,
+    },
+    {
+      type: 'products',
+      label: 'Export Products CSV',
+      href: `/api/admin/reports/export?type=products&${exportQuery}`,
+      metadata: ADMIN_REPORT_EXPORT_METADATA.products,
+    },
+    {
+      type: 'customers',
+      label: 'Export Customers CSV',
+      href: `/api/admin/reports/export?type=customers&${exportQuery}`,
+      metadata: ADMIN_REPORT_EXPORT_METADATA.customers,
+    },
   ]
 
   return (
@@ -94,16 +118,18 @@ export default async function AdminReportsPage({ searchParams }: Props) {
             </Link>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href={`/api/admin/reports/export?type=orders&${exportQuery}`} className="btn-outline text-xs">
-            Export Orders CSV
-          </Link>
-          <Link href={`/api/admin/reports/export?type=products&${exportQuery}`} className="btn-outline text-xs">
-            Export Products CSV
-          </Link>
-          <Link href={`/api/admin/reports/export?type=customers&${exportQuery}`} className="btn-outline text-xs">
-            Export Customers CSV
-          </Link>
+        <div className="flex flex-wrap gap-3">
+          {exportLinks.map((item) => (
+            <div key={item.type} className="max-w-52 space-y-1">
+              <Link href={item.href} className="btn-outline text-xs">
+                {item.label}
+              </Link>
+              <p className="text-xs font-medium text-muted-foreground">
+                {item.metadata.reportSensitivityLabel}
+              </p>
+              <p className="text-xs text-muted-foreground">{item.metadata.warningLabel}</p>
+            </div>
+          ))}
         </div>
       </div>
 

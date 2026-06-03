@@ -185,4 +185,26 @@ describe('admin report export sensitivity metadata', () => {
     assert.equal(fieldSensitivity('customers', 'isActive'), 'unknown-needs-policy')
     assert.equal(fieldSensitivity('customers', 'createdAt'), 'unknown-needs-policy')
   })
+
+  it('provides UI-ready warning labels for every report export', () => {
+    const expectations = {
+      orders: [/customer/i, /order/i, /payment/i],
+      products: [/business/i, /stock/i, /sales/i],
+      customers: [/customer/i, /pii/i, /contact/i],
+    } satisfies Record<AdminReportMetadataKey, RegExp[]>
+
+    for (const [type, requiredTerms] of Object.entries(expectations) as Array<
+      [AdminReportMetadataKey, RegExp[]]
+    >) {
+      const metadata = ADMIN_REPORT_EXPORT_METADATA[type]
+      const uiCopy = `${metadata.reportSensitivityLabel} ${metadata.warningLabel}`
+
+      assert.ok(metadata.reportSensitivityLabel.trim())
+      assert.ok(metadata.warningLabel.trim())
+
+      for (const term of requiredTerms) {
+        assert.match(uiCopy, term)
+      }
+    }
+  })
 })
