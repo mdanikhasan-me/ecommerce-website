@@ -9,7 +9,9 @@ import {
   parseAdminReportRange,
 } from '@/backend/admin/reports'
 import {
+  ADMIN_EXPORT_AUDIT_ERROR_CODES,
   ADMIN_EXPORT_AUDIT_METHOD,
+  ADMIN_EXPORT_AUDIT_RESULTS,
   ADMIN_EXPORT_AUDIT_ROUTE,
   buildAdminExportAuditEvent,
   isAdminReportExportType,
@@ -336,7 +338,11 @@ describe('admin export audit event helper', () => {
       actorName: 'Admin Person',
       actorId: 'user_123',
       orderNumber: 'ORDER-123',
+      customerId: 'customer_123',
       csvRow: 'raw,row,data',
+      payload: { customer: 'Buyer Person' },
+      rawBody: { exportedRows: ['raw,row,data'] },
+      headers: { authorization: 'Bearer should-not-appear' },
     } as Parameters<typeof buildAdminExportAuditEvent>[0] & Record<string, unknown>)
 
     assert.equal(event.type, 'admin_export_failure')
@@ -345,6 +351,15 @@ describe('admin export audit event helper', () => {
     assert.equal(event.statusCode, 400)
     assert.equal(event.errorCode, 'invalid_export_type')
     assert.equal(event.userRole, undefined)
+    assert.equal('actorEmail' in event, false)
+    assert.equal('actorName' in event, false)
+    assert.equal('actorId' in event, false)
+    assert.equal('orderNumber' in event, false)
+    assert.equal('customerId' in event, false)
+    assert.equal('csvRow' in event, false)
+    assert.equal('payload' in event, false)
+    assert.equal('rawBody' in event, false)
+    assert.equal('headers' in event, false)
     assert.deepEqual(event.metadata, {
       result: 'blocked',
       reportTypeValid: false,
@@ -357,7 +372,10 @@ describe('admin export audit event helper', () => {
     assert(!serialized.includes('Admin Person'))
     assert(!serialized.includes('user_123'))
     assert(!serialized.includes('ORDER-123'))
+    assert(!serialized.includes('customer_123'))
     assert(!serialized.includes('raw,row,data'))
+    assert(!serialized.includes('Buyer Person'))
+    assert(!serialized.includes('Bearer'))
   })
 
   it('accepts only the current report export type enum', () => {
@@ -366,5 +384,79 @@ describe('admin export audit event helper', () => {
     assert.equal(isAdminReportExportType('customers'), true)
     assert.equal(isAdminReportExportType('returns'), false)
     assert.equal(isAdminReportExportType('orders?from=2026-01-01'), false)
+  })
+
+  it('derives sensitivity flags for every report type from export metadata', () => {
+    for (const type of Object.keys(ADMIN_REPORT_EXPORT_METADATA) as AdminReportMetadataKey[]) {
+      const event = buildAdminExportAuditEvent({
+        result: 'attempted',
+        reportType: type,
+        statusCode: 200,
+      })
+      const metadata = ADMIN_REPORT_EXPORT_METADATA[type]
+
+      assert.equal(event.metadata.reportTypeValid, true)
+      assert.equal(event.metadata.reportType, type)
+      assert.equal(event.metadata.containsCustomerPii, metadata.containsCustomerPii)
+      assert.equal(
+        event.metadata.containsBusinessSensitiveData,
+        metadata.containsBusinessSensitiveData,
+      )
+      assert.equal(
+        event.metadata.containsPaymentOrOrderSensitiveData,
+        metadata.containsPaymentOrOrderSensitiveData,
+      )
+    }
+  })
+
+  it('keeps route data pathname-only and never accepts raw query input', () => {
+    const event = buildAdminExportAuditEvent({
+      result: 'attempted',
+      reportType: 'customers',
+      route: 'https://boilabin.com/api/admin/reports/export?type=customers&from=raw',
+      url: '/api/admin/reports/export?token=should-not-appear',
+      from: '2026-01-01',
+      to: '2026-01-31',
+    } as Parameters<typeof buildAdminExportAuditEvent>[0] & Record<string, unknown>)
+
+    assert.equal(event.route, ADMIN_EXPORT_AUDIT_ROUTE)
+    assert.equal(event.method, ADMIN_EXPORT_AUDIT_METHOD)
+
+    const serialized = JSON.stringify(event)
+    assert(!serialized.includes('?'))
+    assert(!serialized.includes('from='))
+    assert(!serialized.includes('token='))
+    assert(!serialized.includes('2026-01-01'))
+    assert(!serialized.includes('2026-01-31'))
+  })
+
+  it('bounds result, error code, status code, and actor role values', () => {
+    const event = buildAdminExportAuditEvent({
+      result: 'downloaded_csv_with_raw_details',
+      reportType: 'products',
+      statusCode: 999,
+      errorCode: 'database_error_with_raw_details',
+      actorRole: 'CUSTOMER',
+    })
+
+    assert.deepEqual(ADMIN_EXPORT_AUDIT_RESULTS, ['attempted', 'success', 'blocked', 'failed'])
+    assert.deepEqual(ADMIN_EXPORT_AUDIT_ERROR_CODES, [
+      'invalid_export_type',
+      'unauthorized',
+      'forbidden',
+      'export_failed',
+    ])
+    assert.equal(event.type, 'admin_export_failure')
+    assert.equal(event.severity, 'warn')
+    assert.equal(event.metadata.result, 'blocked')
+    assert.equal(event.metadata.reportType, 'products')
+    assert.equal(event.statusCode, undefined)
+    assert.equal(event.errorCode, undefined)
+    assert.equal(event.userRole, undefined)
+
+    const serialized = JSON.stringify(event)
+    assert(!serialized.includes('downloaded_csv_with_raw_details'))
+    assert(!serialized.includes('database_error_with_raw_details'))
+    assert(!serialized.includes('CUSTOMER'))
   })
 })

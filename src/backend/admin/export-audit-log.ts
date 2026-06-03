@@ -25,7 +25,7 @@ export type AdminExportAuditEventType =
 export type AdminExportAuditSeverity = 'info' | 'warn' | 'error'
 
 export type AdminExportAuditEventInput = {
-  result: AdminExportAuditResult
+  result?: unknown
   reportType?: unknown
   statusCode?: number | null
   errorCode?: unknown
@@ -73,6 +73,15 @@ function isAdminExportAuditActorRole(value: unknown): value is AdminExportAuditA
   )
 }
 
+function normalizeResult(value: unknown): AdminExportAuditResult {
+  return (
+    typeof value === 'string' &&
+    ADMIN_EXPORT_AUDIT_RESULTS.includes(value as AdminExportAuditResult)
+  )
+    ? (value as AdminExportAuditResult)
+    : 'blocked'
+}
+
 function normalizeStatusCode(value: unknown) {
   if (typeof value !== 'number' || !Number.isFinite(value)) return undefined
 
@@ -104,16 +113,17 @@ function normalizeTimestamp(value: string | undefined) {
 export function buildAdminExportAuditEvent(
   input: AdminExportAuditEventInput,
 ): AdminExportAuditEvent {
+  const result = normalizeResult(input.result)
   const reportType = isAdminReportExportType(input.reportType) ? input.reportType : undefined
   const metadata = reportType ? ADMIN_REPORT_EXPORT_METADATA[reportType] : undefined
   const event: AdminExportAuditEvent = {
-    type: eventTypeForResult(input.result),
+    type: eventTypeForResult(result),
     timestamp: normalizeTimestamp(input.timestamp),
-    severity: severityForResult(input.result),
+    severity: severityForResult(result),
     route: ADMIN_EXPORT_AUDIT_ROUTE,
     method: ADMIN_EXPORT_AUDIT_METHOD,
     metadata: {
-      result: input.result,
+      result,
       reportTypeValid: Boolean(reportType),
     },
   }
