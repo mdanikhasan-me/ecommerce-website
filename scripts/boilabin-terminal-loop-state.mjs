@@ -7,11 +7,13 @@ const __dirname = path.dirname(__filename);
 const DEFAULT_CWD = path.resolve(__dirname, '..');
 
 export const TERMINAL_LOOP_ACTIVATION_PHRASE = 'Run Boilabin Terminal Loop mode.';
+export const TERMINAL_BATCH_LOOP_ACTIVATION_PHRASE = 'Run Boilabin Terminal Batch Loop mode.';
 
 const REQUIRED_FILES = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   '.agents/skills/boilabin-step-workflow/SKILL.md',
   'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
+  'docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
   'scripts/boilabin-terminal-loop-state.mjs',
   'tests/boilabin-terminal-loop-workflow.test.ts',
@@ -23,6 +25,7 @@ const READABLE_FILES = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   '.agents/skills/boilabin-step-workflow/SKILL.md',
   'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
+  'docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
 ];
 
@@ -184,9 +187,14 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
   const combinedText = scannedFiles.map((file) => file.content).join('\n\n');
 
   const activationFound = combinedText.includes(TERMINAL_LOOP_ACTIVATION_PHRASE);
+  const batchActivationFound = combinedText.includes(TERMINAL_BATCH_LOOP_ACTIVATION_PHRASE);
   const tenStepStopRuleFound = /10-step|10 step/i.test(combinedText)
     && /stop/i.test(combinedText)
     && /summary/i.test(combinedText);
+  const batchLoopCapFound = /batch[\s\S]{0,120}(capped|maximum|max)[\s\S]{0,80}3 loops/i.test(combinedText)
+    || /3 loops per approved batch/i.test(combinedText);
+  const batchPerLoopValidationFound = /validation after each loop|Validate before staging in every loop|validation before staging/i.test(combinedText);
+  const batchNoAutoFuturePromptFound = /does not execute generated future prompts automatically|generated prompts outside the approved batch remain draft-only|must not execute Loop 4/i.test(combinedText);
   const exactStagingRuleFound = /exact-file staging|exact files|git diff --cached --name-only/i.test(combinedText);
   const missingProtectedDecisions = PROTECTED_DECISIONS
     .filter((decision) => !decision.pattern.test(combinedText))
@@ -201,7 +209,11 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
     latestCommitMention,
     terminalLoopDocsExist: existsSync(path.resolve(cwd, 'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md')),
     activationFound,
+    batchActivationFound,
     tenStepStopRuleFound,
+    batchLoopCapFound,
+    batchPerLoopValidationFound,
+    batchNoAutoFuturePromptFound,
     exactStagingRuleFound,
     secretFindings,
     broadStagingFindings,
@@ -209,7 +221,11 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
     ok: missingFiles.length === 0
       && Boolean(latestReport)
       && activationFound
+      && batchActivationFound
       && tenStepStopRuleFound
+      && batchLoopCapFound
+      && batchPerLoopValidationFound
+      && batchNoAutoFuturePromptFound
       && exactStagingRuleFound
       && secretFindings.length === 0
       && broadStagingFindings.length === 0
@@ -229,7 +245,11 @@ export function formatTerminalLoopState(state) {
   lines.push(`Latest commit mention: ${state.latestCommitMention ?? 'not detected'}`);
   lines.push(`Terminal-loop docs exist: ${state.terminalLoopDocsExist ? 'yes' : 'no'}`);
   lines.push(`Activation phrase found: ${state.activationFound ? 'yes' : 'no'}`);
+  lines.push(`Batch activation phrase found: ${state.batchActivationFound ? 'yes' : 'no'}`);
   lines.push(`10-step stop rule found: ${state.tenStepStopRuleFound ? 'yes' : 'no'}`);
+  lines.push(`Batch loop cap found: ${state.batchLoopCapFound ? 'yes' : 'no'}`);
+  lines.push(`Batch per-loop validation found: ${state.batchPerLoopValidationFound ? 'yes' : 'no'}`);
+  lines.push(`Batch future-prompt stop found: ${state.batchNoAutoFuturePromptFound ? 'yes' : 'no'}`);
   lines.push(`Exact staging rule found: ${state.exactStagingRuleFound ? 'yes' : 'no'}`);
   lines.push(`Broad staging recommendations: ${state.broadStagingFindings.length === 0 ? 'none' : state.broadStagingFindings.length}`);
   lines.push(`Obvious secret-looking strings: ${state.secretFindings.length === 0 ? 'none' : state.secretFindings.length}`);

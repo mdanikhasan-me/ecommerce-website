@@ -39,6 +39,36 @@ Run Boilabin Terminal Loop mode.
 
 After step 10, Codex must stop. It must not start Step 126 or execute a generated next prompt. The user reviews the summary and audit report before approving anything else.
 
+## Optional Terminal Batch Loop Mode
+
+Terminal Batch Loop mode is an optional, prompt-invoked extension for a small set of tightly related safe tasks. It exists for cases where the user explicitly approves multiple bounded loops in one Codex response.
+
+Activation phrase:
+
+```text
+Run Boilabin Terminal Batch Loop mode.
+```
+
+Batch mode does not replace the default one-loop Terminal Loop. The default remains one approved 10-step loop, then stop.
+
+Terminal Batch Loop mode is capped at 3 loops per user-approved batch. Each loop must have:
+
+- one bounded theme shared across the batch;
+- exact allowed files declared before edits;
+- read-only planning lanes when available;
+- one writer only;
+- validation before staging;
+- exact-file staging only;
+- one commit per successful loop;
+- reviewer checks after commit;
+- stop conditions after every loop.
+
+Batch mode must stop immediately if a loop requires prohibited files or actions, if validation fails for a task-caused reason that cannot be fixed inside that loop's allowed files, if the worktree is not clean after a loop, or if the next loop would leave the approved batch scope.
+
+Batch mode is not forever-running automation. It does not auto-approve risky work, does not run in the background, and does not execute generated future prompts automatically.
+
+High-risk categories remain excluded from batch mode unless the user explicitly approves a dedicated batch for that risk. Examples include database migrations, provider setup, deployment, payment/tracking/seller work, CSP enforcement, distributed rate limiting, mobile implementation, product lifecycle changes, and paused visual/media work.
+
 ## Multi-Agent Planning
 
 Use read-only lanes:
@@ -89,6 +119,8 @@ Every Terminal Loop implementation step should create or update one audit `.md` 
 
 Generated next prompts are drafts. They are not queued work. Do not execute the next prompt until the user approves it.
 
+In Terminal Batch Loop mode, the approved batch itself may continue from loop to loop only up to the hard maximum of 3 loops, and only while each loop passes validation, commits cleanly, and stays inside the user's approved batch scope. Any generated prompt for work outside that approved batch remains draft-only.
+
 ## Protected Areas
 
 Do not touch these unless the user explicitly approves a dedicated step:
@@ -129,4 +161,22 @@ Stage exact files only.
 Commit only if validation passes.
 Summarize, then stop.
 Do not execute the next prompt until I approve it.
+```
+
+## Batch Prompt Skeleton
+
+```text
+Run Boilabin Terminal Batch Loop mode.
+
+Use up to 3 bounded loops in this one approved batch.
+Keep one shared theme.
+Declare exact allowed files per loop.
+Use read-only planning lanes before edits.
+Use one writer only.
+Validate before staging in every loop.
+Stage exact files only.
+Commit separately after each successful loop.
+Run reviewer checks after each loop.
+Stop after the approved batch.
+Do not execute work beyond the approved batch.
 ```

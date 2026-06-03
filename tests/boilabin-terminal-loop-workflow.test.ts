@@ -4,6 +4,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 import {
+  TERMINAL_BATCH_LOOP_ACTIVATION_PHRASE,
   TERMINAL_LOOP_ACTIVATION_PHRASE,
   createTerminalLoopState,
   findRecommendedBroadStaging,
@@ -21,6 +22,7 @@ const terminalLoopFiles = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   '.agents/skills/boilabin-step-workflow/SKILL.md',
   'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
+  'docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
   'scripts/boilabin-terminal-loop-state.mjs',
   'tests/boilabin-terminal-loop-workflow.test.ts',
@@ -59,6 +61,39 @@ test('terminal-loop doc defines the bounded 10-step terminal-first workflow', ()
   assert.match(doc, /Create the audit `\.md`/i);
   assert.match(doc, /Validate/i);
   assert.match(doc, /Stage exact files/i);
+});
+
+test('terminal batch loop mode is documented as optional and capped', () => {
+  const batchDoc = readRepoFile('docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md');
+  const terminalDoc = readRepoFile('docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md');
+
+  assert.match(batchDoc, new RegExp(TERMINAL_BATCH_LOOP_ACTIVATION_PHRASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(batchDoc, /optional/i);
+  assert.match(batchDoc, /capped at 3 loops/i);
+  assert.match(batchDoc, /one shared bounded theme/i);
+  assert.match(batchDoc, /exact allowed files for each loop/i);
+  assert.match(batchDoc, /validation/i);
+  assert.match(batchDoc, /exact-file staging/i);
+  assert.match(batchDoc, /one commit per successful loop/i);
+  assert.match(batchDoc, /stop conditions after every loop/i);
+  assert.match(batchDoc, /reviewer checks/i);
+  assert.match(batchDoc, /must not execute Loop 4/i);
+  assert.match(terminalDoc, /default remains one approved 10-step loop/i);
+});
+
+test('terminal batch loop mode rejects autonomous automation language', () => {
+  const combined = [
+    readRepoFile('docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md'),
+    readRepoFile('docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md'),
+    readRepoFile('docs/development/CODEX_SINGLE_CHAT_MULTI_AGENT_WORKFLOW.md'),
+  ].join('\n');
+
+  assert.match(combined, /not forever-running automation/i);
+  assert.match(combined, /not background automation/i);
+  assert.match(combined, /not automatic approval/i);
+  assert.match(combined, /Generated prompts outside the approved batch remain draft-only/i);
+  assert.doesNotMatch(combined, /run forever/i);
+  assert.doesNotMatch(combined, /may auto-approve|can auto-approve|will auto-approve/i);
 });
 
 test('terminal-loop docs preserve stop and approval boundaries', () => {
@@ -112,10 +147,15 @@ test('terminal-loop state script reports ready state', () => {
 
   assert.equal(state.ok, true);
   assert.equal(state.missingFiles.length, 0);
+  assert.equal(state.batchActivationFound, true);
+  assert.equal(state.batchLoopCapFound, true);
+  assert.equal(state.batchPerLoopValidationFound, true);
+  assert.equal(state.batchNoAutoFuturePromptFound, true);
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
   assert.match(formatted, /Boilabin Terminal Loop state/);
   assert.match(formatted, /Terminal Loop is ready: yes/);
+  assert.match(formatted, /Batch loop cap found: yes/);
 });
 
 test('terminal-loop scanner flags unsafe broad staging recommendations', () => {

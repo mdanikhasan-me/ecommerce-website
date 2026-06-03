@@ -132,6 +132,34 @@ For guardrail packages, run the new audit script first. Classify failures as tas
 - Avoid report-commit-report loops when the user explicitly asks not to create another report.
 - Keep final answers concise and numbered when requested.
 
+## Optional Terminal Batch Loop Mode
+
+Terminal Batch Loop mode is a prompt-invoked option for one user-approved batch of closely related safe loops in the same VS Code Codex chat. It is for reducing manual turn-by-turn overhead while preserving the same evidence, validation, exact staging, and stop boundaries.
+
+Use the activation phrase:
+
+```text
+Run Boilabin Terminal Batch Loop mode.
+```
+
+Batch mode rules:
+
+- maximum 3 loops per approved batch;
+- one shared bounded theme;
+- exact allowed files per loop;
+- read-only planning lanes before edits;
+- one writer only;
+- validation before staging in every loop;
+- exact-file staging only;
+- one commit per successful loop;
+- reviewer checks after each loop;
+- stop after the approved batch;
+- generated future prompts remain draft-only unless they are inside the approved batch scope.
+
+Batch mode is not background automation, not forever-running automation, and not automatic approval for risky work. If a loop hits a stop condition, the whole batch stops and reports the blocker.
+
+Do not use batch mode for high-risk categories unless the user explicitly approves that risk and provides exact loop scopes. Examples include database migrations, deployment/provider setup, payment/tracking/seller work, CSP enforcement, distributed rate limiting, mobile implementation, product lifecycle changes, or paused visual/media work.
+
 ## Example Prompt: Read-Only Multi-Agent Audit
 
 ```text
