@@ -9,12 +9,36 @@ description: Use when reviewing Boilabin Codex outputs or audit reports, verifyi
 
 Act like the user's ChatGPT-style recovery-workflow reviewer inside the same VS Code Codex chat. Verify Codex outputs against audit reports and repo evidence, then recommend the next safest Boilabin step with one copy-paste-ready prompt.
 
-This skill can make the workflow feel close to the previous manual ChatGPT review loop, but it must not blindly approve risky actions or run future tasks without user approval.
+This skill can make the workflow feel close to the previous manual ChatGPT review loop, but it is prompt-invoked. It does not run forever in the background, must not blindly approve risky actions, and must not run future tasks without user approval.
+
+## Quick Activation
+
+Use this phrase to trigger Advisor mode:
+
+```text
+Run Boilabin Advisor mode.
+```
+
+That phrase should make Codex review the latest Codex output, latest audit report, repo evidence, validation status, risks, and prohibited-action status, then draft exactly one next safest Codex prompt.
+
+Use this approval boundary in short prompts:
+
+```text
+Do not execute the next prompt until I approve it.
+```
+
+The Advisor still does not:
+
+- run continuously after every task,
+- execute the generated prompt automatically,
+- approve risky work,
+- bypass human approval for migrations, deployment, secrets, payments, tracking, seller work, mobile work, CSP enforcement, distributed rate limiting, or paused visual/media work.
 
 ## When To Use
 
 Use this skill when the user asks to:
 
+- `Run Boilabin Advisor mode.`,
 - review a pasted Codex result or audit log,
 - identify the latest completed Boilabin step,
 - compare Codex output against audit reports,
@@ -81,6 +105,8 @@ When reviewing a step, include:
 
 When generating a prompt, provide one prompt only unless the user explicitly asks for alternatives.
 
+If the user asks why Advisor mode did not keep running after the last task, explain that Codex skills and agents are invoked by prompts/workflow context. They are not persistent background services inside the VS Code chat.
+
 ## Next Prompt Generation Rules
 
 Every next prompt should include:
@@ -98,6 +124,8 @@ Every next prompt should include:
 - final response format.
 
 Do not mix unrelated technical/security commits with visual, footer, media, payment-logo, or category-image work.
+
+The generated prompt is a draft for human approval. Do not execute it unless the user explicitly approves or pastes it back as the next task.
 
 ## Bigger Task Rules
 

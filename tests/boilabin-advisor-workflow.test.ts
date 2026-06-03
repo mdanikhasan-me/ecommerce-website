@@ -4,6 +4,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 import {
+  ADVISOR_ACTIVATION_PHRASE,
   createBoilabinAdvisorState,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
@@ -20,9 +21,12 @@ const advisorFiles = [
   '.codex/agents/boilabin-advisor.toml',
   '.agents/skills/boilabin-advisor/SKILL.md',
   'docs/development/BOILABIN_ADVISOR_WORKFLOW.md',
+  'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
   'scripts/boilabin-advisor-state.mjs',
   'tests/boilabin-advisor-workflow.test.ts',
   'audit-reports/123_BOILABIN_ADVISOR_NEXT_STEP_WORKFLOW.md',
+  'audit-reports/124_ADVISOR_DRY_RUN_AND_INVOCATION_REVIEW.md',
+  'audit-reports/124_NEXT_PROMPT_DRAFT.md',
 ];
 
 test('Step 123 Advisor files exist', () => {
@@ -88,6 +92,41 @@ test('Advisor workflow doc describes human approval and realistic automation lim
   assert.match(doc, /Human approval is required/i);
   assert.match(doc, /not guaranteed/i);
   assert.match(doc, /one VS Code Codex chat/i);
+  assert.match(doc, /prompt trigger/i);
+  assert.match(doc, /does not create a forever-running background process/i);
+});
+
+test('Advisor quickstart documents activation and approval boundaries', () => {
+  const skill = readRepoFile('.agents/skills/boilabin-advisor/SKILL.md');
+  const doc = readRepoFile('docs/development/BOILABIN_ADVISOR_WORKFLOW.md');
+  const quickstart = readRepoFile('docs/development/BOILABIN_ADVISOR_QUICKSTART.md');
+
+  for (const content of [skill, doc, quickstart]) {
+    assert.match(content, new RegExp(ADVISOR_ACTIVATION_PHRASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(content, /not (?:a )?forever-running|does not run forever|cannot keep running/i);
+    assert.match(content, /approval/i);
+    assert.match(content, /Do not execute the next prompt until I approve it/i);
+  }
+});
+
+test('Advisor quickstart includes required user-facing sections', () => {
+  const quickstart = readRepoFile('docs/development/BOILABIN_ADVISOR_QUICKSTART.md');
+
+  for (const heading of [
+    'Purpose',
+    'What To Type',
+    'Best Short Prompt',
+    'What The Advisor Will Do',
+    'What It Cannot Do Automatically',
+    'Human Approval Rules',
+    'Example: After A Codex Task Finishes',
+    'Example: Generate Only The Next Prompt',
+    'Example: Bigger Safe Task',
+    'Troubleshooting',
+    'Recommended Default Prompt',
+  ]) {
+    assert.match(quickstart, new RegExp(`## ${heading}`), `missing ${heading}`);
+  }
 });
 
 test('Advisor state script avoids removed promotion literals that existing script scans reject', () => {
@@ -104,6 +143,9 @@ test('Advisor state script reports ready state without reading env files', () =>
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
   assert.match(formatted, /Boilabin Advisor state/);
+  assert.match(formatted, /Advisor activation phrase: Run Boilabin Advisor mode\./);
+  assert.match(formatted, /Latest recommended next-step found: yes/);
+  assert.match(formatted, /Advisor is ready: yes/);
   assert.match(formatted, /Overall status: ok/);
 });
 
@@ -141,4 +183,15 @@ test('Advisor files do not contain obvious secret-looking values', () => {
   }));
 
   assert.deepEqual(findSuspiciousSecrets(files), []);
+});
+
+test('Step 124 next prompt draft exists and is a single guarded prompt', () => {
+  const draft = readRepoFile('audit-reports/124_NEXT_PROMPT_DRAFT.md');
+
+  assert.match(draft, /^# Step 124 Next Prompt Draft/m);
+  assert.match(draft, /\/plan/);
+  assert.match(draft, /Step 125/i);
+  assert.match(draft, /Do not execute/i);
+  assert.match(draft, /Do not run migrations/i);
+  assert.match(draft, /Do not deploy/i);
 });

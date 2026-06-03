@@ -10,10 +10,15 @@ const ADVISOR_FILES = [
   '.codex/agents/boilabin-advisor.toml',
   '.agents/skills/boilabin-advisor/SKILL.md',
   'docs/development/BOILABIN_ADVISOR_WORKFLOW.md',
+  'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
   'scripts/boilabin-advisor-state.mjs',
   'tests/boilabin-advisor-workflow.test.ts',
   'audit-reports/123_BOILABIN_ADVISOR_NEXT_STEP_WORKFLOW.md',
+  'audit-reports/124_ADVISOR_DRY_RUN_AND_INVOCATION_REVIEW.md',
+  'audit-reports/124_NEXT_PROMPT_DRAFT.md',
 ];
+
+export const ADVISOR_ACTIVATION_PHRASE = 'Run Boilabin Advisor mode.';
 
 const OPTIONAL_CONTEXT_FILES = [
   '.agents/skills/boilabin-step-workflow/SKILL.md',
@@ -94,11 +99,20 @@ export function listAuditReports(cwd = DEFAULT_CWD) {
       return {
         step: Number(match[1]),
         name,
+        isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(name),
         relativePath: `audit-reports/${name}`,
       };
     })
     .filter(Boolean)
-    .sort((a, b) => a.step - b.step);
+    .sort((a, b) => {
+      if (a.step !== b.step) {
+        return a.step - b.step;
+      }
+      if (a.isPromptDraft !== b.isPromptDraft) {
+        return a.isPromptDraft ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
 }
 
 export function parseLatestAuditReport(cwd = DEFAULT_CWD) {
@@ -255,6 +269,7 @@ export function createBoilabinAdvisorState({ cwd = DEFAULT_CWD } = {}) {
 export function formatBoilabinAdvisorState(state) {
   const lines = [];
   lines.push('Boilabin Advisor state');
+  lines.push(`Advisor activation phrase: ${ADVISOR_ACTIVATION_PHRASE}`);
   lines.push(`Required files present: ${state.missingFiles.length === 0 ? 'yes' : 'no'}`);
 
   if (state.latestReport) {
@@ -262,6 +277,7 @@ export function formatBoilabinAdvisorState(state) {
     lines.push(`Latest audit title: ${state.latestReport.title ?? 'unknown'}`);
     lines.push(`Latest report commit reference: ${state.latestReport.latestCommit ?? 'not detected'}`);
     lines.push(`Validation summary: ${state.latestReport.validationSummary ?? 'not detected'}`);
+    lines.push(`Latest recommended next-step found: ${state.latestReport.recommendedNextStep ? 'yes' : 'no'}`);
     lines.push(`Recommended next step: ${state.latestReport.recommendedNextStep ?? 'not detected'}`);
   } else {
     lines.push('Latest audit report: missing');
@@ -274,6 +290,7 @@ export function formatBoilabinAdvisorState(state) {
 
   lines.push(`Obvious secret-looking strings in Advisor docs/config: ${state.secretFindings.length === 0 ? 'none' : state.secretFindings.length}`);
   lines.push(`Broad staging recommendations in Advisor docs/config: ${state.broadStagingFindings.length === 0 ? 'none' : state.broadStagingFindings.length}`);
+  lines.push(`Advisor is ready: ${state.ok ? 'yes' : 'no'}`);
   lines.push(`Overall status: ${state.ok ? 'ok' : 'blocked'}`);
   return lines.join('\n');
 }

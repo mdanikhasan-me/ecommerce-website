@@ -6,6 +6,24 @@ The Boilabin Advisor is a local Codex workflow role for reviewing Boilabin recov
 
 It is meant to bring most of the previous ChatGPT review loop into the same VS Code Codex chat. It can automate review structure and prompt drafting, but it is not guaranteed to be better than careful human review and must not blindly run future risky work.
 
+## Quickstart
+
+Type this when you want the Advisor workflow:
+
+```text
+Run Boilabin Advisor mode.
+```
+
+The phrase is a prompt trigger. It asks Codex to load the Advisor skill, review the latest Codex output and audit report, verify the latest step, and draft exactly one next safest Codex prompt.
+
+It is not a forever-running background loop. It does not create a forever-running background process. It does not execute the generated prompt. You still approve the next step before Codex runs it.
+
+Recommended approval boundary:
+
+```text
+Do not execute the next prompt until I approve it.
+```
+
 ## What The Advisor Can Automate
 
 - Identify the latest completed step from audit reports and repo evidence.
@@ -16,6 +34,8 @@ It is meant to bring most of the previous ChatGPT review loop into the same VS C
 - Recommend the next safest step.
 - Draft one bounded Codex prompt with guardrails, validation, report requirements, and exact-file staging rules.
 
+In practice, "automate" means "perform this review when prompted." It does not mean continuous unattended execution.
+
 ## What The Advisor Must Not Automate
 
 - Secret handling, credential printing, or private env disclosure.
@@ -24,6 +44,7 @@ It is meant to bring most of the previous ChatGPT review loop into the same VS C
 - Payment, tracking, seller marketplace, CSP enforcement, distributed rate limiting, or mobile app implementation without a dedicated approved step.
 - Paused footer, newsletter, payment-logo, PromoSection, or media asset work without a dedicated visual step.
 - Broad staging, broad commits, or cleanup that reverts user work.
+- Automatic execution of a generated next prompt without explicit user approval.
 
 ## How It Should Read Codex Output
 
@@ -90,8 +111,8 @@ The prompt should be copy-paste-ready and should not offer multiple unrelated al
 
 ## How To Use It In One VS Code Codex Chat
 
-1. Paste the latest Codex result or audit report summary.
-2. Ask the Advisor to verify the step and provide the next prompt.
+1. Paste the latest Codex result or audit report summary, or rely on local audit reports if the evidence is already present.
+2. Type `Run Boilabin Advisor mode.`
 3. Review the Advisor's summary and prompt.
 4. Paste the prompt back into Codex only if you approve the next step.
 5. Repeat after the next Codex run completes.
