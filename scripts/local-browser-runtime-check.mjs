@@ -428,7 +428,12 @@ const pageCheckExpression = `(() => {
       !decoded.includes('/assets/banners/');
   });
   const brokenImages = Array.from(document.images)
-    .filter((image) => image.complete && image.naturalWidth === 0)
+    .filter((image) => {
+      const rect = image.getBoundingClientRect();
+      const style = window.getComputedStyle(image);
+      const visible = rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+      return visible && image.complete && image.naturalWidth === 0;
+    })
     .map((image) => image.currentSrc || image.src)
     .slice(0, 5);
   return {

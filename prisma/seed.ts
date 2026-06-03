@@ -101,24 +101,24 @@ async function main() {
   })
 
   // CATEGORIES
-  const electronics = await prisma.category.upsert({ where: { slug: 'electronics' }, update: {}, create: { name: 'Electronics', slug: 'electronics', icon: 'Cpu', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&auto=format', sortOrder: 1 } })
+  const electronics = await prisma.category.upsert({ where: { slug: 'electronics' }, update: {}, create: { name: 'Electronics', slug: 'electronics', icon: 'Cpu', image: '/assets/categories/electronics.jpg', sortOrder: 1 } })
   const mobile = await prisma.category.upsert({ where: { slug: 'mobile-phones' }, update: {}, create: { name: 'Mobile Phones', slug: 'mobile-phones', icon: 'Smartphone', parentId: electronics.id, sortOrder: 1 } })
   const laptops = await prisma.category.upsert({ where: { slug: 'laptops' }, update: {}, create: { name: 'Laptops', slug: 'laptops', icon: 'Laptop', parentId: electronics.id, sortOrder: 2 } })
   const audio = await prisma.category.upsert({ where: { slug: 'audio' }, update: {}, create: { name: 'Audio', slug: 'audio', icon: 'Headphones', parentId: electronics.id, sortOrder: 3 } })
   const wearables = await prisma.category.upsert({ where: { slug: 'wearables' }, update: {}, create: { name: 'Wearables', slug: 'wearables', icon: 'Watch', parentId: electronics.id, sortOrder: 4 } })
 
-  const fashion = await prisma.category.upsert({ where: { slug: 'fashion' }, update: {}, create: { name: 'Fashion', slug: 'fashion', icon: 'Shirt', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&auto=format', sortOrder: 2 } })
+  const fashion = await prisma.category.upsert({ where: { slug: 'fashion' }, update: {}, create: { name: 'Fashion', slug: 'fashion', icon: 'Shirt', image: '/assets/categories/fashion.jpg', sortOrder: 2 } })
   await prisma.category.upsert({ where: { slug: 'mens-fashion' }, update: {}, create: { name: "Men's Fashion", slug: 'mens-fashion', parentId: fashion.id, sortOrder: 1 } })
   await prisma.category.upsert({ where: { slug: 'womens-fashion' }, update: {}, create: { name: "Women's Fashion", slug: 'womens-fashion', parentId: fashion.id, sortOrder: 2 } })
 
-  const homeAppliances = await prisma.category.upsert({ where: { slug: 'home-appliances' }, update: {}, create: { name: 'Home & Appliances', slug: 'home-appliances', icon: 'Home', image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&auto=format', sortOrder: 3 } })
+  const homeAppliances = await prisma.category.upsert({ where: { slug: 'home-appliances' }, update: {}, create: { name: 'Home & Appliances', slug: 'home-appliances', icon: 'Home', image: '/assets/categories/home-appliances.jpg', sortOrder: 3 } })
   await prisma.category.upsert({ where: { slug: 'kitchen' }, update: {}, create: { name: 'Kitchen', slug: 'kitchen', parentId: homeAppliances.id, sortOrder: 1 } })
 
-  await prisma.category.upsert({ where: { slug: 'beauty-health' }, update: {}, create: { name: 'Beauty & Health', slug: 'beauty-health', icon: 'Sparkles', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&auto=format', sortOrder: 4 } })
-  const sports = await prisma.category.upsert({ where: { slug: 'sports-fitness' }, update: {}, create: { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'Dumbbell', image: 'https://images.unsplash.com/photo-1461896836934-bd45ba5b363f?w=400&auto=format', sortOrder: 5 } })
-  await prisma.category.upsert({ where: { slug: 'books-stationery' }, update: {}, create: { name: 'Books & Stationery', slug: 'books-stationery', icon: 'BookOpen', image: 'https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=400&auto=format', sortOrder: 6 } })
-  const gaming = await prisma.category.upsert({ where: { slug: 'gaming' }, update: {}, create: { name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&auto=format', sortOrder: 7 } })
-  const toysCollectibles = await prisma.category.upsert({ where: { slug: 'toys-collectibles' }, update: {}, create: { name: 'Toys & Collectibles', slug: 'toys-collectibles', icon: 'ToyBrick', image: '/assets/categories/gaming.jpg', sortOrder: 8 } })
+  await prisma.category.upsert({ where: { slug: 'beauty-health' }, update: {}, create: { name: 'Beauty & Health', slug: 'beauty-health', icon: 'Sparkles', image: '/assets/categories/beauty-health.jpg', sortOrder: 4 } })
+  const sports = await prisma.category.upsert({ where: { slug: 'sports-fitness' }, update: {}, create: { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'Dumbbell', image: '/assets/categories/sports-fitness.jpg', sortOrder: 5 } })
+  await prisma.category.upsert({ where: { slug: 'books-stationery' }, update: {}, create: { name: 'Books & Stationery', slug: 'books-stationery', icon: 'BookOpen', image: '/assets/categories/books-stationery.jpg', sortOrder: 6 } })
+  const gaming = await prisma.category.upsert({ where: { slug: 'gaming' }, update: {}, create: { name: 'Gaming', slug: 'gaming', icon: 'Gamepad2', image: '/assets/categories/gaming.jpg', sortOrder: 7 } })
+  const toysCollectibles = await prisma.category.upsert({ where: { slug: 'toys-collectibles' }, update: {}, create: { name: 'Toys & Collectibles', slug: 'toys-collectibles', icon: 'ToyBrick', image: '/assets/categories/toys-collectibles.jpg', sortOrder: 8 } })
   await prisma.category.upsert({ where: { slug: 'hot-wheels' }, update: {}, create: { name: 'Hot Wheels', slug: 'hot-wheels', parentId: toysCollectibles.id, sortOrder: 1 } })
   await prisma.category.upsert({ where: { slug: 'lego-sets' }, update: {}, create: { name: 'LEGO Sets', slug: 'lego-sets', parentId: toysCollectibles.id, sortOrder: 2 } })
   await prisma.category.upsert({ where: { slug: 'diecast-models' }, update: {}, create: { name: 'Diecast Models', slug: 'diecast-models', parentId: toysCollectibles.id, sortOrder: 3 } })
@@ -452,7 +452,7 @@ async function main() {
       {
         title: 'The New iPhone 15 Pro',
         subtitle: 'Titanium. A17 Pro. Now in Bangladesh.',
-        imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1600&auto=format',
+        imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg',
         linkUrl: '/products/iphone-15-pro-128gb',
         position: 'hero',
         sortOrder: 1,
@@ -461,7 +461,7 @@ async function main() {
       {
         title: 'Galaxy S24 Ultra',
         subtitle: 'Galaxy AI is here. Experience the future.',
-        imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=1600&auto=format',
+        imageUrl: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
         linkUrl: '/products/samsung-galaxy-s24-ultra-256gb',
         position: 'hero',
         sortOrder: 2,

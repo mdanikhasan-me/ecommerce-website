@@ -28,7 +28,7 @@ export const KNOWN_BROKEN_IMAGE_REPLACEMENTS = [
     model: 'banner',
     field: 'imageUrl',
     from: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=1600&auto=format',
-    to: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=1600&auto=format',
+    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
   },
 ]
 

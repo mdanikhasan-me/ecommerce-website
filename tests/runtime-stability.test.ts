@@ -149,6 +149,14 @@ describe('local browser runtime check helper', () => {
     assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 390))
     assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 1366))
   })
+
+  it('does not treat intentionally hidden responsive image variants as broken visible images', () => {
+    const source = readFileSync(join(process.cwd(), 'scripts/local-browser-runtime-check.mjs'), 'utf8')
+
+    assert.match(source, /getBoundingClientRect\(\)/)
+    assert.match(source, /style\.display !== 'none'/)
+    assert.match(source, /visible && image\.complete && image\.naturalWidth === 0/)
+  })
 })
 
 describe('known broken seeded image URLs', () => {
