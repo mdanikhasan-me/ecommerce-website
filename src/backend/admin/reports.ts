@@ -129,7 +129,7 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
 export function escapeCsvValue(value: unknown) {
   const text = String(value ?? '')
   const safeText = /^[=+\-@]/.test(text.trimStart()) ? `'${text}` : text
-  if (safeText.includes(',') || safeText.includes('"') || safeText.includes('\n')) {
+  if (safeText.includes(',') || safeText.includes('"') || safeText.includes('\n') || safeText.includes('\r')) {
     return `"${safeText.replace(/"/g, '""')}"`
   }
   return safeText
