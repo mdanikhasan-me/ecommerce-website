@@ -59,6 +59,10 @@ export default async function AdminReportsPage({ searchParams }: Props) {
           <p className="mt-1 text-sm text-muted-foreground">
             Filter a date range, inspect the core report sets, and export clean CSV files.
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Handle downloaded CSVs as sensitive files; follow the internal Admin Export CSV
+            Handling Guide before sharing or storing exports.
+          </p>
         </div>
         <form className="flex flex-wrap gap-2 rounded-2xl border border-border bg-card p-3">
           <input aria-label="Form input" title="Form input" type="date" name="from" defaultValue={toDateInputValue(range.from)} className="input-base" />

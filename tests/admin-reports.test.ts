@@ -18,6 +18,9 @@ const adminReportExportLinkSource = () =>
     'utf8',
   )
 
+const adminExportCsvHandlingGuideSource = () =>
+  readFileSync(join(process.cwd(), 'docs/operations/ADMIN_EXPORT_CSV_HANDLING_GUIDE.md'), 'utf8')
+
 type AdminReportMetadataKey = keyof typeof ADMIN_REPORT_EXPORT_METADATA
 
 function fieldNames(type: AdminReportMetadataKey) {
@@ -260,5 +263,19 @@ describe('admin report export sensitivity metadata', () => {
     assert.match(componentSource, /<Link/)
     assert.doesNotMatch(componentSource, /router\.push|redirect\(|NextResponse|Response\.json/)
     assert.doesNotMatch(componentSource, /permission|role|session|auth/)
+  })
+
+  it('documents CSV handling guidance without changing export behavior', () => {
+    const pageSource = adminReportsPageSource()
+    const guideSource = adminExportCsvHandlingGuideSource()
+
+    assert.match(pageSource, /Admin Export CSV\s+Handling Guide/)
+    assert.match(guideSource, /may contain customer PII/)
+    assert.match(guideSource, /Do not share CSV exports in public chats/)
+    assert.match(guideSource, /Delete local CSV exports when they are no longer needed/)
+    assert.match(guideSource, /Do not store downloaded CSV exports in repo folders/)
+    assert.match(guideSource, /future provider\/security decision/)
+    assert.match(guideSource, /operational guidance, not legal advice/)
+    assert.doesNotMatch(guideSource, /DATABASE_URL|SHADOW_DATABASE_URL|password|token|secret/i)
   })
 })
