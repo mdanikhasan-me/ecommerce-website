@@ -18,6 +18,12 @@ import {
   isExpectedStatus,
   parseSmokeArgs,
 } from '../scripts/local-runtime-smoke.mjs'
+import {
+  BROWSER_RUNTIME_ROUTES,
+  BROWSER_RUNTIME_VIEWPORTS,
+  createBrowserLaunchArgs,
+  parseBrowserCheckArgs,
+} from '../scripts/local-browser-runtime-check.mjs'
 
 const require = createRequire(import.meta.url)
 const nextConfig = require('../next.config.js') as {
@@ -104,6 +110,44 @@ describe('local runtime smoke helper', () => {
     assert.ok(paths.includes('/api/products/bad%24id/view'))
     assert.ok(paths.includes('/api/returns'))
     assert.equal(paths.some((path) => path.includes('/api/orders') && path !== '/api/products?page=bad&limit=100000'), false)
+  })
+})
+
+describe('local browser runtime check helper', () => {
+  it('parses local browser check options without allowing ambiguous ports', () => {
+    assert.deepEqual(
+      parseBrowserCheckArgs(['--mode', 'start', '--port', '3121', '--cdp-port', '9321']),
+      {
+        mode: 'start',
+        host: '127.0.0.1',
+        port: 3121,
+        cdpPort: 9321,
+        browser: process.env.BOILABIN_BROWSER_PATH || '',
+        startupTimeoutMs: 90_000,
+        requestTimeoutMs: 20_000,
+      },
+    )
+    assert.throws(() => parseBrowserCheckArgs(['--mode', 'deploy']), /Unsupported browser check mode/)
+    assert.throws(() => parseBrowserCheckArgs(['--port', '3120', '--cdp-port', '3120']), /must be different/)
+  })
+
+  it('uses isolated browser launch arguments and keeps the checked public route set stable', () => {
+    const args = createBrowserLaunchArgs({
+      cdpPort: 9320,
+      userDataDir: 'P:/tmp/boilabin-browser-test',
+      headless: true,
+    })
+
+    assert.ok(args.includes('--remote-debugging-port=9320'))
+    assert.ok(args.includes('--user-data-dir=P:/tmp/boilabin-browser-test'))
+    assert.ok(args.includes('--headless=new'))
+    assert.ok(args.includes('--disable-extensions'))
+    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/category/electronics'))
+    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/category/toys-collectibles'))
+    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/search?q=phone'))
+    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/products/xiaomi-redmi-note-13-pro-256gb'))
+    assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 390))
+    assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 1366))
   })
 })
 
