@@ -145,6 +145,9 @@ describe('mocked authenticated buyer return request coverage', () => {
       success: true,
       payload: { request: { id: 'return_1', status: 'REQUESTED' } },
     })
+    if (result.success) {
+      assert.deepEqual(Object.keys(result.payload), ['request'])
+    }
     assert.deepEqual(calls.returnCreate[0], {
       data: {
         orderId: 'order_1',

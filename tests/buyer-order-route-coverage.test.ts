@@ -175,11 +175,31 @@ describe('mocked authenticated buyer order creation coverage', () => {
         total: 260,
       },
     })
+    if (result.success) {
+      assert.deepEqual(Object.keys(result.payload).sort(), [
+        'discount',
+        'orderId',
+        'orderNumber',
+        'shippingFee',
+        'subtotal',
+        'success',
+        'total',
+      ])
+    }
     assert.deepEqual(soldCountInputs, [['product_1']])
     const orderCreate = calls.orderCreate[0] as { data: any }
     assert.equal(orderCreate.data.userId, 'user_1')
+    assert.equal(orderCreate.data.paymentMethod, 'CASH_ON_DELIVERY')
     assert.equal(orderCreate.data.total, 260)
     assert.equal(orderCreate.data.items.create[0].imageUrl, null)
+    assert.deepEqual(calls.paymentCreate[0], {
+      data: {
+        orderId: 'order_1',
+        amount: 260,
+        method: 'CASH_ON_DELIVERY',
+        status: 'PENDING',
+      },
+    })
   })
 
   it('returns safe product unavailable and stock errors without mutations', async () => {
