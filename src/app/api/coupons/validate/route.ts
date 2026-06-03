@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { parseCouponAmount, parseCouponCode, parsePublicIdList } from '@/backend/api/public-input'
 
 export async function GET(req: NextRequest) {
-  const code = req.nextUrl.searchParams.get('code')?.trim().toUpperCase()
-  const amount = parseFloat(req.nextUrl.searchParams.get('amount') ?? '0')
-  const productIds = req.nextUrl.searchParams
-    .get('productIds')
-    ?.split(',')
-    .map((id) => id.trim())
-    .filter(Boolean) ?? []
+  const code = parseCouponCode(req.nextUrl.searchParams.get('code'))
+  const amount = parseCouponAmount(req.nextUrl.searchParams.get('amount') ?? '0')
+  const productIds = parsePublicIdList(req.nextUrl.searchParams.get('productIds'))
 
   if (!code) return NextResponse.json({ error: 'Coupon code required' }, { status: 400 })
+  if (amount === null) return NextResponse.json({ success: false, error: 'Invalid coupon amount' }, { status: 400 })
 
   const coupon = await db.coupon.findUnique({ where: { code } })
 

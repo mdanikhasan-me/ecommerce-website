@@ -6,7 +6,9 @@ import { POST as postRegister } from '@/app/api/auth/register/route'
 import { POST as postContact } from '@/app/api/contact/route'
 import { GET as getCouponValidation } from '@/app/api/coupons/validate/route'
 import { POST as postNewsletter } from '@/app/api/newsletter/route'
+import { POST as postProductView } from '@/app/api/products/[id]/view/route'
 import { GET as getReviews, POST as postReview } from '@/app/api/reviews/route'
+import { GET as getSearchSuggestions } from '@/app/api/search/suggestions/route'
 import { POST as postCspReport } from '@/app/api/security/csp-report/route'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
@@ -304,11 +306,57 @@ test('coupon validation missing-code branch returns error JSON before database l
   assert.deepEqual(await response.json(), { error: 'Coupon code required' })
 })
 
+test('coupon validation invalid amount returns coupon error JSON before database lookup', async () => {
+  const response = await getCouponValidation(
+    new NextRequest('http://localhost:3000/api/coupons/validate?code=SAVE500&amount=not-a-number'),
+  )
+
+  assert.equal(response.status, 400)
+  assert.deepEqual(await response.json(), { success: false, error: 'Invalid coupon amount' })
+})
+
+test('coupon validation malformed productIds are ignored before database lookup when code is missing', async () => {
+  const response = await getCouponValidation(
+    new NextRequest('http://localhost:3000/api/coupons/validate?amount=1000&productIds=../../bad,valid-id'),
+  )
+
+  assert.equal(response.status, 400)
+  assert.deepEqual(await response.json(), { error: 'Coupon code required' })
+})
+
 test('reviews GET missing productId returns validation JSON before database lookup', async () => {
   const response = await getReviews(new NextRequest('http://localhost:3000/api/reviews'))
 
   assert.equal(response.status, 400)
   assert.deepEqual(await response.json(), { error: 'productId required' })
+})
+
+test('reviews GET invalid productId returns validation JSON before database lookup', async () => {
+  const response = await getReviews(
+    new NextRequest('http://localhost:3000/api/reviews?productId=../../bad'),
+  )
+
+  assert.equal(response.status, 400)
+  assert.deepEqual(await response.json(), { error: 'productId required' })
+})
+
+test('search suggestions short sanitized query returns empty suggestions before database lookup', async () => {
+  const response = await getSearchSuggestions(
+    new NextRequest('http://localhost:3000/api/search/suggestions?q=%00%20a'),
+  )
+
+  assert.equal(response.status, 200)
+  assert.deepEqual(await response.json(), { suggestions: [] })
+})
+
+test('product view invalid id returns not found before database lookup', async () => {
+  const response = await postProductView(
+    createJsonPost('/api/products/../../bad/view', {}, {}),
+    { params: Promise.resolve({ id: '../../bad' }) },
+  )
+
+  assert.equal(response.status, 404)
+  assert.deepEqual(await response.json(), { error: 'Product not found' })
 })
 
 test('reviews POST blocked-origin branch returns before auth or database access', async () => {

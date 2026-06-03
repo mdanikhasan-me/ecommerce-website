@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { parseReviewPayload, syncProductReviewStats } from '@/backend/reviews'
+import { parsePublicId } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const productId = req.nextUrl.searchParams.get('productId')
+  const productId = parsePublicId(req.nextUrl.searchParams.get('productId'))
   if (!productId) return NextResponse.json({ error: 'productId required' }, { status: 400 })
 
   const reviews = await db.review.findMany({

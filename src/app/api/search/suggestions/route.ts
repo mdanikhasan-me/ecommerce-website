@@ -2,18 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { getPublicSearchWords, parsePublicSearchQuery } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
 
 export async function GET(req: NextRequest) {
   const limited = rateLimit(req, { key: 'search:suggestions', limit: 60, windowMs: 60_000 })
   if (limited) return limited
 
-  const q = req.nextUrl.searchParams.get('q')?.trim()
+  const q = parsePublicSearchQuery(req.nextUrl.searchParams.get('q'))
   if (!q || q.length < 2) return NextResponse.json({ suggestions: [] })
 
-  const words = Array.from(
-    new Set(q.toLowerCase().split(/\s+/).filter((w) => w.length >= 2))
-  )
+  const words = getPublicSearchWords(q)
 
   const nameOR = [
     { name: { contains: q, mode: 'insensitive' as const } },

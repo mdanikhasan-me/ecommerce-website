@@ -1,5 +1,6 @@
 import { db } from '@/backend/database'
 import { z } from 'zod'
+import { MAX_PUBLIC_ID_LENGTH } from '@/backend/api/public-input'
 
 export type ReviewAccessState = {
   canReview: boolean
@@ -8,7 +9,12 @@ export type ReviewAccessState = {
 }
 
 const reviewPayloadSchema = z.object({
-  productId: z.string().trim().min(1, 'Product is required'),
+  productId: z
+    .string()
+    .trim()
+    .min(1, 'Product is required')
+    .max(MAX_PUBLIC_ID_LENGTH, 'Product is invalid')
+    .regex(/^[A-Za-z0-9_-]+$/, 'Product is invalid'),
   rating: z.coerce.number().int('Rating must be 1 to 5').min(1, 'Rating must be 1 to 5').max(5, 'Rating must be 1 to 5'),
   title: z
     .string()

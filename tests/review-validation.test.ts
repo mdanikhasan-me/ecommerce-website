@@ -45,4 +45,20 @@ describe('review validation', () => {
 
     assert.equal(parsed.success, false)
   })
+
+  it('rejects unsafe product ids before review database work', () => {
+    const invalidPath = parseReviewPayload({
+      productId: '../../bad',
+      rating: 5,
+      body: 'This review has enough useful detail to pass validation.',
+    })
+    const tooLong = parseReviewPayload({
+      productId: 'x'.repeat(100),
+      rating: 5,
+      body: 'This review has enough useful detail to pass validation.',
+    })
+
+    assert.equal(invalidPath.success, false)
+    assert.equal(tooLong.success, false)
+  })
 })

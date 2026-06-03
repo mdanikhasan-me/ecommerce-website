@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { recordProductView } from '@/backend/commerce-stats'
+import { parsePublicId } from '@/backend/api/public-input'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
@@ -13,7 +14,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const blocked = protectMutationRequest(req)
   if (blocked) return blocked
 
-  const { id } = await params
+  const { id: rawId } = await params
+  const id = parsePublicId(rawId)
+
+  if (!id) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+  }
 
   const product = await db.product.findFirst({
     where: getBuyerVisibleProductWhere({ id }),
