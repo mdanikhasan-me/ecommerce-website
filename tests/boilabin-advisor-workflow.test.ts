@@ -1,0 +1,144 @@
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+import { test } from 'node:test';
+
+import {
+  createBoilabinAdvisorState,
+  findRecommendedBroadStaging,
+  findSuspiciousSecrets,
+  formatBoilabinAdvisorState,
+} from '../scripts/boilabin-advisor-state.mjs';
+
+const repoRoot = process.cwd();
+
+function readRepoFile(relativePath: string) {
+  return readFileSync(path.join(repoRoot, relativePath), 'utf8');
+}
+
+const advisorFiles = [
+  '.codex/agents/boilabin-advisor.toml',
+  '.agents/skills/boilabin-advisor/SKILL.md',
+  'docs/development/BOILABIN_ADVISOR_WORKFLOW.md',
+  'scripts/boilabin-advisor-state.mjs',
+  'tests/boilabin-advisor-workflow.test.ts',
+  'audit-reports/123_BOILABIN_ADVISOR_NEXT_STEP_WORKFLOW.md',
+];
+
+test('Step 123 Advisor files exist', () => {
+  for (const relativePath of advisorFiles) {
+    assert.equal(existsSync(path.join(repoRoot, relativePath)), true, `${relativePath} should exist`);
+  }
+});
+
+test('Advisor skill frontmatter uses only name and description', () => {
+  const skill = readRepoFile('.agents/skills/boilabin-advisor/SKILL.md');
+  const match = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  assert.ok(match, 'skill should have YAML frontmatter');
+
+  const keys = match[1]
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => line.split(':')[0].trim());
+
+  assert.deepEqual(keys, ['name', 'description']);
+  assert.match(match[1], /name:\s+boilabin-advisor/);
+  assert.match(match[1], /description:.*Codex outputs.*audit reports/i);
+});
+
+test('Advisor skill includes required workflow sections', () => {
+  const skill = readRepoFile('.agents/skills/boilabin-advisor/SKILL.md');
+
+  for (const heading of [
+    'Purpose',
+    'When To Use',
+    'Required Review Sequence',
+    'Next Prompt Generation Rules',
+    'Bigger Task Rules',
+    'Multi-Agent Coordination Rules',
+    'Risk And Stop Condition Rules',
+    'Project Decisions To Preserve',
+    'Exact Staging Rules',
+    'Reusable Next-Prompt Skeleton',
+  ]) {
+    assert.match(skill, new RegExp(`## ${heading}`), `missing ${heading}`);
+  }
+});
+
+test('Advisor skill preserves major Boilabin decisions', () => {
+  const skill = readRepoFile('.agents/skills/boilabin-advisor/SKILL.md');
+
+  assert.match(skill, /pre-launch\/local-development/i);
+  assert.match(skill, /https:\/\/boilabin\.com/i);
+  assert.match(skill, /Flash Deals and Flash Sales were removed/i);
+  assert.match(skill, /\/deals/i);
+  assert.match(skill, /\/api\/admin\/flash-sales/i);
+  assert.match(skill, /baby-kids\.jpg/i);
+  assert.match(skill, /Toys\s+&\s+Collectibles/i);
+  assert.match(skill, /Footer, newsletter, payment-logo, and PromoSection visual work is paused/i);
+  assert.match(skill, /Payment, tracking, seller marketplace/i);
+  assert.match(skill, /mobile app implementation remain separate/i);
+});
+
+test('Advisor workflow doc describes human approval and realistic automation limits', () => {
+  const doc = readRepoFile('docs/development/BOILABIN_ADVISOR_WORKFLOW.md');
+
+  assert.match(doc, /previous ChatGPT review loop/i);
+  assert.match(doc, /must not blindly run future risky work/i);
+  assert.match(doc, /Human approval is required/i);
+  assert.match(doc, /not guaranteed/i);
+  assert.match(doc, /one VS Code Codex chat/i);
+});
+
+test('Advisor state script avoids removed promotion literals that existing script scans reject', () => {
+  const script = readRepoFile('scripts/boilabin-advisor-state.mjs');
+  assert.doesNotMatch(script, /flash[\s_-]*(sale|deal)s?|FlashSale|FlashDeal|\/deals/i);
+});
+
+test('Advisor state script reports ready state without reading env files', () => {
+  const state = createBoilabinAdvisorState({ cwd: repoRoot });
+  const formatted = formatBoilabinAdvisorState(state);
+
+  assert.equal(state.ok, true);
+  assert.equal(state.missingFiles.length, 0);
+  assert.equal(state.secretFindings.length, 0);
+  assert.equal(state.broadStagingFindings.length, 0);
+  assert.match(formatted, /Boilabin Advisor state/);
+  assert.match(formatted, /Overall status: ok/);
+});
+
+test('Advisor secret scanner flags obvious risky values in Advisor docs only', () => {
+  const findings = findSuspiciousSecrets([
+    {
+      relativePath: 'example.md',
+      content: ['AUTH_', 'SEC', 'RET="this-is-a-long-real-looking-secret"'].join(''),
+    },
+  ]);
+
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].file, 'example.md');
+});
+
+test('Advisor broad staging scanner ignores warnings but flags recommendations', () => {
+  const findings = findRecommendedBroadStaging([
+    {
+      relativePath: 'safe.md',
+      content: 'Never use git add .\nDo not run git add -A',
+    },
+    {
+      relativePath: 'unsafe.md',
+      content: ['Run git', 'add . before commit'].join(' '),
+    },
+  ]);
+
+  assert.deepEqual(findings, [{ file: 'unsafe.md', line: 1 }]);
+});
+
+test('Advisor files do not contain obvious secret-looking values', () => {
+  const files = advisorFiles.map((relativePath) => ({
+    relativePath,
+    content: readRepoFile(relativePath),
+  }));
+
+  assert.deepEqual(findSuspiciousSecrets(files), []);
+});
