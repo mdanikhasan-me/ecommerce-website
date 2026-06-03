@@ -76,23 +76,6 @@ function computeShipping(subtotal: number) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
 }
 
-type ActiveFlashSaleItem = {
-  id: string
-  productId: string
-  discountType: 'PERCENTAGE' | 'FIXED'
-  discountValue: number
-  maxQuantity: number | null
-  soldQuantity: number
-}
-
-function applyFlashSaleDiscount(unitPrice: number, item: ActiveFlashSaleItem) {
-  if (item.discountType === 'PERCENTAGE') {
-    return Math.max(0, unitPrice - (unitPrice * item.discountValue) / 100)
-  }
-
-  return Math.max(0, unitPrice - item.discountValue)
-}
-
 function sanitizeString(value: unknown, max: number) {
   if (typeof value !== 'string') return ''
   return value.trim().slice(0, max)
@@ -136,8 +119,7 @@ export async function POST(req: NextRequest) {
     const productIds = Array.from(new Set(orderItems.map((item) => String(item.productId ?? '')).filter(Boolean)))
     const variantIds = Array.from(new Set(orderItems.map((item) => item.variantId).filter(Boolean).map(String)))
 
-    const now = new Date()
-    const [products, variants, flashSaleItems] = await Promise.all([
+    const [products, variants] = await Promise.all([
       db.product.findMany({
         where: getBuyerVisibleProductWhere({ id: { in: productIds } }),
         select: { id: true, categoryId: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
@@ -148,31 +130,10 @@ export async function POST(req: NextRequest) {
             select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true },
           })
         : Promise.resolve([]),
-      db.flashSaleItem.findMany({
-        where: {
-          productId: { in: productIds },
-          flashSale: { isActive: true, startsAt: { lte: now }, endsAt: { gt: now } },
-        },
-        select: {
-          id: true,
-          productId: true,
-          discountType: true,
-          discountValue: true,
-          maxQuantity: true,
-          soldQuantity: true,
-        },
-      }),
     ])
 
     const productMap = new Map(products.map((p) => [p.id, p]))
     const variantMap = new Map(variants.map((v) => [v.id, v]))
-    const flashSaleMap = new Map<string, ActiveFlashSaleItem>()
-    for (const item of flashSaleItems) {
-      const existing = flashSaleMap.get(item.productId)
-      if (!existing || applyFlashSaleDiscount(productMap.get(item.productId)?.salePrice ?? productMap.get(item.productId)?.basePrice ?? 0, item) < applyFlashSaleDiscount(productMap.get(item.productId)?.salePrice ?? productMap.get(item.productId)?.basePrice ?? 0, existing)) {
-        flashSaleMap.set(item.productId, item)
-      }
-    }
 
     type PreparedItem = {
       productId: string
@@ -185,11 +146,9 @@ export async function POST(req: NextRequest) {
       quantity: number
       total: number
       imageUrl: string | null
-      flashSaleItemId: string | null
     }
 
     const preparedItems: PreparedItem[] = []
-    const flashSaleQuantities = new Map<string, number>()
     let subtotal = 0
 
     for (const raw of orderItems) {
@@ -223,15 +182,6 @@ export async function POST(req: NextRequest) {
         unitPrice = variant.salePrice ?? variant.price ?? unitPrice
       }
 
-      const flashSaleItem = flashSaleMap.get(product.id) ?? null
-      if (flashSaleItem) {
-        unitPrice = applyFlashSaleDiscount(unitPrice, flashSaleItem)
-        flashSaleQuantities.set(
-          flashSaleItem.id,
-          (flashSaleQuantities.get(flashSaleItem.id) ?? 0) + qty
-        )
-      }
-
       const lineTotal = unitPrice * qty
       subtotal += lineTotal
       preparedItems.push({
@@ -245,15 +195,7 @@ export async function POST(req: NextRequest) {
         quantity: qty,
         total: lineTotal,
         imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl : null,
-        flashSaleItemId: flashSaleItem?.id ?? null,
       })
-    }
-
-    for (const [flashSaleItemId, quantity] of flashSaleQuantities) {
-      const item = flashSaleItems.find((entry) => entry.id === flashSaleItemId)
-      if (item?.maxQuantity && item.soldQuantity + quantity > item.maxQuantity) {
-        return NextResponse.json({ error: 'One or more flash sale items are sold out' }, { status: 409 })
-      }
     }
 
     // Validate coupon server-side (if provided)
@@ -375,26 +317,11 @@ export async function POST(req: NextRequest) {
           notes: notes ? sanitizeString(notes, 500) : undefined,
           isGuestOrder: false,
           items: {
-            create: preparedItems.map(({ categoryId, flashSaleItemId, ...line }) => line),
+            create: preparedItems.map(({ categoryId, ...line }) => line),
           },
           statusHistory: { create: [{ status: 'PENDING', note: 'Order placed' }] },
         },
       })
-
-      for (const [flashSaleItemId, quantity] of flashSaleQuantities) {
-        const item = flashSaleItems.find((entry) => entry.id === flashSaleItemId)
-        const updated = await tx.flashSaleItem.updateMany({
-          where: {
-            id: flashSaleItemId,
-            ...(item?.maxQuantity ? { soldQuantity: { lte: item.maxQuantity - quantity } } : {}),
-          },
-          data: { soldQuantity: { increment: quantity } },
-        })
-
-        if (updated.count === 0) {
-          throw new Error('FLASH_SALE_SOLD_OUT')
-        }
-      }
 
       if (couponId) {
         await tx.coupon.update({ where: { id: couponId }, data: { usageCount: { increment: 1 } } })
@@ -439,20 +366,6 @@ export async function POST(req: NextRequest) {
         },
       })
       return NextResponse.json({ error: `Insufficient stock for "${error.message.split(':')[1]}"` }, { status: 409 })
-    }
-    if (error instanceof Error && error.message === 'FLASH_SALE_SOLD_OUT') {
-      logSecurityEvent({
-        type: 'server_error',
-        severity: 'warn',
-        route: req.nextUrl.pathname,
-        method: req.method,
-        statusCode: 409,
-        errorCode: 'flash_sale_sold_out',
-        metadata: {
-          feature: 'order_creation',
-        },
-      })
-      return NextResponse.json({ error: 'One or more flash sale items are sold out' }, { status: 409 })
     }
     logSecurityEvent({
       type: 'server_error',

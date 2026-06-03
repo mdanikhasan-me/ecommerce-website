@@ -17,7 +17,6 @@ export const ADMIN_NAV_ITEMS = [
   { label: 'Categories', href: '/admin/categories', icon: Grid3X3 },
   { label: 'Inventory', href: '/admin/inventory', icon: Warehouse },
   { label: 'Coupons', href: '/admin/coupons', icon: Ticket },
-  { label: 'Flash Sales', href: '/admin/flash-sales', icon: Zap },
   { label: 'Banners', href: '/admin/banners', icon: Image },
   { label: 'Reviews', href: '/admin/reviews', icon: Star },
   { label: 'Customers', href: '/admin/users', icon: Users },

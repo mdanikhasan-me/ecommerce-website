@@ -42,9 +42,6 @@ src\app\(admin)\admin\coupons
 src\app\(admin)\admin\coupons\[id]
 src\app\(admin)\admin\coupons\new
 src\app\(admin)\admin\dashboard
-src\app\(admin)\admin\flash-sales
-src\app\(admin)\admin\flash-sales\[id]
-src\app\(admin)\admin\flash-sales\new
 src\app\(admin)\admin\inventory
 src\app\(admin)\admin\notifications
 src\app\(admin)\admin\orders
@@ -78,7 +75,6 @@ src\app\(store)\category\[slug]
 src\app\(store)\checkout
 src\app\(store)\compare
 src\app\(store)\contact
-src\app\(store)\deals
 src\app\(store)\faq
 src\app\(store)\help
 src\app\(store)\new-arrivals
@@ -110,8 +106,6 @@ src\app\api\admin\content
 src\app\api\admin\content\[id]
 src\app\api\admin\coupons
 src\app\api\admin\coupons\[id]
-src\app\api\admin\flash-sales
-src\app\api\admin\flash-sales\[id]
 src\app\api\admin\inventory
 src\app\api\admin\inventory\products
 src\app\api\admin\inventory\products\[id]

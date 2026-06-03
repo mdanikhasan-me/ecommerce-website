@@ -26,7 +26,7 @@ describe('admin homepage section validation', () => {
 
   it('accepts object config input', () => {
     const parsed = parseAdminHomepageSectionPayload({
-      type: 'hero:deals',
+      type: 'hero:featured',
       config: { layout: 'grid', visible: true },
     })
 

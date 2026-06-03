@@ -4,21 +4,15 @@ import { ArrowRight, Mail } from 'lucide-react'
 
 import { ProductCardData } from '@/backend/types/product'
 import { calculateDiscount, formatPrice } from '@/backend/utils'
-import { CountdownTimer } from '@/frontend/components/ui/CountdownTimer'
 import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
 import { FeaturedProductRotator } from '@/frontend/components/home/FeaturedProductRotator'
 
 interface PromoSectionProps {
-  flashDealProducts: ProductCardData[]
   newArrivalProducts: ProductCardData[]
   newArrivalRotatorProducts?: ProductCardData[]
-  bestSellerRotatorProducts?: ProductCardData[]
-  flashDealEndsAt?: Date | string | null
-  flashDealMaxDiscount?: number
 }
 
 type PromoCollection = {
-  kind: 'flash' | 'arrival'
   href: string
   label: string
   title: string
@@ -31,31 +25,11 @@ type PromoCollection = {
 }
 
 export function PromoSection({
-  flashDealProducts,
   newArrivalProducts,
   newArrivalRotatorProducts,
-  bestSellerRotatorProducts,
-  flashDealEndsAt,
-  flashDealMaxDiscount = 0,
 }: PromoSectionProps) {
   const collections: PromoCollection[] = [
     {
-      kind: 'flash' as const,
-      href: '/deals',
-      label: 'Limited Offers',
-      title: 'Flash Deals',
-      copy: 'Sharp price drops, arranged into a cleaner full-width banner so the strongest offers are easy to notice at a glance.',
-      cta: 'Shop deals',
-      bandClassName: 'bg-[#261f31]',
-      previewCardClassName: 'border-[#dfd1bc] bg-[#fffaf3]',
-      products: flashDealProducts.slice(0, 3),
-      rotatorProducts:
-        bestSellerRotatorProducts && bestSellerRotatorProducts.length > 0
-          ? bestSellerRotatorProducts
-          : flashDealProducts,
-    },
-    {
-      kind: 'arrival' as const,
       href: '/new-arrivals',
       label: 'New This Week',
       title: 'New Arrivals',
@@ -89,8 +63,6 @@ export function PromoSection({
             >
               <PromoTextPanel
                 collection={collection}
-                flashDealEndsAt={flashDealEndsAt}
-                flashDealMaxDiscount={flashDealMaxDiscount}
               />
               <PromoProductsPanel collection={collection} />
             </Link>
@@ -103,12 +75,8 @@ export function PromoSection({
 
 function PromoTextPanel({
   collection,
-  flashDealEndsAt,
-  flashDealMaxDiscount,
 }: {
   collection: PromoCollection
-  flashDealEndsAt?: Date | string | null
-  flashDealMaxDiscount: number
 }) {
   return (
     <div className="relative flex flex-col justify-center gap-6 py-7 sm:py-9 lg:flex-row lg:items-center lg:gap-10 lg:py-14">
@@ -126,28 +94,9 @@ function PromoTextPanel({
             {collection.copy}
           </p>
 
-          {collection.kind === 'flash' ? (
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              {flashDealMaxDiscount > 0 ? (
-                <span className="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-xs font-semibold text-[hsl(var(--buttermilk))]">
-                  Up to {flashDealMaxDiscount}% off
-                </span>
-              ) : null}
-              {flashDealEndsAt ? (
-                <CountdownTimer
-                  endsAt={flashDealEndsAt}
-                  label="Ends in"
-                  className="flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-[hsl(var(--buttermilk))]"
-                  valueClassName="rounded-md bg-black/16 px-2 py-1"
-                  separatorClassName="text-[hsl(var(--buttermilk))]/40"
-                />
-              ) : null}
-            </div>
-          ) : (
-            <div className="mt-5 inline-flex items-center rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-xs font-semibold text-[hsl(var(--buttermilk))]">
-              New releases added regularly
-            </div>
-          )}
+          <div className="mt-5 inline-flex items-center rounded-full border border-white/12 bg-white/8 px-3 py-1.5 text-xs font-semibold text-[hsl(var(--buttermilk))]">
+            New releases added regularly
+          </div>
 
           <div className="mt-7">
             <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors group-hover:bg-white">
@@ -176,7 +125,7 @@ function MobilePromoProductStrip({ collection }: { collection: PromoCollection }
             <PromoProductPreview
               product={product}
               cardClassName={collection.previewCardClassName}
-              badgeClassName={collection.kind === 'flash' ? 'bg-primary text-white' : 'bg-foreground text-white'}
+              badgeClassName="bg-foreground text-white"
               compact
             />
           </div>
@@ -195,7 +144,7 @@ function PromoProductsPanel({ collection }: { collection: PromoCollection }) {
             key={product.id}
             product={product}
             cardClassName={collection.previewCardClassName}
-            badgeClassName={collection.kind === 'flash' ? 'bg-primary text-white' : 'bg-foreground text-white'}
+            badgeClassName="bg-foreground text-white"
           />
         ))}
       </div>
@@ -269,7 +218,7 @@ export function NewsletterSection() {
               <span className="text-[hsl(var(--buttermilk))] text-xs font-semibold uppercase tracking-[0.26em]">Newsletter</span>
             </div>
             <h2 className="font-display text-[1.8rem] font-bold leading-[0.96] text-white sm:text-[2.2rem] xl:text-[2.5rem]">
-              Get new arrivals and limited deals first.
+              Get new arrivals and selected offers first.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/76">
               Receive launch alerts, selected offers, and useful updates without the clutter.

@@ -108,6 +108,7 @@ describe('technical SEO policy', () => {
     assert.equal(urls.includes('https://boilabin.com/track-order'), false)
     assert.equal(urls.includes('https://boilabin.com/search'), false)
     assert.equal(urls.includes('https://boilabin.com/cart'), false)
+    assert.equal(urls.includes('https://boilabin.com/deals'), false)
     assert.equal(urls.includes('https://boilabin.com/category'), true)
   })
 

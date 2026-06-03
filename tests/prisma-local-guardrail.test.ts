@@ -75,6 +75,7 @@ test('Prisma local command resolver allows only explicit local Prisma commands',
     '--name',
     'local_change',
   ])
+  assert.deepEqual(resolvePrismaArgs(['migrate', 'deploy']), ['migrate', 'deploy'])
   assert.throws(() => resolvePrismaArgs(['db', 'push']), /Unsupported Prisma local command/)
 })
 

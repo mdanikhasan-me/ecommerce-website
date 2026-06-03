@@ -80,7 +80,6 @@ async function main() {
   })
 
   await prisma.productView.deleteMany({})
-  await prisma.flashSaleItem.updateMany({ data: { soldQuantity: 0 } })
 
   await syncReviewStats()
   await syncSoldCounts()

@@ -59,8 +59,7 @@ const NAV_CATEGORIES = [
 ]
 
 const MOBILE_SHOP_LINKS = [
-  { label: 'Flash Deals', href: '/deals', icon: Zap, tone: 'deal' },
-  { label: 'New Arrivals', href: '/new-arrivals', icon: Sparkles, tone: 'normal' },
+  { label: 'New Arrivals', href: '/new-arrivals', icon: Sparkles },
 ]
 
 const MOBILE_SUPPORT_LINKS = [
@@ -410,19 +409,6 @@ export function Header() {
             ))}
 
             <Link
-              href="/deals"
-              className={cn(
-                'ml-2 flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors',
-                pathname === '/deals'
-                  ? 'bg-red-50 text-red-600'
-                  : 'text-red-600 hover:bg-red-50'
-              )}
-            >
-              <Zap className="h-3.5 w-3.5" />
-              Flash Deals
-            </Link>
-
-            <Link
               href="/new-arrivals"
               className={cn(
                 'ml-auto rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
@@ -671,9 +657,7 @@ export function Header() {
                         href={item.href}
                         className={cn(
                           'flex items-center gap-2 rounded-2xl border px-3 py-3 text-sm font-semibold',
-                          item.tone === 'deal'
-                            ? 'border-red-100 bg-red-50 text-red-600'
-                            : 'border-border bg-card text-foreground'
+                          'border-border bg-card text-foreground'
                         )}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >

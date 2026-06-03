@@ -22,11 +22,11 @@ export function resolvePrismaArgs(argv) {
     return [command, ...(subcommand ? [subcommand, ...rest] : [])]
   }
 
-  if (command === 'migrate' && subcommand === 'dev') {
+  if (command === 'migrate' && (subcommand === 'dev' || subcommand === 'deploy')) {
     return [command, subcommand, ...rest]
   }
 
-  throw new Error('Unsupported Prisma local command. Allowed commands: validate, generate, migrate dev.')
+  throw new Error('Unsupported Prisma local command. Allowed commands: validate, generate, migrate dev, migrate deploy.')
 }
 
 export function createPrismaLocalPlan({

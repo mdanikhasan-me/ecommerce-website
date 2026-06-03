@@ -26,7 +26,6 @@
 ![Compare](https://img.shields.io/badge/Compare-Live-3F3D56?style=flat-square&logo=semanticuireact&logoColor=white)
 ![Reviews](https://img.shields.io/badge/Reviews-Delivered%20Order%20Flow-4C1D95?style=flat-square&logo=trustpilot&logoColor=white)
 ![SEO](https://img.shields.io/badge/SEO-Dynamic%20Product%20Meta-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)
-![Flash Deals](https://img.shields.io/badge/Flash%20Deals-Real%20Campaign%20Only-6D28D9?style=flat-square&logo=lightning&logoColor=white)
 ![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
 ![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
 
@@ -41,7 +40,7 @@ Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping
 ### What it includes
 
 - Customer storefront with category discovery, search, cart, checkout, wishlist, compare, reviews, and account pages
-- Admin panel for products, categories, brands, flash sales, banners, content, reports, inventory, reviews, and orders
+- Admin panel for products, categories, brands, coupons, banners, content, reports, inventory, reviews, and orders
 - Seller foundation with onboarding, dashboard, product management, and order handling structure
 - SEO-focused product metadata and Bangladesh-first pricing language
 - Local asset organization for branding, payments, categories, and uploaded media
@@ -52,11 +51,11 @@ Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping
 
 | Area | Highlights |
 | --- | --- |
-| Storefront | Hero banners, featured collections, flash deals, new arrivals, category browsing, brand pages |
+| Storefront | Hero banners, featured collections, new arrivals, category browsing, brand pages |
 | Shopping | Cart drawer, wishlist, compare, 3-step checkout, guest-friendly flow, order confirmation |
 | Product System | Variants, attributes, specs, sale pricing, stock tracking, review summaries |
 | Reviews | Delivered-order review flow, moderation, rating sync |
-| Admin | Product CRUD, brand/category management, coupons, banners, flash sale campaigns, reports |
+| Admin | Product CRUD, brand/category management, coupons, banners, inventory, reports |
 | Marketplace Ready | Seller onboarding structure, seller admin review, seller order and product sections |
 | SEO | Dynamic metadata, Bangladesh pricing phrases, product-level meta title and description generation |
 
@@ -415,7 +414,6 @@ The admin panel is designed to manage the store as a real working operations das
 - Reviews
 - Coupons
 - Inventory
-- Flash sales
 - Banners
 - Content blocks
 - Reports
@@ -492,12 +490,6 @@ The compare page now supports:
 - category info
 - product description
 - direct add-to-cart actions
-
-### Flash deals
-
-Flash deal banners and sections now only appear when there is a real active flash-sale campaign with actual products behind it.
-
----
 
 ## Roadmap
 

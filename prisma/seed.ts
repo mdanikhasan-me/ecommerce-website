@@ -476,40 +476,9 @@ async function main() {
         sortOrder: 3,
         isActive: true,
       },
-      {
-        title: 'Flash Sale',
-        subtitle: 'Up to 30% off on standout picks',
-        imageUrl: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=800&auto=format',
-        linkUrl: '/deals',
-        position: 'promo',
-        sortOrder: 1,
-        isActive: true,
-      },
     ],
     skipDuplicates: true,
   })
-
-  // FLASH SALE
-  const flashSale = await prisma.flashSale.upsert({
-    where: { id: 'flash-001' },
-    update: {},
-    create: {
-      id: 'flash-001',
-      title: 'Weekend Mega Sale',
-      startsAt: new Date(),
-      endsAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
-      isActive: true,
-    },
-  })
-
-  const flashProducts = await prisma.product.findMany({ where: { sku: { in: ['XIA-BUDS4-PRO', 'ANK-PWR-BANK-20K', 'XIA-MI-BAND8', 'ANK-NANO-65W'] } } })
-  for (const fp of flashProducts) {
-    await prisma.flashSaleItem.upsert({
-      where: { flashSaleId_productId: { flashSaleId: flashSale.id, productId: fp.id } },
-      update: {},
-      create: { flashSaleId: flashSale.id, productId: fp.id, discountType: CouponType.PERCENTAGE, discountValue: 20, maxQuantity: 100, soldQuantity: 0 },
-    })
-  }
 
   // COUPONS
   await prisma.coupon.createMany({
