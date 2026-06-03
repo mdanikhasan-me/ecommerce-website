@@ -13,6 +13,11 @@ import {
   resolvePrismaArgs,
   runPrismaLocalCli,
 } from '../scripts/run-prisma-local.mjs'
+import {
+  createPrismaSeedLocalPlan,
+  runPrismaSeedLocalCli,
+  sanitizeSeedOutput,
+} from '../scripts/run-prisma-seed-local.mjs'
 
 function withTempEnvFiles(files: Record<string, string>, callback: (cwd: string) => void) {
   const cwd = mkdtempSync(join(tmpdir(), 'boilabin-prisma-local-'))
@@ -117,4 +122,141 @@ test('Prisma local runner passes merged local env values to the spawned Prisma c
     assert.match(spawned[0].env.DATABASE_URL, /localhost:5432\/boilabin_local/)
     assert.match(spawned[0].env.SHADOW_DATABASE_URL, /localhost:5432\/boilabin_shadow/)
   })
+})
+
+test('Prisma seed local plan uses .env.local to override a remote-looking .env', () => {
+  withTempEnvFiles({
+    '.env': [
+      'DATABASE_URL="postgresql://postgres:postgres@db.example.test:5432/remote_app"',
+      'SHADOW_DATABASE_URL="postgresql://postgres:postgres@db.example.test:5432/remote_shadow"',
+    ].join('\n'),
+    '.env.local': [
+      'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_local"',
+      'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
+    ].join('\n'),
+  }, (cwd) => {
+    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: {} })
+
+    assert.equal(plan.safety.databaseUrl, 'local')
+    assert.equal(plan.safety.shadowDatabaseUrl, 'local')
+    assert.equal(plan.safety.shadowDatabaseSeparate, true)
+    assert.equal(plan.canRun, true)
+  })
+})
+
+test('Prisma seed local plan refuses a remote-looking app database URL', () => {
+  withTempEnvFiles({
+    '.env': [
+      'DATABASE_URL="postgresql://postgres:postgres@db.example.test:5432/remote_app"',
+      'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
+    ].join('\n'),
+  }, (cwd) => {
+    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: {} })
+
+    assert.equal(plan.safety.databaseUrl, 'remote-looking')
+    assert.equal(plan.canRun, false)
+  })
+})
+
+test('Prisma seed local runner refuses missing shadow DB and does not spawn seed', () => {
+  withTempEnvFiles({
+    '.env.local': 'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_local"',
+  }, (cwd) => {
+    let spawnCount = 0
+    const stderr: string[] = []
+    const status = runPrismaSeedLocalCli({
+      cwd,
+      baseEnv: {},
+      stdout: () => undefined,
+      stderr: (message: string) => stderr.push(message),
+      spawn: () => {
+        spawnCount += 1
+        return { status: 0 }
+      },
+    })
+
+    assert.equal(status, 1)
+    assert.equal(spawnCount, 0)
+    assert.match(stderr.join('\n'), /Refusing to run seed/)
+  })
+})
+
+test('Prisma seed local runner refuses same app and shadow database', () => {
+  withTempEnvFiles({
+    '.env.local': [
+      'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_local"',
+      'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_local"',
+    ].join('\n'),
+  }, (cwd) => {
+    let spawnCount = 0
+    const status = runPrismaSeedLocalCli({
+      cwd,
+      baseEnv: {},
+      stdout: () => undefined,
+      stderr: () => undefined,
+      spawn: () => {
+        spawnCount += 1
+        return { status: 0 }
+      },
+    })
+
+    assert.equal(status, 1)
+    assert.equal(spawnCount, 0)
+  })
+})
+
+test('Prisma seed local runner redacts seed credential and URL output', () => {
+  withTempEnvFiles({
+    '.env.local': [
+      'DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_local"',
+      'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
+    ].join('\n'),
+  }, (cwd) => {
+    const stdout: string[] = []
+    const status = runPrismaSeedLocalCli({
+      cwd,
+      baseEnv: {},
+      stdout: (message: string) => stdout.push(message),
+      stderr: () => undefined,
+      spawn: () => ({
+        status: 0,
+        stdout: [
+          'DATABASE_URL=postgresql://user:pass@example.test/db',
+          'Admin login: admin@example.test',
+          'Password: ExampleSecret123',
+          'Admin: admin@example.test / ExampleSecret123',
+          'Customer: customer@example.test / ExampleSecret123',
+          'Seed completed',
+        ].join('\n'),
+        stderr: '',
+      }),
+    })
+
+    const serialized = stdout.join('\n')
+
+    assert.equal(status, 0)
+    assert(!serialized.includes('postgresql://user:pass@example.test/db'))
+    assert(!serialized.includes('admin@example.test'))
+    assert(!serialized.includes('ExampleSecret123'))
+    assert(serialized.includes('[redacted-database-url]'))
+    assert(serialized.includes('[redacted seed credential output]'))
+    assert(serialized.includes('Seed completed'))
+  })
+})
+
+test('sanitizeSeedOutput redacts database URLs, emails, and credential lines', () => {
+  const output = sanitizeSeedOutput([
+    'postgresql://user:pass@example.test/db',
+    'customer@example.test',
+    'password: secret',
+    'regular status line',
+  ].join('\n'))
+
+  assert(!output.includes('postgresql://user:pass@example.test/db'))
+  assert(!output.includes('customer@example.test'))
+  assert(!output.includes('secret'))
+  assert(output.includes('[redacted-database-url]'))
+  assert(output.includes('[redacted-email]'))
+  assert(output.includes('[redacted seed credential output]'))
+  assert(output.includes('regular status line'))
 })
