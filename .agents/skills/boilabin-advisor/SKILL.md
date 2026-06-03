@@ -34,11 +34,20 @@ The Advisor still does not:
 - approve risky work,
 - bypass human approval for migrations, deployment, secrets, payments, tracking, seller work, mobile work, CSP enforcement, distributed rate limiting, or paused visual/media work.
 
+Use this phrase when the user wants the stronger terminal-first loop instead of a review-only Advisor pass:
+
+```text
+Run Boilabin Terminal Loop mode.
+```
+
+Terminal Loop mode runs one bounded 10-step loop using terminal evidence, read-only planning lanes, one writer, validation before commit, an audit `.md`, a summary, and then a hard stop. It does not run forever and does not execute the next generated prompt without user approval.
+
 ## When To Use
 
 Use this skill when the user asks to:
 
 - `Run Boilabin Advisor mode.`,
+- `Run Boilabin Terminal Loop mode.`,
 - review a pasted Codex result or audit log,
 - identify the latest completed Boilabin step,
 - compare Codex output against audit reports,

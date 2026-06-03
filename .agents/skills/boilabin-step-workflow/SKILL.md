@@ -7,6 +7,31 @@ description: Use for Boilabin step-by-step Codex recovery tasks, audit review, n
 
 Use this skill for Boilabin recovery roadmap work, audit-log review, next-step prompt creation, multi-agent planning, validation, and exact-file commit workflows.
 
+## Terminal-First 10-Step Loop
+
+Use this activation phrase when the user wants a bounded terminal-agent workflow:
+
+```text
+Run Boilabin Terminal Loop mode.
+```
+
+Terminal Loop mode runs exactly one bounded 10-step loop, then stops. It is prompt-invoked, not a forever-running background process, and it does not auto-approve or execute the next task.
+
+The loop is:
+
+1. Terminal baseline: run requested safe status/state commands and record evidence.
+2. Multi-agent planning: use real read-only lanes when available, otherwise labeled simulated lanes.
+3. Evidence review: read safe files before editing.
+4. Coordinator decision: summarize the bounded change, allowed files, and stop conditions.
+5. Implement allowed docs/script/test/report changes with one writer only.
+6. Create or update the requested read-only state script when the step requires it.
+7. Create or update focused tests.
+8. Create the audit `.md` and next prompt draft if requested.
+9. Validate with terminal commands and record real results.
+10. Stage exact files, commit if validation passes, summarize, and stop.
+
+Terminal Loop mode must use terminal evidence instead of guessing. Do not claim a command passed unless terminal output proves it. If validation fails, classify it, fix only inside the allowed scope, rerun affected validation, and document the result. If a fix requires prohibited files/actions, stop.
+
 ## Core Rules
 
 - Preserve the existing step-by-step Boilabin workflow.
@@ -19,6 +44,7 @@ Use this skill for Boilabin recovery roadmap work, audit-log review, next-step p
 - Never use broad staging such as `git add .` or `git add -A`.
 - Never print secrets, full DB URLs, tokens, cookies, credentials, auth headers, payment secrets, OAuth secrets, SMTP secrets, private connection strings, customer/order PII, or raw user data.
 - Do not touch private env files unless the user explicitly authorizes a safe read and the task requires it.
+- In Terminal Loop mode, stop after one 10-step loop. Generate the audit report and final summary, then wait for the user before any next task.
 
 ## Standard Lanes
 

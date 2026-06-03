@@ -12,6 +12,14 @@ Advisor mode is a prompt-invoked workflow. It is not a forever-running backgroun
 Run Boilabin Advisor mode.
 ```
 
+For the stronger terminal-first workflow, type:
+
+```text
+Run Boilabin Terminal Loop mode.
+```
+
+Terminal Loop mode runs one bounded 10-step loop, validates with terminal commands, writes an audit `.md`, summarizes, and stops.
+
 ## Best Short Prompt
 
 ```text
@@ -39,6 +47,7 @@ Do not execute the next prompt until I approve it.
 - It cannot approve risky roadmap work on the user's behalf.
 - It cannot safely infer missing validation, commits, or reports without evidence.
 - It cannot bypass secrets, database, deployment, payment, tracking, seller, mobile, CSP, rate-limit, or paused visual/media guardrails.
+- Terminal Loop mode cannot continue into another task automatically after the loop summary.
 
 ## Human Approval Rules
 
