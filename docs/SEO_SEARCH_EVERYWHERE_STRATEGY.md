@@ -217,3 +217,19 @@ Use visible, honest signals:
 3. Improve product/category metadata wording.
 4. Add more complete product/offer schema where page content supports it.
 5. Plan merchant feed readiness after product data policy is stable.
+
+## Verification Workflow
+
+Before hosting exists, Boilabin can verify repository-level search readiness through local tests, content scans, schema helper tests, and build output. After staging exists, Boilabin can inspect hosted robots, sitemap, metadata, JSON-LD, Open Graph previews, and page performance without submitting staging URLs to search engines.
+
+After the production domain points to hosting, run the production-only verification sequence:
+
+- verify Search Console and Bing Webmaster ownership;
+- submit the production sitemap;
+- inspect representative homepage, product, category, FAQ, shipping, and returns URLs;
+- validate structured data with Google Rich Results Test and Schema.org Validator;
+- inspect social previews from production URLs;
+- review Core Web Vitals and PageSpeed evidence;
+- document AI discovery checks as manual observations, not ranking guarantees.
+
+Do not submit staging URLs to search engines, and do not claim external verification is complete until the external tool has actually confirmed it.
