@@ -115,11 +115,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function ReviewsFallback() {
   return (
-    <section className="mt-12 overflow-hidden rounded-2xl border border-border">
-      <div className="border-b border-border bg-secondary px-6 py-4">
+    <section className="mt-8 overflow-hidden rounded-2xl border border-border sm:mt-10">
+      <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
         <div className="skeleton h-6 w-44 rounded" />
       </div>
-      <div className="space-y-5 p-6">
+      <div className="space-y-4 p-4 sm:space-y-5 sm:p-6">
         <div className="skeleton h-28 w-full rounded-2xl" />
         <div className="skeleton h-24 w-full rounded-2xl" />
         <div className="skeleton h-24 w-full rounded-2xl" />
@@ -130,9 +130,9 @@ function ReviewsFallback() {
 
 function RelatedProductsFallback() {
   return (
-    <section className="mt-14">
-      <div className="skeleton mb-6 h-8 w-52 rounded" />
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+    <section className="mt-10 sm:mt-12">
+      <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
             <div className="skeleton aspect-square w-full" />
@@ -217,11 +217,15 @@ async function RelatedProductsSection({
   if (related.length === 0) return null
 
   return (
-    <section className="mt-14">
-      <h2 className="section-title mb-6">You Might Also Like</h2>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+    <section className="mt-10 sm:mt-12">
+      <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4">
         {related.map((relatedProduct) => (
-          <ProductCard key={relatedProduct.id} product={relatedProduct} />
+          <ProductCard
+            key={relatedProduct.id}
+            product={relatedProduct}
+            imageSizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+          />
         ))}
       </div>
     </section>
@@ -255,31 +259,31 @@ export default async function ProductPage({ params }: Props) {
   ])
 
   return (
-    <div className="container-site py-8">
+    <div className="container-site py-5 sm:py-6 lg:py-8">
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
 
-      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/" className="transition-colors hover:text-foreground">
+      <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-5 sm:gap-2 sm:text-sm">
+        <Link href="/" className="whitespace-nowrap transition-colors hover:text-foreground">
           Home
         </Link>
         <span>/</span>
-        <Link href={`/category/${product.category.slug}`} className="capitalize transition-colors hover:text-foreground">
+        <Link href={`/category/${product.category.slug}`} className="whitespace-nowrap capitalize transition-colors hover:text-foreground">
           {product.category.name}
         </Link>
-        <span>/</span>
-        <span className="max-w-[200px] truncate text-foreground">{product.name}</span>
+        <span className="hidden sm:inline">/</span>
+        <span className="hidden max-w-[260px] truncate text-foreground sm:inline">{product.name}</span>
       </nav>
 
       <ProductDetailClient product={product} />
 
       {product.specifications.length > 0 ? (
-        <div className="mt-12 overflow-hidden rounded-2xl border border-border">
-          <div className="border-b border-border bg-secondary px-6 py-4">
+        <div className="mt-8 overflow-hidden rounded-2xl border border-border sm:mt-10">
+          <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
             <h3 className="font-display text-lg font-semibold">Specifications</h3>
           </div>
           <div className="divide-y divide-border">
             {product.specifications.map((specification, index) => (
-              <div key={index} className="grid grid-cols-2 px-6 py-3 text-sm">
+              <div key={index} className="grid gap-1 px-4 py-3 text-sm sm:grid-cols-[minmax(8rem,0.42fr)_1fr] sm:px-6">
                 <span className="font-medium text-muted-foreground">{specification.name}</span>
                 <span>{specification.value}</span>
               </div>

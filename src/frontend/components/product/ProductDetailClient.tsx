@@ -124,11 +124,11 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   }
 
   return (
-    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-      <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] md:items-start md:gap-6 lg:gap-9">
+      <div className="flex flex-col gap-2.5 md:sticky md:top-24">
         <div
           ref={zoomFrameRef}
-          className="relative aspect-square cursor-zoom-in overflow-hidden rounded-2xl bg-secondary"
+          className="relative aspect-[4/3] cursor-zoom-in overflow-hidden rounded-[1.35rem] bg-secondary md:rounded-2xl"
           onMouseEnter={() => {
             zoomFrameRef.current?.style.setProperty('--zoom-origin', '50% 50%')
             setIsZoomed(true)
@@ -149,14 +149,14 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           )}
 
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-            {discount > 0 && <span className="badge-sale">{discount}% off</span>}
-            {product.isNew && <span className="badge-new">New</span>}
-            {product.isBestSeller && <span className="badge-bestseller">Best Seller</span>}
+            {discount > 0 && <span className="badge-sale px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">{discount}% off</span>}
+            {product.isNew && <span className="badge-new px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">New</span>}
+            {product.isBestSeller && <span className="badge-bestseller px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">Best Seller</span>}
           </div>
         </div>
 
         {galleryImages.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-2 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory]">
             {galleryImages.map((img, i) => (
               <button
                 type="button"
@@ -165,7 +165,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 title={`View image ${i + 1}`}
                 onClick={() => setSelectedImage(i)}
                 className={cn(
-                  'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all',
+                  'relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all [scroll-snap-align:start] sm:h-16 sm:w-16',
                   selectedImage === i ? 'border-primary' : 'border-border hover:border-primary/50'
                 )}
               >
@@ -183,13 +183,13 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
         )}
       </div>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4 md:rounded-[1.35rem] md:border md:border-border/80 md:bg-card/80 md:p-4 md:shadow-[0_12px_30px_rgba(23,18,15,0.035)] lg:p-5">
         <div>
-          <h1 className="mt-1 font-display text-2xl font-bold leading-tight md:text-3xl">
+          <h1 className="font-display text-[1.72rem] font-bold leading-[1.08] sm:text-2xl lg:text-3xl">
             {product.name}
           </h1>
 
-          <div className="mt-2 flex items-center gap-3">
+          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star key={s} className={cn('h-4 w-4', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')} />
@@ -205,18 +205,18 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           </div>
         </div>
 
-        <div className="flex items-baseline gap-3 border-y border-border py-4">
-          <span className="font-display text-3xl font-bold">{formatPrice(price)}</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border py-3.5">
+          <span className="whitespace-nowrap font-display text-[1.9rem] font-bold leading-none sm:text-3xl">{formatPrice(price)}</span>
           {discount > 0 && (
             <>
-              <span className="text-lg text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
-              <span className="badge-sale px-2.5 py-1 text-sm">Save {formatPrice(originalPrice - price)}</span>
+              <span className="whitespace-nowrap text-base text-muted-foreground line-through sm:text-lg">{formatPrice(originalPrice)}</span>
+              <span className="badge-sale px-2.5 py-1 text-xs sm:text-sm">Save {formatPrice(originalPrice - price)}</span>
             </>
           )}
         </div>
 
         {product.shortDescription && (
-          <p className="leading-relaxed text-muted-foreground">{product.shortDescription}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{product.shortDescription}</p>
         )}
 
         {Object.entries(variantGroups).map(([groupName, opts]) => (
@@ -236,7 +236,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                   key={value}
                   onClick={() => setSelectedVariant(variant)}
                   className={cn(
-                    'rounded-lg border px-4 py-2 text-sm font-medium transition-all',
+                    'rounded-lg border px-3 py-1.5 text-sm font-medium transition-all sm:px-4 sm:py-2',
                     selectedVariant?.id === variant.id
                       ? 'border-primary bg-primary/5 text-primary'
                       : 'border-border hover:border-primary/50'
@@ -251,7 +251,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
 
         <div>
           <p className="mb-2 text-sm font-semibold">Quantity</p>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center overflow-hidden rounded-xl border border-border">
               <button
                 type="button"
@@ -277,12 +277,12 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="grid grid-cols-1 gap-2.5 min-[420px]:grid-cols-2">
           <button
             type="button"
             onClick={handleAddToCart}
             disabled={!inStock}
-            className="btn-outline flex flex-1 items-center justify-center gap-2"
+            className="btn-outline flex items-center justify-center gap-2 py-2.5"
           >
             <ShoppingCart className="h-4 w-4" />
             Add to Cart
@@ -291,14 +291,14 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             type="button"
             onClick={handleBuyNow}
             disabled={!inStock}
-            className="btn-primary flex flex-1 items-center justify-center gap-2"
+            className="btn-primary flex items-center justify-center gap-2 py-2.5"
           >
             <Zap className="h-4 w-4" />
             Buy Now
           </button>
         </div>
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
           <button
             type="button"
             onClick={() => {
@@ -307,7 +307,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
             }}
             className={cn(
-              'flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-all',
               isWished ? 'border-red-200 bg-red-50 text-red-500' : 'border-border hover:border-red-200 hover:text-red-500'
             )}
           >
@@ -326,7 +326,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
             }}
             className={cn(
-              'flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition-all hover:border-primary/50',
+              'flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-all hover:border-primary/50',
               isCompared ? 'border-primary/30 bg-primary/5 text-primary' : 'border-border'
             )}
           >
@@ -341,13 +341,13 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               navigator.clipboard.writeText(window.location.href)
               toast.success('Link copied!')
             }}
-            className="ml-auto flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium transition-all hover:border-primary/50"
+            className="flex items-center justify-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium transition-all hover:border-primary/50"
           >
             <Share2 className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="space-y-3 rounded-2xl bg-secondary p-4">
+        <div className="space-y-2.5 rounded-2xl bg-secondary p-3.5 sm:p-4">
           <div className="flex items-start gap-3 text-sm">
             <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
@@ -373,7 +373,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
         </div>
 
         {product.attributes.length > 0 && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-2">
             {product.attributes.map((attr) => (
               <div key={attr.id ?? `${attr.name}-${attr.value}`} className="flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground">{attr.name}:</span>
@@ -394,11 +394,11 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
       </div>
 
       {product.description && (
-        <div className="overflow-hidden rounded-2xl border border-border lg:col-span-2">
-          <div className="border-b border-border bg-secondary px-6 py-4">
+        <div className="overflow-hidden rounded-2xl border border-border md:col-span-2">
+          <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
             <h3 className="font-display text-lg font-semibold">Product Description</h3>
           </div>
-          <div className="prose prose-sm max-w-none px-6 py-5 leading-relaxed text-muted-foreground">
+          <div className="prose prose-sm max-w-none px-4 py-4 leading-relaxed text-muted-foreground sm:px-6 sm:py-5">
             {product.description.split('\n').map((line: string, i: number) => (
               <p key={i}>{line}</p>
             ))}
