@@ -50,12 +50,12 @@ export function CartDrawer() {
       <div
         ref={drawerRef}
         className={cn(
-          'fixed right-0 top-0 bottom-0 w-full max-w-md bg-background z-50 shadow-2xl flex flex-col transition-transform duration-300',
+          'fixed right-0 top-0 bottom-0 z-50 flex w-full max-w-[26rem] flex-col bg-background shadow-2xl transition-transform duration-300 sm:max-w-md',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3.5 sm:px-5 sm:py-4">
           <div className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
             <h2 className="font-display font-semibold text-lg">Your Cart</h2>
@@ -77,31 +77,38 @@ export function CartDrawer() {
         </div>
 
         {/* Items */}
-        <div className={cn('flex-1 overflow-y-auto', items.length > 0 && 'bg-secondary/25')}>
+        <div
+          className={cn(
+            'overflow-y-auto',
+            items.length > 0
+              ? 'max-h-[calc(100dvh-15.5rem)] bg-secondary/25'
+              : 'min-h-0 flex-1'
+          )}
+        >
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-8">
-              <div className="h-20 w-20 rounded-2xl bg-secondary flex items-center justify-center">
-                <ShoppingBag className="h-10 w-10 text-muted-foreground" />
+            <div className="flex h-full flex-col items-center justify-center gap-3 px-7 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary sm:h-20 sm:w-20">
+                <ShoppingBag className="h-8 w-8 text-muted-foreground sm:h-10 sm:w-10" />
               </div>
               <div>
                 <p className="font-semibold text-lg">Your cart is empty</p>
-                <p className="text-muted-foreground text-sm mt-1">Discover thousands of products and add them to your cart.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Discover products and add them to your cart.</p>
               </div>
               <button
                 type="button"
                 onClick={closeCart}
-                className="btn-primary mt-2"
+                className="btn-primary mt-1"
               >
                 Start Shopping
               </button>
             </div>
           ) : (
-            <div className="space-y-3 p-4">
+            <div className="space-y-2.5 p-3 sm:space-y-3 sm:p-4">
               {items.map((item) => (
-                <div key={`${item.productId}-${item.variantId}`} className="flex gap-3 rounded-2xl border border-border bg-background p-3 shadow-sm">
+                <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[4.75rem_minmax(0,1fr)_auto] gap-2.5 rounded-2xl border border-border bg-background p-2.5 shadow-sm sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:gap-3 sm:p-3">
                   {/* Image */}
                   <Link href={`/products/${item.slug}`} onClick={closeCart}>
-                    <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
+                    <div className="relative h-[4.75rem] w-[4.75rem] flex-shrink-0 overflow-hidden rounded-xl bg-secondary sm:h-20 sm:w-20">
                       {item.image && (
                         <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
                       )}
@@ -118,7 +125,7 @@ export function CartDrawer() {
                     {item.variantName && (
                       <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>
                     )}
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                       {/* Qty */}
                       <div className="flex items-center border border-border rounded-lg overflow-hidden">
                         <button
@@ -158,7 +165,7 @@ export function CartDrawer() {
                     aria-label={`Remove ${item.name}`}
                     title={`Remove ${item.name}`}
                     onClick={() => removeItem(item.productId, item.variantId)}
-                    className="p-1.5 h-fit rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -170,7 +177,7 @@ export function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="border-t border-border p-5 space-y-4">
+          <div className="space-y-3 border-t border-border p-4 sm:space-y-4 sm:p-5">
             {/* Subtotal */}
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">

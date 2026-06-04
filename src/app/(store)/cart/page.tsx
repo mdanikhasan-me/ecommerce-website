@@ -50,35 +50,35 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container-site py-20 flex flex-col items-center justify-center text-center">
-        <div className="h-24 w-24 rounded-3xl bg-secondary flex items-center justify-center mb-6">
-          <ShoppingBag className="h-12 w-12 text-muted-foreground" />
+      <div className="container-site flex flex-col items-center justify-center py-12 text-center sm:py-16 lg:py-20">
+        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-secondary sm:h-24 sm:w-24">
+          <ShoppingBag className="h-10 w-10 text-muted-foreground sm:h-12 sm:w-12" />
         </div>
         <h1 className="font-display text-2xl font-bold">Your cart is empty</h1>
-        <p className="text-muted-foreground mt-2 mb-6">Looks like you haven&apos;t added anything yet.</p>
+        <p className="mb-5 mt-2 max-w-sm text-muted-foreground">Looks like you haven&apos;t added anything yet.</p>
         <Link href="/" className="btn-primary">Start Shopping</Link>
       </div>
     )
   }
 
   return (
-    <div className="container-site py-8">
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+    <div className="container-site py-5 sm:py-6 lg:py-8">
+      <nav className="mb-4 flex items-center gap-2 text-xs text-muted-foreground sm:mb-5 sm:text-sm">
         <Link href="/" className="hover:text-foreground">Home</Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <span className="text-foreground">Shopping Cart</span>
       </nav>
 
-      <h1 className="font-display text-2xl font-bold mb-8">
+      <h1 className="mb-5 font-display text-2xl font-bold sm:mb-6">
         Shopping Cart <span className="text-muted-foreground font-normal">({items.length} items)</span>
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] md:items-start lg:grid-cols-3 lg:gap-8">
+        <div className="space-y-3 lg:col-span-2 lg:space-y-4">
           {items.map((item) => (
-            <div key={`${item.productId}-${item.variantId}`} className="bg-card border border-border rounded-2xl p-4 flex gap-4">
+            <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 rounded-2xl border border-border bg-card p-3 sm:grid-cols-[6rem_minmax(0,1fr)_auto] sm:items-center sm:p-4">
               <Link href={`/products/${item.slug}`} className="flex-shrink-0">
-                <div className="relative h-24 w-24 rounded-xl overflow-hidden bg-secondary">
+                <div className="relative h-[5.5rem] w-[5.5rem] overflow-hidden rounded-xl bg-secondary sm:h-24 sm:w-24">
                   {item.image && <Image src={item.image} alt={item.name} fill className="object-cover" sizes="96px" />}
                 </div>
               </Link>
@@ -90,7 +90,7 @@ export default function CartPage() {
                 {item.variantName && <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>}
                 <p className="text-xs text-muted-foreground font-mono mt-0.5">{item.sku}</p>
 
-                <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center border border-border rounded-xl overflow-hidden">
                     <button
                       type="button"
@@ -114,8 +114,8 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
+                  <div className="flex items-center gap-3 sm:hidden">
+                    <div className="text-left">
                       <p className="font-bold">{formatPrice(item.price * item.quantity)}</p>
                       {item.price !== item.originalPrice && (
                         <p className="text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
@@ -126,19 +126,36 @@ export default function CartPage() {
                       aria-label={`Remove ${item.name} from cart`}
                       title={`Remove ${item.name} from cart`}
                       onClick={() => removeItem(item.productId, item.variantId)}
-                      className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
               </div>
+              <div className="hidden items-center gap-4 sm:flex">
+                <div className="text-right">
+                  <p className="font-bold">{formatPrice(item.price * item.quantity)}</p>
+                  {item.price !== item.originalPrice && (
+                    <p className="text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  aria-label={`Remove ${item.name} from cart`}
+                  title={`Remove ${item.name} from cart`}
+                  onClick={() => removeItem(item.productId, item.variantId)}
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
 
         <div>
-          <div className="bg-card border border-border rounded-2xl p-5 sticky top-24">
+          <div className="sticky top-24 rounded-2xl border border-border bg-card p-4 sm:p-5">
             <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
 
             <div className="mb-5">
@@ -200,8 +217,8 @@ export default function CartPage() {
               Proceed to Checkout <ArrowRight className="h-4 w-4" />
             </Link>
 
-            <p className="text-xs text-muted-foreground text-center mt-3">
-              Secure checkout with cash on delivery
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Cash on delivery is available at checkout
             </p>
           </div>
         </div>
