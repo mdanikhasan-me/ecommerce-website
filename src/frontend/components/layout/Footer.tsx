@@ -13,7 +13,7 @@ import {
   RefreshCcw,
   WalletCards,
 } from 'lucide-react'
-import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
+import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
@@ -23,17 +23,29 @@ const SOCIAL_LINKS = [
   { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
 ]
 
-const FOOTER_PAYMENT_METHODS = PAYMENT_GATEWAYS
-  .filter((gateway) => gateway.isAvailable)
-  .flatMap((gateway) => gateway.logos ?? [])
-
-const FOOTER_PAYMENT_LOGO_CLASSES: Record<string, string> = {
-  'Cash on Delivery': 'h-[0.9rem] w-auto',
-  bKash: 'h-[1.05rem] w-auto',
-  Nagad: 'h-[1.15rem] w-auto',
-  Visa: 'h-[0.95rem] w-auto',
-  Mastercard: 'h-[0.95rem] w-auto',
-}
+// Footer display only; does not enable checkout gateways.
+const FOOTER_PAYMENT_LOGOS = [
+  {
+    ...PAYMENT_ASSETS.CASH_ON_DELIVERY,
+    className: 'h-[1.05rem] max-w-[4.8rem]',
+  },
+  {
+    ...PAYMENT_ASSETS.BKASH,
+    className: 'h-[1.35rem] max-w-[2.4rem]',
+  },
+  {
+    ...PAYMENT_ASSETS.NAGAD,
+    className: 'h-[1.55rem] max-w-[2.1rem]',
+  },
+  {
+    ...PAYMENT_ASSETS.VISA,
+    className: 'h-[1.05rem] max-w-[3.5rem]',
+  },
+  {
+    ...PAYMENT_ASSETS.MASTERCARD,
+    className: 'h-[1.15rem] max-w-[3.15rem]',
+  },
+]
 
 type FooterLinkSection = {
   title: string
@@ -56,8 +68,8 @@ const FOOTER_SERVICE_ITEMS = [
     icon: RefreshCcw,
   },
   {
-    title: 'Cash on Delivery',
-    copy: 'Shown payment methods follow current checkout availability.',
+    title: 'Checkout payment',
+    copy: 'Confirm available options at checkout.',
     icon: WalletCards,
   },
   {
@@ -124,15 +136,15 @@ const BOTTOM_LEGAL_LINKS = [
 export function Footer() {
   return (
     <footer className="border-t border-black/8 bg-[hsl(42_42%_96%)] text-foreground">
-      <div className="border-b border-black/6 bg-white/52">
-        <div className="container-site py-5 sm:py-6">
-          <div className="grid gap-y-4 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
+      <div className="hidden border-b border-black/6 bg-white/52 sm:block">
+        <div className="container-site py-4 lg:py-5">
+          <div className="grid gap-y-3 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
             {FOOTER_SERVICE_ITEMS.map((item) => (
               <div
                 key={item.title}
-                className="flex min-w-0 items-center gap-3"
+                className="flex min-w-0 items-center gap-2.5"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground">
                   <item.icon className="h-5 w-5" />
                 </span>
                 <span className="min-w-0">
@@ -146,19 +158,19 @@ export function Footer() {
       </div>
 
       <div>
-        <div className="container-site py-8 sm:py-10 lg:py-12">
-          <div className="grid gap-9 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.62fr)] lg:gap-12 xl:gap-16">
+        <div className="container-site py-6 sm:py-8 lg:py-9">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.64fr)] lg:gap-10 xl:gap-14">
             <section aria-label="Boilabin contact" className="max-w-[34rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                <BoilabinLogo variant="mark" size={52} />
-                <span className="font-display text-[1.48rem] font-bold leading-none tracking-normal text-foreground sm:text-[1.6rem]">
+                <BoilabinLogo variant="mark" size={46} />
+                <span className="font-display text-[1.4rem] font-bold leading-none tracking-normal text-foreground sm:text-[1.55rem]">
                   Boilabin
                 </span>
               </Link>
-              <p className="mt-4 max-w-[29rem] text-sm leading-6 text-muted-foreground">
+              <p className="mt-3 max-w-[27rem] text-sm leading-6 text-muted-foreground sm:mt-4">
                 Browse products, manage orders, and reach support from one practical shopping hub.
               </p>
-              <div className="mt-5 flex flex-col gap-2.5 text-sm text-muted-foreground">
+              <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="flex items-center gap-2 transition-colors hover:text-foreground focus-visible:text-foreground"
@@ -175,7 +187,7 @@ export function Footer() {
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary/72" /> {CONTACT_ADDRESS}
                 </span>
               </div>
-              <div className="mt-5 flex items-center gap-2.5">
+              <div className="mt-4 flex items-center gap-2">
                 {SOCIAL_LINKS.map((item) => (
                   <a
                     key={item.label}
@@ -183,9 +195,9 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-3.5 w-3.5" />
                   </a>
                 ))}
               </div>
@@ -195,7 +207,7 @@ export function Footer() {
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <div key={section.title}>
                   <h2 className="text-sm font-semibold text-foreground">{section.title}</h2>
-                  <ul className="mt-3 space-y-2.5">
+                  <ul className="mt-2.5 space-y-2">
                     {section.links.map((link) => (
                       <li key={link.href}>
                         <Link
@@ -216,13 +228,13 @@ export function Footer() {
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <details
                   key={section.title}
-                  className="group overflow-hidden rounded-xl border border-black/6 bg-white/72 shadow-[0_8px_20px_rgba(23,18,15,0.03)]"
+                  className="group overflow-hidden border-b border-black/8"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
                     <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
-                  <ul className="space-y-1 border-t border-black/6 px-4 py-3">
+                  <ul className="space-y-1 pb-3">
                     {section.links.map((link) => (
                       <li key={link.href}>
                         <Link
@@ -240,42 +252,33 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="mt-8 grid gap-7 border-t border-black/8 pt-7 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.72fr)] lg:items-start lg:gap-12">
+          <div className="mt-6 grid gap-5 border-t border-black/8 pt-5 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.68fr)] lg:items-start lg:gap-10">
             <section className="order-2 lg:order-1">
               <h2 className="text-sm font-semibold text-foreground">We accept</h2>
-              {FOOTER_PAYMENT_METHODS.length > 0 ? (
-                <div className="mt-3 flex flex-wrap items-center gap-2.5">
-                  {FOOTER_PAYMENT_METHODS.map((method) => (
-                    <span
-                      key={method.alt}
-                      className="inline-flex min-h-8 items-center justify-center rounded-md border border-black/8 bg-white px-3 shadow-[0_5px_14px_rgba(23,18,15,0.035)]"
-                    >
-                      <img
-                        src={method.src}
-                        alt={method.alt}
-                        width={method.width}
-                        height={method.height}
-                        loading="eager"
-                        decoding="async"
-                        className={`${FOOTER_PAYMENT_LOGO_CLASSES[method.alt] ?? 'h-[1rem] w-auto'} block object-contain`}
-                      />
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-              <p className="mt-2.5 max-w-md text-xs leading-5 text-muted-foreground">
-                Displayed methods follow current checkout availability.
-              </p>
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-5">
+                {FOOTER_PAYMENT_LOGOS.map((method) => (
+                  <img
+                    key={method.alt}
+                    src={method.src}
+                    alt={method.alt}
+                    width={method.width}
+                    height={method.height}
+                    loading="eager"
+                    decoding="async"
+                    className={`${method.className} block w-auto object-contain`}
+                  />
+                ))}
+              </div>
             </section>
 
             <section className="order-1 lg:order-2">
               <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
                 Get launch alerts, selected offers, and useful updates.
               </p>
-              <div className="mt-3">
+              <div className="mt-2.5">
                 <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
                   No spam. Unsubscribe anytime.
                 </p>
               </div>
@@ -285,7 +288,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-black/6 bg-white/54">
-        <div className="container-site py-4 text-xs text-muted-foreground">
+        <div className="container-site py-3.5 text-xs text-muted-foreground">
           <div className="flex w-full flex-col items-center justify-between gap-3 lg:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>
