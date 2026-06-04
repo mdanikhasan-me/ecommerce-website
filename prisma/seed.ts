@@ -155,7 +155,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: true,
       tags: ['iphone', 'apple', 'smartphone', '5g', 'pro'],
       rating: 4.8, reviewCount: 124, soldCount: 89,
-      imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format',
+      imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg',
       specifications: [
         { group: 'Display', name: 'Screen Size', value: '6.1 inches' },
         { group: 'Display', name: 'Resolution', value: '2556 x 1179 pixels' },
@@ -174,7 +174,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['samsung', 'galaxy', 'android', 'flagship', 's-pen'],
       rating: 4.7, reviewCount: 98, soldCount: 67,
-      imageUrl: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format',
+      imageUrl: '/uploads/products/samsung-galaxy-s24-ultra-256gb-mnyzjwut-55e72c0c.jpg',
       specifications: [
         { group: 'Display', name: 'Screen Size', value: '6.8 inches' },
         { group: 'Display', name: 'Technology', value: 'Dynamic AMOLED 2X, 120Hz' },
@@ -263,7 +263,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['powerbank', 'anker', 'charger', 'fast-charge'],
       rating: 4.7, reviewCount: 523, soldCount: 876,
-      imageUrl: 'https://images.unsplash.com/photo-1609428614116-c91f3c1eac77?w=800&auto=format',
+      imageUrl: '/uploads/products/anker-737-power-bank-24000mah-mnyzif42-a41aa5a6.webp',
     },
     {
       sku: 'SONY-PS5-SLIM', name: 'Sony PlayStation 5 Slim Console', slug: 'sony-playstation-5-slim',
@@ -351,7 +351,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['charger', 'anker', 'usb-c', 'gan', 'fast-charge'],
       rating: 4.7, reviewCount: 892, soldCount: 2134,
-      imageUrl: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format',
+      imageUrl: '/uploads/products/anker-511-nano-pro-65w-charger-mnyzoikz-37e76524.jpg',
     },
     {
       sku: 'APL-AIRPODS-PRO2', name: 'Apple AirPods Pro (2nd Generation)', slug: 'apple-airpods-pro-2nd-gen',
@@ -373,7 +373,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: false,
       tags: ['monitor', 'dell', '4k', 'usb-c', 'ultrasharp'],
       rating: 4.8, reviewCount: 89, soldCount: 56,
-      imageUrl: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format',
+      imageUrl: '/uploads/products/dell-ultrasharp-27-4k-usb-c-u2723de-mnyzrjgz-759f7168.jpg',
     },
     {
       sku: 'SAM-GALAXY-TAB-S9', name: 'Samsung Galaxy Tab S9 128GB WiFi', slug: 'samsung-galaxy-tab-s9-128gb',
@@ -384,7 +384,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['tablet', 'samsung', 'android', 's-pen', 'flagship'],
       rating: 4.7, reviewCount: 143, soldCount: 78,
-      imageUrl: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format',
+      imageUrl: '/uploads/products/samsung-galaxy-tab-s9-128gb-mnyvmwuo-057009f0.jpg',
     },
     {
       sku: 'XIA-REDMI-NOTE13PRO', name: 'Xiaomi Redmi Note 13 Pro 256GB', slug: 'xiaomi-redmi-note-13-pro-256gb',
@@ -395,7 +395,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: false,
       tags: ['xiaomi', 'redmi', 'smartphone', 'camera-phone', 'midrange'],
       rating: 4.5, reviewCount: 234, soldCount: 312,
-      imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format',
+      imageUrl: '/uploads/products/xiaomi-redmi-note-13-pro-256gb-mnyvj84s-d6198d84.webp',
     },
   ]
 

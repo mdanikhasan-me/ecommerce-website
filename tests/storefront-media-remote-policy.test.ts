@@ -6,6 +6,7 @@ import {
   auditStorefrontMediaSources,
   CANONICAL_CATEGORY_ASSETS,
   CANONICAL_HERO_ASSETS,
+  CANONICAL_PRODUCT_IMAGE_REPLACEMENTS,
   RETIRED_STOREFRONT_REMOTE_MEDIA,
 } from '../scripts/audit-storefront-media-sources.mjs'
 
@@ -48,6 +49,21 @@ describe('storefront media remote policy inventory', () => {
         ),
         `${retiredUrl} should not return to active seed hero references`,
       )
+    }
+  })
+
+  it('keeps approved product image replacements on committed local assets', () => {
+    const audit = auditStorefrontMediaSources()
+
+    assert.equal(audit.productImageReplacements.length, CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length)
+    assert.equal(audit.productSeedLocalReplacementCount, CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length)
+    assert.equal(audit.staleProductReplacementRemoteCount, 0)
+
+    for (const replacement of audit.productImageReplacements) {
+      assert.equal(replacement.localExists, true, `${replacement.local} should exist`)
+      assert.equal(replacement.seedUsesLocal, true, `${replacement.product} should use local seed image`)
+      assert.equal(replacement.seedUsesRemote, false, `${replacement.product} should not use stale remote seed image`)
+      assert.equal(replacement.repairMapsRemoteToLocal, true, `${replacement.product} should have a local repair mapping`)
     }
   })
 })

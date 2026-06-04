@@ -18,6 +18,58 @@ export const CANONICAL_HERO_ASSETS = [
   '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
 ]
 
+export const CANONICAL_PRODUCT_IMAGE_REPLACEMENTS = [
+  {
+    product: 'iPhone 15 Pro 128GB',
+    slug: 'iphone-15-pro-128gb',
+    remote: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format',
+    local: '/assets/banners/home-hero-iphone-15-pro.jpg',
+    note: 'Temporary exact-product hero asset reuse until a dedicated product-card asset is supplied.',
+  },
+  {
+    product: 'Samsung Galaxy S24 Ultra 256GB',
+    slug: 'samsung-galaxy-s24-ultra-256gb',
+    remote: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format',
+    local: '/uploads/products/samsung-galaxy-s24-ultra-256gb-mnyzjwut-55e72c0c.jpg',
+    note: 'Exact committed product upload.',
+  },
+  {
+    product: 'Anker 737 Power Bank 24000mAh',
+    slug: 'anker-737-power-bank-24000mah',
+    remote: 'https://images.unsplash.com/photo-1609428614116-c91f3c1eac77?w=800&auto=format',
+    local: '/uploads/products/anker-737-power-bank-24000mah-mnyzif42-a41aa5a6.webp',
+    note: 'Exact committed product upload.',
+  },
+  {
+    product: 'Anker 511 Nano Pro 65W USB-C Charger',
+    slug: 'anker-511-nano-pro-65w-charger',
+    remote: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format',
+    local: '/uploads/products/anker-511-nano-pro-65w-charger-mnyzoikz-37e76524.jpg',
+    note: 'Exact committed product upload.',
+  },
+  {
+    product: 'Dell UltraSharp 27" 4K USB-C Monitor U2723DE',
+    slug: 'dell-ultrasharp-27-4k-usb-c-u2723de',
+    remote: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format',
+    local: '/uploads/products/dell-ultrasharp-27-4k-usb-c-u2723de-mnyzrjgz-759f7168.jpg',
+    note: 'Exact committed product upload.',
+  },
+  {
+    product: 'Samsung Galaxy Tab S9 128GB WiFi',
+    slug: 'samsung-galaxy-tab-s9-128gb',
+    remote: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format',
+    local: '/uploads/products/samsung-galaxy-tab-s9-128gb-mnyvmwuo-057009f0.jpg',
+    note: 'Exact committed product upload selected from same-slug local assets.',
+  },
+  {
+    product: 'Xiaomi Redmi Note 13 Pro 256GB',
+    slug: 'xiaomi-redmi-note-13-pro-256gb',
+    remote: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format',
+    local: '/uploads/products/xiaomi-redmi-note-13-pro-256gb-mnyvj84s-d6198d84.webp',
+    note: 'Exact committed product upload.',
+  },
+]
+
 export const RETIRED_STOREFRONT_REMOTE_MEDIA = [
   'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1600&auto=format',
   'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=1600&auto=format',
@@ -66,6 +118,12 @@ function collectRemoteUrlsFromFile(cwd, file) {
   }))
 }
 
+function readFileIfPresent(cwd, file) {
+  const absolutePath = join(cwd, file)
+  if (!existsSync(absolutePath)) return ''
+  return readFileSync(absolutePath, 'utf8')
+}
+
 function classifyRemoteUrl({ file, url }) {
   if (file === 'next.config.js') return 'next-image-remote-allowlist'
   if (file === 'prisma/seed.ts' && url.includes('w=1600')) return 'seed-hero-remote'
@@ -78,6 +136,8 @@ function classifyRemoteUrl({ file, url }) {
 }
 
 export function auditStorefrontMediaSources({ cwd = process.cwd(), scanFiles = DEFAULT_SCAN_FILES } = {}) {
+  const seedText = readFileIfPresent(cwd, 'prisma/seed.ts')
+  const knownRepairText = readFileIfPresent(cwd, 'scripts/repair-known-broken-image-urls.mjs')
   const categoryAssets = CANONICAL_CATEGORY_ASSETS.map((pathname) => ({
     pathname,
     exists: publicPathExists(cwd, pathname),
@@ -90,6 +150,15 @@ export function auditStorefrontMediaSources({ cwd = process.cwd(), scanFiles = D
   const remoteReferences = scanFiles.flatMap((file) => collectRemoteUrlsFromFile(cwd, file))
   const remoteUrls = unique(remoteReferences.map((reference) => reference.url))
   const acceptedRemoteUrls = new Set(ACCEPTED_REMOTE_MEDIA.map((entry) => entry.url))
+  const productImageReplacements = CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.map((replacement) => ({
+    ...replacement,
+    localExists: publicPathExists(cwd, replacement.local),
+    seedUsesLocal: seedText.includes(`imageUrl: '${replacement.local}'`),
+    seedUsesRemote: seedText.includes(`imageUrl: '${replacement.remote}'`),
+    repairMapsRemoteToLocal:
+      knownRepairText.includes(`from: '${replacement.remote}'`) &&
+      knownRepairText.includes(`to: '${replacement.local}'`),
+  }))
 
   return {
     cwd: normalizePath(cwd),
@@ -104,6 +173,7 @@ export function auditStorefrontMediaSources({ cwd = process.cwd(), scanFiles = D
     },
     remoteReferences,
     remoteUrls,
+    productImageReplacements,
     retiredStorefrontRemoteMedia: RETIRED_STOREFRONT_REMOTE_MEDIA.map((url) => ({
       url,
       presentInActiveSeedHero: remoteReferences.some(
@@ -115,6 +185,11 @@ export function auditStorefrontMediaSources({ cwd = process.cwd(), scanFiles = D
       present: remoteUrls.includes(entry.url),
     })),
     productSeedRemoteCount: remoteReferences.filter((reference) => reference.classification === 'product-seed-remote')
+      .length,
+    productSeedLocalReplacementCount: productImageReplacements.filter(
+      (replacement) => replacement.seedUsesLocal && replacement.localExists,
+    ).length,
+    staleProductReplacementRemoteCount: productImageReplacements.filter((replacement) => replacement.seedUsesRemote)
       .length,
     unexpectedRemoteHeroCount: remoteReferences.filter(
       (reference) =>
@@ -131,6 +206,8 @@ function formatAudit(audit) {
   lines.push(`Hero assets present: ${audit.heroAssets.every((asset) => asset.exists)}`)
   lines.push(`Baby Kids asset restored: ${audit.babyKidsExists}`)
   lines.push(`Product seed remote images: ${audit.productSeedRemoteCount}`)
+  lines.push(`Product seed local replacements: ${audit.productSeedLocalReplacementCount}`)
+  lines.push(`Stale product replacement remotes: ${audit.staleProductReplacementRemoteCount}`)
   lines.push(`Unexpected seed hero remotes: ${audit.unexpectedRemoteHeroCount}`)
   lines.push('Remote media references:')
   for (const reference of audit.remoteReferences) {

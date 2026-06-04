@@ -9,6 +9,7 @@ import {
   CATEGORY_IMAGE_REPAIRS,
   repairStorefrontImageSources,
 } from '../scripts/repair-storefront-image-sources.mjs'
+import { CANONICAL_PRODUCT_IMAGE_REPLACEMENTS } from '../scripts/audit-storefront-media-sources.mjs'
 
 function publicAssetExists(pathname: string) {
   return existsSync(join(process.cwd(), 'public', pathname.replace(/^\//, '')))
@@ -41,6 +42,16 @@ describe('storefront image source of truth', () => {
 
     for (const repair of BANNER_IMAGE_REPAIRS) {
       assert.equal(publicAssetExists(repair.to), true, `${repair.to} should exist`)
+    }
+  })
+
+  it('keeps approved product seed image replacements on local source-of-truth assets', () => {
+    const seed = readFileSync(join(process.cwd(), 'prisma/seed.ts'), 'utf8')
+
+    for (const replacement of CANONICAL_PRODUCT_IMAGE_REPLACEMENTS) {
+      assert.ok(seed.includes(`imageUrl: '${replacement.local}'`), `${replacement.product} should use local seed asset`)
+      assert.equal(seed.includes(`imageUrl: '${replacement.remote}'`), false, `${replacement.product} should not use stale remote seed asset`)
+      assert.equal(publicAssetExists(replacement.local), true, `${replacement.local} should exist`)
     }
   })
 

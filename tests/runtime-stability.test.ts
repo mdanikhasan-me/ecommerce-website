@@ -194,7 +194,7 @@ describe('known broken seeded image URLs', () => {
     assert.equal(results.length, KNOWN_BROKEN_IMAGE_REPLACEMENTS.length)
     assert.deepEqual(
       updates.map((update) => update.model),
-      ['productImage', 'productImage', 'banner'],
+      KNOWN_BROKEN_IMAGE_REPLACEMENTS.map((replacement) => replacement.model),
     )
 
     for (const [index, update] of updates.entries()) {
