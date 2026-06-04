@@ -77,7 +77,7 @@ export function CartDrawer() {
         </div>
 
         {/* Items */}
-        <div className="flex-1 overflow-y-auto">
+        <div className={cn('flex-1 overflow-y-auto', items.length > 0 && 'bg-secondary/25')}>
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-8">
               <div className="h-20 w-20 rounded-2xl bg-secondary flex items-center justify-center">
@@ -96,9 +96,9 @@ export function CartDrawer() {
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-border">
+            <div className="space-y-3 p-4">
               {items.map((item) => (
-                <div key={`${item.productId}-${item.variantId}`} className="flex gap-3 p-4">
+                <div key={`${item.productId}-${item.variantId}`} className="flex gap-3 rounded-2xl border border-border bg-background p-3 shadow-sm">
                   {/* Image */}
                   <Link href={`/products/${item.slug}`} onClick={closeCart}>
                     <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-secondary flex-shrink-0">
