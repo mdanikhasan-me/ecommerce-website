@@ -2,6 +2,7 @@ import {
   ADMIN_REPORT_EXPORT_METADATA,
   type AdminReportExportType,
 } from '@/backend/admin/reports'
+import type { SecurityEventInput } from '@/backend/security/security-log'
 
 export const ADMIN_EXPORT_AUDIT_ROUTE = '/api/admin/reports/export' as const
 export const ADMIN_EXPORT_AUDIT_METHOD = 'GET' as const
@@ -51,6 +52,8 @@ export type AdminExportAuditEvent = {
     containsPaymentOrOrderSensitiveData?: boolean
   }
 }
+
+export type AdminExportSecurityEvent = SecurityEventInput
 
 export function isAdminReportExportType(value: unknown): value is AdminReportExportType {
   return (
@@ -143,4 +146,34 @@ export function buildAdminExportAuditEvent(
   }
 
   return event
+}
+
+export function buildAdminExportSecurityEvent(
+  input: AdminExportAuditEventInput,
+): AdminExportSecurityEvent {
+  const event = buildAdminExportAuditEvent(input)
+  const metadata: NonNullable<SecurityEventInput['metadata']> = {
+    result: event.metadata.result,
+    reportTypeValid: event.metadata.reportTypeValid,
+  }
+
+  if (event.metadata.reportType) metadata.reportType = event.metadata.reportType
+  if (typeof event.metadata.containsCustomerPii === 'boolean') {
+    metadata.containsCustomerPii = event.metadata.containsCustomerPii
+  }
+  if (typeof event.metadata.containsBusinessSensitiveData === 'boolean') {
+    metadata.containsBusinessSensitiveData = event.metadata.containsBusinessSensitiveData
+  }
+
+  return {
+    type: event.type,
+    timestamp: event.timestamp,
+    severity: event.severity,
+    route: event.route,
+    method: event.method,
+    statusCode: event.statusCode,
+    errorCode: event.errorCode,
+    userRole: event.userRole,
+    metadata,
+  }
 }

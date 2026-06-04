@@ -14,6 +14,7 @@ import {
   ADMIN_EXPORT_AUDIT_RESULTS,
   ADMIN_EXPORT_AUDIT_ROUTE,
   buildAdminExportAuditEvent,
+  buildAdminExportSecurityEvent,
   isAdminReportExportType,
 } from '@/backend/admin/export-audit-log'
 import { sanitizeSecurityEvent } from '@/backend/security/security-log'
@@ -26,6 +27,9 @@ const adminReportExportLinkSource = () =>
     join(process.cwd(), 'src/frontend/components/admin/AdminReportExportLink.tsx'),
     'utf8',
   )
+
+const adminReportExportRouteSource = () =>
+  readFileSync(join(process.cwd(), 'src/app/api/admin/reports/export/route.ts'), 'utf8')
 
 const adminExportCsvHandlingGuideSource = () =>
   readFileSync(join(process.cwd(), 'docs/operations/ADMIN_EXPORT_CSV_HANDLING_GUIDE.md'), 'utf8')
@@ -458,5 +462,120 @@ describe('admin export audit event helper', () => {
     assert(!serialized.includes('downloaded_csv_with_raw_details'))
     assert(!serialized.includes('database_error_with_raw_details'))
     assert(!serialized.includes('CUSTOMER'))
+  })
+
+  it('builds a security-log event without payment-named metadata keys', () => {
+    const securityEvent = buildAdminExportSecurityEvent({
+      result: 'success',
+      reportType: 'orders',
+      statusCode: 200,
+      actorRole: 'ADMIN',
+      timestamp: '2026-06-04T10:00:00.000Z',
+    })
+
+    assert.equal(securityEvent.type, 'admin_export_success')
+    assert.equal(securityEvent.route, ADMIN_EXPORT_AUDIT_ROUTE)
+    assert.equal(securityEvent.method, ADMIN_EXPORT_AUDIT_METHOD)
+    assert.equal(securityEvent.statusCode, 200)
+    assert.equal(securityEvent.userRole, 'ADMIN')
+    assert.deepEqual(securityEvent.metadata, {
+      result: 'success',
+      reportTypeValid: true,
+      reportType: 'orders',
+      containsCustomerPii: true,
+      containsBusinessSensitiveData: false,
+    })
+
+    const serialized = JSON.stringify(securityEvent)
+    assert(!serialized.includes('containsPaymentOrOrderSensitiveData'))
+    assert(!serialized.includes('paymentStatus'))
+    assert(!serialized.includes('orderNumber'))
+
+    const sanitized = sanitizeSecurityEvent(securityEvent)
+    assert.equal(sanitized.metadata?.reportType, 'orders')
+    assert.equal(sanitized.metadata?.containsCustomerPii, true)
+    assert.equal(sanitized.metadata?.containsBusinessSensitiveData, false)
+    assert.equal('containsPaymentOrOrderSensitiveData' in (sanitized.metadata ?? {}), false)
+  })
+})
+
+describe('admin report export route audit logging source contract', () => {
+  function auditLogCallBlocks() {
+    return adminReportExportRouteSource().match(/logAdminExportAudit\(\{[\s\S]*?\n\s*\}\)/g) ?? []
+  }
+
+  it('imports only the approved sanitized audit helper and security logger', () => {
+    const routeSource = adminReportExportRouteSource()
+
+    assert.match(routeSource, /buildAdminExportSecurityEvent/)
+    assert.match(routeSource, /isAdminReportExportType/)
+    assert.match(routeSource, /logSecurityEvent/)
+    assert.doesNotMatch(routeSource, /logAdminAudit/)
+    assert.doesNotMatch(routeSource, /db\.auditLog|@\/backend\/database|PrismaClient|process\.env/)
+  })
+
+  it('isolates audit logging as fail-open source behavior', () => {
+    const routeSource = adminReportExportRouteSource()
+
+    assert.match(routeSource, /function logAdminExportAudit\(input: AdminExportAuditEventInput\)/)
+    assert.match(
+      routeSource,
+      /try\s*\{\s*logSecurityEvent\(buildAdminExportSecurityEvent\(input\)\)\s*\}\s*catch\s*\{/,
+    )
+    assert.match(routeSource, /fail-open/)
+    assert.doesNotMatch(routeSource, /throw new Error\(|return logSecurityEvent/)
+  })
+
+  it('keeps invalid export type response unchanged while logging a bounded blocked event', () => {
+    const routeSource = adminReportExportRouteSource()
+    const invalidLogIndex = routeSource.indexOf("errorCode: 'invalid_export_type'")
+    const invalidReturnIndex = routeSource.indexOf(
+      "return NextResponse.json({ error: 'Export type is invalid' }, { status: 400 })",
+    )
+
+    assert.match(routeSource, /if \(!isAdminReportExportType\(type\)\)/)
+    assert.ok(invalidLogIndex > -1)
+    assert.ok(invalidReturnIndex > -1)
+    assert.ok(invalidLogIndex < invalidReturnIndex)
+    assert.doesNotMatch(routeSource, /reportType:\s*type/)
+  })
+
+  it('logs successful exports only after CSV construction and without inspecting CSV contents', () => {
+    const routeSource = adminReportExportRouteSource()
+    const csvBuildIndex = routeSource.indexOf('const csv = await buildAdminReportCsv(type, range)')
+    const successLogIndex = routeSource.indexOf("result: 'success'")
+    const csvResponseIndex = routeSource.indexOf('return new NextResponse(csv, {')
+
+    assert.ok(csvBuildIndex > -1)
+    assert.ok(successLogIndex > -1)
+    assert.ok(csvResponseIndex > -1)
+    assert.ok(csvBuildIndex < successLogIndex)
+    assert.ok(successLogIndex < csvResponseIndex)
+
+    for (const block of auditLogCallBlocks()) {
+      assert.doesNotMatch(block, /\bcsv\b|rowCount|rows|payload|body/)
+    }
+  })
+
+  it('keeps catch-path client response behavior while logging only bounded failure data', () => {
+    const routeSource = adminReportExportRouteSource()
+
+    assert.match(routeSource, /toSafeClientError\(error, 'Could not export report'\)/)
+    assert.match(routeSource, /result: status === 401 \? 'blocked' : 'failed'/)
+    assert.match(routeSource, /errorCode: status === 401 \? 'unauthorized' : 'export_failed'/)
+    assert.match(routeSource, /return NextResponse\.json\(\{ error: message \}, \{ status \}\)/)
+
+    for (const block of auditLogCallBlocks()) {
+      assert.doesNotMatch(block, /\berror\b|stack|message/)
+    }
+  })
+
+  it('does not pass raw request, query, date, header, actor, or CSV values into audit logging', () => {
+    for (const block of auditLogCallBlocks()) {
+      assert.doesNotMatch(
+        block,
+        /req\.url|searchParams|\bfrom\s*:|\bto\s*:|headers|cookies|actorId|actorEmail|actorName|customerId|orderNumber|raw|csv|row|payload|body/,
+      )
+    }
   })
 })
