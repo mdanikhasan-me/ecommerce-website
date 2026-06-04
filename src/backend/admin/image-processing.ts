@@ -3,13 +3,47 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import sharp from 'sharp'
 
-type UploadProfile = {
+export type UploadProfile = {
   maxWidth: number
   maxHeight: number
   webpQuality: number
   fallbackQuality: number
   sharpenSigma: number
 }
+
+export const IMAGE_UPLOAD_LIMITS = {
+  maxUploadBytes: 8 * 1024 * 1024,
+  maxDecodedPixels: 24_000_000,
+  maxDimension: 8_000,
+} as const
+
+export const IMAGE_UPLOAD_PROFILE_NAMES = ['products', 'banners', 'brands', 'categories'] as const
+export type ImageUploadProfileName = (typeof IMAGE_UPLOAD_PROFILE_NAMES)[number]
+
+export const IMAGE_UPLOAD_VARIANT_INTENTS = {
+  thumbnail: { maxWidth: 320, maxHeight: 320, intendedUse: 'Small previews and compact admin tables' },
+  card: { maxWidth: 720, maxHeight: 720, intendedUse: 'Product cards, category grids, and search results' },
+  detail: { maxWidth: 1400, maxHeight: 1400, intendedUse: 'Product detail gallery and banner previews' },
+  zoom: { maxWidth: 2200, maxHeight: 2200, intendedUse: 'Large inspection view when product detail needs it' },
+} as const
+
+export const IMAGE_UPLOAD_STORAGE_POLICY = {
+  currentStorage: 'local-public-uploads',
+  preferredFormat: 'webp',
+  fallbackFormats: ['jpeg', 'png', 'gif'],
+  stripsMetadataByDefault: true,
+  preservesOriginalUpload: false,
+  derivedVariantsImplemented: false,
+  objectStorageImplemented: false,
+} as const
+
+export const IMAGE_UPLOAD_ERROR_MESSAGES = {
+  safeUpload: 'Invalid image upload payload',
+  uploadTooLarge: 'Image upload is too large',
+  unsupportedImage: 'Unsupported image type',
+  dimensionsTooLarge: 'Image dimensions are too large',
+  decodedPixelsTooLarge: 'Image decoded pixel count is too large',
+} as const
 
 const DEFAULT_PROFILE: UploadProfile = {
   maxWidth: 1800,
@@ -19,7 +53,7 @@ const DEFAULT_PROFILE: UploadProfile = {
   sharpenSigma: 0.45,
 }
 
-const UPLOAD_PROFILES: Record<string, UploadProfile> = {
+export const IMAGE_UPLOAD_PROFILES = {
   products: {
     maxWidth: 2200,
     maxHeight: 2200,
@@ -48,17 +82,24 @@ const UPLOAD_PROFILES: Record<string, UploadProfile> = {
     fallbackQuality: 89,
     sharpenSigma: 0.45,
   },
-}
+} as const satisfies Record<ImageUploadProfileName, UploadProfile>
 
-export const MAX_IMAGE_UPLOAD_BYTES = 8 * 1024 * 1024
-export const MAX_DECODED_IMAGE_PIXELS = 24_000_000
-export const MAX_IMAGE_DIMENSION = 8_000
+export const MAX_IMAGE_UPLOAD_BYTES = IMAGE_UPLOAD_LIMITS.maxUploadBytes
+export const MAX_DECODED_IMAGE_PIXELS = IMAGE_UPLOAD_LIMITS.maxDecodedPixels
+export const MAX_IMAGE_DIMENSION = IMAGE_UPLOAD_LIMITS.maxDimension
 
-const SAFE_UPLOAD_ERROR = 'Invalid image upload payload'
-const UPLOAD_TOO_LARGE_ERROR = 'Image upload is too large'
-const UNSUPPORTED_IMAGE_ERROR = 'Unsupported image type'
-const IMAGE_DIMENSIONS_TOO_LARGE_ERROR = 'Image dimensions are too large'
+const SAFE_UPLOAD_ERROR = IMAGE_UPLOAD_ERROR_MESSAGES.safeUpload
+const UPLOAD_TOO_LARGE_ERROR = IMAGE_UPLOAD_ERROR_MESSAGES.uploadTooLarge
+const UNSUPPORTED_IMAGE_ERROR = IMAGE_UPLOAD_ERROR_MESSAGES.unsupportedImage
+const IMAGE_DIMENSIONS_TOO_LARGE_ERROR = IMAGE_UPLOAD_ERROR_MESSAGES.dimensionsTooLarge
+const IMAGE_PIXELS_TOO_LARGE_ERROR = IMAGE_UPLOAD_ERROR_MESSAGES.decodedPixelsTooLarge
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
+const SAFE_RETHROW_UPLOAD_ERRORS = new Set<string>([
+  UNSUPPORTED_IMAGE_ERROR,
+  IMAGE_DIMENSIONS_TOO_LARGE_ERROR,
+  IMAGE_PIXELS_TOO_LARGE_ERROR,
+  SAFE_UPLOAD_ERROR,
+])
 const ALLOWED_IMAGE_FORMATS_BY_MIME = new Map([
   ['image/jpeg', 'jpeg'],
   ['image/jpg', 'jpeg'],
@@ -111,8 +152,8 @@ function outputFormatForExtension(extension: string): 'jpeg' | 'png' | 'webp' | 
   return 'png'
 }
 
-function getUploadProfile(kind: string) {
-  return UPLOAD_PROFILES[kind] ?? DEFAULT_PROFILE
+export function getImageUploadProfile(kind: string): UploadProfile {
+  return IMAGE_UPLOAD_PROFILES[kind as ImageUploadProfileName] ?? DEFAULT_PROFILE
 }
 
 function buildPipeline(buffer: Buffer, profile: UploadProfile) {
@@ -137,10 +178,7 @@ export async function validateImageUploadPayload(dataUrl: string) {
   }
 
   try {
-    const metadata = await sharp(parsed.buffer, {
-      failOn: 'error',
-      limitInputPixels: MAX_DECODED_IMAGE_PIXELS + 1,
-    }).metadata()
+    const metadata = await sharp(parsed.buffer, { failOn: 'error', limitInputPixels: false }).metadata()
 
     const width = metadata.width ?? 0
     const height = metadata.pageHeight ?? metadata.height ?? 0
@@ -153,19 +191,14 @@ export async function validateImageUploadPayload(dataUrl: string) {
     if (metadata.format !== expectedFormat) {
       throw new Error(UNSUPPORTED_IMAGE_ERROR)
     }
-    if (
-      width > MAX_IMAGE_DIMENSION ||
-      height > MAX_IMAGE_DIMENSION ||
-      pixelCount > MAX_DECODED_IMAGE_PIXELS
-    ) {
+    if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
       throw new Error(IMAGE_DIMENSIONS_TOO_LARGE_ERROR)
     }
+    if (pixelCount > MAX_DECODED_IMAGE_PIXELS) {
+      throw new Error(IMAGE_PIXELS_TOO_LARGE_ERROR)
+    }
   } catch (error) {
-    if (error instanceof Error && [
-      UNSUPPORTED_IMAGE_ERROR,
-      IMAGE_DIMENSIONS_TOO_LARGE_ERROR,
-      SAFE_UPLOAD_ERROR,
-    ].includes(error.message)) {
+    if (error instanceof Error && SAFE_RETHROW_UPLOAD_ERRORS.has(error.message)) {
       throw error
     }
 
@@ -184,7 +217,7 @@ export async function persistOptimizedImageUpload(input: {
 }) {
   const parsed = await validateImageUploadPayload(input.dataUrl)
 
-  const profile = getUploadProfile(input.profile)
+  const profile = getImageUploadProfile(input.profile)
   const outputDir = path.join(process.cwd(), 'public', ...input.directorySegments)
   await fs.mkdir(outputDir, { recursive: true })
 
