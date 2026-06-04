@@ -153,29 +153,31 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   )
 
   return (
-    <div className="container-site py-8">
+    <div className="container-site py-7 sm:py-8 lg:py-10">
       <JsonLd data={[breadcrumbJsonLd, itemListJsonLd]} />
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+      <nav className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/">Home</Link>
         <span>/</span>
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="font-display text-2xl font-bold">{category.name}</h1>
-          {category.description && <p className="text-muted-foreground text-sm mt-1">{category.description}</p>}
+      <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-[48rem]">
+          <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">{category.name}</h1>
+          {category.description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{category.description}</p>}
         </div>
-        <span className="text-sm text-muted-foreground">{total} products</span>
+        <span className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground">
+          {total} products
+        </span>
       </div>
 
       {/* Sub-categories */}
       {category.children.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-6">
+        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
           <a
             href={`/category/${slug}`}
-            className="flex-shrink-0 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium"
+            className="flex-shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white"
           >
             All
           </a>
@@ -183,7 +185,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <a
               key={sub.slug}
               href={`/category/${sub.slug}`}
-              className="flex-shrink-0 px-4 py-2 rounded-xl border border-border text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+              className="flex-shrink-0 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
             >
               {sub.name}
             </a>
@@ -191,8 +193,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </div>
       )}
 
-      <div className="flex gap-8">
-        <aside className="hidden lg:block w-64 flex-shrink-0">
+      <div className="flex gap-6 xl:gap-8">
+        <aside className="hidden w-64 flex-shrink-0 lg:block">
           <SearchFiltersPanel
             categories={filterCategories}
             searchParams={resolvedSearchParams.queryParams}
@@ -202,9 +204,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">{total} results</p>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <MobileSearchFilters
                 categories={filterCategories}
                 searchParams={resolvedSearchParams.queryParams}
@@ -212,7 +214,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                 preserveOnClear={[]}
                 label="Category"
               />
-              <span className="text-sm font-medium">Sort by:</span>
+              <span className="text-sm font-medium">Sort:</span>
               <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
             </div>
           </div>
@@ -225,7 +227,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                 {products.map((p, index) => (
                   <ProductCard
                     key={p.id}

@@ -66,8 +66,8 @@ export function ProductCard({
 
   if (layout === 'list') {
     return (
-      <div className={cn('product-card flex gap-4 p-4 md:p-5', className)}>
-        <Link href={`/products/${product.slug}`} className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-[1.1rem] bg-[#eee6db]">
+      <div className={cn('product-card flex gap-3 p-3 sm:gap-4 sm:p-4 md:p-5', className)}>
+        <Link href={`/products/${product.slug}`} className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-[1.1rem] bg-[#eee6db] sm:h-28 sm:w-28">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -82,7 +82,7 @@ export function ProductCard({
         </Link>
         <div className="flex-1 min-w-0">
           <Link href={`/products/${product.slug}`} className="transition-colors hover:text-primary">
-            <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-6 text-foreground">{product.name}</h3>
+            <h3 className="mt-1 line-clamp-2 text-[14px] font-semibold leading-5 text-foreground sm:text-[15px] sm:leading-6">{product.name}</h3>
           </Link>
           <div className="flex items-center gap-1 mt-1">
             <Star className="h-3 w-3 star-filled" />
@@ -92,7 +92,7 @@ export function ProductCard({
             </span>
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <span className="font-display text-[1.2rem] font-bold">{formatPrice(price)}</span>
+            <span className="font-display text-[1.1rem] font-bold sm:text-[1.2rem]">{formatPrice(price)}</span>
             {product.salePrice && <span className="text-xs text-muted-foreground line-through">{formatPrice(product.basePrice)}</span>}
             {discount > 0 && <span className="badge-sale">{discount}% off</span>}
           </div>
@@ -102,7 +102,7 @@ export function ProductCard({
           <button type="button" aria-label={isWished ? 'Remove from wishlist' : 'Add to wishlist'} title={isWished ? 'Remove from wishlist' : 'Add to wishlist'} onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
             <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
           </button>
-          <button type="button" onClick={handleAddToCart} disabled={!inStock} className="btn-primary text-xs py-1.5 px-3">
+          <button type="button" onClick={handleAddToCart} disabled={!inStock} className="btn-primary px-3 py-1.5 text-xs">
             Add to Cart
           </button>
         </div>
@@ -111,7 +111,7 @@ export function ProductCard({
   }
 
   return (
-    <div className={cn('product-card group block', className)}>
+    <div className={cn('product-card group flex h-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[1.35rem] bg-[#eee6db]">
         <Link href={`/products/${product.slug}`} className="relative block aspect-square">
           {primaryImage ? (
@@ -179,7 +179,7 @@ export function ProductCard({
           <div className="absolute bottom-0 left-0 right-0 translate-y-0 transition-transform duration-300 sm:translate-y-full sm:group-hover:translate-y-0">
             <button type="button"
               onClick={handleAddToCart}
-              className="flex w-full items-center justify-center gap-2 bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+              className="flex w-full items-center justify-center gap-2 bg-primary py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 sm:py-3"
             >
               <ShoppingCart className="h-4 w-4" />
               Add to Cart
@@ -188,25 +188,25 @@ export function ProductCard({
         )}
       </div>
 
-      <Link href={`/products/${product.slug}`} className="block p-4">
-        <h3 className="line-clamp-2 text-[15px] font-semibold leading-6 text-foreground transition-colors group-hover:text-primary">
+      <Link href={`/products/${product.slug}`} className="flex flex-1 flex-col p-3 sm:p-4">
+        <h3 className="line-clamp-2 text-[13px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary sm:text-[15px] sm:leading-6">
           {product.name}
         </h3>
 
-        <div className="mt-3 flex items-center gap-1.5">
+        <div className="mt-2.5 flex items-center gap-1 sm:gap-1.5">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
               className={cn('h-3 w-3', star <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
             />
           ))}
-          <span className="text-[12px] font-medium text-foreground/55">
+          <span className="truncate text-[11px] font-medium text-foreground/55 sm:text-[12px]">
             {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
           </span>
         </div>
 
-        <div className="mt-3.5 flex flex-col items-start gap-1 min-[420px]:flex-row min-[420px]:items-baseline min-[420px]:gap-2">
-          <span className="font-display text-[1.28rem] font-bold leading-tight tracking-tight text-foreground sm:text-[1.48rem] lg:text-[1.62rem]">
+        <div className="mt-3 flex flex-col items-start gap-1 min-[420px]:flex-row min-[420px]:items-baseline min-[420px]:gap-2">
+          <span className="font-display text-[1.12rem] font-bold leading-tight tracking-tight text-foreground sm:text-[1.36rem] lg:text-[1.5rem]">
             {formatPrice(price)}
           </span>
           {product.salePrice && (
@@ -214,7 +214,7 @@ export function ProductCard({
           )}
         </div>
 
-        <p className={cn('mt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
+        <p className={cn('mt-auto pt-2 text-[12px] font-medium sm:text-[13px]', stockColor)}>{stockLabel}</p>
       </Link>
     </div>
   )

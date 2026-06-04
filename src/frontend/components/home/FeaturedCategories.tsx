@@ -25,7 +25,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   if (visibleCategories.length === 0) return null
 
   return (
-    <section className="section-shell px-5 py-6 sm:px-8 sm:py-8">
+    <section className="section-shell px-4 py-5 sm:px-8 sm:py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="section-kicker">Browse Categories</p>
@@ -43,7 +43,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
         </Link>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:hidden">
+      <div className="mt-5 grid grid-cols-2 gap-2.5 sm:hidden">
         {visibleCategories.map((category) => (
           <MobileCategoryTile key={category.id} category={category} />
         ))}
@@ -62,7 +62,7 @@ function MobileCategoryTile({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-[0.93] min-h-[162px] min-w-0 overflow-hidden rounded-[26px] border border-black/6 bg-[#f5efe6] shadow-[0_18px_38px_-34px_rgba(15,23,42,0.16)]"
+      className="group relative isolate flex aspect-[0.9] min-h-[138px] min-w-0 overflow-hidden rounded-[22px] border border-black/6 bg-[#f5efe6] shadow-[0_18px_38px_-34px_rgba(15,23,42,0.16)]"
     >
       <div className="absolute inset-0">
         <Image
@@ -77,9 +77,9 @@ function MobileCategoryTile({ category }: { category: Category }) {
 
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.04)_8%,rgba(15,23,42,0.14)_50%,rgba(15,23,42,0.78)_100%)]" />
 
-      <div className="relative z-10 mt-auto flex items-end justify-between gap-2 p-3.5">
+      <div className="relative z-10 mt-auto flex items-end justify-between gap-2 p-3">
         <div className="max-w-[72%]">
-          <p className="text-[1.05rem] font-semibold leading-5 text-white drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
+          <p className="text-[0.98rem] font-semibold leading-5 text-white drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
             {category.name}
           </p>
           <p className="mt-0.5 text-[0.72rem] font-medium leading-4 text-white/85 drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
@@ -87,12 +87,12 @@ function MobileCategoryTile({ category }: { category: Category }) {
           </p>
         </div>
 
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)]">
-          <ArrowRight className="h-4 w-4" />
+        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)]">
+          <ArrowRight className="h-3.5 w-3.5" />
         </span>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 rounded-[26px] ring-1 ring-black/5" />
+      <div className="pointer-events-none absolute inset-0 rounded-[22px] ring-1 ring-black/5" />
     </Link>
   )
 }

@@ -32,8 +32,8 @@ export default async function CategoriesPage() {
   const categories = await getCategories()
 
   return (
-    <div className="container-site py-10">
-      <nav className="mb-8 flex items-center gap-1.5 text-sm text-muted-foreground">
+    <div className="container-site py-8 sm:py-10 lg:py-12">
+      <nav className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground sm:mb-8">
         <Link href="/" className="transition-colors hover:text-foreground">
           Home
         </Link>
@@ -41,13 +41,16 @@ export default async function CategoriesPage() {
         <span className="font-medium text-foreground">All Categories</span>
       </nav>
 
-      <header className="mb-8">
-        <h1 className="font-display text-[2.7rem] leading-[0.94] tracking-tight text-[#161616] sm:text-[3.5rem]">
+      <header className="mb-6 max-w-[48rem] sm:mb-8">
+        <h1 className="font-display text-[2.25rem] leading-[0.98] tracking-tight text-[#161616] sm:text-[3.2rem]">
           All Categories
         </h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+          Browse departments and subcategories, then open a category to see current listings.
+        </p>
       </header>
 
-      <section className="overflow-hidden rounded-[24px] border border-black/8 bg-card shadow-[0_18px_42px_-36px_rgba(15,23,42,0.12)]">
+      <section className="overflow-hidden rounded-[22px] border border-black/8 bg-card shadow-[0_18px_42px_-36px_rgba(15,23,42,0.12)] sm:rounded-[24px]">
         {categories.map((category) => (
           <CategoryAccordionRow
             key={category.id}
@@ -68,7 +71,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
     return (
       <Link
         href={`/category/${category.slug}`}
-        className="group flex items-start justify-between gap-4 border-b border-black/6 px-5 py-5 transition-colors last:border-b-0 hover:bg-[#faf6ef] sm:px-7 sm:py-6"
+        className="group flex items-start justify-between gap-4 border-b border-black/6 px-4 py-4 transition-colors last:border-b-0 hover:bg-[#faf6ef] sm:px-7 sm:py-6"
       >
         <div className="min-w-0">
           <h2 className="text-[1.12rem] font-semibold tracking-tight text-[#161616] sm:text-[1.2rem]">{category.name}</h2>
@@ -83,7 +86,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
 
   return (
     <details className="group border-b border-black/6 last:border-b-0">
-      <summary className="cursor-pointer list-none px-5 py-5 marker:content-none sm:px-7 sm:py-6">
+      <summary className="cursor-pointer list-none px-4 py-4 marker:content-none sm:px-7 sm:py-6">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h2 className="text-[1.12rem] font-semibold tracking-tight text-[#161616] sm:text-[1.2rem]">{category.name}</h2>
@@ -95,7 +98,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
         </div>
       </summary>
 
-      <div className="border-t border-black/6 px-5 py-2 sm:px-7">
+      <div className="border-t border-black/6 px-4 py-2 sm:px-7">
         <div className="grid gap-0">
           <Link
             href={`/category/${category.slug}`}

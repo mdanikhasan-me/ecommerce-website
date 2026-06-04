@@ -165,32 +165,32 @@ export default async function SearchPage({ searchParams }: Props) {
   ]
 
   return (
-    <div className="container-site py-8">
-      <div className="mb-6">
+    <div className="container-site py-7 sm:py-8 lg:py-10">
+      <div className="mb-5 max-w-[48rem] sm:mb-6">
         {params.q ? (
-          <h1 className="font-display text-2xl font-bold">
+          <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
             Results for <span className="text-primary">&quot;{params.q}&quot;</span>
-            <span className="text-base font-normal text-muted-foreground ml-2">({total} products)</span>
+            <span className="ml-2 text-base font-normal text-muted-foreground">({total} products)</span>
           </h1>
         ) : (
-          <h1 className="font-display text-2xl font-bold">
+          <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
             All Products
-            <span className="text-base font-normal text-muted-foreground ml-2">({total} products)</span>
+            <span className="ml-2 text-base font-normal text-muted-foreground">({total} products)</span>
           </h1>
         )}
       </div>
 
-      <div className="flex gap-8">
-        <aside className="hidden lg:block w-64 flex-shrink-0">
+      <div className="flex gap-6 xl:gap-8">
+        <aside className="hidden w-64 flex-shrink-0 lg:block">
           <SearchFiltersPanel categories={categories} searchParams={params.queryParams} />
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">{total} results</p>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
-              <span className="text-sm font-medium">Sort by:</span>
+              <span className="text-sm font-medium">Sort:</span>
               <SortSelect current={params.sort} options={SORT_OPTIONS} />
             </div>
           </div>
@@ -203,7 +203,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}

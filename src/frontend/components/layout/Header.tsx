@@ -64,6 +64,7 @@ const MOBILE_SHOP_LINKS = [
 
 const MOBILE_SUPPORT_LINKS = [
   { label: 'Help Center', href: '/help', icon: LifeBuoy },
+  { label: 'Track Order', href: '/track-order', icon: Package },
   { label: 'Contact Us', href: '/contact', icon: HelpCircle },
   { label: 'Returns', href: '/returns', icon: RefreshCcw },
   { label: 'Shipping Info', href: '/shipping', icon: Truck },
