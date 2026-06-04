@@ -26,9 +26,9 @@ export function MobileSearchFilters({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold shadow-[0_10px_24px_rgba(23,18,15,0.05)]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-semibold shadow-[0_10px_24px_rgba(23,18,15,0.05)] sm:gap-2 sm:px-4 sm:py-2 sm:text-sm"
       >
-        <SlidersHorizontal className="h-4 w-4" />
+        <SlidersHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         Filters
       </button>
 

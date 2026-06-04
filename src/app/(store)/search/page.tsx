@@ -165,17 +165,24 @@ export default async function SearchPage({ searchParams }: Props) {
   ]
 
   return (
-    <div className="container-site py-7 sm:py-8 lg:py-10">
-      <div className="mb-5 max-w-[48rem] sm:mb-6">
+    <div className="container-site py-5 sm:py-7 lg:py-8">
+      <div className="mb-4 max-w-[48rem] sm:mb-5">
         {params.q ? (
-          <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
-            Results for <span className="text-primary">&quot;{params.q}&quot;</span>
-            <span className="ml-2 text-base font-normal text-muted-foreground">({total} products)</span>
+          <h1 className="font-display text-[1.68rem] font-bold leading-[1.08] sm:text-3xl sm:leading-tight">
+            <span className="inline-flex flex-wrap items-baseline gap-x-2">
+              <span>Results for</span>
+              <span className="text-primary">&quot;{params.q}&quot;</span>
+            </span>
+            <span className="mt-1 block text-sm font-normal text-muted-foreground sm:ml-2 sm:mt-0 sm:inline sm:text-base">
+              ({total} products)
+            </span>
           </h1>
         ) : (
-          <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
-            All Products
-            <span className="ml-2 text-base font-normal text-muted-foreground">({total} products)</span>
+          <h1 className="font-display text-[1.68rem] font-bold leading-[1.08] sm:text-3xl sm:leading-tight">
+            <span>All Products</span>
+            <span className="mt-1 block text-sm font-normal text-muted-foreground sm:ml-2 sm:mt-0 sm:inline sm:text-base">
+              ({total} products)
+            </span>
           </h1>
         )}
       </div>
@@ -186,11 +193,11 @@ export default async function SearchPage({ searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-5 flex flex-col gap-3 rounded-[1.25rem] border border-border/80 bg-card/95 p-3 shadow-[0_12px_30px_rgba(23,18,15,0.04)] sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-            <p className="text-sm font-medium text-muted-foreground">{total} results</p>
-            <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+          <div className="mb-4 flex flex-col gap-2 rounded-[1rem] border border-border/80 bg-card/95 p-2.5 shadow-[0_10px_24px_rgba(23,18,15,0.035)] sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-3.5">
+            <p className="text-xs font-medium text-muted-foreground sm:text-sm">{total} results</p>
+            <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end sm:gap-2">
               <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
-              <span className="ml-auto text-sm font-medium sm:ml-0">Sort:</span>
+              <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
               <SortSelect current={params.sort} options={SORT_OPTIONS} />
             </div>
           </div>
@@ -203,7 +210,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:gap-5 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3.5 md:grid-cols-3 lg:gap-4 xl:grid-cols-4">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}

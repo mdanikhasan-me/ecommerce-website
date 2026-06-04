@@ -130,12 +130,12 @@ export default async function HomePage() {
 
       <HeroBanner banners={banners} />
 
-      <section className="container-site py-8 sm:py-10">
+      <section className="container-site py-5 sm:py-8">
         <FeaturedCategories categories={categories} />
       </section>
 
       {featured.length > 0 && (
-        <section className="container-site py-12">
+        <section className="container-site py-8 sm:py-10">
           <ProductGrid
             title="Featured Products"
             subtitle="Selected listings from the current catalog"
@@ -153,7 +153,7 @@ export default async function HomePage() {
       </section>
 
       {bestSellers.length > 0 && (
-        <section className="container-site py-12">
+        <section className="container-site py-8 sm:py-10">
           <ProductGrid
             title="Best Sellers"
             subtitle="Popular listings from the current catalog"
@@ -164,7 +164,7 @@ export default async function HomePage() {
       )}
 
       {newArrivals.length > 0 && (
-        <section className="container-site py-12">
+        <section className="container-site py-8 sm:py-10">
           <ProductGrid
             title="New Arrivals"
             subtitle="Fresh finds, just landed"

@@ -12,7 +12,7 @@ export function SortSelect({ current, options }: { current: string; options: Sor
         url.searchParams.delete('page')
         window.location.href = url.toString()
       }}
-      className="text-sm border border-input rounded-lg px-3 py-1.5 bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+      className="rounded-full border border-input bg-background px-2.5 py-1.5 text-[13px] focus:outline-none focus:ring-2 focus:ring-ring sm:rounded-lg sm:px-3 sm:text-sm"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>{o.label}</option>

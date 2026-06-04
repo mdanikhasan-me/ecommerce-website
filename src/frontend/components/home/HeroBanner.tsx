@@ -21,7 +21,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   const heroTitleClass =
     'font-display font-bold leading-[0.9] text-[hsl(var(--buttermilk))] [text-shadow:0_6px_24px_rgba(16,12,10,0.42)]'
   const heroSubtitleClass =
-    'max-w-xl text-sm leading-7 text-[hsl(var(--buttermilk))] [text-shadow:0_3px_18px_rgba(16,12,10,0.48)] sm:text-base'
+    'max-w-xl text-sm leading-6 text-[hsl(var(--buttermilk))] [text-shadow:0_3px_18px_rgba(16,12,10,0.48)] sm:text-base sm:leading-7'
 
   const goTo = useCallback((index: number) => {
     if (isTransitioning) return
@@ -42,17 +42,17 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   if (!banners.length) {
     return (
       <section className="w-full">
-        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] py-12 lg:py-16">
+        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] py-10 lg:py-14">
           <div className="container-site">
             <div className="max-w-2xl">
-            <h1 className={cn('mt-4 text-[2.65rem] leading-[0.92] sm:text-[4rem]', heroTitleClass)}>
+            <h1 className={cn('mt-3 text-[2.25rem] leading-[0.92] sm:text-[3.4rem]', heroTitleClass)}>
               A warmer, calmer way to shop online in Bangladesh.
             </h1>
-            <p className={cn('mt-5', heroSubtitleClass)}>
+            <p className={cn('mt-4', heroSubtitleClass)}>
               Browse electronics, fashion, home essentials, and product details in a storefront organized for everyday shopping.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/search" className="inline-flex items-center rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link href="/search" className="inline-flex items-center rounded-full bg-[hsl(var(--buttermilk))] px-5 py-2.5 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white">
                 Start shopping
               </Link>
             </div>
@@ -75,7 +75,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   return (
     <section className="w-full">
       <div className="group relative overflow-hidden bg-foreground">
-        <div className="relative aspect-[19/15] w-full sm:aspect-[21/12] lg:aspect-[21/8]">
+        <div className="relative aspect-[3/2] w-full sm:aspect-[19/9] lg:aspect-[24/8]">
           {hasMobileImage ? (
             <Image
               key={`${banner.id}-mobile`}
@@ -107,7 +107,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
             />
           ) : null}
 
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,18,15,0.78)_0%,rgba(23,18,15,0.44)_38%,rgba(23,18,15,0.06)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,18,15,0.7)_0%,rgba(23,18,15,0.36)_40%,rgba(23,18,15,0.04)_100%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(243,233,214,0.14),transparent_28%)]" />
 
           <div
@@ -116,23 +116,23 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
               isTransitioning ? 'translate-x-5 opacity-0' : 'translate-x-0 opacity-100'
             )}
           >
-            <div className="container-site flex h-full items-end py-7 sm:items-center sm:py-12 lg:py-14">
-              <div className="max-w-[19rem] sm:max-w-[34rem] sm:p-2">
+            <div className="container-site flex h-full items-end py-5 sm:items-center sm:py-8 lg:py-10">
+              <div className="max-w-[17rem] sm:max-w-[32rem] sm:p-2">
                 {title ? (
-                  <h2 className={cn('mt-4 text-[1.95rem] sm:text-[3.2rem] lg:text-[4.2rem]', heroTitleClass)}>
+                  <h2 className={cn('text-[1.62rem] sm:text-[2.7rem] lg:text-[3.8rem]', heroTitleClass)}>
                     {title}
                   </h2>
                 ) : null}
                 {subtitle ? (
-                  <p className={cn(title ? 'mt-4' : 'mt-0', heroSubtitleClass)}>
+                  <p className={cn(title ? 'mt-2.5 sm:mt-3.5' : 'mt-0', heroSubtitleClass)}>
                     {subtitle}
                   </p>
                 ) : null}
-                <div className="mt-7 flex flex-wrap items-center gap-3">
+                <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6">
                   {banner.linkUrl ? (
                     <Link
                       href={banner.linkUrl}
-                      className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white"
+                      className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-4 py-2.5 text-xs font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white sm:px-5 sm:text-sm"
                     >
                       Explore collection
                       <ChevronRight className="h-4 w-4" />
@@ -164,7 +164,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 <ChevronRight className="h-5 w-5" />
               </button>
 
-              <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
+              <div className="absolute bottom-3.5 left-1/2 flex -translate-x-1/2 gap-2 sm:bottom-5">
                 {banners.map((_, i) => (
                   <button
                     key={i}
@@ -175,8 +175,8 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                     className={cn(
                       'rounded-full transition-all duration-300',
                       i === current
-                        ? 'h-2 w-7 bg-[hsl(var(--buttermilk))]'
-                        : 'h-2 w-2 bg-white/45 hover:bg-white/74'
+                        ? 'h-1.5 w-6 bg-[hsl(var(--buttermilk))] sm:h-2 sm:w-7'
+                        : 'h-1.5 w-1.5 bg-white/45 hover:bg-white/74 sm:h-2 sm:w-2'
                     )}
                   />
                 ))}

@@ -165,7 +165,7 @@ export function Header() {
     <div data-search-root="true" ref={searchRef} className={cn('relative', className)}>
       <form onSubmit={handleSearch} className="flex items-center">
         <div className="relative w-full">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42 sm:left-4" />
           <input
             aria-label="Search products..."
             title="Search products..."
@@ -177,7 +177,7 @@ export function Header() {
               setShowSuggestions(true)
             }}
             onFocus={() => setShowSuggestions(true)}
-            className="h-10 w-full rounded-full border border-black/8 bg-card pl-11 pr-5 text-sm text-foreground shadow-[0_6px_16px_rgba(23,18,15,0.03)] transition-colors placeholder:text-foreground/40 focus:border-primary/25 focus:outline-none sm:h-11"
+            className="h-9 w-full rounded-full border border-black/8 bg-card pl-10 pr-4 text-[13px] text-foreground shadow-[0_6px_16px_rgba(23,18,15,0.03)] transition-colors placeholder:text-foreground/40 focus:border-primary/25 focus:outline-none sm:h-11 sm:pl-11 sm:pr-5 sm:text-sm"
           />
         </div>
       </form>
@@ -203,7 +203,7 @@ export function Header() {
   return (
     <header className="relative z-40 w-full border-b border-black/6 bg-background">
       <div className="border-b border-black/6 bg-foreground text-background">
-        <div className="container-site flex min-h-9 items-center justify-between gap-4 text-[11px] tracking-[0.02em] text-background/84">
+        <div className="container-site flex min-h-8 items-center justify-between gap-3 text-[10px] tracking-[0.02em] text-background/84 sm:min-h-9 sm:text-[11px]">
           <span className="flex items-center gap-1.5 font-medium">
             <Zap className="h-3 w-3 text-[hsl(var(--buttermilk))]" />
             Free delivery on orders over Tk 2,000
@@ -221,14 +221,14 @@ export function Header() {
 
       <div className="border-b border-black/6 bg-background">
         <div className="container-site">
-          <div className="flex min-h-[3.9rem] items-center gap-3 py-2.5 sm:min-h-[4.2rem] sm:py-3 lg:gap-5">
+          <div className="flex min-h-[3.2rem] items-center gap-2.5 py-1.5 sm:min-h-[4.2rem] sm:gap-3 sm:py-3 lg:gap-5">
             <Link
               href="/"
-              className="group flex flex-shrink-0 items-center gap-2.5 sm:gap-3"
+              className="group flex flex-shrink-0 items-center gap-2 sm:gap-3"
               aria-label="Boilabin home"
             >
-              <BoilabinLogo variant="mark" size={38} priority />
-              <span className="hidden font-display text-lg font-bold leading-none text-foreground min-[360px]:block sm:hidden">
+              <BoilabinLogo variant="mark" size={32} priority />
+              <span className="hidden font-display text-base font-bold leading-none text-foreground min-[360px]:block sm:hidden">
                 Boilabin
               </span>
               <BoilabinLogo variant="wordmark" size={24} className="hidden sm:block" priority />
@@ -256,7 +256,7 @@ export function Header() {
                 title="Cart"
                 aria-label="Cart"
                 onClick={openCart}
-                className="relative rounded-lg p-2 transition-colors hover:bg-secondary"
+                className="relative rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2"
               >
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 ? (
@@ -375,14 +375,14 @@ export function Header() {
                   setIsMobileMenuOpen(!isMobileMenuOpen)
                   setExpandedMobileCategory(null)
                 }}
-                className="rounded-lg p-2 transition-colors hover:bg-secondary lg:hidden"
+                className="rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2 lg:hidden"
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          <div className="pb-3 sm:hidden">
+          <div className="pb-2 sm:hidden">
             {renderSearch()}
           </div>
         </div>

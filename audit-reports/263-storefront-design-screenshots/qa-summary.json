@@ -1,0 +1,297 @@
+{
+  "ok": true,
+  "generatedAt": "2026-06-04T15:45:21.068Z",
+  "baseUrl": "http://127.0.0.1:3140",
+  "routeStatuses": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/category",
+      "status": 200
+    },
+    {
+      "path": "/category/electronics",
+      "status": 200
+    },
+    {
+      "path": "/search?q=phone",
+      "status": 200
+    },
+    {
+      "path": "/cart",
+      "status": 200
+    },
+    {
+      "path": "/track-order",
+      "status": 200
+    },
+    {
+      "path": "/deals",
+      "status": 404
+    },
+    {
+      "path": "/api/admin/flash-sales",
+      "status": 404
+    }
+  ],
+  "totals": {
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "serverErrors": 0,
+    "imageFailures": 0,
+    "rawRequestFailures": 99,
+    "browserLifecycleAborts": 99
+  },
+  "overflow": 0,
+  "visibleBrokenImages": 0,
+  "screenshots": [
+    {
+      "file": "mobile-390-home.png",
+      "viewport": "mobile-390",
+      "path": "/",
+      "firstHeading": "",
+      "horizontalOverflow": false,
+      "visibleImageCount": 41,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "mobile-390-category-electronics.png",
+      "viewport": "mobile-390",
+      "path": "/category/electronics",
+      "firstHeading": "Electronics",
+      "horizontalOverflow": false,
+      "visibleImageCount": 23,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "mobile-390-search-q-phone.png",
+      "viewport": "mobile-390",
+      "path": "/search?q=phone",
+      "firstHeading": "Results for \"phone\"(7 products)",
+      "horizontalOverflow": false,
+      "visibleImageCount": 12,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "tablet-700-home.png",
+      "viewport": "tablet-700",
+      "path": "/",
+      "firstHeading": "",
+      "horizontalOverflow": false,
+      "visibleImageCount": 42,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "tablet-768-home.png",
+      "viewport": "tablet-768",
+      "path": "/",
+      "firstHeading": "",
+      "horizontalOverflow": false,
+      "visibleImageCount": 42,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "tablet-768-category-electronics.png",
+      "viewport": "tablet-768",
+      "path": "/category/electronics",
+      "firstHeading": "Electronics",
+      "horizontalOverflow": false,
+      "visibleImageCount": 24,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "tablet-768-search-q-phone.png",
+      "viewport": "tablet-768",
+      "path": "/search?q=phone",
+      "firstHeading": "Results for \"phone\"(7 products)",
+      "horizontalOverflow": false,
+      "visibleImageCount": 13,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "desktop-1024-category-electronics.png",
+      "viewport": "desktop-1024",
+      "path": "/category/electronics",
+      "firstHeading": "Electronics",
+      "horizontalOverflow": false,
+      "visibleImageCount": 24,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "desktop-1024-search-q-phone.png",
+      "viewport": "desktop-1024",
+      "path": "/search?q=phone",
+      "firstHeading": "Results for \"phone\"(7 products)",
+      "horizontalOverflow": false,
+      "visibleImageCount": 13,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    },
+    {
+      "file": "desktop-1366-home.png",
+      "viewport": "desktop-1366",
+      "path": "/",
+      "firstHeading": "",
+      "horizontalOverflow": false,
+      "visibleImageCount": 42,
+      "brokenImages": [],
+      "footer": {
+        "present": true,
+        "youtube": true,
+        "hasCod": false,
+        "paymentAlts": [
+          "Mastercard",
+          "Nagad",
+          "Visa",
+          "bKash"
+        ]
+      }
+    }
+  ],
+  "footerChecks": [
+    {
+      "present": true,
+      "youtube": true,
+      "hasCod": false,
+      "paymentAlts": [
+        "Mastercard",
+        "Nagad",
+        "Visa",
+        "bKash"
+      ]
+    },
+    {
+      "present": true,
+      "youtube": true,
+      "hasCod": false,
+      "paymentAlts": [
+        "Mastercard",
+        "Nagad",
+        "Visa",
+        "bKash"
+      ]
+    },
+    {
+      "present": true,
+      "youtube": true,
+      "hasCod": false,
+      "paymentAlts": [
+        "Mastercard",
+        "Nagad",
+        "Visa",
+        "bKash"
+      ]
+    },
+    {
+      "present": true,
+      "youtube": true,
+      "hasCod": false,
+      "paymentAlts": [
+        "Mastercard",
+        "Nagad",
+        "Visa",
+        "bKash"
+      ]
+    }
+  ]
+}
