@@ -18,12 +18,8 @@ const SOCIAL_LINKS = [
   { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
 ]
 
-// Footer display only; does not enable checkout gateways.
+// Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
-  {
-    ...PAYMENT_ASSETS.CASH_ON_DELIVERY,
-    className: 'h-[0.95rem] max-w-[4.2rem]',
-  },
   {
     ...PAYMENT_ASSETS.BKASH,
     className: 'h-[1.28rem] max-w-[2.3rem]',
