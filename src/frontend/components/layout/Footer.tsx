@@ -127,6 +127,11 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   },
 ]
 
+const FOOTER_TABLET_LINK_GROUPS = [
+  [FOOTER_LINK_SECTIONS[0], FOOTER_LINK_SECTIONS[1]],
+  [FOOTER_LINK_SECTIONS[3], FOOTER_LINK_SECTIONS[2], FOOTER_LINK_SECTIONS[4]],
+]
+
 const BOTTOM_LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Terms of Use', href: '/terms' },
@@ -136,9 +141,9 @@ const BOTTOM_LEGAL_LINKS = [
 export function Footer() {
   return (
     <footer className="border-t border-black/8 bg-[hsl(42_42%_96%)] text-foreground">
-      <div className="hidden border-b border-black/6 bg-white/52 sm:block">
-        <div className="container-site py-4 lg:py-5">
-          <div className="grid gap-y-3 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
+      <div className="hidden border-b border-black/6 bg-white/52 md:block">
+        <div className="container-site py-3.5 lg:py-5">
+          <div className="grid gap-y-3 md:grid-cols-2 md:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
             {FOOTER_SERVICE_ITEMS.map((item) => (
               <div
                 key={item.title}
@@ -158,8 +163,8 @@ export function Footer() {
       </div>
 
       <div>
-        <div className="container-site py-6 sm:py-8 lg:py-9">
-          <div className="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.64fr)] lg:gap-10 xl:gap-14">
+        <div className="container-site py-6 min-[600px]:py-7 lg:py-9">
+          <div className="grid gap-6 min-[600px]:gap-7 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.64fr)] lg:gap-10 xl:gap-14">
             <section aria-label="Boilabin contact" className="max-w-[34rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
                 <BoilabinLogo variant="mark" size={46} />
@@ -203,7 +208,7 @@ export function Footer() {
               </div>
             </section>
 
-            <nav aria-label="Footer" className="hidden grid-cols-2 gap-x-7 gap-y-8 sm:grid md:grid-cols-3 xl:grid-cols-5">
+            <nav aria-label="Footer" className="hidden grid-cols-5 gap-x-7 gap-y-8 lg:grid">
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <div key={section.title}>
                   <h2 className="text-sm font-semibold text-foreground">{section.title}</h2>
@@ -224,7 +229,32 @@ export function Footer() {
               ))}
             </nav>
 
-            <nav aria-label="Footer sections" className="space-y-2 sm:hidden">
+            <nav aria-label="Footer tablet sections" className="hidden gap-x-8 gap-y-5 min-[600px]:grid min-[600px]:grid-cols-2 lg:hidden">
+              {FOOTER_TABLET_LINK_GROUPS.map((group, groupIndex) => (
+                <div key={groupIndex} className="space-y-5">
+                  {group.map((section) => (
+                    <div key={section.title}>
+                      <h2 className="text-sm font-semibold text-foreground">{section.title}</h2>
+                      <ul className="mt-2 space-y-1.5">
+                        {section.links.map((link) => (
+                          <li key={link.href}>
+                            <Link
+                              href={link.href}
+                              prefetch={link.prefetch}
+                              className="text-sm leading-5 text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+                            >
+                              {link.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </nav>
+
+            <nav aria-label="Footer sections" className="space-y-2 min-[600px]:hidden">
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <details
                   key={section.title}
@@ -252,10 +282,10 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="mt-6 grid gap-5 border-t border-black/8 pt-5 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.68fr)] lg:items-start lg:gap-10">
-            <section className="order-2 lg:order-1">
+          <div className="mt-6 grid gap-5 border-t border-black/8 pt-5 min-[600px]:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.72fr)] min-[600px]:items-start min-[600px]:gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.68fr)] lg:gap-10">
+            <section className="order-2 min-[600px]:order-1">
               <h2 className="text-sm font-semibold text-foreground">We accept</h2>
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-5">
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-2 min-[600px]:gap-x-4 lg:gap-x-5">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
@@ -271,7 +301,7 @@ export function Footer() {
               </div>
             </section>
 
-            <section className="order-1 lg:order-2">
+            <section className="order-1 min-[600px]:order-2 min-[600px]:max-w-[22rem] min-[600px]:justify-self-end lg:max-w-none">
               <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
               <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
                 Get launch alerts, selected offers, and useful updates.
@@ -289,13 +319,13 @@ export function Footer() {
 
       <div className="border-t border-black/6 bg-white/54">
         <div className="container-site py-3.5 text-xs text-muted-foreground">
-          <div className="flex w-full flex-col items-center justify-between gap-3 lg:flex-row">
+          <div className="flex w-full flex-col items-center justify-between gap-2.5 min-[700px]:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>
               <span className="font-semibold text-foreground">Boilabin</span>
               <span>All rights reserved.</span>
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 lg:justify-end">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 min-[700px]:justify-end">
               {BOTTOM_LEGAL_LINKS.map((link, index) => (
                 <span key={link.href} className="inline-flex items-center gap-3">
                   {index > 0 ? <span aria-hidden="true" className="text-black/20">|</span> : null}
