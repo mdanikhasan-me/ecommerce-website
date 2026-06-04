@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 
-import { getCategoryMediaPath } from '@/shared/category-media'
+import { getCategoryMediaBasePath, getCategoryMediaPath } from '@/shared/category-media'
 import {
   BANNER_IMAGE_REPAIRS,
   CATEGORY_IMAGE_REPAIRS,
@@ -18,14 +18,21 @@ function publicAssetExists(pathname: string) {
 describe('storefront image source of truth', () => {
   it('keeps active category media on canonical local asset files', () => {
     for (const repair of CATEGORY_IMAGE_REPAIRS) {
-      assert.equal(getCategoryMediaPath({ slug: repair.slug }), repair.image)
+      const mediaPath = getCategoryMediaPath({ slug: repair.slug })
+
+      assert.equal(getCategoryMediaBasePath({ slug: repair.slug }), repair.image)
+      assert.equal(mediaPath.startsWith(`${repair.image}?v=`), true)
       assert.equal(publicAssetExists(repair.image), true, `${repair.image} should exist`)
       assert.notEqual(repair.image, '/assets/categories/baby-kids.jpg')
     }
   })
 
   it('keeps Toys & Collectibles canonical without restoring Baby & Kids artwork', () => {
-    assert.equal(getCategoryMediaPath({ slug: 'toys-collectibles' }), '/assets/categories/toys-collectibles.jpg')
+    assert.equal(getCategoryMediaBasePath({ slug: 'toys-collectibles' }), '/assets/categories/toys-collectibles.jpg')
+    assert.equal(
+      getCategoryMediaPath({ slug: 'toys-collectibles' }).startsWith('/assets/categories/toys-collectibles.jpg?v='),
+      true,
+    )
     assert.equal(publicAssetExists('/assets/categories/toys-collectibles.jpg'), true)
     assert.equal(publicAssetExists('/assets/categories/baby-kids.jpg'), false)
     assert.notEqual(getCategoryMediaPath({ slug: 'baby-kids' }), '/assets/categories/baby-kids.jpg')

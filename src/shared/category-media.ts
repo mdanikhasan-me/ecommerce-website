@@ -1,13 +1,58 @@
-const CATEGORY_PHOTO_ASSETS: Record<string, string> = {
-  electronics: '/assets/categories/electronics.jpg',
-  fashion: '/assets/categories/fashion.jpg',
-  'home-appliances': '/assets/categories/home-appliances.jpg',
-  'beauty-health': '/assets/categories/beauty-health.jpg',
-  'sports-fitness': '/assets/categories/sports-fitness.jpg',
-  'books-stationery': '/assets/categories/books-stationery.jpg',
-  gaming: '/assets/categories/gaming.jpg',
-  'toys-collectibles': '/assets/categories/toys-collectibles.jpg',
-  'baby-kids': '/assets/categories/gaming.jpg',
+export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: string }> = {
+  electronics: {
+    path: '/assets/categories/electronics.jpg',
+    version: '75b478cf761d',
+  },
+  fashion: {
+    path: '/assets/categories/fashion.jpg',
+    version: '50f7092c1d2d',
+  },
+  'home-appliances': {
+    path: '/assets/categories/home-appliances.jpg',
+    version: '4ea4173c04ae',
+  },
+  'beauty-health': {
+    path: '/assets/categories/beauty-health.jpg',
+    version: '5709ce7f5817',
+  },
+  'sports-fitness': {
+    path: '/assets/categories/sports-fitness.jpg',
+    version: 'f91b7397630a',
+  },
+  'books-stationery': {
+    path: '/assets/categories/books-stationery.jpg',
+    version: '9b0fa704b0cb',
+  },
+  gaming: {
+    path: '/assets/categories/gaming.jpg',
+    version: '1ec2f8930d9a',
+  },
+  'toys-collectibles': {
+    path: '/assets/categories/toys-collectibles.jpg',
+    version: '11993afd8f62',
+  },
+  'baby-kids': {
+    path: '/assets/categories/gaming.jpg',
+    version: '1ec2f8930d9a',
+  },
+}
+
+// Keep this version in sync with the image file hash when a same-named category asset is replaced.
+function versionCategoryAsset(asset: { path: string; version: string }) {
+  return `${asset.path}?v=${asset.version}`
+}
+
+export function getCategoryMediaBasePath(category: CategoryImageInput) {
+  const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
+  if (localAsset) {
+    return localAsset.path
+  }
+
+  if (category.image && !isLegacyBrokenCategoryImage(category.image)) {
+    return category.image
+  }
+
+  return CATEGORY_PHOTO_ASSETS.electronics.path
 }
 
 type CategoryImageInput = {
@@ -32,12 +77,12 @@ function isLegacyBrokenCategoryImage(src: string) {
 export function getCategoryMediaPath(category: CategoryImageInput) {
   const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
   if (localAsset) {
-    return localAsset
+    return versionCategoryAsset(localAsset)
   }
 
   if (category.image && !isLegacyBrokenCategoryImage(category.image)) {
     return category.image
   }
 
-  return CATEGORY_PHOTO_ASSETS.electronics
+  return versionCategoryAsset(CATEGORY_PHOTO_ASSETS.electronics)
 }
