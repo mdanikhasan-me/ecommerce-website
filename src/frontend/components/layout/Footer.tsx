@@ -11,7 +11,6 @@ import {
   PackageCheck,
   Phone,
   RefreshCcw,
-  Search,
   WalletCards,
 } from 'lucide-react'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
@@ -78,7 +77,7 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
     ],
   },
   {
-    title: 'Support',
+    title: 'Customer Service',
     links: [
       { label: 'Help center', href: '/help' },
       { label: 'Track order', href: '/track-order' },
@@ -86,6 +85,14 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
       { label: 'Returns', href: '/returns' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    title: 'About Us',
+    links: [
+      { label: 'About Boilabin', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'FAQ', href: '/faq' },
     ],
   },
   {
@@ -98,41 +105,49 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
     ],
   },
   {
-    title: 'Legal',
+    title: 'Policies',
     links: [
       { label: 'Privacy', href: '/privacy' },
       { label: 'Terms', href: '/terms' },
+      { label: 'Shipping', href: '/shipping' },
+      { label: 'Returns', href: '/returns' },
     ],
   },
 ]
 
-const LEGAL_LINKS = FOOTER_LINK_SECTIONS.find((section) => section.title === 'Legal')?.links ?? []
+const BOTTOM_LEGAL_LINKS = [
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Terms of Use', href: '/terms' },
+  { label: 'Sitemap', href: '/sitemap.xml' },
+]
 
 export function Footer() {
   return (
     <footer className="border-t border-black/8 bg-[hsl(42_42%_96%)] text-foreground">
-      <div className="container-site py-6 sm:py-8">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {FOOTER_SERVICE_ITEMS.map((item) => (
-            <div
-              key={item.title}
-              className="flex min-w-0 items-start gap-3 rounded-xl border border-black/6 bg-white/64 p-3.5 shadow-[0_10px_24px_rgba(23,18,15,0.035)] sm:rounded-2xl sm:p-4"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                <item.icon className="h-4 w-4" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold leading-5 text-foreground">{item.title}</span>
-                <span className="mt-1 block text-xs leading-5 text-muted-foreground">{item.copy}</span>
-              </span>
-            </div>
-          ))}
+      <div className="border-b border-black/6 bg-white/52">
+        <div className="container-site py-5 sm:py-6">
+          <div className="grid gap-y-4 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
+            {FOOTER_SERVICE_ITEMS.map((item) => (
+              <div
+                key={item.title}
+                className="flex min-w-0 items-center gap-3"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground">
+                  <item.icon className="h-5 w-5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold leading-5 text-foreground">{item.title}</span>
+                  <span className="mt-1 block text-xs leading-5 text-muted-foreground">{item.copy}</span>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-black/6">
+      <div>
         <div className="container-site py-8 sm:py-10 lg:py-12">
-          <div className="grid gap-8 lg:grid-cols-[minmax(18rem,0.88fr)_minmax(0,1.55fr)_minmax(17rem,0.72fr)] lg:gap-10">
+          <div className="grid gap-9 lg:grid-cols-[minmax(17rem,0.72fr)_minmax(0,1.62fr)] lg:gap-12 xl:gap-16">
             <section aria-label="Boilabin contact" className="max-w-[34rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
                 <BoilabinLogo variant="mark" size={52} />
@@ -168,7 +183,7 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-black/8 bg-white text-foreground shadow-[0_8px_18px_rgba(23,18,15,0.045)] transition-colors hover:border-primary/18 hover:bg-primary/6 hover:text-primary focus-visible:border-primary/18 focus-visible:bg-primary/6 focus-visible:text-primary"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
                     <item.icon className="h-4 w-4" />
                   </a>
@@ -176,7 +191,7 @@ export function Footer() {
               </div>
             </section>
 
-            <nav aria-label="Footer" className="hidden grid-cols-4 gap-x-6 gap-y-8 sm:grid">
+            <nav aria-label="Footer" className="hidden grid-cols-2 gap-x-7 gap-y-8 sm:grid md:grid-cols-3 xl:grid-cols-5">
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <div key={section.title}>
                   <h2 className="text-sm font-semibold text-foreground">{section.title}</h2>
@@ -223,42 +238,17 @@ export function Footer() {
                 </details>
               ))}
             </nav>
-
-            <section className="rounded-2xl border border-black/6 bg-white/70 p-4 shadow-[0_12px_28px_rgba(23,18,15,0.04)] sm:p-5">
-              <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                  <Search className="h-4 w-4" />
-                </span>
-                <div>
-                  <h2 className="text-sm font-semibold text-foreground">Store updates</h2>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Get launch alerts, selected offers, and useful updates.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <HomepageNewsletterForm variant="light" source="footer" />
-                <p className="mt-2.5 text-xs leading-5 text-muted-foreground">
-                  No spam. Unsubscribe anytime.
-                </p>
-              </div>
-            </section>
           </div>
 
-          {FOOTER_PAYMENT_METHODS.length > 0 ? (
-            <div className="mt-8 rounded-2xl border border-black/6 bg-white/62 px-4 py-4 sm:mt-10 sm:px-5">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-sm font-semibold text-foreground">Payment methods</h2>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Logos appear only for payment methods currently available in checkout.
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2.5 sm:justify-end">
+          <div className="mt-8 grid gap-7 border-t border-black/8 pt-7 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.72fr)] lg:items-start lg:gap-12">
+            <section className="order-2 lg:order-1">
+              <h2 className="text-sm font-semibold text-foreground">We accept</h2>
+              {FOOTER_PAYMENT_METHODS.length > 0 ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2.5">
                   {FOOTER_PAYMENT_METHODS.map((method) => (
                     <span
                       key={method.alt}
-                      className="inline-flex min-h-9 items-center justify-center rounded-xl border border-black/6 bg-white px-3 shadow-[0_6px_16px_rgba(23,18,15,0.04)]"
+                      className="inline-flex min-h-8 items-center justify-center rounded-md border border-black/8 bg-white px-3 shadow-[0_5px_14px_rgba(23,18,15,0.035)]"
                     >
                       <img
                         src={method.src}
@@ -272,9 +262,25 @@ export function Footer() {
                     </span>
                   ))}
                 </div>
+              ) : null}
+              <p className="mt-2.5 max-w-md text-xs leading-5 text-muted-foreground">
+                Displayed methods follow current checkout availability.
+              </p>
+            </section>
+
+            <section className="order-1 lg:order-2">
+              <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                Get launch alerts, selected offers, and useful updates.
+              </p>
+              <div className="mt-3">
+                <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                  No spam. Unsubscribe anytime.
+                </p>
               </div>
-            </div>
-          ) : null}
+            </section>
+          </div>
         </div>
       </div>
 
@@ -286,15 +292,17 @@ export function Footer() {
               <span className="font-semibold text-foreground">Boilabin</span>
               <span>All rights reserved.</span>
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-end">
-              {LEGAL_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="transition-colors hover:text-foreground focus-visible:text-foreground"
-                >
-                  {link.label}
-                </Link>
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 lg:justify-end">
+              {BOTTOM_LEGAL_LINKS.map((link, index) => (
+                <span key={link.href} className="inline-flex items-center gap-3">
+                  {index > 0 ? <span aria-hidden="true" className="text-black/20">|</span> : null}
+                  <Link
+                    href={link.href}
+                    className="transition-colors hover:text-foreground focus-visible:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                </span>
               ))}
             </div>
           </div>
