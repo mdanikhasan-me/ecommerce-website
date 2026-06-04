@@ -8,33 +8,37 @@ import {
   Mail,
   MapPin,
   Phone,
+  Youtube,
 } from 'lucide-react'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
 import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
 
+const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
+
 const SOCIAL_LINKS = [
   { icon: Facebook, href: FACEBOOK_URL, label: 'Facebook' },
   { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
+  { icon: Youtube, href: YOUTUBE_URL, label: 'YouTube' },
 ]
 
 // Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
   {
     ...PAYMENT_ASSETS.BKASH,
-    className: 'h-[1.28rem] max-w-[2.3rem]',
+    className: 'h-[1.18rem] max-w-[2.15rem]',
   },
   {
     ...PAYMENT_ASSETS.NAGAD,
-    className: 'h-[1.35rem] max-w-[2rem]',
+    className: 'h-[1.24rem] max-w-[1.9rem]',
   },
   {
     ...PAYMENT_ASSETS.VISA,
-    className: 'h-[0.92rem] max-w-[3.2rem]',
+    className: 'h-[0.84rem] max-w-[2.95rem]',
   },
   {
     ...PAYMENT_ASSETS.MASTERCARD,
-    className: 'h-[1.05rem] max-w-[2.8rem]',
+    className: 'h-[0.96rem] max-w-[2.58rem]',
   },
 ]
 
@@ -133,9 +137,9 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
-                    <item.icon className="h-3.5 w-3.5" />
+                    <item.icon className="h-4 w-4" />
                   </a>
                 ))}
               </div>
