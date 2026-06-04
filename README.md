@@ -350,6 +350,24 @@ No demo login credentials are published in this README. For local testing, use l
 
 Use role concepts such as admin, customer, and seller only for planning and local QA. Never commit or publish real usernames, emails, passwords, seeded account credentials, staging credentials, or production credentials. Keep staging and production secrets in the approved hosting provider secret manager.
 
+### Local authenticated checkout QA fixture
+
+Authenticated checkout QA can use a guarded local-only buyer account after local PostgreSQL is running and `npm run db:url:safety` reports local migration ready `yes`.
+
+First audit the fixture guardrails:
+
+```bash
+npm run auth:fixture:readiness
+```
+
+To create or refresh the local buyer, set `BOILABIN_LOCAL_BUYER_PASSWORD` outside git with a strong local-only password, optionally keep the default local-only email `local-buyer@boilabin.localhost`, then run:
+
+```bash
+npm run auth:buyer:local
+```
+
+The helper refuses remote-looking database URLs, requires a separate local shadow database, creates only a `CUSTOMER` fixture, ensures a cart and wishlist exist, and does not print the password, hash, or full email address. Use this account only for no-submit local checkout shell QA unless a later step explicitly approves order-creation testing. Do not reuse production, staging, payment, OAuth, or hosting credentials.
+
 ### Useful routes
 
 - Storefront: `http://localhost:3000`
@@ -367,6 +385,8 @@ npm run start             # Run production server
 npm run lint              # Lint project
 npm run typecheck         # Type-check project
 npm test                  # Run tests
+npm run auth:fixture:readiness # Audit local authenticated checkout fixture guardrails
+npm run auth:buyer:local  # Create/update local-only CUSTOMER fixture after DB safety passes
 npm run db:url:safety     # Classify DB URLs without connecting or printing secrets
 npm run db:require-local   # Fail unless DB URLs are local and separate; no DB connection
 npm run db:validate       # Plain Prisma validate; does not load .env.local guardrail

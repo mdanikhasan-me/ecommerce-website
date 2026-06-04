@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "test": "tsx --test tests/**/*.test.ts",
     "admin:password:local": "node scripts/set-local-admin-password.mjs",
+    "auth:fixture:readiness": "node scripts/audit-local-auth-fixture-readiness.mjs",
+    "auth:buyer:local": "node scripts/create-local-buyer-fixture.mjs",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
     "db:url:safety": "node scripts/check-db-url-safety.mjs",
