@@ -144,6 +144,17 @@ Metadata should summarize what the page actually contains:
 
 Avoid adding delivery speed, payment availability, seller status, authenticity, review counts, or warranty details unless that same fact is visible and current on the page.
 
+## Structured Data And Social Preview Guidance
+
+Structured data is page evidence for search systems, not a place to add sales claims. Before adding Product, Offer, shipping, return, payment, review, Organization, FAQ, or ItemList fields, check that the same fact is visible on the page or supplied by current product data.
+
+Keep schema conservative:
+
+- do not add GTIN, MPN, brand, rating, review, shipping time, return method, payment provider, or seller-marketplace fields without real source data;
+- do not use schema to claim authenticity, trust, speed, guarantees, or broad coverage;
+- keep Cash on Delivery wording factual and do not imply online gateways are live unless checkout supports them;
+- keep Open Graph image copy short, factual, and consistent with visible site facts.
+
 ## Review Checklist Before Publishing Copy
 
 - Is every claim provable?

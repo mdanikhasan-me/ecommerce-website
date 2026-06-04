@@ -37,12 +37,13 @@ describe('content quality marketing-copy guardrail', () => {
   it('classifies review-only claims without weakening hard-blocked findings', async () => {
     const { findMarketingCopyFindings } = await import('../scripts/audit-ai-marketing-copy.mjs')
     const findings = findMarketingCopyFindings(
-      'Fast delivery and secure checkout for authentic products.',
+      'Fast delivery, secure checkout, and smooth checkout for authentic products.',
       'src/app/(store)/faq/page.tsx',
     )
 
     assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'fast-delivery' && finding.policy === 'review-only'))
     assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'secure-checkout' && finding.policy === 'review-only'))
+    assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'smooth-checkout' && finding.policy === 'review-only'))
     assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'authentic' && finding.policy === 'review-only'))
     assert.ok(findings.every((finding: { category: string }) => finding.category === 'source-visible-copy'))
   })
@@ -55,5 +56,27 @@ describe('content quality marketing-copy guardrail', () => {
       findMarketingCopyFindings('const TRUSTED_FETCH_SITES = new Set(["same-origin"])', 'src/backend/security/request-guard.ts'),
       [],
     )
+  })
+
+  it('classifies schema and social-preview surfaces explicitly', async () => {
+    const { classifyContentArea, findMarketingCopyFindings } = await import('../scripts/audit-ai-marketing-copy.mjs')
+
+    assert.equal(
+      classifyContentArea('src/backend/seo/structured-data.ts', 'authentic guaranteed'),
+      'structured-data',
+    )
+    assert.equal(
+      classifyContentArea('src/app/opengraph-image.tsx', 'Authentic products and smooth checkout'),
+      'opengraph-social-preview',
+    )
+
+    const findings = findMarketingCopyFindings(
+      'Authentic products and smooth checkout with cash on delivery.',
+      'src/app/opengraph-image.tsx',
+    )
+
+    assert.ok(findings.some((finding: { id: string }) => finding.id === 'authentic'))
+    assert.ok(findings.some((finding: { id: string }) => finding.id === 'smooth-checkout'))
+    assert.ok(findings.every((finding: { category: string }) => finding.category === 'opengraph-social-preview'))
   })
 })

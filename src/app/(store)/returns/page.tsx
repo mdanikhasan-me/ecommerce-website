@@ -25,7 +25,7 @@ export default function ReturnsPage() {
               <li>Items received damaged or defective</li>
               <li>Wrong product delivered</li>
               <li>Products that materially differ from the listing description</li>
-              <li>Unused items in original packaging submitted within the return window</li>
+              <li>Unused items in original packaging submitted within seven days of delivery</li>
             </ul>
           ),
         },

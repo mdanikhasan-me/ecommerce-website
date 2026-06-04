@@ -78,6 +78,14 @@ Current useful types:
 - ItemList;
 - FAQPage.
 
+Alignment rules:
+
+- Product and Offer schema must come from current product inputs: name, description, image, SKU/slug, price, currency, availability, category, URL, ratings, and reviews only when those inputs exist.
+- Shipping schema may include the visible base fee and Bangladesh destination. Do not add exact handling or transit timing unless the public shipping policy states the same details.
+- Return schema may include the public seven-day return window. Do not add a return method, return fees, refund guarantee, or pickup guarantee until the visible returns policy states it.
+- OnlineStore schema may mention Cash on Delivery. Do not add bKash, Nagad, card, or other provider support until those payment methods are live and visible in checkout.
+- Do not add GTIN, MPN, brand relationship, authenticity verification, customer count, seller count, or review count unless those facts come from product data or approved visible content.
+
 Future improvements:
 
 - more complete Offer shipping and return fields where visible and accurate;
@@ -166,6 +174,8 @@ Open Graph and Twitter descriptions should use the same calm factual wording as 
 - category page with visible listings;
 - help page with policy or support steps;
 - brand or collection page only when the page actually exists.
+
+Open Graph image copy follows the same rule. It should not promise authenticity verification, delivery-speed guarantees, checkout-safety guarantees, customer trust, or payment-provider support unless those facts are visible and current.
 
 ## Schema Matching Rule
 

@@ -55,7 +55,7 @@ export default function OpengraphImage() {
             A more considered online shopping experience for Bangladesh.
           </div>
           <div style={{ marginTop: 8, maxWidth: 900, color: '#D8C7D6', fontSize: 28 }}>
-            Authentic products, dependable delivery, and smooth checkout with cash on delivery.
+            Product listings, category browsing, and cash on delivery information.
           </div>
         </div>
 

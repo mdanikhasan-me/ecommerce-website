@@ -1,15 +1,15 @@
 /**
  * JSON-LD Structured Data Generators
  *
- * Schema.org markup for Google Rich Results, Shopping panels, and AI citations.
- * Based on research from Amazon, Daraz, and Google's product schema documentation:
+ * Schema.org markup for search, product discovery, and AI-readable page facts.
+ * Keep every field aligned with visible page content or current product inputs:
  *
  * - Product schema with Offer (price, currency BDT, availability)
- * - AggregateRating for star ratings in SERPs (20-30% CTR increase)
- * - BreadcrumbList for navigation breadcrumbs in search results
- * - Organization schema for business identity and trust signals
- * - WebSite with SearchAction for Google sitelinks searchbox
- * - FAQPage for FAQ rich snippets
+ * - AggregateRating only when actual rating inputs exist
+ * - BreadcrumbList for navigation breadcrumbs
+ * - Organization schema for business identity
+ * - WebSite with SearchAction for the public search route
+ * - FAQPage for visible FAQ content
  *
  * All prices in BDT, all addresses in Bangladesh format.
  */
@@ -85,33 +85,17 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
           '@type': 'DefinedRegion',
           addressCountry: 'BD',
         },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 2,
-            unitCode: 'DAY',
-          },
-          transitTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 2,
-            maxValue: 5,
-            unitCode: 'DAY',
-          },
-        },
       },
       hasMerchantReturnPolicy: {
         '@type': 'MerchantReturnPolicy',
         applicableCountry: 'BD',
         returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
         merchantReturnDays: 7,
-        returnMethod: 'https://schema.org/ReturnByMail',
       },
     },
   }
 
-  // AggregateRating (huge CTR boost; shows stars in SERPs)
+  // Aggregate ratings are emitted only when product data supplies real rating inputs.
   if (product.rating && product.reviewCount && product.reviewCount > 0) {
     jsonLd.aggregateRating = {
       '@type': 'AggregateRating',
@@ -122,7 +106,7 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
     }
   }
 
-  // Individual reviews (Google prefers max 5)
+  // Individual reviews are emitted only when review inputs are available.
   if (product.reviews && product.reviews.length > 0) {
     jsonLd.review = product.reviews.slice(0, 5).map((r) => ({
       '@type': 'Review',

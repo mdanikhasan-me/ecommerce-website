@@ -26,6 +26,7 @@ export const REVIEW_ONLY_COPY_PATTERNS = [
   { id: 'reliable', pattern: /\breliable\b/i, severity: 'low' },
   { id: 'fast-delivery', pattern: /\bfast\s+(delivery|shipping)\b/i, severity: 'medium' },
   { id: 'secure-checkout', pattern: /\bsecure\s+checkout\b/i, severity: 'medium' },
+  { id: 'smooth-checkout', pattern: /\bsmooth\s+checkout\b/i, severity: 'medium' },
   { id: 'authentic', pattern: /\bauthentic\b/i, severity: 'medium' },
   { id: 'loved-by-thousands', pattern: /\bloved\s+by\s+thousands\b/i, severity: 'high' },
 ]
@@ -65,8 +66,10 @@ export function classifyContentArea(filePath, excerpt = '') {
 
   if (normalized === 'README.md' || normalized.startsWith('docs/')) return 'docs'
   if (normalized === 'prisma/seed.ts') return 'seed-demo'
-  if (normalized.includes('/admin/') || normalized.includes('ProductEditorForm')) return 'admin-input-helper'
+  if (normalized === 'src/app/opengraph-image.tsx') return 'opengraph-social-preview'
+  if (normalized.endsWith('/structured-data.ts')) return 'structured-data'
   if (normalized.includes('/seo/') || normalized === 'src/app/layout.tsx') return 'seo-metadata'
+  if (normalized.includes('/admin/') || normalized.includes('ProductEditorForm')) return 'admin-input-helper'
   if (normalized.includes('/layout/Footer') || normalized.includes('/home/') || normalized.includes('/content/')) return 'source-visible-copy'
   if (normalized.startsWith('src/app/(store)/')) return 'source-visible-copy'
   if (/isBestSeller|pinnedInBestSeller|bestRating|worstRating|trusted-fetch-site|AUTH_TRUST_HOST/i.test(excerpt)) {

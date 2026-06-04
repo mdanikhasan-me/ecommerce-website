@@ -6,10 +6,14 @@ import { getStaticSitemapEntries } from '@/app/sitemap'
 import {
   generateBreadcrumbJsonLd,
   generateCategoryMetadata,
+  generateFAQJsonLd,
   generateItemListJsonLd,
+  generateLocalBusinessJsonLd,
+  generateOrganizationJsonLd,
   generateProductJsonLd,
   generateProductMetadata,
   generateSearchMetadata,
+  generateWebsiteJsonLd,
   hasFacetedCategoryParams,
   noIndexFollowRobots,
   normalizeSiteUrl,
@@ -83,6 +87,82 @@ describe('technical SEO policy', () => {
     assert.equal(jsonLd.url, 'https://boilabin.com/products/test-phone')
     assert.deepEqual(jsonLd.image, ['https://boilabin.com/uploads/test-phone.webp'])
     assert.equal((jsonLd.offers as { availability: string }).availability, 'https://schema.org/OutOfStock')
+  })
+
+  it('keeps Product Offer schema useful without unsupported merchant claims', () => {
+    const jsonLd = generateProductJsonLd({
+      name: 'Test Phone',
+      slug: 'test-phone',
+      description: 'A test product',
+      basePrice: 1200,
+      images: [{ url: '/uploads/test-phone.webp' }],
+      category: { name: 'Electronics', slug: 'electronics' },
+      stockQuantity: 5,
+    })
+
+    const serialized = JSON.stringify(jsonLd).toLowerCase()
+    const offer = jsonLd.offers as Record<string, unknown>
+    const shippingDetails = offer.shippingDetails as Record<string, unknown>
+    const returnPolicy = offer.hasMerchantReturnPolicy as Record<string, unknown>
+
+    assert.equal(offer.priceCurrency, 'BDT')
+    assert.equal((offer.seller as { name: string }).name, 'Boilabin')
+    assert.equal((shippingDetails.shippingRate as { currency: string }).currency, 'BDT')
+    assert.equal((shippingDetails.shippingDestination as { addressCountry: string }).addressCountry, 'BD')
+    assert.equal('deliveryTime' in shippingDetails, false)
+    assert.equal(returnPolicy.returnPolicyCategory, 'https://schema.org/MerchantReturnFiniteReturnWindow')
+    assert.equal(returnPolicy.merchantReturnDays, 7)
+    assert.equal('returnMethod' in returnPolicy, false)
+    assert.equal(serialized.includes('gtin'), false)
+    assert.equal(serialized.includes('mpn'), false)
+    assert.equal(serialized.includes('authentic'), false)
+    assert.equal(serialized.includes('bkash'), false)
+    assert.equal(serialized.includes('nagad'), false)
+    assert.equal(serialized.includes('visa'), false)
+    assert.equal(serialized.includes('mastercard'), false)
+  })
+
+  it('keeps metadata fallbacks factual and canonical without hard-blocked hype', () => {
+    const productMetadata = generateProductMetadata({
+      name: 'Test Phone',
+      slug: 'test-phone',
+      basePrice: 1200,
+      images: [],
+      category: { name: 'Electronics', slug: 'electronics' },
+    })
+    const categoryMetadata = generateCategoryMetadata({
+      name: 'Electronics',
+      slug: 'electronics',
+      productCount: 8,
+    })
+    const serialized = JSON.stringify([productMetadata, categoryMetadata]).toLowerCase()
+
+    assert.equal(productMetadata.alternates?.canonical, 'https://boilabin.com/products/test-phone')
+    assert.equal(categoryMetadata.alternates?.canonical, 'https://boilabin.com/category/electronics')
+    assert.doesNotMatch(serialized, /\b(most trusted|trusted|premium|best price|leading|ultimate|authentic guaranteed|fast delivery|secure checkout)\b/)
+  })
+
+  it('keeps Organization, WebSite, OnlineStore, and FAQ JSON-LD factual', () => {
+    const organization = generateOrganizationJsonLd()
+    const website = generateWebsiteJsonLd()
+    const onlineStore = generateLocalBusinessJsonLd()
+    const faq = generateFAQJsonLd([
+      {
+        question: 'What payment methods do you accept?',
+        answer: 'Cash on Delivery is available now.',
+      },
+    ])
+
+    assert.equal(organization.name, 'Boilabin')
+    assert.equal(organization.url, 'https://boilabin.com/')
+    assert.deepEqual(organization.sameAs, [])
+    assert.equal(website.potentialAction['@type'], 'SearchAction')
+    assert.equal(website.potentialAction.target.urlTemplate, 'https://boilabin.com/search?q={search_term_string}')
+    assert.equal(onlineStore.paymentAccepted, 'Cash on Delivery')
+    assert.equal(JSON.stringify(onlineStore).includes('bKash'), false)
+    assert.equal(JSON.stringify(onlineStore).includes('Nagad'), false)
+    assert.equal(faq.mainEntity[0].name, 'What payment methods do you accept?')
+    assert.equal(faq.mainEntity[0].acceptedAnswer.text, 'Cash on Delivery is available now.')
   })
 
   it('generates absolute breadcrumb and item-list JSON-LD URLs', () => {
