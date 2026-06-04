@@ -186,24 +186,24 @@ export default async function SearchPage({ searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">{total} results</p>
-            <div className="flex flex-wrap items-center gap-2">
+          <div className="mb-5 flex flex-col gap-3 rounded-[1.25rem] border border-border/80 bg-card/95 p-3 shadow-[0_12px_30px_rgba(23,18,15,0.04)] sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+            <p className="text-sm font-medium text-muted-foreground">{total} results</p>
+            <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
               <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
-              <span className="text-sm font-medium">Sort:</span>
+              <span className="ml-auto text-sm font-medium sm:ml-0">Sort:</span>
               <SortSelect current={params.sort} options={SORT_OPTIONS} />
             </div>
           </div>
 
           {products.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-4xl mb-4">🔍</p>
-              <h2 className="font-display text-xl font-semibold">No products found</h2>
-              <p className="text-muted-foreground mt-2">Try a different search term or remove some filters</p>
+            <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center shadow-[0_16px_36px_rgba(23,18,15,0.05)] sm:px-8 sm:py-16">
+              <p className="section-kicker">No results</p>
+              <h2 className="mt-3 font-display text-xl font-semibold">No products found</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try a different search term or remove some filters.</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:gap-5 xl:grid-cols-4">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}

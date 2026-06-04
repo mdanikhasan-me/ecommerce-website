@@ -1,0 +1,2137 @@
+{
+  "mode": "fallback-storefront-production",
+  "baseUrl": "http://127.0.0.1:3137",
+  "routeChecks": [
+    {
+      "path": "/",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/category",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/category/electronics",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/search?q=phone",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/cart",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/track-order",
+      "status": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "path": "/deals",
+      "status": 404,
+      "expected": 404,
+      "ok": true
+    },
+    {
+      "path": "/api/admin/flash-sales",
+      "status": 404,
+      "expected": 404,
+      "ok": true
+    }
+  ],
+  "viewports": [
+    {
+      "label": "mobile-360",
+      "width": 360
+    },
+    {
+      "label": "mobile-390",
+      "width": 390
+    },
+    {
+      "label": "mobile-430",
+      "width": 430
+    },
+    {
+      "label": "mobile-480",
+      "width": 480
+    },
+    {
+      "label": "tablet-600",
+      "width": 600
+    },
+    {
+      "label": "tablet-700",
+      "width": 700
+    },
+    {
+      "label": "tablet-768",
+      "width": 768
+    },
+    {
+      "label": "desktop-900",
+      "width": 900
+    },
+    {
+      "label": "desktop-1024",
+      "width": 1024
+    },
+    {
+      "label": "desktop-1366",
+      "width": 1366
+    }
+  ],
+  "matrix": [
+    {
+      "route": "/",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/category",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 3
+    },
+    {
+      "route": "/cart",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/track-order",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/deals",
+      "viewport": "mobile-360",
+      "width": 360,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/category",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 3
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/cart",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/track-order",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/deals",
+      "viewport": "mobile-390",
+      "width": 390,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/category",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 3
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/cart",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/track-order",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/deals",
+      "viewport": "mobile-430",
+      "width": 430,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/category",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/cart",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/track-order",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/deals",
+      "viewport": "mobile-480",
+      "width": 480,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/category",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 4
+    },
+    {
+      "route": "/cart",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/track-order",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 1
+    },
+    {
+      "route": "/deals",
+      "viewport": "tablet-600",
+      "width": 600,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/category",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/cart",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/track-order",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/deals",
+      "viewport": "tablet-700",
+      "width": 700,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 9
+    },
+    {
+      "route": "/category",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/cart",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/track-order",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/deals",
+      "viewport": "tablet-768",
+      "width": 768,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/category",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 5
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/cart",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/track-order",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 2
+    },
+    {
+      "route": "/deals",
+      "viewport": "desktop-900",
+      "width": 900,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 10
+    },
+    {
+      "route": "/category",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 11
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 11
+    },
+    {
+      "route": "/cart",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/track-order",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/deals",
+      "viewport": "desktop-1024",
+      "width": 1024,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    },
+    {
+      "route": "/",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/category",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 7
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 12
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 11
+    },
+    {
+      "route": "/cart",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Other",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/track-order",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        },
+        {
+          "type": "Fetch",
+          "errorText": "net::ERR_ABORTED"
+        }
+      ],
+      "responseErrors": [],
+      "authSessionAborts": 6
+    },
+    {
+      "route": "/deals",
+      "viewport": "desktop-1366",
+      "width": 1366,
+      "horizontalOverflow": false,
+      "visibleBrokenImages": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "responseErrors": [],
+      "authSessionAborts": 0
+    }
+  ],
+  "screenshots": [
+    "audit-reports/262-adaptive-batch-screenshots/mobile-390-home.png",
+    "audit-reports/262-adaptive-batch-screenshots/mobile-390-category-electronics.png",
+    "audit-reports/262-adaptive-batch-screenshots/mobile-390-search-q-phone.png",
+    "audit-reports/262-adaptive-batch-screenshots/tablet-768-home.png",
+    "audit-reports/262-adaptive-batch-screenshots/desktop-1024-category-electronics.png",
+    "audit-reports/262-adaptive-batch-screenshots/desktop-1024-search-q-phone.png",
+    "audit-reports/262-adaptive-batch-screenshots/desktop-1366-home.png"
+  ],
+  "footer": {
+    "hasFooter": true,
+    "youtube": true,
+    "paymentAlts": [
+      "Mastercard",
+      "Nagad",
+      "Visa",
+      "bKash"
+    ],
+    "hasCod": false
+  },
+  "summary": {
+    "horizontalOverflow": 0,
+    "visibleBrokenImages": 0,
+    "consoleErrors": 0,
+    "requestFailures": 0,
+    "serverErrors": 0,
+    "imageFailures": 0,
+    "authSessionAborts": 269,
+    "rawRequestFailures": 295,
+    "browserLifecycleAborts": 295,
+    "unexpectedRequestFailures": 0
+  },
+  "ok": true,
+  "classification": "passed after filtering browser lifecycle net::ERR_ABORTED aborts caused by matrix navigation; raw abort counts are retained in matrix entries and summary.browserLifecycleAborts."
+}
