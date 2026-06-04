@@ -1,0 +1,184 @@
+# Boilabin Search Everywhere Strategy
+
+## What Search Everywhere Means
+
+Search Everywhere Optimization means making Boilabin understandable across:
+
+- Google Search;
+- Google Images;
+- Google Lens and product discovery;
+- Bing;
+- ChatGPT browsing and answers;
+- Gemini-style answers;
+- Perplexity-style answers;
+- Claude-style web answers;
+- AI crawlers and agents;
+- social previews;
+- product and merchant surfaces.
+
+This is broader than old keyword SEO. The site needs crawlable pages, factual copy, consistent structured data, useful images, and stable product/category URLs.
+
+## Official References Used
+
+- Google product structured data: https://developers.google.com/search/docs/appearance/structured-data/product
+- Google merchant listing structured data: https://developers.google.com/search/docs/appearance/structured-data/merchant-listing
+- Google ecommerce SEO guides: https://developers.google.com/search/docs/specialty/ecommerce
+- Google image SEO: https://developers.google.com/search/docs/appearance/google-images
+- Google helpful content guidance: https://developers.google.com/search/docs/fundamentals/creating-helpful-content
+- Google sitemaps: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+- Google robots.txt interpretation: https://developers.google.com/search/reference/robots_txt
+- Next.js Image component: https://nextjs.org/docs/app/api-reference/components/image
+- MDN image formats: https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+- web.dev AVIF guide: https://web.dev/learn/images/avif/
+
+## Why Hype Copy Does Not Work
+
+Terms like "trusted", "premium", "best", and "leading" do not help if the page has no evidence. They make the page less specific and less useful.
+
+Better signals:
+
+- clear product names;
+- real brands/models;
+- visible price and availability;
+- shipping/return facts;
+- product images that match the product;
+- factual category descriptions;
+- structured data that matches visible content.
+
+## Crawlability Checklist
+
+- Public product pages must be accessible without login.
+- Public category pages must be accessible without login.
+- Search/faceted pages should remain noindex unless deliberately approved.
+- Private routes should stay blocked or noindexed.
+- Images should be crawlable and not hidden behind auth.
+- Canonical URLs should use `https://boilabin.com` for production/future indexing.
+- Pages should not depend on client-only rendering for core product facts.
+
+## Sitemap And Robots Checklist
+
+- `robots.txt` should allow public pages and disallow private/admin/API routes.
+- `robots.txt` should expose the sitemap URL.
+- Sitemap should include public static pages, active products, and active categories.
+- At scale, split sitemap output by type and count.
+- Avoid including private utility routes or faceted URLs.
+
+## Structured Data Checklist
+
+Current useful types:
+
+- Organization;
+- WebSite with SearchAction;
+- OnlineStore;
+- BreadcrumbList;
+- Product;
+- Offer;
+- ItemList;
+- FAQPage.
+
+Future improvements:
+
+- more complete Offer shipping and return fields where visible and accurate;
+- brand/gtin/mpn where known;
+- product variant support where variants get stable URLs or clear page-level selection;
+- review snippets only when reviews are genuine and visible;
+- stronger category ItemList consistency;
+- merchant/feed readiness alignment.
+
+## Merchant And Product Feed Readiness
+
+Google supports product visibility through structured data and Merchant Center feeds. Boilabin should eventually prepare:
+
+- product ID/SKU policy;
+- title and description policy;
+- image link and additional image link policy;
+- availability and stock policy;
+- price sync policy;
+- return/shipping policy;
+- feed refresh cadence;
+- crawlable product URLs.
+
+## Product Page Requirements
+
+Each indexable product page should have:
+
+- unique title;
+- specific product description;
+- primary image with alt text;
+- price in BDT;
+- stock/availability;
+- SKU or product identifier;
+- category breadcrumb;
+- visible returns/shipping facts if used in schema;
+- canonical URL;
+- Product JSON-LD that matches visible page content.
+
+## Category Page Requirements
+
+Each important category should have:
+
+- unique intro copy;
+- subcategory links;
+- visible product count;
+- crawlable pagination;
+- ItemList JSON-LD for visible products;
+- noindex on filtered/faceted combinations unless approved.
+
+## Brand And Collection Page Requirements
+
+Future brand/collection pages should include:
+
+- brand facts;
+- product list;
+- Bangladesh availability;
+- links to related categories;
+- no unsupported authenticity claims.
+
+## Buying Guide Requirements
+
+Useful future guides:
+
+- Where to buy Hot Wheels in Bangladesh.
+- How to choose authentic die-cast cars.
+- Hot Wheels gift guide in Bangladesh.
+- How to compare phone storage and warranty in Bangladesh.
+- Cash on delivery and return guide for online shopping in Bangladesh.
+
+Buying guides should link to categories/products and answer real buyer questions.
+
+## AI-Readable Business Facts Page
+
+Add a future public page with factual business details:
+
+- Boilabin name;
+- country served;
+- categories sold;
+- support contact;
+- shipping/returns summary;
+- payment methods that are actually enabled;
+- marketplace/seller status if and when approved.
+
+This page should help search engines and AI answer systems cite accurate facts.
+
+## Optional llms.txt Strategy
+
+An `llms.txt` or Markdown summary can help some tools, but it is not a ranking shortcut. Treat it as an optional helper after the main site content, schema, sitemap, robots, and product data are correct.
+
+## Bangladesh Trust Signals
+
+Use visible, honest signals:
+
+- clear contact information;
+- shipping areas;
+- return/refund policy;
+- available payment methods;
+- stock and availability;
+- seller/product source information when approved.
+
+## First Implementation Priorities
+
+1. Harden image upload/media performance.
+2. Add content-quality guardrails and remove unsupported hype.
+3. Improve product/category metadata wording.
+4. Add more complete product/offer schema where page content supports it.
+5. Plan merchant feed readiness after product data policy is stable.
