@@ -57,7 +57,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const seoTitle = product.metaTitle?.trim() || `${product.name} price in Bangladesh`
   const seoDescription =
     product.metaDescription?.trim() ||
-    `Buy ${product.name} in Bangladesh at BDT ${formatBdt(price)}. Fast delivery, secure checkout, and cash on delivery from Boilabin.`
+    `View ${product.name} in Bangladesh at BDT ${formatBdt(price)} with product details, category, availability, and checkout options on Boilabin.`
 
   return {
     title: seoTitle,
@@ -106,10 +106,10 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
   const url = canonicalUrl(`/category/${category.slug}`)
   const desc =
     category.description ??
-    `Shop ${category.name} at the best prices in Bangladesh. ${category.productCount ? `${category.productCount}+ products` : 'Wide selection'} with free delivery on orders over Tk 2,000.`
+    `Browse ${category.name} products on Boilabin. ${category.productCount ? `${category.productCount}+ visible products` : 'Review current listings'} with prices, images, availability, and category details.`
 
   return {
-    title: `${category.name}, Best Prices in Bangladesh`,
+    title: `${category.name} Products in Bangladesh`,
     description: desc,
     keywords: [
       category.name,
@@ -120,7 +120,7 @@ export function generateCategoryMetadata(category: CategoryMeta): Metadata {
     ],
     alternates: { canonical: url },
     openGraph: {
-      title: `${category.name}, Best Prices in Bangladesh, ${SEO.siteName}`,
+      title: `${category.name} Products in Bangladesh, ${SEO.siteName}`,
       description: desc,
       url,
       siteName: SEO.siteName,

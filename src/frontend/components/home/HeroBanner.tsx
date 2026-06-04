@@ -49,7 +49,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
               A warmer, calmer way to shop online in Bangladesh.
             </h1>
             <p className={cn('mt-5', heroSubtitleClass)}>
-              Discover electronics, fashion, home essentials, and trusted brands in a storefront built to help you buy with confidence.
+              Browse electronics, fashion, home essentials, and product details in a storefront organized for everyday shopping.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/search" className="inline-flex items-center rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white">

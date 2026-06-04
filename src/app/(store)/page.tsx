@@ -138,7 +138,7 @@ export default async function HomePage() {
         <section className="container-site py-12">
           <ProductGrid
             title="Featured Products"
-            subtitle="Handpicked products, premium quality"
+            subtitle="Selected listings from the current catalog"
             products={featured}
             viewAllHref="/search?featured=true"
           />
@@ -156,7 +156,7 @@ export default async function HomePage() {
         <section className="container-site py-12">
           <ProductGrid
             title="Best Sellers"
-            subtitle="Loved by thousands of customers"
+            subtitle="Popular listings from the current catalog"
             products={bestSellers}
             viewAllHref="/search?sort=popular"
           />

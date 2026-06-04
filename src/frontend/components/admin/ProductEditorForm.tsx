@@ -791,7 +791,7 @@ export function ProductEditorForm({
                   value={form.metaDescription}
                   onChange={(event) => updateField('metaDescription', event.target.value)}
                   className="input-base min-h-[100px] resize-y"
-                  placeholder={`Buy ${form.name || 'product'} in Bangladesh at the best price. Fast delivery and cash on delivery from Boilabin.`}
+                  placeholder={`View ${form.name || 'product'} in Bangladesh with price, product details, availability, and checkout options from Boilabin.`}
                 />
               </div>
 
@@ -809,7 +809,7 @@ export function ProductEditorForm({
                     <span className="text-foreground/80">
                       {form.metaDescription.trim() ||
                         (form.name
-                          ? `Buy ${form.name} in Bangladesh at the best price. Fast delivery, secure checkout, and cash on delivery from Boilabin.`
+                          ? `View ${form.name} in Bangladesh with price, product details, availability, and checkout options from Boilabin.`
                           : 'Not set')}
                     </span>
                   </p>

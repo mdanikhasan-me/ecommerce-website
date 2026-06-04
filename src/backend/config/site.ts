@@ -9,7 +9,7 @@ import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
 
 export const siteConfig = {
   name: 'Boilabin',
-  description: "Bangladesh's premium online marketplace",
+  description: 'Bangladesh-based online marketplace',
   url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   locale: 'en-BD',
   currency: 'BDT',

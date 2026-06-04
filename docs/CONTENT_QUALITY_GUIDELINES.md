@@ -15,6 +15,8 @@ Boilabin copy should sound factual, useful, and specific. It should not sound li
 - Never claim "trusted", "premium", "best", or "leading" without evidence.
 - Avoid scammy marketplace language.
 - Keep Bangladesh context concrete: delivery area, payment method, stock, returns, contact, and product type.
+- Treat Search Everywhere copy as factual page explanation, not keyword stuffing.
+- If a business fact is not confirmed, omit it or say where the buyer can check it.
 
 ## Avoid These Patterns
 
@@ -96,6 +98,16 @@ Avoid:
 - exaggerated discounts;
 - vague "best seller" claims unless the product is actually marked that way.
 
+Admin product descriptions should encourage facts that can be checked:
+
+- material, size, color, model, and compatibility;
+- included items and variant differences;
+- condition notes where relevant;
+- warranty, return, or delivery notes only when the policy is known;
+- image alt text that names the actual product.
+
+Admin product descriptions should not encourage "best price", "fast delivery", "secure checkout", "premium quality", or authenticity claims unless those claims are backed by approved policy.
+
 ## Category Page Guidance
 
 Good category copy should include:
@@ -118,6 +130,19 @@ AI answer systems and search engines need clear facts:
 - structured data that matches visible page content.
 
 Do not write only for keywords. Search systems can understand factual structure better than empty claims.
+
+For Boilabin, Search Everywhere Optimization means factual crawlable content plus structured data that matches visible page facts. It does not mean repeating "best", "trusted", "premium", or similar phrases.
+
+## Metadata Guidance
+
+Metadata should summarize what the page actually contains:
+
+- product pages: product name, price, category, availability, and visible details;
+- category pages: category name, visible product count, prices/images availability, and subcategory context;
+- support pages: the policy or task explained on the page;
+- social previews: the same factual summary used on the page.
+
+Avoid adding delivery speed, payment availability, seller status, authenticity, review counts, or warranty details unless that same fact is visible and current on the page.
 
 ## Review Checklist Before Publishing Copy
 

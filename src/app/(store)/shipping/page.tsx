@@ -23,8 +23,8 @@ export default function ShippingPage() {
 
         <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[
-            { icon: Truck, title: 'Free Delivery', desc: `On all orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}` },
-            { icon: Clock, title: 'Fast Shipping', desc: 'Dhaka city orders in 1 to 2 days' },
+            { icon: Truck, title: 'Free Delivery Threshold', desc: `On orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}` },
+            { icon: Clock, title: 'Delivery Estimates', desc: 'Delivery timing depends on the order address' },
             { icon: MapPin, title: 'Simple Rate', desc: `Tk ${siteConfig.shipping.baseFee} for paid delivery` },
             { icon: CreditCard, title: 'COD Available', desc: 'Cash on delivery at no extra cost' },
           ].map((item) => (
@@ -63,7 +63,7 @@ export default function ShippingPage() {
         </div>
 
         <p className="mt-4 text-xs text-muted-foreground">
-          Orders placed before 2:00 PM are dispatched the same business day. Delivery times are estimates and may vary during holidays or peak seasons.
+          Delivery times are estimates and may vary by address, holidays, order volume, and fulfillment availability.
         </p>
       </div>
     </div>

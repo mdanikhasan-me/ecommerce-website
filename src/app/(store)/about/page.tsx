@@ -4,7 +4,7 @@ import { ContentPageShell } from '@/frontend/components/content/ContentPageShell
 
 export const metadata: Metadata = generatePageMetadata(
   'About Boilabin',
-  'Learn how Boilabin is building a clearer, more reliable online shopping experience for customers in Bangladesh.',
+  'Learn how Boilabin organizes product information, shopping categories, order support, and policy pages for customers in Bangladesh.',
   '/about',
 )
 
@@ -13,11 +13,11 @@ export default function AboutPage() {
     <ContentPageShell
       eyebrow="About Boilabin"
       title="A cleaner online shopping experience for Bangladesh."
-      description="Boilabin is being built around trust, clarity, and better product discovery so customers can shop with more confidence from the first click to the final delivery."
+      description="Boilabin is being built around clear product listings, practical category browsing, and support pages that help customers understand the shopping flow before placing an order."
       highlights={[
-        { label: 'Focus', value: 'Authentic products and a clearer storefront' },
-        { label: 'Coverage', value: 'Fast delivery across Bangladesh with tracked fulfillment' },
-        { label: 'Support', value: 'Straightforward service before and after checkout' },
+        { label: 'Focus', value: 'Product listings with prices, images, and availability' },
+        { label: 'Catalog', value: 'Categories for electronics, fashion, home, beauty, toys, and more' },
+        { label: 'Support', value: 'Order, shipping, return, and contact information in one place' },
       ]}
       sections={[
         {
@@ -26,13 +26,13 @@ export default function AboutPage() {
           body: (
             <>
               <p>
-                Boilabin started with a simple goal: make online shopping feel more reliable,
-                more premium, and far less confusing for customers in Bangladesh.
+                Boilabin started with a simple goal: make online shopping easier to understand
+                for customers in Bangladesh.
               </p>
               <p>
-                Instead of overwhelming people with messy listings and inconsistent storefronts,
-                we want the experience to feel deliberate and easy to trust. The focus is better presentation,
-                clearer product information, and service that still feels human after payment.
+                Instead of relying on vague marketplace claims, the storefront focuses on product
+                names, images, prices, availability, categories, and order information that buyers
+                can review before checkout.
               </p>
             </>
           ),
@@ -42,11 +42,11 @@ export default function AboutPage() {
           title: 'What customers should expect',
           body: (
             <ul>
-              <li>Authentic products sourced through trusted channels</li>
-              <li>Clear pricing without hidden surprises at checkout</li>
-              <li>Delivery updates that stay transparent from dispatch to handoff</li>
+              <li>Product listings with images, prices, availability, and category details</li>
+              <li>Checkout totals that show product, delivery, and payment information</li>
+              <li>Account pages where signed-in customers can review orders</li>
               <li>Returns and refunds explained in plain language</li>
-              <li>Support that actually responds when customers need help</li>
+              <li>Contact information for order, product, and support questions</li>
             </ul>
           ),
         },
@@ -56,13 +56,12 @@ export default function AboutPage() {
           body: (
             <>
               <p>
-                The long term vision is not just a store with products on shelves. It is a
-                retail brand that earns trust over time through better design, better operations,
-                and higher product standards.
+                The long term vision is a shopping site where product information, policies,
+                category pages, and account tools stay consistent as the catalog grows.
               </p>
               <p>
-                We want Boilabin to feel modern and premium without becoming difficult to use.
-                That balance matters just as much as the products themselves.
+                That means improving the parts buyers actually use: searchable listings,
+                readable product pages, useful support content, and order flows that stay clear.
               </p>
             </>
           ),

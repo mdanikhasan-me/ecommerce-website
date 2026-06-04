@@ -21,15 +21,15 @@ export const SEO = {
   country: 'BD',
   language: 'en',
 
-  defaultTitle: 'Boilabin, Shop Quality Products Online in Bangladesh',
+  defaultTitle: 'Boilabin, Online Shopping in Bangladesh',
   titleTemplate: '%s, Boilabin',
   defaultDescription:
-    'Shop electronics, fashion, home appliances and more in Bangladesh. Free delivery on orders over Tk 2,000, with cash on delivery available.',
+    'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 2,000 qualify for free delivery, and cash on delivery is available.',
 
   baseKeywords: [
     'online shopping bangladesh',
     'buy online bd',
-    'best price bangladesh',
+    'product price bangladesh',
     'price in bd',
     'boilabin',
     'online shop dhaka',
@@ -62,7 +62,7 @@ export const SEO = {
         url: toAbsoluteUrl('/opengraph-image', siteUrl) ?? `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
-        alt: 'Boilabin, Shop Quality Products Online in Bangladesh',
+        alt: 'Boilabin, Online Shopping in Bangladesh',
       },
     ],
   },

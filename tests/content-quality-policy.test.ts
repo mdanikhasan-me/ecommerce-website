@@ -6,13 +6,15 @@ describe('content quality marketing-copy guardrail', () => {
     const { findMarketingCopyFindings } = await import('../scripts/audit-ai-marketing-copy.mjs')
     const findings = findMarketingCopyFindings(
       "Bangladesh's most trusted premium marketplace and ultimate one-stop shop.",
-      'sample.tsx',
+      'src/app/(store)/sample/page.tsx',
     )
 
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'most-trusted'))
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'premium'))
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'ultimate'))
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'one-stop'))
+    assert.ok(findings.every((finding: { policy: string }) => finding.policy === 'hard-blocked'))
+    assert.ok(findings.every((finding: { category: string }) => finding.category === 'source-visible-copy'))
   })
 
   it('allows factual product/category wording', async () => {
@@ -30,5 +32,28 @@ describe('content quality marketing-copy guardrail', () => {
     assert.equal(shouldSkipContentPath('.env'), true)
     assert.equal(shouldSkipContentPath('.env.local'), true)
     assert.equal(shouldSkipContentPath('public/uploads/products/example.webp'), true)
+  })
+
+  it('classifies review-only claims without weakening hard-blocked findings', async () => {
+    const { findMarketingCopyFindings } = await import('../scripts/audit-ai-marketing-copy.mjs')
+    const findings = findMarketingCopyFindings(
+      'Fast delivery and secure checkout for authentic products.',
+      'src/app/(store)/faq/page.tsx',
+    )
+
+    assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'fast-delivery' && finding.policy === 'review-only'))
+    assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'secure-checkout' && finding.policy === 'review-only'))
+    assert.ok(findings.some((finding: { id: string; policy: string }) => finding.id === 'authentic' && finding.policy === 'review-only'))
+    assert.ok(findings.every((finding: { category: string }) => finding.category === 'source-visible-copy'))
+  })
+
+  it('keeps functional internal labels from becoming visible-copy findings', async () => {
+    const { classifyContentArea, findMarketingCopyFindings } = await import('../scripts/audit-ai-marketing-copy.mjs')
+
+    assert.equal(classifyContentArea('src/backend/types/product.ts', 'isBestSeller: boolean'), 'internal-identifier')
+    assert.deepEqual(
+      findMarketingCopyFindings('const TRUSTED_FETCH_SITES = new Set(["same-origin"])', 'src/backend/security/request-guard.ts'),
+      [],
+    )
   })
 })

@@ -35,6 +35,8 @@ This is broader than old keyword SEO. The site needs crawlable pages, factual co
 
 Terms like "trusted", "premium", "best", and "leading" do not help if the page has no evidence. They make the page less specific and less useful.
 
+Final rule for Boilabin: Search Everywhere Optimization means factual crawlable content plus structured data that matches visible page facts, not hype.
+
 Better signals:
 
 - clear product names;
@@ -113,6 +115,8 @@ Each indexable product page should have:
 - canonical URL;
 - Product JSON-LD that matches visible page content.
 
+Product descriptions should prioritize model, category, variant, size, color, compatibility, included items, price, availability, and known policy notes. Do not add marketplace trust claims, official brand relationship claims, delivery speed, or authenticity language unless those facts are approved and visible.
+
 ## Category Page Requirements
 
 Each important category should have:
@@ -123,6 +127,8 @@ Each important category should have:
 - crawlable pagination;
 - ItemList JSON-LD for visible products;
 - noindex on filtered/faceted combinations unless approved.
+
+Category intros should explain what the category contains, how subcategories are organized, and which product details buyers can compare. Avoid "best selection" or "premium collection" wording unless it is backed by documented merchandising criteria.
 
 ## Brand And Collection Page Requirements
 
@@ -145,6 +151,25 @@ Useful future guides:
 - Cash on delivery and return guide for online shopping in Bangladesh.
 
 Buying guides should link to categories/products and answer real buyer questions.
+
+Buying guides should be written as factual help content. They can explain comparison points, care notes, compatibility, gift-use cases, delivery/return reading tips, and how to use filters. They should not invent product guarantees or market leadership.
+
+## Image Alt Text And Visual Discovery
+
+Image alt text should name the visible product, category, or banner subject. For product images, include the product name and meaningful variant details when known. For category images, name the category rather than using broad promotional text. This helps Google Images, Lens-style discovery, accessibility tools, and AI answer systems understand the media without adding unsupported claims.
+
+## Social Preview And AI Answer Readability
+
+Open Graph and Twitter descriptions should use the same calm factual wording as page metadata. AI answer systems can quote or summarize previews, so previews should state the page type and content clearly:
+
+- product detail, price, category, and availability;
+- category page with visible listings;
+- help page with policy or support steps;
+- brand or collection page only when the page actually exists.
+
+## Schema Matching Rule
+
+Structured data must match visible facts. Do not add brand, GTIN, MPN, review, shipping, return, seller, payment, or offer properties unless the page or approved policy provides the same fact. Schema should clarify the page, not make claims the buyer cannot verify.
 
 ## AI-Readable Business Facts Page
 
