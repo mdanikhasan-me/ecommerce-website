@@ -122,7 +122,7 @@ export function CheckoutClient() {
     <div className="container-site py-6 sm:py-8 lg:py-10">
       <div className="mx-auto max-w-6xl">
         <div className="mb-7 flex flex-col gap-1 sm:mb-8">
-          <p className="section-kicker">Secure checkout</p>
+          <p className="section-kicker">Checkout</p>
           <h1 className="font-display text-2xl font-bold sm:text-3xl">Checkout</h1>
         </div>
 

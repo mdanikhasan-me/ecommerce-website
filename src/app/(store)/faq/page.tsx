@@ -12,9 +12,9 @@ const FAQS: FAQSection[] = [
   {
     category: 'Orders and Delivery',
     items: [
-      { q: 'How long does delivery take?', a: 'Delivery within Dhaka city takes 1 to 2 business days. Other divisions take 2 to 4 business days. Remote areas may take up to 5 business days.' },
+      { q: 'How long does delivery take?', a: 'Delivery timing depends on the order address, item availability, holidays, and fulfillment capacity. Review the shipping page and checkout details before placing an order.' },
       { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 60.' },
-      { q: 'Can I track my order?', a: "Yes. Once your order is shipped, you'll receive a tracking number via email or SMS. You can also track it from My Account and Orders." },
+      { q: 'Can I track my order?', a: 'Signed-in customers can check order status from My Account and Orders. Tracking details appear there when they are available.' },
       { q: 'Can I change or cancel my order?', a: 'Orders can be modified or cancelled within 1 hour of placement. After that, contact our support team as soon as possible.' },
     ],
   },
@@ -31,7 +31,7 @@ const FAQS: FAQSection[] = [
     items: [
       { q: 'What is the return policy?', a: 'We offer a seven day return window for most products. Items must be in original, unused condition with all accessories and packaging.' },
       { q: 'How do I return a product?', a: 'Go to My Account, then Orders, then select your order and request a return. If the request is approved, return or pickup instructions are shared with you.' },
-      { q: 'When will I get my refund?', a: 'Refunds are processed within 3 to 5 business days after we receive and inspect the returned item.' },
+      { q: 'When will I get my refund?', a: 'Refund timing depends on the return review, item inspection, and refund method. Support shares the next step after the request is reviewed.' },
     ],
   },
   {

@@ -353,21 +353,21 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             <div>
               <span className="font-medium">Free delivery</span>
               <span className="text-muted-foreground"> on orders over Tk 2,000</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Estimated 1 to 3 business days</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Delivery timing varies by address and availability</p>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm">
             <RefreshCcw className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
               <span className="font-medium">Seven day return policy</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Easy returns and refunds</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Return eligibility is reviewed against the policy</p>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm">
             <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
-              <span className="font-medium">Secure checkout</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Cash on delivery today. Online payments are enabled after gateway setup.</p>
+              <span className="font-medium">Checkout and payment</span>
+              <p className="mt-0.5 text-xs text-muted-foreground">Cash on delivery is available for eligible orders.</p>
             </div>
           </div>
         </div>

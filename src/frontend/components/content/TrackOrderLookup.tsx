@@ -38,7 +38,7 @@ export function TrackOrderLookup() {
       </form>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        You can find your order number in the confirmation email or in your account under My Orders.
+        You can find your order number on the order confirmation page or in your account under My Orders.
       </p>
     </div>
   )

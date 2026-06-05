@@ -201,7 +201,8 @@ export function Footer() {
 
           <div className="mt-5 grid gap-4 border-t border-black/8 pt-4 min-[600px]:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)] min-[600px]:items-start min-[600px]:gap-6 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.62fr)] lg:items-center lg:gap-9">
             <section className="order-2 min-[600px]:order-1">
-              <h2 className="text-sm font-semibold text-foreground">We accept</h2>
+              <h2 className="text-sm font-semibold text-foreground">Checkout payment options</h2>
+              <p className="mt-1 text-xs text-muted-foreground">Availability is shown at checkout.</p>
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 min-[600px]:gap-x-3.5 lg:gap-x-4">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img

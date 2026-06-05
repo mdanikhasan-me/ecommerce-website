@@ -33,7 +33,7 @@ This is broader than old keyword SEO. The site needs crawlable pages, factual co
 
 ## Why Hype Copy Does Not Work
 
-Terms like "trusted", "premium", "best", and "leading" do not help if the page has no evidence. They make the page less specific and less useful.
+Unsupported trust, luxury, top-choice, and market-leader terms do not help if the page has no evidence. They make the page less specific and less useful.
 
 Final rule for Boilabin: Search Everywhere Optimization means factual crawlable content plus structured data that matches visible page facts, not hype.
 
@@ -136,7 +136,7 @@ Each important category should have:
 - ItemList JSON-LD for visible products;
 - noindex on filtered/faceted combinations unless approved.
 
-Category intros should explain what the category contains, how subcategories are organized, and which product details buyers can compare. Avoid "best selection" or "premium collection" wording unless it is backed by documented merchandising criteria.
+Category intros should explain what the category contains, how subcategories are organized, and which product details buyers can compare. Avoid selection-superiority or luxury-collection wording unless it is backed by documented merchandising criteria.
 
 ## Brand And Collection Page Requirements
 
@@ -153,7 +153,7 @@ Future brand/collection pages should include:
 Useful future guides:
 
 - Where to buy Hot Wheels in Bangladesh.
-- How to choose authentic die-cast cars.
+- How to review die-cast model source and condition details.
 - Hot Wheels gift guide in Bangladesh.
 - How to compare phone storage and warranty in Bangladesh.
 - Cash on delivery and return guide for online shopping in Bangladesh.

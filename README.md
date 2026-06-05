@@ -1,12 +1,12 @@
 # Boilabin
 
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=24&pause=1100&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Premium+storefront%2C+admin+panel%2C+and+seller-ready+architecture;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=24&pause=1100&color=5B2C83&center=true&vCenter=true&width=980&lines=Bangladesh-first+full-stack+ecommerce+marketplace;Storefront%2C+admin+panel%2C+and+seller+foundation;Built+with+Next.js%2C+TypeScript%2C+Prisma%2C+and+PostgreSQL" alt="Boilabin animated intro" />
 </div>
 
 <div align="center">
   <strong>Boilabin</strong><br />
-  Bangladesh first premium ecommerce platform with storefront, admin, and seller ready architecture.
+  Bangladesh-first ecommerce project with storefront, admin, and seller-foundation architecture.
 </div>
 
 <br />
@@ -21,13 +21,13 @@
 ![Zustand](https://img.shields.io/badge/State-Zustand-4B2E2E?style=for-the-badge)
 ![Private Repo](https://img.shields.io/badge/Repo-Private-5B2C83?style=for-the-badge)
 
-![Storefront](https://img.shields.io/badge/Storefront-Customer%20Ready-111827?style=flat-square&logo=vercel&logoColor=white)
+![Storefront](https://img.shields.io/badge/Storefront-Catalog%20Flow-111827?style=flat-square&logo=vercel&logoColor=white)
 ![Admin](https://img.shields.io/badge/Admin-Operations%20Panel-2B2D42?style=flat-square&logo=buffer&logoColor=white)
-![Compare](https://img.shields.io/badge/Compare-Live-3F3D56?style=flat-square&logo=semanticuireact&logoColor=white)
+![Compare](https://img.shields.io/badge/Compare-UI%20Flow-3F3D56?style=flat-square&logo=semanticuireact&logoColor=white)
 ![Reviews](https://img.shields.io/badge/Reviews-Delivered%20Order%20Flow-4C1D95?style=flat-square&logo=trustpilot&logoColor=white)
 ![SEO](https://img.shields.io/badge/SEO-Dynamic%20Product%20Meta-1D4ED8?style=flat-square&logo=googlechrome&logoColor=white)
 ![Bangladesh First](https://img.shields.io/badge/Market-Bangladesh%20First-0F766E?style=flat-square&logo=shopify&logoColor=white)
-![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Ready-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
+![Single Store](https://img.shields.io/badge/Mode-Single%20Store%20Flow-7C2D12?style=flat-square&logo=homeassistant&logoColor=white)
 
 ![Boilabin Storefront Preview](./public/assets/readme/storefront-preview.png)
 
@@ -35,7 +35,7 @@
 
 ## Overview
 
-Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping. The project combines a polished storefront, a functional admin panel, and a seller-ready architecture that can scale into a larger marketplace later.
+Boilabin is a Bangladesh-focused ecommerce marketplace project. The codebase combines a storefront, an admin panel, and seller-foundation structures that can be reviewed before broader marketplace work is approved later.
 
 ### What it includes
 
@@ -56,7 +56,7 @@ Boilabin is a premium ecommerce marketplace focused on Bangladesh-first shopping
 | Product System | Variants, attributes, specs, sale pricing, stock tracking, review summaries |
 | Reviews | Delivered-order review flow, moderation, rating sync |
 | Admin | Product CRUD, brand/category management, coupons, banners, inventory, reports |
-| Marketplace Ready | Seller onboarding structure, seller admin review, seller order and product sections |
+| Marketplace Foundation | Seller onboarding structure, seller admin review, seller order and product sections |
 | SEO | Dynamic metadata, Bangladesh pricing phrases, product-level meta title and description generation |
 
 ---
@@ -410,7 +410,7 @@ npm run db:reset          # Reset and reseed database; destructive, local only
 
 - `Cash on Delivery`
 
-### Present in UI, but not live until gateway integration is completed
+### Visible as disabled choices until gateway integration is completed
 
 - `bKash`
 - `Nagad`
@@ -488,13 +488,13 @@ This keeps permanent visuals separate from uploaded runtime media under `public/
 
 ---
 
-## Why This Project Stands Out
+## Project Positioning
 
 - Bangladesh-focused ecommerce flow instead of a generic template-only build
-- Real admin structure, not just a storefront demo
-- Seller-ready architecture without forcing marketplace complexity too early
-- Strong asset organization and SEO-aware content direction
-- Designed to be polished visually while still practical to extend
+- Admin structure beyond a storefront demo
+- Seller foundation without forcing marketplace complexity too early
+- Structured asset organization and SEO-aware content direction
+- Designed to balance storefront presentation with maintainable implementation
 
 ---
 

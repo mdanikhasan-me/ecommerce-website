@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = generateNoIndexPageMetadata(
   'Checkout',
-  'Secure checkout for Boilabin customers.',
+  'Checkout for Boilabin customers.',
   '/checkout',
 )
 

@@ -10,7 +10,7 @@ async function main() {
   await prisma.setting.createMany({
     data: [
       { key: 'site_name', value: 'BoilaBin', group: 'general' },
-      { key: 'site_tagline', value: 'Shop Quality Products from Trusted Sellers', group: 'general' },
+      { key: 'site_tagline', value: 'Browse Products by Category in Bangladesh', group: 'general' },
       { key: 'site_email', value: 'anikhasan2@icloud.com', group: 'general' },
       { key: 'site_phone', value: '01758409063', group: 'general' },
       { key: 'site_address', value: 'Bashundhara R/A, J Block, Road 20', group: 'general' },
@@ -148,7 +148,7 @@ async function main() {
   const productsData: ProductSeed[] = [
     {
       sku: 'IPH-15P-128', name: 'iPhone 15 Pro 128GB', slug: 'iphone-15-pro-128gb',
-      description: 'The iPhone 15 Pro features a titanium design, A17 Pro chip, and a Pro camera system. The most powerful iPhone yet with a new Action button and USB 3 speeds.',
+      description: 'The iPhone 15 Pro features a titanium design, A17 Pro chip, Pro camera system, Action button, and USB 3 speeds.',
       shortDescription: 'Titanium design, A17 Pro chip, 48MP camera system.',
       categoryId: mobile.id, brandId: apple.id, sellerId: firstPartySeller.id,
       basePrice: 149900, salePrice: 144900, stockQuantity: 50,
@@ -167,7 +167,7 @@ async function main() {
     },
     {
       sku: 'SAM-S24U-256', name: 'Samsung Galaxy S24 Ultra 256GB', slug: 'samsung-galaxy-s24-ultra-256gb',
-      description: 'Galaxy AI is here. The Galaxy S24 Ultra brings you closer to what matters most with Galaxy AI built in, a built-in S Pen, titanium frame, and an improved 200MP camera.',
+      description: 'The Galaxy S24 Ultra includes Galaxy AI features, a built-in S Pen, titanium frame, and an improved 200MP camera.',
       shortDescription: 'Galaxy AI, built-in S Pen, 200MP camera, titanium frame.',
       categoryId: mobile.id, brandId: samsung.id, sellerId: firstPartySeller.id,
       basePrice: 175000, salePrice: 169000, stockQuantity: 35,
@@ -184,8 +184,8 @@ async function main() {
     },
     {
       sku: 'XIA-BUDS4-PRO', name: 'Xiaomi Buds 4 Pro', slug: 'xiaomi-buds-4-pro',
-      description: 'Xiaomi Buds 4 Pro delivers premium audio with 48dB Adaptive ANC, ultra-low latency gaming mode, and up to 38 hours total battery life.',
-      shortDescription: '48dB ANC, Hi-Res Audio, 38H battery, premium audio.',
+      description: 'Xiaomi Buds 4 Pro includes 48dB Adaptive ANC, ultra-low latency gaming mode, and up to 38 hours total battery life.',
+      shortDescription: '48dB ANC, Hi-Res Audio, 38H battery, wireless audio.',
       categoryId: audio.id, brandId: xiaomi.id, sellerId: firstPartySeller.id,
       basePrice: 18500, salePrice: 15900, stockQuantity: 120,
       isFeatured: true, isNew: false, isBestSeller: true,
@@ -201,18 +201,18 @@ async function main() {
     },
     {
       sku: 'SONY-WH1000XM5', name: 'Sony WH-1000XM5 Wireless Headphones', slug: 'sony-wh-1000xm5',
-      description: 'Industry-leading noise canceling with two processors and 8 microphones. Up to 30-hour battery life with quick charging. Crystal clear hands-free calling.',
-      shortDescription: 'Industry-leading ANC, 30H battery, Hi-Res Audio.',
+      description: 'Noise canceling with two processors and 8 microphones. Up to 30-hour battery life with quick charging and hands-free calling.',
+      shortDescription: 'ANC, 30H battery, Hi-Res Audio.',
       categoryId: audio.id, brandId: sony.id, sellerId: firstPartySeller.id,
       basePrice: 42000, salePrice: 36500, stockQuantity: 45,
       isFeatured: true, isNew: false, isBestSeller: true,
-      tags: ['headphones', 'anc', 'wireless', 'sony', 'premium'],
+      tags: ['headphones', 'anc', 'wireless', 'sony', 'audio'],
       rating: 4.9, reviewCount: 456, soldCount: 234,
       imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&auto=format',
     },
     {
       sku: 'DELL-XPS15-9520', name: 'Dell XPS 15 9520 Core i7 OLED', slug: 'dell-xps-15-9520-i7-oled',
-      description: 'The Dell XPS 15 is a powerhouse laptop featuring a stunning 15.6" OLED display, Intel Core i7-12700H, 16GB DDR5 RAM, and NVIDIA GeForce RTX 3050 Ti.',
+      description: 'The Dell XPS 15 features a 15.6" OLED display, Intel Core i7-12700H, 16GB DDR5 RAM, and NVIDIA GeForce RTX 3050 Ti.',
       shortDescription: '15.6" OLED, Intel i7-12700H, 16GB RAM, RTX 3050 Ti.',
       categoryId: laptops.id, brandId: dell.id, sellerId: firstPartySeller.id,
       basePrice: 185000, stockQuantity: 20,
@@ -223,7 +223,7 @@ async function main() {
     },
     {
       sku: 'HP-SPEC-X360-14', name: 'HP Spectre x360 14 2-in-1 Laptop', slug: 'hp-spectre-x360-14',
-      description: 'The HP Spectre x360 14 is a premium 2-in-1 convertible with an Intel Evo platform, OLED touch display, and exceptional battery life up to 17 hours.',
+      description: 'The HP Spectre x360 14 is a 2-in-1 convertible with an Intel Evo platform, OLED touch display, and battery life up to 17 hours.',
       shortDescription: '2-in-1 convertible, Intel Evo, OLED touch, 17H battery.',
       categoryId: laptops.id, brandId: hp.id, sellerId: firstPartySeller.id,
       basePrice: 165000, salePrice: 158000, stockQuantity: 15,
@@ -289,7 +289,7 @@ async function main() {
     },
     {
       sku: 'NIKE-AIR-MAX-270', name: 'Nike Air Max 270 Running Shoes', slug: 'nike-air-max-270-running-shoes',
-      description: 'The Nike Air Max 270 features Nike\'s tallest Air unit ever for incredible underfoot cushioning. Designed for all-day wear with a breathable mesh upper.',
+      description: 'The Nike Air Max 270 features an Air unit for underfoot cushioning and a breathable mesh upper for everyday wear.',
       shortDescription: 'Tallest Air unit, breathable mesh, all-day comfort.',
       categoryId: sports.id, brandId: nike.id, sellerId: firstPartySeller.id,
       basePrice: 14500, salePrice: 12900, stockQuantity: 150,
@@ -300,18 +300,18 @@ async function main() {
     },
     {
       sku: 'BOSE-QC45', name: 'Bose QuietComfort 45 Headphones', slug: 'bose-quietcomfort-45-headphones',
-      description: 'Bose QuietComfort 45 headphones deliver world-class noise cancellation, lifelike audio, and all-day comfort with up to 24 hours of battery life.',
-      shortDescription: 'World-class ANC, 24H battery, premium comfort.',
+      description: 'Bose QuietComfort 45 headphones include active noise cancellation, wireless audio, and up to 24 hours of battery life.',
+      shortDescription: 'ANC, 24H battery, cushioned fit.',
       categoryId: audio.id, brandId: bose.id, sellerId: firstPartySeller.id,
       basePrice: 35000, salePrice: 31500, stockQuantity: 38,
       isFeatured: false, isNew: false, isBestSeller: false,
-      tags: ['headphones', 'bose', 'anc', 'wireless', 'premium'],
+      tags: ['headphones', 'bose', 'anc', 'wireless', 'audio'],
       rating: 4.8, reviewCount: 345, soldCount: 178,
       imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format',
     },
     {
       sku: 'SAM-55QN90C-TV', name: 'Samsung 55" Neo QLED 4K Smart TV QN90C', slug: 'samsung-55-neo-qled-qn90c',
-      description: 'Samsung Neo QLED 4K TV with Quantum Matrix Technology Pro, Neural Quantum Processor 4K, and Object Tracking Sound+ for an immersive viewing experience.',
+      description: 'Samsung Neo QLED 4K TV with Quantum Matrix Technology Pro, Neural Quantum Processor 4K, and Object Tracking Sound+.',
       shortDescription: 'Neo QLED, Quantum Matrix Pro, AI 4K upscaling, OTS+.',
       categoryId: homeAppliances.id, brandId: samsung.id, sellerId: firstPartySeller.id,
       basePrice: 175000, salePrice: 158000, stockQuantity: 12,
@@ -344,8 +344,8 @@ async function main() {
     },
     {
       sku: 'ANK-NANO-65W', name: 'Anker 511 Nano Pro 65W USB-C Charger', slug: 'anker-511-nano-pro-65w-charger',
-      description: 'The Anker Nano Pro 65W is the smallest 65W GaN charger. Power laptops, phones, and tablets simultaneously with PIQ 3.0 technology.',
-      shortDescription: 'Smallest 65W GaN charger, multi-device, foldable plug.',
+      description: 'The Anker Nano Pro 65W is a compact GaN charger for laptops, phones, and tablets with PIQ 3.0 technology.',
+      shortDescription: '65W GaN charger, multi-device, foldable plug.',
       categoryId: electronics.id, brandId: anker.id, sellerId: firstPartySeller.id,
       basePrice: 3200, salePrice: 2799, stockQuantity: 400,
       isFeatured: false, isNew: false, isBestSeller: true,
@@ -377,7 +377,7 @@ async function main() {
     },
     {
       sku: 'SAM-GALAXY-TAB-S9', name: 'Samsung Galaxy Tab S9 128GB WiFi', slug: 'samsung-galaxy-tab-s9-128gb',
-      description: 'Galaxy Tab S9 features a Dynamic AMOLED 2X display, IP68 water resistance, Snapdragon 8 Gen 2, and includes the S Pen for a premium tablet experience.',
+      description: 'Galaxy Tab S9 features a Dynamic AMOLED 2X display, IP68 water resistance, Snapdragon 8 Gen 2, and includes the S Pen.',
       shortDescription: 'Dynamic AMOLED 2X, IP68, Snapdragon 8 Gen 2, S Pen included.',
       categoryId: electronics.id, brandId: samsung.id, sellerId: firstPartySeller.id,
       basePrice: 92000, salePrice: 85000, stockQuantity: 30,

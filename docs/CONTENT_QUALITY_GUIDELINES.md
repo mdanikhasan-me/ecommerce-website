@@ -12,7 +12,7 @@ Boilabin copy should sound factual, useful, and specific. It should not sound li
 - Use product/category-specific language.
 - Write for humans first.
 - Support search and AI understanding with facts, not hype.
-- Never claim "trusted", "premium", "best", or "leading" without evidence.
+- Avoid trust, luxury, top-choice, or market-leader claims without evidence.
 - Avoid scammy marketplace language.
 - Keep Bangladesh context concrete: delivery area, payment method, stock, returns, contact, and product type.
 - Treat Search Everywhere copy as factual page explanation, not keyword stuffing.
@@ -20,15 +20,15 @@ Boilabin copy should sound factual, useful, and specific. It should not sound li
 
 ## Avoid These Patterns
 
-- "Bangladesh's most trusted premium marketplace"
-- "world-class shopping"
-- "ultimate destination"
-- "one-stop shop"
-- "shop with confidence"
-- "discover amazing products"
-- "authentic guaranteed"
-- "best price" unless price evidence exists
-- "loved by thousands" unless the number is true and documented
+- unsupported national trust or luxury-positioning slogans
+- global-superiority shopping slogans
+- destination-style superlatives
+- all-in-one shopping slogans
+- confidence slogans without evidence
+- vague discovery slogans
+- origin or condition guarantees without proof
+- price-superiority claims unless price evidence exists
+- popularity claims unless the number is true and documented
 
 ## Better Copy Pattern
 
@@ -43,7 +43,7 @@ Who this page is for + what products are here + where it serves + practical buyi
 Bad:
 
 ```text
-Bangladesh's most trusted premium marketplace.
+Bangladesh-focused shopping with products across multiple categories.
 ```
 
 Better:
@@ -55,7 +55,7 @@ Boilabin is a Bangladesh-based online marketplace for products across toys, elec
 Bad:
 
 ```text
-Shop the best premium Hot Wheels collection.
+Shop a top-tier Hot Wheels collection.
 ```
 
 Better:
@@ -67,7 +67,7 @@ Browse Hot Wheels cars, multipacks, and collectible die-cast models available fr
 Bad:
 
 ```text
-Discover amazing products curated just for you.
+Discover new products curated for you.
 ```
 
 Better:
@@ -92,7 +92,7 @@ Good product copy should include:
 
 Avoid:
 
-- generic "premium quality";
+- generic luxury-quality claims;
 - invented authenticity claims;
 - fake urgency;
 - exaggerated discounts;
@@ -106,7 +106,7 @@ Admin product descriptions should encourage facts that can be checked:
 - warranty, return, or delivery notes only when the policy is known;
 - image alt text that names the actual product.
 
-Admin product descriptions should not encourage "best price", "fast delivery", "secure checkout", "premium quality", or authenticity claims unless those claims are backed by approved policy.
+Admin product descriptions should not encourage price-superiority, delivery-speed, checkout-safety, luxury-quality, or origin-verification claims unless those claims are backed by approved policy.
 
 ## Category Page Guidance
 
@@ -131,7 +131,7 @@ AI answer systems and search engines need clear facts:
 
 Do not write only for keywords. Search systems can understand factual structure better than empty claims.
 
-For Boilabin, Search Everywhere Optimization means factual crawlable content plus structured data that matches visible page facts. It does not mean repeating "best", "trusted", "premium", or similar phrases.
+For Boilabin, Search Everywhere Optimization means factual crawlable content plus structured data that matches visible page facts. It does not mean repeating superiority, trust, or luxury-positioning phrases.
 
 ## Metadata Guidance
 
@@ -161,5 +161,5 @@ Keep schema conservative:
 - Would a buyer understand what is actually available?
 - Does the text mention the specific product/category?
 - Is the language calm and useful?
-- Does it avoid "trusted", "premium", "best", "leading", and "ultimate" unless proven?
+- Does it avoid trust, luxury, top-choice, market-leader, and superlative claims unless proven?
 - Does it help a search engine or AI answer system identify the page topic?

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { describe, it } from 'node:test'
+
+const readProjectFile = (path: string) => readFileSync(path, 'utf8')
 
 describe('content quality marketing-copy guardrail', () => {
   it('flags unsupported generic marketplace claims', async () => {
@@ -78,5 +81,40 @@ describe('content quality marketing-copy guardrail', () => {
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'authentic'))
     assert.ok(findings.some((finding: { id: string }) => finding.id === 'smooth-checkout'))
     assert.ok(findings.every((finding: { category: string }) => finding.category === 'opengraph-social-preview'))
+  })
+
+  it('keeps the repository marketing-copy audit free of unsupported public claims', async () => {
+    const { auditMarketingCopy } = await import('../scripts/audit-ai-marketing-copy.mjs')
+    const result = await auditMarketingCopy()
+
+    assert.equal(result.findings.length, 0)
+  })
+
+  it('keeps checkout, product detail, and tracking copy factual before payment/tracking integrations', () => {
+    const checkoutPage = readProjectFile('src/app/(store)/checkout/page.tsx')
+    const checkoutClient = readProjectFile('src/frontend/components/checkout/CheckoutClient.tsx')
+    const productDetail = readProjectFile('src/frontend/components/product/ProductDetailClient.tsx')
+    const paymentConfig = readProjectFile('src/backend/config/payment.ts')
+    const faqPage = readProjectFile('src/app/(store)/faq/page.tsx')
+    const trackOrder = readProjectFile('src/frontend/components/content/TrackOrderLookup.tsx')
+
+    assert.doesNotMatch(`${checkoutPage}\n${checkoutClient}\n${productDetail}`, /secure checkout/i)
+    assert.doesNotMatch(paymentConfig, /coming soon|after gateway setup|checkout popup/i)
+    assert.doesNotMatch(`${faqPage}\n${trackOrder}`, /tracking number via email or sms|confirmation email/i)
+    assert.match(productDetail, /Cash on delivery is available for eligible orders/)
+    assert.match(paymentConfig, /This option is not available for the current checkout/)
+  })
+
+  it('keeps footer payment logos display-only without COD or acceptance wording', () => {
+    const footer = readProjectFile('src/frontend/components/layout/Footer.tsx')
+
+    assert.match(footer, /https:\/\/www\.youtube\.com\/@Boilabin/)
+    assert.match(footer, /PAYMENT_ASSETS\.BKASH/)
+    assert.match(footer, /PAYMENT_ASSETS\.NAGAD/)
+    assert.match(footer, /PAYMENT_ASSETS\.VISA/)
+    assert.match(footer, /PAYMENT_ASSETS\.MASTERCARD/)
+    assert.doesNotMatch(footer, /PAYMENT_ASSETS\.CASH_ON_DELIVERY/)
+    assert.doesNotMatch(footer, />We accept</)
+    assert.match(footer, /Availability is shown at checkout/)
   })
 })

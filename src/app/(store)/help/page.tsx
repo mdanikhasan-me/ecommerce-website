@@ -72,8 +72,8 @@ export default function HelpPage() {
 
               <div className="relative mt-9 grid gap-3 sm:grid-cols-3">
                 {[
-                  ['Support hours', '24/7'],
-                  ['Delivery', 'Anywhere'],
+                  ['Support channel', 'Contact form'],
+                  ['Delivery', 'Bangladesh addresses'],
                   ['Direct reply', CONTACT_EMAIL],
                 ].map(([label, value]) => (
                   <div key={label} className="border-l border-white/[0.15] pl-4">

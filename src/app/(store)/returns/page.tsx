@@ -13,8 +13,8 @@ export default function ReturnsPage() {
   return (
     <ContentPageShell
       eyebrow="Refund policy"
-      title="Simple return rules with a cleaner refund process."
-      description="This page explains which items can be returned, how the request flow works, and when customers should expect a refund after approval."
+      title="Return rules and refund review steps."
+      description="This page explains which items can be returned, how the request flow works, and how refund next steps are reviewed after approval."
       updatedAt="January 2025"
       sections={[
         {
@@ -49,7 +49,7 @@ export default function ReturnsPage() {
             <ol>
               <li>Open your account order history and choose the relevant order.</li>
               <li>Select the return request action and choose the reason.</li>
-              <li>Our team reviews the request, usually within 24 hours.</li>
+              <li>Our team reviews the request and shares the next step.</li>
               <li>If approved, pickup or return instructions are shared with you.</li>
               <li>The refund is released after item inspection is complete.</li>
             </ol>
@@ -62,8 +62,8 @@ export default function ReturnsPage() {
             <>
               <div className="grid gap-3 md:grid-cols-2">
                 {[
-                  ['Bank transfer', '3 to 5 business days'],
-                  ['Cash on delivery orders', 'Bank transfer within 3 to 5 business days'],
+                  ['Bank transfer', 'Timing is confirmed after approval and inspection'],
+                  ['Cash on delivery orders', 'Support confirms the refund method after inspection'],
                 ].map(([method, time]) => (
                   <div
                     key={method}

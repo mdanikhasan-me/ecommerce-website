@@ -25,11 +25,11 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
     description: BANGLADESH_ONLINE_GATEWAY_READY
       ? 'Pay via bKash mobile banking'
-      : 'Online checkout popup will be enabled after gateway setup',
+      : 'This option is not available for the current checkout',
     disabledReason: BANGLADESH_ONLINE_GATEWAY_READY
       ? undefined
-      : 'bKash checkout is not configured yet',
-    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Coming soon',
+      : 'bKash checkout is unavailable',
+    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Unavailable',
   },
   {
     id: 'NAGAD',
@@ -38,11 +38,11 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     isAvailable: BANGLADESH_ONLINE_GATEWAY_READY,
     description: BANGLADESH_ONLINE_GATEWAY_READY
       ? 'Pay via Nagad mobile banking'
-      : 'Online checkout popup will be enabled after gateway setup',
+      : 'This option is not available for the current checkout',
     disabledReason: BANGLADESH_ONLINE_GATEWAY_READY
       ? undefined
-      : 'Nagad checkout is not configured yet',
-    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Coming soon',
+      : 'Nagad checkout is unavailable',
+    badge: BANGLADESH_ONLINE_GATEWAY_READY ? undefined : 'Unavailable',
   },
   {
     id: 'STRIPE',
@@ -50,6 +50,6 @@ export const PAYMENT_GATEWAYS: PaymentGateway[] = [
     logos: [PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD],
     isAvailable: false,
     description: 'Visa, Mastercard, and international cards',
-    badge: 'Coming soon',
+    badge: 'Unavailable',
   },
 ]
