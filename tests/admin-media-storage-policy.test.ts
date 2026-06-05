@@ -96,6 +96,15 @@ describe('admin managed media storage policy', () => {
     assert.equal(classifyAdminMediaPath('/uploads/products/product.webp').canDeleteLocalFile, true)
   })
 
+  it('keeps source-controlled catalog product assets protected from admin cleanup', () => {
+    const classified = classifyAdminMediaPath('/assets/products/catalog/example-product.jpg')
+
+    assert.equal(classified.bucket, 'protected-source-code-asset')
+    assert.equal(classified.canDeleteLocalFile, false)
+    assert.equal(classified.managedPrefix, null)
+    assert.match(classified.reason, /Source-code assets/)
+  })
+
   it('documents future ownership metadata required before physical deletion can be trusted', () => {
     assert.deepEqual(
       MEDIA_OWNERSHIP_REQUIRED_FOR_PHYSICAL_DELETE,

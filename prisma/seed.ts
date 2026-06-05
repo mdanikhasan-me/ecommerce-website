@@ -155,7 +155,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: true,
       tags: ['iphone', 'apple', 'smartphone', '5g', 'pro'],
       rating: 4.8, reviewCount: 124, soldCount: 89,
-      imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg',
+      imageUrl: '/assets/products/catalog/iphone-15-pro-128gb.jpg',
       specifications: [
         { group: 'Display', name: 'Screen Size', value: '6.1 inches' },
         { group: 'Display', name: 'Resolution', value: '2556 x 1179 pixels' },
@@ -174,7 +174,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['samsung', 'galaxy', 'android', 'flagship', 's-pen'],
       rating: 4.7, reviewCount: 98, soldCount: 67,
-      imageUrl: '/uploads/products/samsung-galaxy-s24-ultra-256gb-mnyzjwut-55e72c0c.jpg',
+      imageUrl: '/assets/products/catalog/samsung-galaxy-s24-ultra-256gb.jpg',
       specifications: [
         { group: 'Display', name: 'Screen Size', value: '6.8 inches' },
         { group: 'Display', name: 'Technology', value: 'Dynamic AMOLED 2X, 120Hz' },
@@ -191,7 +191,7 @@ async function main() {
       isFeatured: true, isNew: false, isBestSeller: true,
       tags: ['earbuds', 'wireless', 'anc', 'xiaomi', 'audio'],
       rating: 4.5, reviewCount: 203, soldCount: 312,
-      imageUrl: 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/xiaomi-buds-4-pro.avif',
       specifications: [
         { name: 'Driver Size', value: '11mm + 6mm dual dynamic' },
         { name: 'ANC', value: 'Up to 48dB' },
@@ -208,7 +208,7 @@ async function main() {
       isFeatured: true, isNew: false, isBestSeller: true,
       tags: ['headphones', 'anc', 'wireless', 'sony', 'audio'],
       rating: 4.9, reviewCount: 456, soldCount: 234,
-      imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/sony-wh-1000xm5.avif',
     },
     {
       sku: 'DELL-XPS15-9520', name: 'Dell XPS 15 9520 Core i7 OLED', slug: 'dell-xps-15-9520-i7-oled',
@@ -219,7 +219,7 @@ async function main() {
       isFeatured: true, isNew: false, isBestSeller: false,
       tags: ['laptop', 'dell', 'xps', 'oled', 'intel', 'creator'],
       rating: 4.7, reviewCount: 87, soldCount: 43,
-      imageUrl: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/dell-xps-15-9520-i7-oled.avif',
     },
     {
       sku: 'HP-SPEC-X360-14', name: 'HP Spectre x360 14 2-in-1 Laptop', slug: 'hp-spectre-x360-14',
@@ -230,7 +230,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: false,
       tags: ['laptop', 'hp', '2-in-1', 'oled', 'touch'],
       rating: 4.6, reviewCount: 62, soldCount: 28,
-      imageUrl: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/hp-spectre-x360-14.avif',
     },
     {
       sku: 'APL-WATCH-S9-41', name: 'Apple Watch Series 9 41mm', slug: 'apple-watch-series-9-41mm',
@@ -241,7 +241,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: true,
       tags: ['smartwatch', 'apple', 'health', 'fitness'],
       rating: 4.8, reviewCount: 178, soldCount: 156,
-      imageUrl: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/apple-watch-series-9-41mm.avif',
     },
     {
       sku: 'SAM-GALAXYW6-44', name: 'Samsung Galaxy Watch 6 Classic 44mm', slug: 'samsung-galaxy-watch-6-classic-44mm',
@@ -252,7 +252,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['smartwatch', 'samsung', 'android', 'health'],
       rating: 4.6, reviewCount: 134, soldCount: 98,
-      imageUrl: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/samsung-galaxy-watch-6-classic-44mm.avif',
     },
     {
       sku: 'ANK-PWR-BANK-20K', name: 'Anker 737 Power Bank 24000mAh', slug: 'anker-737-power-bank-24000mah',
@@ -263,7 +263,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['powerbank', 'anker', 'charger', 'fast-charge'],
       rating: 4.7, reviewCount: 523, soldCount: 876,
-      imageUrl: '/uploads/products/anker-737-power-bank-24000mah-mnyzif42-a41aa5a6.webp',
+      imageUrl: '/assets/products/catalog/anker-737-power-bank-24000mah.webp',
     },
     {
       sku: 'SONY-PS5-SLIM', name: 'Sony PlayStation 5 Slim Console', slug: 'sony-playstation-5-slim',
@@ -274,7 +274,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: true,
       tags: ['playstation', 'console', 'gaming', 'sony', 'ps5'],
       rating: 4.9, reviewCount: 312, soldCount: 189,
-      imageUrl: 'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/sony-playstation-5-slim.avif',
     },
     {
       sku: 'XIA-PAD6-128', name: 'Xiaomi Pad 6 128GB WiFi', slug: 'xiaomi-pad-6-128gb-wifi',
@@ -285,7 +285,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: false,
       tags: ['tablet', 'xiaomi', 'android', 'pad'],
       rating: 4.5, reviewCount: 89, soldCount: 112,
-      imageUrl: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/xiaomi-pad-6-128gb-wifi.avif',
     },
     {
       sku: 'NIKE-AIR-MAX-270', name: 'Nike Air Max 270 Running Shoes', slug: 'nike-air-max-270-running-shoes',
@@ -296,7 +296,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['shoes', 'nike', 'running', 'airmax', 'sports'],
       rating: 4.6, reviewCount: 287, soldCount: 456,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/nike-air-max-270-running-shoes.avif',
     },
     {
       sku: 'BOSE-QC45', name: 'Bose QuietComfort 45 Headphones', slug: 'bose-quietcomfort-45-headphones',
@@ -307,7 +307,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: false,
       tags: ['headphones', 'bose', 'anc', 'wireless', 'audio'],
       rating: 4.8, reviewCount: 345, soldCount: 178,
-      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/bose-quietcomfort-45-headphones.avif',
     },
     {
       sku: 'SAM-55QN90C-TV', name: 'Samsung 55" Neo QLED 4K Smart TV QN90C', slug: 'samsung-55-neo-qled-qn90c',
@@ -318,7 +318,7 @@ async function main() {
       isFeatured: true, isNew: false, isBestSeller: false,
       tags: ['tv', 'samsung', 'qled', '4k', 'smart-tv'],
       rating: 4.7, reviewCount: 134, soldCount: 45,
-      imageUrl: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/samsung-55-neo-qled-qn90c.avif',
     },
     {
       sku: 'SONY-A7IV-BODY', name: 'Sony Alpha a7 IV Mirrorless Camera Body', slug: 'sony-alpha-a7-iv-mirrorless-body',
@@ -329,7 +329,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: false,
       tags: ['camera', 'sony', 'mirrorless', 'fullframe', 'photography'],
       rating: 4.9, reviewCount: 76, soldCount: 34,
-      imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/sony-alpha-a7-iv-mirrorless-body.avif',
     },
     {
       sku: 'XIA-MI-BAND8', name: 'Xiaomi Mi Smart Band 8', slug: 'xiaomi-mi-smart-band-8',
@@ -340,7 +340,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: true,
       tags: ['fitness-band', 'xiaomi', 'health', 'budget'],
       rating: 4.4, reviewCount: 678, soldCount: 1234,
-      imageUrl: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/xiaomi-mi-smart-band-8.avif',
     },
     {
       sku: 'ANK-NANO-65W', name: 'Anker 511 Nano Pro 65W USB-C Charger', slug: 'anker-511-nano-pro-65w-charger',
@@ -351,7 +351,7 @@ async function main() {
       isFeatured: false, isNew: false, isBestSeller: true,
       tags: ['charger', 'anker', 'usb-c', 'gan', 'fast-charge'],
       rating: 4.7, reviewCount: 892, soldCount: 2134,
-      imageUrl: '/uploads/products/anker-511-nano-pro-65w-charger-mnyzoikz-37e76524.jpg',
+      imageUrl: '/assets/products/catalog/anker-511-nano-pro-65w-charger.jpg',
     },
     {
       sku: 'APL-AIRPODS-PRO2', name: 'Apple AirPods Pro (2nd Generation)', slug: 'apple-airpods-pro-2nd-gen',
@@ -362,7 +362,7 @@ async function main() {
       isFeatured: true, isNew: false, isBestSeller: true,
       tags: ['airpods', 'apple', 'earbuds', 'anc', 'wireless'],
       rating: 4.8, reviewCount: 567, soldCount: 445,
-      imageUrl: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&auto=format',
+      imageUrl: '/assets/products/catalog/apple-airpods-pro-2nd-gen.avif',
     },
     {
       sku: 'DELL-MON-27-4K', name: 'Dell UltraSharp 27" 4K USB-C Monitor U2723DE', slug: 'dell-ultrasharp-27-4k-usb-c-u2723de',
@@ -373,7 +373,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: false,
       tags: ['monitor', 'dell', '4k', 'usb-c', 'ultrasharp'],
       rating: 4.8, reviewCount: 89, soldCount: 56,
-      imageUrl: '/uploads/products/dell-ultrasharp-27-4k-usb-c-u2723de-mnyzrjgz-759f7168.jpg',
+      imageUrl: '/assets/products/catalog/dell-ultrasharp-27-4k-usb-c-u2723de.jpg',
     },
     {
       sku: 'SAM-GALAXY-TAB-S9', name: 'Samsung Galaxy Tab S9 128GB WiFi', slug: 'samsung-galaxy-tab-s9-128gb',
@@ -384,7 +384,7 @@ async function main() {
       isFeatured: true, isNew: true, isBestSeller: false,
       tags: ['tablet', 'samsung', 'android', 's-pen', 'flagship'],
       rating: 4.7, reviewCount: 143, soldCount: 78,
-      imageUrl: '/uploads/products/samsung-galaxy-tab-s9-128gb-mnyvmwuo-057009f0.jpg',
+      imageUrl: '/assets/products/catalog/samsung-galaxy-tab-s9-128gb.jpg',
     },
     {
       sku: 'XIA-REDMI-NOTE13PRO', name: 'Xiaomi Redmi Note 13 Pro 256GB', slug: 'xiaomi-redmi-note-13-pro-256gb',
@@ -395,7 +395,7 @@ async function main() {
       isFeatured: false, isNew: true, isBestSeller: false,
       tags: ['xiaomi', 'redmi', 'smartphone', 'camera-phone', 'midrange'],
       rating: 4.5, reviewCount: 234, soldCount: 312,
-      imageUrl: '/uploads/products/xiaomi-redmi-note-13-pro-256gb-mnyvj84s-d6198d84.webp',
+      imageUrl: '/assets/products/catalog/xiaomi-redmi-note-13-pro-256gb.webp',
     },
   ]
 

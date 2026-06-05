@@ -148,6 +148,12 @@ Future production should use object storage and CDN-backed delivery after provid
 
 Source-controlled assets under `/assets/*` and `/images/*` are committed application assets. Admin cleanup must never delete them, even when a database row points at one of those paths.
 
+Source-controlled catalog/demo product media now lives under:
+
+- `/assets/products/catalog/*` for committed seed/demo product images.
+
+These files are changed by developers through source control, not by admin delete/replace actions. They are appropriate for pre-launch demo catalog rows, static fixtures, and source-controlled product examples. They must not be treated as runtime uploads or deletion candidates.
+
 Managed local uploads currently live under:
 
 - `/uploads/admin/*` for banner, category, and other admin-managed artwork;
@@ -155,7 +161,7 @@ Managed local uploads currently live under:
 
 Those prefixes are only local/pre-launch ownership hints. They are not enough for long-term production deletion by themselves because the repository can contain demo or recovery files under upload-like paths. Production deletion should require an owned storage key or media metadata record, not only a public URL prefix.
 
-Current product uploads intentionally do not write to `public/assets/products`. The `public/assets` tree is deployment-owned and source-controlled. Admin/runtime uploads are user- or admin-created files and currently belong in `public/uploads/products` so they stay separate from committed UI assets, branding, category art, and payment logos.
+Current product uploads intentionally do not write to `public/assets/products`. The `public/assets` tree is deployment-owned and source-controlled. Admin/runtime uploads are user- or admin-created files and currently belong in `public/uploads/products` so they stay separate from committed catalog/demo product media, UI assets, branding, category art, and payment logos.
 
 Current banner and category uploads use the admin upload helper and write under `public/uploads/admin/<purpose>`. The stored public values are `/uploads/admin/banners/...` for banner images and `/uploads/admin/categories/...` for category images. Existing source category or hero assets that point to `/assets/...` remain protected source assets, even when a database row references them.
 

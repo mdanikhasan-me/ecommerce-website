@@ -33,7 +33,7 @@ describe('storefront media remote policy inventory', () => {
     const audit = auditStorefrontMediaSources()
 
     assert.equal(audit.unexpectedRemoteHeroCount, 0)
-    assert.ok(audit.productSeedRemoteCount > 0)
+    assert.equal(audit.productSeedRemoteCount, 0)
 
     for (const remote of ACCEPTED_REMOTE_MEDIA) {
       assert.ok(

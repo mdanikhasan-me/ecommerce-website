@@ -30,6 +30,8 @@ const DEFAULT_SKIP_DIRS = new Set([
 
 const SOURCE_ASSET_PREFIXES = ['/assets/', '/images/']
 const MANAGED_UPLOAD_PREFIXES = ['/uploads/admin/', '/uploads/products/']
+export const PRODUCT_SOURCE_ASSET_PREFIX = '/assets/products/'
+export const PRODUCT_SOURCE_PUBLIC_ROOT = 'public/assets/products'
 const KNOWN_REMOTE_IMAGE_HOSTS = new Set([
   'images.unsplash.com',
   'images.pexels.com',
@@ -277,6 +279,121 @@ async function collectPublicInventory(root) {
   return inventory
 }
 
+async function collectProductSourceAssetInventory(root) {
+  const absoluteRoot = path.join(root, PRODUCT_SOURCE_PUBLIC_ROOT)
+  const summary = {
+    exists: false,
+    fileCount: 0,
+    totalBytes: 0,
+    extensionCounts: {},
+  }
+
+  if (!existsSync(absoluteRoot)) return summary
+
+  summary.exists = true
+  const files = await walkFiles(absoluteRoot)
+  for (const filePath of files) {
+    const stats = await fs.stat(filePath)
+    const extension = path.extname(filePath).toLowerCase() || '[none]'
+    summary.fileCount += 1
+    summary.totalBytes += stats.size
+    summary.extensionCounts[extension] = (summary.extensionCounts[extension] ?? 0) + 1
+  }
+
+  return summary
+}
+
+function collectProductSeedEntries(seedText) {
+  const productsBlock = seedText.match(/const productsData:[\s\S]*?= \[([\s\S]*?)\n  \]/)?.[1]
+  if (!productsBlock) return []
+
+  const products = []
+  const productPattern = /\{[\s\S]*?sku:[\s\S]*?\n    \}/g
+  for (const match of productsBlock.matchAll(productPattern)) {
+    const block = match[0]
+    const slug = block.match(/slug:\s*'([^']+)'/)?.[1]
+    const imageUrl = block.match(/imageUrl:\s*'([^']+)'/)?.[1]
+    if (slug && imageUrl) products.push({ slug, imageUrl })
+  }
+
+  return products
+}
+
+async function collectProductSeedMediaSummary(root) {
+  const summary = {
+    productSeedProductCount: 0,
+    productSeedLocalProductSourceAssetCount: 0,
+    productSeedLocalManagedUploadCount: 0,
+    productSeedLocalNonProductSourceAssetCount: 0,
+    productSeedRemoteCatalogMediaCount: 0,
+    productSeedMissingLocalSourceAssetCount: 0,
+    productSeedUnknownMediaCount: 0,
+    productSeedOwnerReviewNeededCount: 0,
+  }
+
+  let seedText = ''
+  try {
+    seedText = await fs.readFile(path.join(root, 'prisma', 'seed.ts'), 'utf8')
+  } catch (error) {
+    if (error?.code === 'ENOENT') return summary
+    throw error
+  }
+
+  const products = collectProductSeedEntries(seedText)
+  summary.productSeedProductCount = products.length
+
+  let ownerReviewNeededSlugs = new Set()
+  try {
+    const productMediaSource = await fs.readFile(path.join(root, 'src', 'shared', 'product-media.ts'), 'utf8')
+    const entries = productMediaSource.match(/\{[\s\S]*?slug:\s*'[^']+'[\s\S]*?\n  \}/g) ?? []
+    ownerReviewNeededSlugs = new Set(
+      entries
+        .filter((entry) => /ownerReviewNeeded:\s*true/.test(entry))
+        .map((entry) => entry.match(/slug:\s*'([^']+)'/)?.[1])
+        .filter(Boolean),
+    )
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error
+  }
+
+  for (const product of products) {
+    const imageUrl = product.imageUrl
+    if (ownerReviewNeededSlugs.has(product.slug)) {
+      summary.productSeedOwnerReviewNeededCount += 1
+    }
+
+    if (imageUrl.startsWith(PRODUCT_SOURCE_ASSET_PREFIX)) {
+      summary.productSeedLocalProductSourceAssetCount += 1
+      if (!localSourceAssetExists(imageUrl, root)) {
+        summary.productSeedMissingLocalSourceAssetCount += 1
+      }
+      continue
+    }
+
+    if (MANAGED_UPLOAD_PREFIXES.some((prefix) => imageUrl.startsWith(prefix))) {
+      summary.productSeedLocalManagedUploadCount += 1
+      continue
+    }
+
+    if (SOURCE_ASSET_PREFIXES.some((prefix) => imageUrl.startsWith(prefix))) {
+      summary.productSeedLocalNonProductSourceAssetCount += 1
+      if (!localSourceAssetExists(imageUrl, root)) {
+        summary.productSeedMissingLocalSourceAssetCount += 1
+      }
+      continue
+    }
+
+    if (/^https?:\/\//i.test(imageUrl)) {
+      summary.productSeedRemoteCatalogMediaCount += 1
+      continue
+    }
+
+    summary.productSeedUnknownMediaCount += 1
+  }
+
+  return summary
+}
+
 async function collectPaymentAssetConfigStatus(root) {
   const assetSourcePath = path.join(root, 'src', 'shared', 'assets.ts')
   let assetSource = ''
@@ -379,6 +496,8 @@ export async function collectLocalAssetDependencyAudit({
     scannedFileCount: files.length,
     summary,
     publicInventory: await collectPublicInventory(root),
+    productSourceAssetFolder: await collectProductSourceAssetInventory(root),
+    productSeedMedia: await collectProductSeedMediaSummary(root),
     paymentAssetConfig: await collectPaymentAssetConfigStatus(root),
     safeAggregateOnly: true,
     privateEnvRead: false,
@@ -410,6 +529,21 @@ export function createLocalAssetDependencyEvidence(audit) {
     scannedFileCount: audit.scannedFileCount,
     summary: audit.summary,
     publicInventory: audit.publicInventory,
+    productSourceAssetFolder: audit.productSourceAssetFolder,
+    productSeedMedia: audit.productSeedMedia,
+    remoteCatalogBacklog: {
+      remainingRemoteProductCatalogMediaCount: audit.summary.remoteProductCatalogMedia,
+      filesWithRemoteProductCatalogMediaCount: audit.remoteProductCatalogMediaFiles.length,
+      seedProductRemoteCatalogMediaCount: audit.productSeedMedia.productSeedRemoteCatalogMediaCount,
+      ownerReviewNeededProductMediaCount: audit.productSeedMedia.productSeedOwnerReviewNeededCount,
+    },
+    sourceUploadBoundary: {
+      sourceControlledProductAssetsRootLabel: 'public-assets-products',
+      sourceControlledProductAssetsPrefixLabel: 'assets-products',
+      managedProductUploadRootLabel: 'public-uploads-products',
+      productSeedUsesManagedUploadCount: audit.productSeedMedia.productSeedLocalManagedUploadCount,
+      productSeedUsesProductSourceAssetCount: audit.productSeedMedia.productSeedLocalProductSourceAssetCount,
+    },
     paymentAssetConfig: audit.paymentAssetConfig,
     safeAggregateOnly: audit.safeAggregateOnly,
     privateEnvRead: audit.privateEnvRead,
