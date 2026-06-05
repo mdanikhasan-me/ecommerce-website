@@ -26,6 +26,10 @@ export type AdminMediaPathClassification = {
   managedPrefix: string | null
 }
 
+export type AdminMediaLocalDeletionPlan = AdminMediaPathClassification & {
+  remainingReferenceCount: number
+}
+
 export function normalizeAdminMediaPath(value: string | null | undefined) {
   const trimmed = value?.trim()
   return trimmed || null
@@ -98,14 +102,21 @@ export function classifyAdminMediaPath(value: string | null | undefined): AdminM
   }
 }
 
-export function resolveManagedMediaFilePath(value: string | null | undefined, managedPrefix: string) {
+export function resolveManagedMediaFilePath(
+  value: string | null | undefined,
+  managedPrefix: string,
+  publicRoot = path.resolve(process.cwd(), 'public'),
+) {
   const normalizedPath = normalizeAdminMediaPath(value)
+  if (!MANAGED_LOCAL_UPLOAD_PREFIXES.includes(managedPrefix as (typeof MANAGED_LOCAL_UPLOAD_PREFIXES)[number])) {
+    return null
+  }
   if (!normalizedPath || !normalizedPath.startsWith(managedPrefix)) return null
   if (/[\0?#]/.test(normalizedPath)) return null
 
-  const publicRoot = path.resolve(process.cwd(), 'public')
-  const uploadRoot = path.resolve(publicRoot, managedPrefix.replace(/^\/+|\/+$/g, ''))
-  const filePath = path.resolve(publicRoot, normalizedPath.replace(/^\/+/, ''))
+  const resolvedPublicRoot = path.resolve(publicRoot)
+  const uploadRoot = path.resolve(resolvedPublicRoot, managedPrefix.replace(/^\/+|\/+$/g, ''))
+  const filePath = path.resolve(resolvedPublicRoot, normalizedPath.replace(/^\/+/, ''))
 
   if (filePath === uploadRoot || !filePath.startsWith(`${uploadRoot}${path.sep}`)) {
     return null
@@ -116,4 +127,55 @@ export function resolveManagedMediaFilePath(value: string | null | undefined, ma
 
 export function canDeleteAdminMediaLocalFile(value: string | null | undefined) {
   return classifyAdminMediaPath(value).canDeleteLocalFile
+}
+
+export function countRemainingAdminMediaReferences(
+  value: string | null | undefined,
+  remainingActiveReferences: Iterable<string | null | undefined>,
+) {
+  const normalizedPath = normalizeAdminMediaPath(value)
+  if (!normalizedPath) return 0
+
+  let count = 0
+  for (const reference of remainingActiveReferences) {
+    if (normalizeAdminMediaPath(reference) === normalizedPath) {
+      count += 1
+    }
+  }
+
+  return count
+}
+
+export function planAdminMediaLocalDeletion(
+  value: string | null | undefined,
+  remainingActiveReferences: Iterable<string | null | undefined> = [],
+): AdminMediaLocalDeletionPlan {
+  const classification = classifyAdminMediaPath(value)
+
+  if (!classification.canDeleteLocalFile || !classification.normalizedPath) {
+    return {
+      ...classification,
+      remainingReferenceCount: 0,
+    }
+  }
+
+  const remainingReferenceCount = countRemainingAdminMediaReferences(
+    classification.normalizedPath,
+    remainingActiveReferences,
+  )
+
+  if (remainingReferenceCount > 0) {
+    return {
+      ...classification,
+      canDeleteLocalFile: false,
+      reason: 'Path is still referenced by remaining active media records.',
+      remainingReferenceCount,
+    }
+  }
+
+  return {
+    ...classification,
+    reason: 'Path is inside a known managed upload root and has no supplied remaining active references.',
+    remainingReferenceCount,
+  }
 }

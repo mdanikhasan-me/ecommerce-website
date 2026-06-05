@@ -1,12 +1,34 @@
 import assert from 'node:assert/strict'
+import { promises as fs } from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { describe, it } from 'node:test'
 
 import {
+  deleteManagedAdminUpload,
+  resolveManagedPublicUploadPath,
+} from '@/backend/admin/admin-utils'
+import {
   canDeleteAdminMediaLocalFile,
   classifyAdminMediaPath,
+  countRemainingAdminMediaReferences,
+  planAdminMediaLocalDeletion,
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
+import { deleteManagedUpload } from '@/backend/admin/product-editor'
+
+async function withTempProject(callback: (root: string) => Promise<void>) {
+  const originalCwd = process.cwd()
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'boilabin-admin-media-'))
+
+  try {
+    process.chdir(root)
+    await callback(root)
+  } finally {
+    process.chdir(originalCwd)
+    await fs.rm(root, { recursive: true, force: true })
+  }
+}
 
 describe('admin media upload deletion lifecycle guardrails', () => {
   it('allows only known managed local upload roots as local deletion candidates', () => {
@@ -90,5 +112,101 @@ describe('admin media upload deletion lifecycle guardrails', () => {
     assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/uploads/admin/', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/uploads/admin/banners/banner.webp?download=1', '/uploads/admin/'), null)
+    assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/assets/'), null)
+  })
+
+  it('plans deletion only when callers provide no remaining active references', () => {
+    const candidate = '/uploads/admin/banners/banner.webp'
+
+    assert.equal(countRemainingAdminMediaReferences(candidate, [candidate, candidate]), 2)
+
+    const stillReferenced = planAdminMediaLocalDeletion(candidate, [
+      '/uploads/admin/banners/banner.webp',
+      '/uploads/products/other.webp',
+    ])
+    const unreferenced = planAdminMediaLocalDeletion(candidate, [])
+    const protectedAsset = planAdminMediaLocalDeletion('/assets/banners/home-hero-iphone-15-pro.jpg', [])
+
+    assert.equal(stillReferenced.canDeleteLocalFile, false)
+    assert.equal(stillReferenced.remainingReferenceCount, 1)
+    assert.match(stillReferenced.reason, /still referenced/)
+    assert.equal(unreferenced.canDeleteLocalFile, true)
+    assert.equal(unreferenced.remainingReferenceCount, 0)
+    assert.equal(protectedAsset.canDeleteLocalFile, false)
+    assert.equal(protectedAsset.bucket, 'protected-source-code-asset')
+  })
+
+  it('routes admin cleanup helper path resolution through the classifier', () => {
+    assert.equal(
+      resolveManagedPublicUploadPath('/uploads/admin/banners/banner.webp', '/uploads/admin/'),
+      path.resolve(process.cwd(), 'public', 'uploads', 'admin', 'banners', 'banner.webp'),
+    )
+    assert.equal(resolveManagedPublicUploadPath('/uploads/admin/', '/uploads/admin/'), null)
+    assert.equal(resolveManagedPublicUploadPath('/uploads/admin/banners/banner.webp?download=1', '/uploads/admin/'), null)
+    assert.equal(resolveManagedPublicUploadPath('/assets/banners/banner.webp', '/uploads/admin/'), null)
+  })
+
+  it('deletes only temp managed admin and product fixtures', async () => {
+    await withTempProject(async (root) => {
+      const adminPath = path.join(root, 'public', 'uploads', 'admin', 'banners', 'banner.webp')
+      const productPath = path.join(root, 'public', 'uploads', 'products', 'product.webp')
+      const sourceAssetPath = path.join(root, 'public', 'assets', 'banners', 'source.webp')
+
+      await fs.mkdir(path.dirname(adminPath), { recursive: true })
+      await fs.mkdir(path.dirname(productPath), { recursive: true })
+      await fs.mkdir(path.dirname(sourceAssetPath), { recursive: true })
+      await fs.writeFile(adminPath, 'admin')
+      await fs.writeFile(productPath, 'product')
+      await fs.writeFile(sourceAssetPath, 'source')
+
+      await deleteManagedAdminUpload('/uploads/admin/banners/banner.webp')
+      await deleteManagedUpload('/uploads/products/product.webp')
+      await deleteManagedAdminUpload('/assets/banners/source.webp')
+
+      await assert.rejects(fs.stat(adminPath), { code: 'ENOENT' })
+      await assert.rejects(fs.stat(productPath), { code: 'ENOENT' })
+      await assert.doesNotReject(fs.stat(sourceAssetPath))
+    })
+  })
+
+  it('refuses temp managed root, traversal, query, fragment, remote, and data cleanup inputs', async () => {
+    await withTempProject(async (root) => {
+      const adminPath = path.join(root, 'public', 'uploads', 'admin', 'banners', 'banner.webp')
+      const productPath = path.join(root, 'public', 'uploads', 'products', 'product.webp')
+
+      await fs.mkdir(path.dirname(adminPath), { recursive: true })
+      await fs.mkdir(path.dirname(productPath), { recursive: true })
+      await fs.writeFile(adminPath, 'admin')
+      await fs.writeFile(productPath, 'product')
+
+      await deleteManagedAdminUpload('/uploads/admin/')
+      await deleteManagedAdminUpload('/uploads/admin/banners/banner.webp?download=1')
+      await deleteManagedAdminUpload('/uploads/admin/..\\assets\\banners\\source.webp')
+      await deleteManagedAdminUpload('https://cdn.example.test/banner.webp')
+      await deleteManagedAdminUpload('data:image/webp;base64,AAAA')
+      await deleteManagedUpload('/uploads/products/product.webp#preview')
+      await deleteManagedUpload('/uploads/products/../../package.json')
+
+      await assert.doesNotReject(fs.stat(adminPath))
+      await assert.doesNotReject(fs.stat(productPath))
+    })
+  })
+
+  it('keeps admin and product cleanup roots isolated from each other', async () => {
+    await withTempProject(async (root) => {
+      const adminPath = path.join(root, 'public', 'uploads', 'admin', 'banners', 'banner.webp')
+      const productPath = path.join(root, 'public', 'uploads', 'products', 'product.webp')
+
+      await fs.mkdir(path.dirname(adminPath), { recursive: true })
+      await fs.mkdir(path.dirname(productPath), { recursive: true })
+      await fs.writeFile(adminPath, 'admin')
+      await fs.writeFile(productPath, 'product')
+
+      await deleteManagedAdminUpload('/uploads/products/product.webp')
+      await deleteManagedUpload('/uploads/admin/banners/banner.webp')
+
+      await assert.doesNotReject(fs.stat(adminPath))
+      await assert.doesNotReject(fs.stat(productPath))
+    })
   })
 })

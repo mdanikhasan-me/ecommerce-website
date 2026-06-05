@@ -3,7 +3,10 @@ import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
-import { resolveManagedPublicUploadPath } from '@/backend/admin/admin-utils'
+import {
+  classifyAdminMediaPath,
+  resolveManagedMediaFilePath,
+} from '@/backend/admin/media-lifecycle'
 import { z } from 'zod'
 
 type ProductImageInput = {
@@ -276,13 +279,12 @@ async function persistImage(url: string, slug: string) {
 }
 
 function isManagedUpload(url: string) {
-  return url.startsWith('/uploads/products/')
+  const classification = classifyAdminMediaPath(url)
+  return classification.managedPrefix === '/uploads/products/' && classification.canDeleteLocalFile
 }
 
 export async function deleteManagedUpload(url: string) {
-  if (!isManagedUpload(url)) return
-
-  const filePath = resolveManagedPublicUploadPath(url, '/uploads/products/')
+  const filePath = resolveManagedMediaFilePath(url, '/uploads/products/')
   if (!filePath) return
 
   await fs.rm(filePath, { force: true })

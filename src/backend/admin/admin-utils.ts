@@ -1,9 +1,12 @@
 import { promises as fs } from 'fs'
-import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
+import {
+  classifyAdminMediaPath,
+  resolveManagedMediaFilePath,
+} from '@/backend/admin/media-lifecycle'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 export async function requireAdminSession() {
@@ -76,21 +79,12 @@ export async function ensureUniqueSlug(rawSlug: string, excludeId?: string) {
 }
 
 export function isManagedAdminUpload(url: string) {
-  return url.startsWith('/uploads/admin/')
+  const classification = classifyAdminMediaPath(url)
+  return classification.managedPrefix === '/uploads/admin/' && classification.canDeleteLocalFile
 }
 
 export function resolveManagedPublicUploadPath(url: string, managedPrefix: string) {
-  if (!url.startsWith(managedPrefix)) return null
-
-  const publicRoot = path.resolve(process.cwd(), 'public')
-  const uploadRoot = path.resolve(publicRoot, managedPrefix.replace(/^\/+|\/+$/g, ''))
-  const filePath = path.resolve(publicRoot, url.replace(/^\/+/, ''))
-
-  if (filePath !== uploadRoot && !filePath.startsWith(`${uploadRoot}${path.sep}`)) {
-    return null
-  }
-
-  return filePath
+  return resolveManagedMediaFilePath(url, managedPrefix)
 }
 
 export async function persistAdminUpload(url: string | null | undefined, folder: string) {
@@ -110,9 +104,7 @@ export async function persistAdminUpload(url: string | null | undefined, folder:
 }
 
 export async function deleteManagedAdminUpload(url: string | null | undefined) {
-  if (!url || !isManagedAdminUpload(url)) return
-
-  const filePath = resolveManagedPublicUploadPath(url, '/uploads/admin/')
+  const filePath = url ? resolveManagedMediaFilePath(url, '/uploads/admin/') : null
   if (!filePath) return
 
   await fs.rm(filePath, { force: true })
