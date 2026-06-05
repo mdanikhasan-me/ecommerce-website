@@ -6,12 +6,20 @@ import {
   MANAGED_MEDIA_STORAGE_POLICY,
   MEDIA_ASSET_SCHEMA_PLAN_FIELDS,
   MEDIA_ASSET_STATUS_PLAN,
+  MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS,
   MEDIA_BACKFILL_PHASE_PLAN,
   MEDIA_DELETION_HARD_REFUSAL_REASONS,
   MEDIA_DELETION_LEDGER_STATUSES,
   MEDIA_DELETION_LEDGER_SCHEMA_PLAN_FIELDS,
   MEDIA_EXISTING_FIELD_MIGRATION_PLAN,
+  MEDIA_MIGRATION_FUTURE_DB_TESTS,
+  MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST,
+  MEDIA_MIGRATION_LOCAL_DB_PREREQUISITES,
   MEDIA_MIGRATION_ROLLBACK_PLAN,
+  MEDIA_MIGRATION_MANUAL_APPROVAL_GATES,
+  MEDIA_MIGRATION_PHASE_GATE_PLAN,
+  MEDIA_MIGRATION_ROLLBACK_GATES,
+  MEDIA_MIGRATION_STOP_CONDITIONS,
   MEDIA_OWNERSHIP_REQUIRED_FOR_PHYSICAL_DELETE,
   MEDIA_OWNERSHIP_OWNER_TYPES,
   MEDIA_RECYCLE_WINDOW_POLICY,
@@ -332,5 +340,133 @@ describe('admin managed media storage policy', () => {
     assert.ok(MEDIA_SCHEMA_INDEX_CONSTRAINT_PLAN.includes('constraint-historical-evidence-preserve-only'))
     assert.ok(MEDIA_MIGRATION_ROLLBACK_PLAN.includes('never-physically-delete-media-during-migration'))
     assert.ok(MEDIA_MIGRATION_ROLLBACK_PLAN.includes('keep-existing-url-fields-authoritative-during-migration'))
+  })
+
+  it('pins the migration-safe implementation checklist without enabling schema work', () => {
+    assert.deepEqual(
+      MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST.map((item) => item.step),
+      [
+        'pre-migration-approvals',
+        'local-db-prerequisites',
+        'schema-design-review',
+        'migration-creation',
+        'backfill-dry-run',
+        'ownership-unverified-backfill',
+        'new-upload-metadata-writes',
+        'ledger-and-recycle-integration',
+        'provider-storage-integration',
+        'deletion-job-approval',
+      ],
+    )
+    assert.equal(
+      MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST
+        .filter((item) => item.step !== 'local-db-prerequisites' && item.step !== 'backfill-dry-run')
+        .every((item) => item.ownerApprovalRequired),
+      true,
+    )
+    assert.match(
+      MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST.find((item) => item.step === 'migration-creation')?.forbidden ?? '',
+      /Do not combine schema creation with backfill/,
+    )
+    assert.match(
+      MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST.find((item) => item.step === 'deletion-job-approval')?.forbidden ?? '',
+      /No automatic cleanup/,
+    )
+  })
+
+  it('pins local prerequisites, approvals, phase gates, and stop conditions', () => {
+    assert.deepEqual(MEDIA_MIGRATION_LOCAL_DB_PREREQUISITES, [
+      'database-url-classifies-local',
+      'shadow-database-url-classifies-local',
+      'app-and-shadow-databases-are-separate',
+      'local-postgresql-service-reachable',
+      'prisma-validate-passes',
+      'prisma-generate-passes',
+      'no-pending-schema-or-migration-diff',
+      'recent-local-backup-or-snapshot-approved',
+    ])
+    assert.ok(MEDIA_MIGRATION_MANUAL_APPROVAL_GATES.includes('owner-approves-schema-migration-creation'))
+    assert.ok(MEDIA_MIGRATION_MANUAL_APPROVAL_GATES.includes('owner-classifies-existing-local-uploads'))
+    assert.deepEqual(MEDIA_MIGRATION_PHASE_GATE_PLAN, [
+      'phase-a-schema-only-migration',
+      'phase-b-no-op-read-compatibility-tests',
+      'phase-c-backfill-dry-run-aggregate-report',
+      'phase-d-ownership-unverified-backfill',
+      'phase-e-source-and-historical-protection-marking',
+      'phase-f-new-upload-metadata-write-path',
+      'phase-g-ledger-and-recycle-gate-integration',
+      'phase-h-provider-storage-integration',
+      'phase-i-deletion-job-after-explicit-approval',
+    ])
+    assert.ok(MEDIA_MIGRATION_STOP_CONDITIONS.includes('physical-deletion-would-be-required'))
+    assert.ok(MEDIA_MIGRATION_STOP_CONDITIONS.includes('source-or-historical-media-might-be-touched'))
+  })
+
+  it('pins future dry-run, rollback, and DB-backed test requirements', () => {
+    assert.ok(MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS.includes('read-only-by-default'))
+    assert.ok(MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS.includes('aggregate-counts-only-by-default'))
+    assert.ok(MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS.includes('no-filenames-full-paths-urls-or-pii-in-default-output'))
+    assert.ok(MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS.includes('creates-no-mediaasset-rows-without-approval'))
+    assert.ok(MEDIA_MIGRATION_ROLLBACK_GATES.includes('no-physical-deletion-during-schema-migration-or-backfill'))
+    assert.ok(MEDIA_MIGRATION_ROLLBACK_GATES.includes('backfill-metadata-rows-removable-by-batch-id'))
+    assert.ok(MEDIA_MIGRATION_FUTURE_DB_TESTS.includes('migration-applies-locally'))
+    assert.ok(MEDIA_MIGRATION_FUTURE_DB_TESTS.includes('public-urls-unchanged'))
+    assert.ok(MEDIA_MIGRATION_FUTURE_DB_TESTS.includes('cleanup-refuses-without-ledger-approval'))
+    assert.ok(MEDIA_MIGRATION_FUTURE_DB_TESTS.includes('restore-path-exists'))
+  })
+
+  it('keeps Step 281 docs and Prisma schema migration-readiness only', () => {
+    const docs = readFileSync('docs/MEDIA_UPLOAD_POLICY.md', 'utf8')
+    const schema = readFileSync('prisma/schema.prisma', 'utf8')
+
+    assert.match(docs, /Migration-Safe Implementation Checklist/i)
+    assert.match(docs, /Phase A: schema-only migration/i)
+    assert.match(docs, /Default output must be aggregate-only/i)
+    assert.match(docs, /No physical deletion is allowed during schema migration or backfill/i)
+    assert.doesNotMatch(docs, /safe to delete/i)
+    assert.doesNotMatch(docs, /provider deletion is implemented/i)
+    assert.doesNotMatch(schema, /model\s+MediaAsset\b/)
+    assert.doesNotMatch(schema, /model\s+MediaDeletionLedger\b/)
+  })
+
+  it('keeps Step 281 report and evidence from claiming implementation happened', () => {
+    const report = readFileSync(
+      'audit-reports/281_MEDIA_ASSET_MIGRATION_SAFE_IMPLEMENTATION_CHECKLIST.md',
+      'utf8',
+    )
+    const evidence = JSON.parse(readFileSync(
+      'audit-reports/281-media-asset-migration-safe-implementation-checklist/media-migration-readiness-evidence.json',
+      'utf8',
+    )) as {
+      prohibitedActions: Record<string, boolean>
+      futureGates: Record<string, boolean>
+    }
+
+    assert.match(report, /Pseudo-Schema Design Summary/i)
+    assert.match(report, /Backfill Dry-Run Design/i)
+    assert.match(report, /DB-Backed Tests Required Before Migration/i)
+    assert.match(report, /no Prisma schema file was edited/i)
+    assert.doesNotMatch(report, /safe to delete/i)
+    assert.doesNotMatch(report, /migration applied/i)
+    assert.doesNotMatch(report, /provider deletion is implemented/i)
+
+    for (const key of [
+      'prismaSchemaChanged',
+      'migrationCreated',
+      'migrationRun',
+      'databaseMutation',
+      'deletionModeAdded',
+      'runtimeCleanupChanged',
+      'providerCleanupAdded',
+      'realFilesDeleted',
+      'publicAssetsTouched',
+      'privateEnvRead',
+    ]) {
+      assert.equal(evidence.prohibitedActions[key], false, `${key} should remain false`)
+    }
+
+    assert.equal(evidence.futureGates.physicalDeletionDuringSchemaMigrationOrBackfillAllowed, false)
+    assert.equal(evidence.futureGates.defaultDryRunMayPrintRawIdentifiers, false)
+    assert.equal(evidence.futureGates.publicUrlIsStorageOwnershipProof, false)
   })
 })

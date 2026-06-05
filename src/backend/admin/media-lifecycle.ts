@@ -380,6 +380,185 @@ export const MEDIA_MIGRATION_ROLLBACK_PLAN = [
   'restore-provider-objects-before-repointing-public-urls',
 ] as const
 
+export const MEDIA_MIGRATION_LOCAL_DB_PREREQUISITES = [
+  'database-url-classifies-local',
+  'shadow-database-url-classifies-local',
+  'app-and-shadow-databases-are-separate',
+  'local-postgresql-service-reachable',
+  'prisma-validate-passes',
+  'prisma-generate-passes',
+  'no-pending-schema-or-migration-diff',
+  'recent-local-backup-or-snapshot-approved',
+] as const
+
+export const MEDIA_MIGRATION_MANUAL_APPROVAL_GATES = [
+  'owner-approves-schema-migration-creation',
+  'owner-approves-storage-provider-direction',
+  'owner-approves-retention-and-recycle-window-days',
+  'owner-approves-backup-and-restore-owner',
+  'owner-approves-deletion-approval-role',
+  'owner-approves-seller-media-policy',
+  'owner-approves-product-variant-ownership-policy',
+  'owner-classifies-existing-local-uploads',
+  'owner-approves-raw-original-retention-policy',
+  'owner-approves-cdn-cache-invalidation-plan',
+] as const
+
+export const MEDIA_MIGRATION_IMPLEMENTATION_CHECKLIST = [
+  {
+    step: 'pre-migration-approvals',
+    allowed: 'Collect owner approvals and confirm provider, retention, backup, and variant policy decisions.',
+    forbidden: 'Do not create migrations or mutate data before approvals are recorded.',
+    requiredTests: ['documentation-review', 'no-schema-diff-check'],
+    rollbackOrStop: 'Stop if any approval is missing.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'local-db-prerequisites',
+    allowed: 'Verify local and separate app/shadow database URLs plus local PostgreSQL reachability.',
+    forbidden: 'Do not connect to remote-looking databases or print connection strings.',
+    requiredTests: ['db-url-safety', 'prisma-validate', 'prisma-generate'],
+    rollbackOrStop: 'Stop if local readiness or guardrails fail.',
+    ownerApprovalRequired: false,
+  },
+  {
+    step: 'schema-design-review',
+    allowed: 'Review pseudo-schema, indexes, constraints, nullability, and rollback notes.',
+    forbidden: 'Do not edit Prisma schema in a review-only step.',
+    requiredTests: ['schema-plan-contract-tests', 'route-contract-inventory'],
+    rollbackOrStop: 'Stop if route/API compatibility is unclear.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'migration-creation',
+    allowed: 'Create a schema-only migration only in a future approved migration step.',
+    forbidden: 'Do not combine schema creation with backfill, cleanup, or provider deletion.',
+    requiredTests: ['migration-applies-locally', 'migration-rolls-back-locally'],
+    rollbackOrStop: 'Rollback schema before any backfill data is written.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'backfill-dry-run',
+    allowed: 'Produce aggregate-only classification counts for existing media URL fields.',
+    forbidden: 'Do not write MediaAsset rows, filenames, full URLs, full paths, matched records, or PII.',
+    requiredTests: ['dry-run-aggregate-only', 'field-map-complete', 'historical-preserve-only'],
+    rollbackOrStop: 'Stop if dry-run output requires private identifiers.',
+    ownerApprovalRequired: false,
+  },
+  {
+    step: 'ownership-unverified-backfill',
+    allowed: 'Create metadata rows as ownership_unverified after approval and successful dry-run review.',
+    forbidden: 'Do not mark backfilled rows as cleanup-approved or alter public URLs.',
+    requiredTests: ['backfill-idempotent', 'public-urls-unchanged', 'route-contracts-unchanged'],
+    rollbackOrStop: 'Remove metadata rows by backfill batch id only.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'new-upload-metadata-writes',
+    allowed: 'Dual-write new approved uploads to MediaAsset while keeping URL fields authoritative.',
+    forbidden: 'Do not remove URL fields or alter API response shapes.',
+    requiredTests: ['upload-dual-write', 'mobile-api-contracts', 'rollback-disables-dual-write'],
+    rollbackOrStop: 'Disable metadata writes and keep serving URL fields.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'ledger-and-recycle-integration',
+    allowed: 'Plan cleanup decisions through ledger, approval, recycle window, backup, and fresh reference audit gates.',
+    forbidden: 'Do not physically delete media without all gates and explicit future approval.',
+    requiredTests: ['ledger-required', 'stale-audit-refused', 'recycle-window-required', 'restore-path-required'],
+    rollbackOrStop: 'Disable cleanup job and retain ledger evidence.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'provider-storage-integration',
+    allowed: 'Persist provider keys only after provider, backup, restore, and CDN decisions are approved.',
+    forbidden: 'Do not infer provider keys from public URLs or run provider deletion.',
+    requiredTests: ['provider-key-mapping', 'public-url-compatibility', 'provider-rollback'],
+    rollbackOrStop: 'Serve existing public URLs until provider mapping is repaired.',
+    ownerApprovalRequired: true,
+  },
+  {
+    step: 'deletion-job-approval',
+    allowed: 'Enable deletion job only in a future explicitly approved implementation after all gates pass.',
+    forbidden: 'No automatic cleanup of source, historical, ownership-unverified, or stale-audit media.',
+    requiredTests: ['manual-approval-required', 'delete-failure-ledgered', 'restore-before-permanent-delete'],
+    rollbackOrStop: 'Stop the job and restore from recycle/provider backup when needed.',
+    ownerApprovalRequired: true,
+  },
+] as const
+
+export const MEDIA_MIGRATION_PHASE_GATE_PLAN = [
+  'phase-a-schema-only-migration',
+  'phase-b-no-op-read-compatibility-tests',
+  'phase-c-backfill-dry-run-aggregate-report',
+  'phase-d-ownership-unverified-backfill',
+  'phase-e-source-and-historical-protection-marking',
+  'phase-f-new-upload-metadata-write-path',
+  'phase-g-ledger-and-recycle-gate-integration',
+  'phase-h-provider-storage-integration',
+  'phase-i-deletion-job-after-explicit-approval',
+] as const
+
+export const MEDIA_BACKFILL_DRY_RUN_REQUIREMENTS = [
+  'read-only-by-default',
+  'classifies-all-current-media-url-fields',
+  'aggregate-counts-only-by-default',
+  'no-filenames-full-paths-urls-or-pii-in-default-output',
+  'classifies-source-assets',
+  'classifies-managed-upload-roots',
+  'classifies-remote-media',
+  'classifies-historical-evidence',
+  'classifies-active-references',
+  'classifies-ownership-unverified-values',
+  'classifies-product-variant-media-as-deferred',
+  'classifies-seller-and-brand-fields-as-policy-blocked',
+  'creates-no-mediaasset-rows-without-approval',
+] as const
+
+export const MEDIA_MIGRATION_ROLLBACK_GATES = [
+  'schema-only-migration-rolls-back-before-backfill',
+  'backfill-metadata-rows-removable-by-batch-id',
+  'new-upload-metadata-writes-can-be-disabled',
+  'ledger-rows-retained-as-audit-evidence',
+  'provider-storage-keys-reversible-before-url-repointing',
+  'recycle-quarantine-state-restorable',
+  'deletion-job-disabled-before-any-permanent-delete',
+  'no-physical-deletion-during-schema-migration-or-backfill',
+] as const
+
+export const MEDIA_MIGRATION_FUTURE_DB_TESTS = [
+  'migration-applies-locally',
+  'migration-rolls-back-locally',
+  'no-route-response-changes',
+  'public-urls-unchanged',
+  'orphan-audit-remains-aggregate-only',
+  'source-assets-protected',
+  'historical-evidence-preserve-only',
+  'product-variants-not-deletion-candidates',
+  'backfill-idempotent',
+  'duplicate-and-shared-url-handling',
+  'provider-key-not-inferred-from-public-url',
+  'cleanup-refuses-without-ledger-approval',
+  'stale-audit-refuses-deletion',
+  'recycle-window-required',
+  'restore-path-exists',
+] as const
+
+export const MEDIA_MIGRATION_STOP_CONDITIONS = [
+  'database-url-unsafe',
+  'shadow-database-url-unsafe',
+  'app-and-shadow-databases-not-separate',
+  'local-postgresql-unreachable',
+  'owner-approval-missing',
+  'provider-choice-missing',
+  'backup-or-restore-policy-missing',
+  'route-response-drift-detected',
+  'validation-failed',
+  'backfill-output-would-expose-private-identifiers',
+  'physical-deletion-would-be-required',
+  'source-or-historical-media-might-be-touched',
+] as const
+
 export type ManagedMediaStorageNamespace = 'products' | 'admin'
 
 export type ManagedMediaStorageKeyPlan = {

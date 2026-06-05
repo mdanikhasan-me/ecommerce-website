@@ -511,6 +511,111 @@ The owner must approve:
 - whether existing local uploads are real owner-uploaded data, demo data, or recovery artifacts;
 - how current unreferenced managed candidates should be backfilled, if at all.
 
+## Migration-Safe Implementation Checklist
+
+Future media metadata implementation must move through approval and verification gates. This checklist is not an implementation and does not authorize schema changes by itself.
+
+| Step | Allowed action | Forbidden action | Required tests | Rollback or stop condition |
+| --- | --- | --- | --- | --- |
+| Pre-migration approvals | Record owner decisions for schema, provider, retention, backup, seller media, and variant policy | Creating migrations before approval | Documentation review and no schema diff check | Stop if any approval is missing |
+| Local DB prerequisites | Verify local app/shadow database URL shape, separation, and PostgreSQL reachability | Remote-looking DB use or connection string output | DB URL safety, Prisma validate, Prisma generate | Stop if local guardrails fail |
+| Schema design review | Review pseudo-schema, indexes, constraints, nullability, and compatibility | Editing Prisma schema in a review-only step | Schema-plan contract tests and route contract inventory | Stop if API compatibility is unclear |
+| Migration creation | Create schema-only migration in a later approved step | Combining schema with backfill, cleanup, provider work, or route behavior changes | Migration applies and rolls back locally | Roll back schema before any backfill |
+| Backfill dry-run | Produce aggregate-only classification counts | Writing rows or outputting private identifiers | Dry-run aggregate output and field-map completeness | Stop if private identifiers would be required |
+| Ownership-unverified backfill | Create metadata rows as `ownership_unverified` after approval | Marking backfilled rows cleanup-approved or changing public URLs | Idempotency, unchanged public URLs, unchanged route contracts | Remove metadata rows by batch id only |
+| New upload metadata writes | Dual-write new approved uploads to metadata while URL fields remain authoritative | Removing URL fields or changing API response shapes | Upload dual-write, mobile/API contracts, rollback | Disable metadata writes and keep URL serving |
+| Ledger and recycle integration | Require ledger, approval, recycle window, backup, restore, and fresh reference audit | Physical deletion without all gates | Ledger-required, stale-audit refusal, recycle-window tests | Disable cleanup job and retain ledger evidence |
+| Provider storage integration | Persist provider keys after provider, backup, restore, and CDN decisions | Inferring provider keys from public URLs or running provider delete | Provider key mapping and rollback tests | Continue serving existing public URLs |
+| Deletion job approval | Enable a deletion job only in a later explicitly approved implementation | Automatic cleanup of source, historical, ownership-unverified, or stale-audit media | Manual approval, failure ledgering, restore-before-delete tests | Stop the job and restore from recycle/provider backup |
+
+Owner approval is required for every step except local DB prerequisite checks and aggregate-only dry-run design.
+
+## Local DB Prerequisites For Future Migration Work
+
+Before any future migration or DB-backed media test, confirm:
+
+- `DATABASE_URL` classifies local;
+- `SHADOW_DATABASE_URL` classifies local;
+- app and shadow databases are separate;
+- local PostgreSQL is reachable;
+- Prisma validate passes;
+- Prisma generate passes;
+- there is no pending schema or migration diff;
+- a recent local backup or snapshot is approved.
+
+URL-shape readiness does not prove PostgreSQL is running, and local DB readiness does not authorize remote, staging, or production database changes.
+
+## Future Migration Phase Gates
+
+The future migration path should be split into strict gates:
+
+- Phase A: schema-only migration. Add metadata models only after owner approval; do not remove existing URL fields.
+- Phase B: no-op read compatibility tests. Prove current routes, admin pages, storefront pages, and API/mobile-facing payloads still read existing URL fields.
+- Phase C: backfill dry-run aggregate report. Classify existing mapped media fields without writing rows.
+- Phase D: ownership-unverified backfill. Write metadata rows only as unverified and batch-tagged.
+- Phase E: source and historical protection marking. Mark source assets and historical evidence preserve-only.
+- Phase F: new upload metadata write path. Dual-write future uploads while existing URL fields remain authoritative.
+- Phase G: ledger and recycle gate integration. Require ledger, approval, recycle window, restore, and fresh reference audit before cleanup decisions.
+- Phase H: provider storage integration. Add provider keys only after provider, backup, restore, and CDN choices are approved.
+- Phase I: deletion job after explicit approval. Enable a cleanup job only after all gates, tests, and owner approvals pass.
+
+No phase may physically remove media during schema migration or backfill.
+
+## Future Backfill Dry-Run Design
+
+A future dry-run backfill command should be read-only by default.
+
+It should classify:
+
+- all current media URL fields;
+- source assets;
+- managed upload roots;
+- remote media;
+- historical evidence;
+- active references;
+- ownership-unverified values;
+- product variant media as deferred;
+- seller and brand fields as policy-blocked until those ownership rules are approved.
+
+Default output must be aggregate-only. It must avoid filenames, full paths, full URLs, record IDs, matched records, customer/order PII, private env values, and uploaded private file contents.
+
+The command must create no `MediaAsset` rows until a later approved backfill step. It must stop if DB safety fails, reference checks are incomplete, or output would require private identifiers.
+
+## Rollback Gates For Future Media Metadata Work
+
+Rollback planning must include:
+
+- schema-only migration rollback before backfill;
+- backfilled metadata rows removable by batch id;
+- new upload metadata writes can be disabled without changing URL serving;
+- ledger rows retained as audit evidence;
+- provider storage keys reversible before URL repointing;
+- recycle/quarantine state restorable before any permanent action;
+- deletion job disabled before any permanent action;
+- no physical deletion during schema migration or backfill.
+
+No physical deletion is allowed during schema migration or backfill.
+
+## Future DB-Backed Test Matrix
+
+Before creating or applying a real media metadata migration, future DB-backed tests should prove:
+
+- migration applies locally;
+- migration rolls back locally;
+- route responses do not change;
+- public URLs remain unchanged;
+- orphan audit remains aggregate-only;
+- source assets are protected;
+- historical evidence remains preserve-only;
+- product variants are not deletion candidates;
+- backfill is idempotent;
+- duplicate and shared URLs are handled;
+- provider keys are not inferred from public URLs;
+- cleanup refuses without ledger approval;
+- stale audits refuse deletion;
+- recycle window is required;
+- restore path exists.
+
 ## Alt Text Requirement
 
 Product images should have meaningful alt text. Category and banner images should have text alternatives based on visible content, not generic "image" labels.
