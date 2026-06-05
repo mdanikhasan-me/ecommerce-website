@@ -1,0 +1,126 @@
+{
+  "generatedBy": "scripts/audit-ui-ux-redesign-readiness.mjs",
+  "databaseRequired": false,
+  "privateEnvRead": false,
+  "tokenInventory": {
+    "cssVariableCount": 28,
+    "cssVariables": [
+      "accent",
+      "accent-foreground",
+      "background",
+      "border",
+      "buttermilk",
+      "card",
+      "card-foreground",
+      "destructive",
+      "destructive-foreground",
+      "footer-heading",
+      "footer-link",
+      "footer-muted",
+      "foreground",
+      "input",
+      "muted",
+      "muted-foreground",
+      "popover",
+      "popover-foreground",
+      "primary",
+      "primary-foreground",
+      "radius",
+      "ring",
+      "secondary",
+      "secondary-foreground",
+      "success",
+      "success-foreground",
+      "warning",
+      "warning-foreground"
+    ],
+    "globalComponentClasses": [
+      "skeleton",
+      "product-card",
+      "section-title",
+      "badge-sale",
+      "badge-new",
+      "badge-bestseller",
+      "price-current",
+      "price-original",
+      "input-base",
+      "btn-primary",
+      "btn-secondary",
+      "btn-outline",
+      "btn-accent",
+      "trust-badge",
+      "container-site",
+      "section-kicker",
+      "section-shell",
+      "editorial-link"
+    ],
+    "tailwindSemanticColorKeys": [
+      "background",
+      "foreground",
+      "primary",
+      "secondary",
+      "muted",
+      "accent",
+      "card",
+      "popover",
+      "destructive",
+      "success",
+      "warning"
+    ],
+    "fontFamilies": [
+      "sans",
+      "display",
+      "brand",
+      "mono"
+    ],
+    "arbitraryValueUsageCount": 588,
+    "hardcodedHexColorCount": 80,
+    "customBreakpointUsageCount": 21,
+    "customShadowUsageCount": 30,
+    "customRadiusUsageCount": 23
+  },
+  "riskFindings": [
+    {
+      "area": "design-system",
+      "level": "warning",
+      "finding": "Buttons, inputs, cards, shells, and overlays are mostly global classes or feature-local markup rather than reusable UI primitives."
+    },
+    {
+      "area": "tokens",
+      "level": "warning",
+      "finding": "Large arbitrary Tailwind value usage means spacing, radii, and shadows should be standardized before broad visual edits."
+    },
+    {
+      "area": "accessibility",
+      "level": "warning",
+      "finding": "Some admin forms still use generic accessible names; storefront redesign should include accessible-name guardrails."
+    },
+    {
+      "area": "overlays",
+      "level": "warning",
+      "finding": "Header menu, cart drawer, filters, and admin overlays are hand-rolled and need focused keyboard/focus review before large interaction changes."
+    },
+    {
+      "area": "media",
+      "level": "warning",
+      "finding": "Hero/category/product images depend on strict local asset and managed-upload boundaries from Step 285; redesign should not replace or relocate media."
+    }
+  ],
+  "recommendedFirstImplementation": {
+    "title": "Design-system and accessibility foundation before broad visual redesign",
+    "safeFiles": [
+      "src/app/globals.css",
+      "src/frontend/components/ui/*",
+      "src/frontend/components/product/ProductCard.tsx",
+      "src/frontend/components/product/SearchFiltersPanel.tsx",
+      "src/frontend/components/admin/ProductEditorForm.tsx"
+    ],
+    "keepSeparateApproval": [
+      "src/frontend/components/layout/Footer.tsx",
+      "src/frontend/components/layout/NewsletterForm.tsx",
+      "src/frontend/components/home/PromoSection.tsx",
+      "public/assets/**",
+      "public/uploads/**"
+    ]
+  }
+}

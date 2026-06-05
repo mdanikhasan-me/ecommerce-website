@@ -20,12 +20,18 @@ export function MobileSearchFilters({
   label = 'Search',
 }: MobileSearchFiltersProps) {
   const [open, setOpen] = useState(false)
+  const panelId = 'mobile-search-filters-panel'
+  const titleId = 'mobile-search-filters-title'
 
   return (
     <div className="lg:hidden">
       <button
         type="button"
         onClick={() => setOpen(true)}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-controls={panelId}
+        aria-label={`Open ${label.toLowerCase()} filters`}
         className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-semibold shadow-[0_10px_24px_rgba(23,18,15,0.05)] sm:gap-2 sm:px-4 sm:py-2 sm:text-sm"
       >
         <SlidersHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -40,11 +46,17 @@ export function MobileSearchFilters({
             className="absolute inset-0 bg-black/36"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-hidden rounded-t-[1.5rem] bg-background shadow-[0_-24px_54px_rgba(23,18,15,0.22)]">
+          <div
+            id={panelId}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-hidden rounded-t-[1.5rem] bg-background shadow-[0_-24px_54px_rgba(23,18,15,0.22)]"
+          >
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
                 <p className="section-kicker text-[10px]">{label}</p>
-                <h2 className="font-display text-lg font-semibold">Filters</h2>
+                <h2 id={titleId} className="font-display text-lg font-semibold">Filters</h2>
               </div>
               <button
                 type="button"

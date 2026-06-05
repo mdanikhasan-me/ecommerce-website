@@ -82,15 +82,15 @@ export function SearchFiltersPanel({
           <SlidersHorizontal className="h-4 w-4" /> Filters
         </h3>
         {hasFilters && (
-          <button type="button" onClick={clearAll} className="flex items-center gap-1 text-xs text-primary hover:underline">
+          <button type="button" onClick={clearAll} aria-label="Clear all product filters" className="flex items-center gap-1 text-xs text-primary hover:underline">
             <X className="h-3 w-3" /> Clear All
           </button>
         )}
       </div>
 
       {categories.length > 0 && (
-        <div>
-          <h4 className="mb-2 text-sm font-semibold">Category</h4>
+        <fieldset>
+          <legend className="mb-2 text-sm font-semibold">Category</legend>
           <div className="space-y-1.5">
             {categories.map((cat) => (
               <label key={cat.slug} className="group flex cursor-pointer items-center gap-2">
@@ -108,38 +108,49 @@ export function SearchFiltersPanel({
               </label>
             ))}
           </div>
-        </div>
+        </fieldset>
       )}
 
-      <div>
-        <h4 className="mb-2 text-sm font-semibold">Price Range (Tk)</h4>
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Price Range (Tk)</legend>
         <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            aria-label="Minimum price"
-            className="input-base w-full"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            aria-label="Maximum price"
-            className="input-base w-full"
-          />
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">Minimum price</span>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              placeholder="Min"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              aria-label="Minimum price"
+              className="input-base w-full"
+            />
+          </label>
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">Maximum price</span>
+            <input
+              type="number"
+              min="0"
+              inputMode="numeric"
+              placeholder="Max"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              aria-label="Maximum price"
+              className="input-base w-full"
+            />
+          </label>
         </div>
         <button
           type="button"
           onClick={() => applyPriceRange(minPrice, maxPrice)}
+          aria-label="Apply product price range"
           className="btn-outline mt-2 w-full py-1.5 text-xs"
         >
           Apply Price
         </button>
 
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Quick price ranges">
           {[['0', '5000'], ['5000', '20000'], ['20000', '50000'], ['50000', '']].map(([min, max]) => (
             <button
               type="button"
@@ -156,11 +167,11 @@ export function SearchFiltersPanel({
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
-      <div>
-        <h4 className="mb-2 text-sm font-semibold">Minimum Rating</h4>
-        <div className="space-y-1.5">
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Minimum Rating</legend>
+        <div className="space-y-1.5" role="radiogroup" aria-label="Minimum rating">
           {[4, 3, 2].map((rating) => {
             const selected = searchParams.rating === String(rating)
 
@@ -193,10 +204,10 @@ export function SearchFiltersPanel({
             )
           })}
         </div>
-      </div>
+      </fieldset>
 
-      <div>
-        <h4 className="mb-2 text-sm font-semibold">Availability</h4>
+      <fieldset>
+        <legend className="mb-2 text-sm font-semibold">Availability</legend>
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
@@ -207,7 +218,7 @@ export function SearchFiltersPanel({
           />
           <span className="text-sm">In Stock Only</span>
         </label>
-      </div>
+      </fieldset>
     </div>
   )
 }
