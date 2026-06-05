@@ -1,0 +1,60 @@
+{
+  "generated_at_local": "2026-06-05",
+  "latest_commit": "a8a3be0",
+  "area_file_counts": {
+    "src": 233,
+    "scripts": 31,
+    "tests": 73,
+    "docs": 21,
+    "prisma": 6,
+    "public_assets": 99,
+    "public_uploads_aggregate": 11,
+    "audit_reports": 650
+  },
+  "route_counts": {
+    "app_pages": 55,
+    "api_route_files": 38,
+    "dynamic_pages": 12,
+    "inactive_deals_dir_files": 0,
+    "inactive_flash_sales_route_files": 0
+  },
+  "asset_counts": {
+    "icons": 49,
+    "categories": 8,
+    "branding": 8,
+    "payments": 5,
+    "banners": 2,
+    "product_assets": 25
+  },
+  "catalog_counts": {
+    "seed_categories": 20,
+    "seed_brands": 9,
+    "seed_products": 21,
+    "variant_sizes": 5,
+    "product_catalog_physical_images": 21,
+    "catalog_media_map_entries": 22
+  },
+  "upload_inventory_aggregate_only": {
+    "files": 11,
+    "extensions": {
+      "jpg": 8,
+      "webp": 3
+    },
+    "top_buckets": {
+      "products": 10,
+      "admin": 1
+    }
+  },
+  "risk_markers": {
+    "todo_fixme_matches": 0,
+    "debugger_matches": 0,
+    "only_test_matches": 0,
+    "console_matches_total": 113,
+    "src_console_matches": 3
+  },
+  "review_candidates": [
+    "24 scripts are not referenced by package scripts and should be treated as manual/one-off until reviewed.",
+    "Catalog media map has one more entry than seeded products and should be reviewed before future media work.",
+    "Inactive empty deals/flash-sales directories remain with no active route files."
+  ]
+}

@@ -17,6 +17,7 @@ import {
   hasFacetedCategoryParams,
   noIndexFollowRobots,
   normalizeSiteUrl,
+  serializeJsonLd,
   toAbsoluteUrl,
 } from '@/backend/seo'
 
@@ -180,6 +181,24 @@ describe('technical SEO policy', () => {
     assert.equal(breadcrumb.itemListElement[0].item, 'https://boilabin.com/category/electronics')
     assert.equal(itemList.itemListElement[0].item.url, 'https://boilabin.com/products/test-phone')
     assert.equal(itemList.itemListElement[0].item.image, 'https://boilabin.com/uploads/test-phone.webp')
+  })
+
+  it('escapes JSON-LD script-breaking characters before rendering', () => {
+    const serialized = serializeJsonLd({
+      name: '</script><img src=x onerror=alert(1)>',
+      description: 'Ampersand & line\u2028separator\u2029test',
+    })
+
+    assert.equal(serialized.includes('</script'), false)
+    assert.equal(serialized.includes('<'), false)
+    assert.equal(serialized.includes('>'), false)
+    assert.equal(serialized.includes('&'), false)
+    assert.equal(serialized.includes('\u2028'), false)
+    assert.equal(serialized.includes('\u2029'), false)
+    assert.match(serialized, /\\u003c\/script\\u003e/)
+    assert.match(serialized, /\\u0026/)
+    assert.match(serialized, /\\u2028/)
+    assert.match(serialized, /\\u2029/)
   })
 
   it('excludes utility and private routes from static sitemap entries', () => {

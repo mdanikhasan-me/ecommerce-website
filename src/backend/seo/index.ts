@@ -43,4 +43,4 @@ export {
   generateItemListJsonLd,
 } from './structured-data'
 
-export { JsonLd } from './JsonLd'
+export { JsonLd, serializeJsonLd } from './JsonLd'

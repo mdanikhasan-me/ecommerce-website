@@ -1,0 +1,142 @@
+[
+  {
+    "id": "risk-worktree-old-zip",
+    "source_steps": [],
+    "category": "worktree hygiene",
+    "severity": "low",
+    "status": "closed",
+    "evidence": "Stale Step 289 zip artifact was initially present but absent when exact cleanup ran.",
+    "recommended_action": "Continue avoiding compressed audit artifacts unless explicitly reviewed.",
+    "step291_fixed": true
+  },
+  {
+    "id": "risk-json-ld-script-breakout",
+    "source_steps": [],
+    "category": "seo/security",
+    "severity": "medium",
+    "status": "closed",
+    "evidence": "JsonLd previously inserted raw JSON.stringify output into script text.",
+    "recommended_action": "Step 291 added escaping and regression coverage.",
+    "step291_fixed": true
+  },
+  {
+    "id": "risk-owner-review-product-media",
+    "source_steps": [],
+    "category": "media/business assets",
+    "severity": "medium",
+    "status": "blocked-owner-approval",
+    "evidence": "14 localized product media items still need owner review; Toys shares Gaming pixels.",
+    "recommended_action": "Owner-approved media replacement/review step.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-remaining-remote-brand-promo-media",
+    "source_steps": [],
+    "category": "media/licensing",
+    "severity": "medium",
+    "status": "blocked-owner-approval",
+    "evidence": "Brand placeholder and Sony/promotional remote references remain outside Step 290 product-catalog scope.",
+    "recommended_action": "Localize only with licensed/approved owner assets.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-mediaasset-ledger-schema",
+    "source_steps": [],
+    "category": "media lifecycle/schema",
+    "severity": "high",
+    "status": "blocked-schema-migration",
+    "evidence": "No MediaAsset or MediaDeletionLedger models exist.",
+    "recommended_action": "Owner-approved additive schema/migration preflight.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-product-lifecycle-schema",
+    "source_steps": [],
+    "category": "catalog/lifecycle",
+    "severity": "high",
+    "status": "blocked-schema-migration",
+    "evidence": "Product lifecycle remains legacy isActive-based.",
+    "recommended_action": "Dedicated additive ProductStatus/timestamp migration plan.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-production-media-storage",
+    "source_steps": [],
+    "category": "provider/storage",
+    "severity": "high",
+    "status": "blocked-provider-setup",
+    "evidence": "Runtime uploads remain local filesystem; object storage/CDN/backup policy undecided.",
+    "recommended_action": "Choose storage/CDN/backup provider and deletion policy.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-authenticated-admin-qa",
+    "source_steps": [],
+    "category": "admin/auth QA",
+    "severity": "high",
+    "status": "blocked-private-credential",
+    "evidence": "Full authenticated admin browser CRUD/media QA needs secure private admin session.",
+    "recommended_action": "Approve a non-secret session/credential handoff.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-hosting-staging-production",
+    "source_steps": [],
+    "category": "deployment",
+    "severity": "high",
+    "status": "blocked-production-hosting",
+    "evidence": "Hosting provider, staging URL, production DNS, secrets, hosted DB, and admin handoff are unset.",
+    "recommended_action": "Pick provider and run staging first.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-payment-tracking-seller",
+    "source_steps": [],
+    "category": "payment/tracking/seller",
+    "severity": "high",
+    "status": "blocked-provider-setup",
+    "evidence": "Online payments/tracking/seller marketplace are disabled/placeholders.",
+    "recommended_action": "Dedicated provider/security design before enabling.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-launch-policy-legal-copy",
+    "source_steps": [],
+    "category": "legal/business policy",
+    "severity": "medium",
+    "status": "blocked-legal-business-policy",
+    "evidence": "Return/shipping/support/privacy/analytics/legal wording needs owner/legal approval.",
+    "recommended_action": "Owner/legal review before launch.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-deferred-uiux-surfaces",
+    "source_steps": [],
+    "category": "uiux",
+    "severity": "medium",
+    "status": "deferred-uiux",
+    "evidence": "Broad redesign has design-system and overlay/focus debt.",
+    "recommended_action": "Start bounded ProductCard/listing or design-system foundation step.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-search-external-verification",
+    "source_steps": [],
+    "category": "seo/search",
+    "severity": "medium",
+    "status": "production-only",
+    "evidence": "Search Console/Bing/rich-result/social/CWV checks require hosted URL/account access.",
+    "recommended_action": "Run after staging/production is hosted.",
+    "step291_fixed": false
+  },
+  {
+    "id": "risk-csp-rate-limit-monitoring",
+    "source_steps": [],
+    "category": "security/ops",
+    "severity": "high",
+    "status": "blocked-provider-setup",
+    "evidence": "CSP enforcement, distributed rate limiting, and durable monitoring/logging are provider-backed future work.",
+    "recommended_action": "Choose Redis/KV/logging provider before implementation.",
+    "step291_fixed": false
+  }
+]

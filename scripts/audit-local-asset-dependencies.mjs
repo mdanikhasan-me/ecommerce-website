@@ -277,6 +277,15 @@ function increment(summary, key, by = 1) {
   summary[key] = (summary[key] ?? 0) + by
 }
 
+async function statIfPresent(filePath) {
+  try {
+    return await fs.stat(filePath)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throw error
+  }
+}
+
 async function collectPublicInventory(root) {
   const inventory = {}
 
@@ -298,7 +307,8 @@ async function collectPublicInventory(root) {
     summary.exists = true
     const files = await walkFiles(absoluteRoot)
     for (const filePath of files) {
-      const stats = await fs.stat(filePath)
+      const stats = await statIfPresent(filePath)
+      if (!stats) continue
       const extension = path.extname(filePath).toLowerCase() || '[none]'
       summary.fileCount += 1
       summary.totalBytes += stats.size
@@ -343,7 +353,8 @@ async function collectProductSourceAssetInventory(root) {
   const files = await walkFiles(absoluteRoot)
 
   for (const filePath of files) {
-    const stats = await fs.stat(filePath)
+    const stats = await statIfPresent(filePath)
+    if (!stats) continue
     const extension = path.extname(filePath).toLowerCase() || '[none]'
     const isCatalogFile = filePath.startsWith(`${catalogRoot}${path.sep}`)
     const relative = isCatalogFile ? normalizeRelativePath(path.relative(catalogRoot, filePath)) : ''

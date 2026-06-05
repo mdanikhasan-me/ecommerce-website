@@ -1,0 +1,58 @@
+{
+  "scan_scope": "audit-reports/**/*.md",
+  "scan_date_local": "2026-06-05",
+  "total_md": 342,
+  "root_md": 342,
+  "nested_md": 0,
+  "numbered_md": 342,
+  "unnumbered_md": 0,
+  "step_min": 0,
+  "step_max": 291,
+  "unique_step_count": 284,
+  "present_step_ranges": [
+    "0-2",
+    "6-67",
+    "69-73",
+    "75-76",
+    "78",
+    "80-82",
+    "84-291"
+  ],
+  "missing_steps": [
+    3,
+    4,
+    5,
+    68,
+    74,
+    77,
+    79,
+    83
+  ],
+  "prompt_md_count": 68,
+  "report_md_count": 274,
+  "latest_completed_report_path": "audit-reports/290_MEDIA_FILESYSTEM_OWNERSHIP_ICON_RECONCILIATION.md",
+  "latest_prior_prompt_path": "audit-reports/291_NEXT_PROMPT_DRAFT.md",
+  "duplicate_report_step_candidates": [
+    91,
+    95
+  ],
+  "prompt_only_steps": [
+    158,
+    168,
+    178,
+    186,
+    201,
+    218,
+    238,
+    242,
+    246,
+    249,
+    252,
+    254,
+    257,
+    291
+  ],
+  "notes": [
+    "Step 291 creates this closure package and Step 292 prompt draft."
+  ]
+}
