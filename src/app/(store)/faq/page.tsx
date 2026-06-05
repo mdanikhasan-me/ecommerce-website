@@ -15,7 +15,7 @@ const FAQS: FAQSection[] = [
       { q: 'How long does delivery take?', a: 'Delivery timing depends on the order address, item availability, holidays, and fulfillment capacity. Review the shipping page and checkout details before placing an order.' },
       { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 60.' },
       { q: 'Can I track my order?', a: 'Signed-in customers can check order status from My Account and Orders. Tracking details appear there when they are available.' },
-      { q: 'Can I change or cancel my order?', a: 'Orders can be modified or cancelled within 1 hour of placement. After that, contact our support team as soon as possible.' },
+      { q: 'Can I change or cancel my order?', a: 'Contact support as soon as possible. Available changes depend on the current order status and fulfillment progress.' },
     ],
   },
   {

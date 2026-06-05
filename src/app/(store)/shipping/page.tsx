@@ -10,8 +10,8 @@ export const metadata: Metadata = generatePageMetadata(
 )
 
 const ZONES = [
-  { zone: 'Bangladesh', fee: `Tk ${siteConfig.shipping.baseFee}`, time: '1 to 5 days' },
-  { zone: `Orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}`, fee: 'Free', time: '1 to 5 days' },
+  { zone: 'Bangladesh', fee: `Tk ${siteConfig.shipping.baseFee}`, time: 'Varies by address' },
+  { zone: `Orders over Tk ${siteConfig.shipping.freeShippingMin.toLocaleString('en-BD')}`, fee: 'Free', time: 'Varies by address' },
 ]
 
 export default function ShippingPage() {
@@ -47,7 +47,7 @@ export default function ShippingPage() {
               <tr className="border-b border-border bg-secondary/50">
                 <th className="px-5 py-3 text-left font-semibold">Zone</th>
                 <th className="px-5 py-3 text-left font-semibold">Delivery Fee</th>
-                <th className="px-5 py-3 text-left font-semibold">Estimated Time</th>
+                <th className="px-5 py-3 text-left font-semibold">Timing Note</th>
               </tr>
             </thead>
             <tbody>

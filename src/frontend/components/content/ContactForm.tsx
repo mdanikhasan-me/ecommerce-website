@@ -29,7 +29,7 @@ export function ContactForm() {
 
       if (!response.ok) throw new Error(data.error || 'Could not send message')
 
-      toast.success("Message sent! We'll reply within 24 hours.")
+      toast.success("Message sent! We'll review it and follow up.")
       setForm(INITIAL_FORM)
     } catch (error) {
       toast.error(getErrorMessage(error))
@@ -57,9 +57,9 @@ export function ContactForm() {
         />
 
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
-          <p className="mb-1 text-sm font-semibold">Quick Response</p>
+          <p className="mb-1 text-sm font-semibold">Support notes</p>
           <p className="text-sm text-muted-foreground">
-            Most queries are answered within 2 hours during business hours. For urgent order issues, call us directly.
+            For urgent order issues, call us directly during business hours or send the form with your order details.
           </p>
         </div>
       </div>

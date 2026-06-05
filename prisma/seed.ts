@@ -460,7 +460,7 @@ async function main() {
       },
       {
         title: 'Galaxy S24 Ultra',
-        subtitle: 'Galaxy AI is here. Experience the future.',
+        subtitle: 'Galaxy AI features with local catalog details.',
         imageUrl: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
         linkUrl: '/products/samsung-galaxy-s24-ultra-256gb',
         position: 'hero',
@@ -469,7 +469,7 @@ async function main() {
       },
       {
         title: 'Sony WH-1000XM5',
-        subtitle: 'Silence the world. Hear what matters.',
+        subtitle: 'Noise cancelling headphones with product details.',
         imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=1600&auto=format',
         linkUrl: '/products/sony-wh-1000xm5',
         position: 'hero',

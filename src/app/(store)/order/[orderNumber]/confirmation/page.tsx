@@ -124,8 +124,8 @@ export default async function OrderConfirmationPage({ params }: Props) {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Estimated</span>
-                  <span className="font-medium">1 to 3 business days</span>
+                  <span className="text-muted-foreground">Delivery</span>
+                  <span className="font-medium">Varies by address</span>
                 </div>
               </div>
             </div>

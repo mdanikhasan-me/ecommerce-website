@@ -35,7 +35,7 @@ export const SEO = {
     'online shop dhaka',
     'free delivery bangladesh',
     'cash on delivery bd',
-    'bkash payment online shopping',
+    'bangladesh ecommerce payment options',
   ],
 
   organization: {

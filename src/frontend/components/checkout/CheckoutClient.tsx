@@ -388,7 +388,7 @@ export function CheckoutClient() {
 
               <div className="mt-4 p-3 bg-green-50 rounded-xl text-green-700 text-xs text-center font-medium">
                 <Truck className="h-4 w-4 inline mr-1.5" />
-                Estimated delivery: 1 to 3 business days
+                Delivery timing depends on address and availability
               </div>
             </div>
           </div>
