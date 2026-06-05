@@ -1,0 +1,163 @@
+﻿{
+  "mode": "start",
+  "baseUrl": "http://127.0.0.1:3130",
+  "ok": true,
+  "results": [
+    {
+      "label": "home",
+      "path": "/",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "category electronics",
+      "path": "/category/electronics",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "product detail",
+      "path": "/products/xiaomi-redmi-note-13-pro-256gb",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "cart",
+      "path": "/cart",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "checkout auth boundary",
+      "path": "/checkout",
+      "method": "GET",
+      "status": 307,
+      "ok": true,
+      "rawLeak": false,
+      "location": "/auth/login?callbackUrl=/checkout&reason=checkout",
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "track order",
+      "path": "/track-order",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "admin auth boundary",
+      "path": "/admin/dashboard",
+      "method": "GET",
+      "status": 307,
+      "ok": true,
+      "rawLeak": false,
+      "location": "http://localhost:3130/auth/login?callbackUrl=%2Fadmin%2Fdashboard",
+      "contentType": "",
+      "bodySample": ""
+    },
+    {
+      "label": "products API sanitized params",
+      "path": "/api/products?page=bad&limit=100000",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "application/json",
+      "bodySample": ""
+    },
+    {
+      "label": "product view malformed id",
+      "path": "/api/products/bad%24id/view",
+      "method": "POST",
+      "status": 404,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "application/json",
+      "bodySample": ""
+    },
+    {
+      "label": "return request unauthenticated",
+      "path": "/api/returns",
+      "method": "POST",
+      "status": 401,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "application/json",
+      "bodySample": ""
+    },
+    {
+      "label": "removed storefront route",
+      "path": "/deals",
+      "method": "GET",
+      "status": 404,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "removed admin API route",
+      "path": "/api/admin/flash-sales",
+      "method": "GET",
+      "status": 404,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "bodySample": ""
+    },
+    {
+      "label": "sitemap",
+      "path": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "application/xml",
+      "bodySample": ""
+    },
+    {
+      "label": "robots",
+      "path": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "ok": true,
+      "rawLeak": false,
+      "location": null,
+      "contentType": "text/plain",
+      "bodySample": ""
+    }
+  ],
+  "logs": []
+}
+

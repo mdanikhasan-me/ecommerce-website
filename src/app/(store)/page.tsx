@@ -130,49 +130,54 @@ export default async function HomePage() {
 
       <HeroBanner banners={banners} />
 
-      <section className="container-site py-5 sm:py-8">
-        <FeaturedCategories categories={categories} />
-      </section>
+      <div className="storefront-home-stack">
+        <section className="container-site pt-5 sm:pt-8">
+          <FeaturedCategories categories={categories} />
+        </section>
 
-      {featured.length > 0 && (
-        <section className="container-site py-8 sm:py-10">
-          <ProductGrid
-            title="Featured Products"
-            subtitle="Selected listings from the current catalog"
-            products={featured}
-            viewAllHref="/search?featured=true"
+        {featured.length > 0 && (
+          <section className="container-site py-5 sm:py-7 lg:py-8">
+            <ProductGrid
+              eyebrow="Featured catalog"
+              title="Featured Products"
+              subtitle="Selected listings from the current catalog"
+              products={featured}
+              viewAllHref="/search?featured=true"
+            />
+          </section>
+        )}
+
+        <section className="w-full py-4 sm:py-6">
+          <PromoSection
+            newArrivalProducts={newArrivals}
+            newArrivalRotatorProducts={newArrivalRotatorProducts}
           />
         </section>
-      )}
 
-      <section className="w-full py-4 sm:py-6">
-        <PromoSection
-          newArrivalProducts={newArrivals}
-          newArrivalRotatorProducts={newArrivalRotatorProducts}
-        />
-      </section>
+        {bestSellers.length > 0 && (
+          <section className="container-site py-5 sm:py-7 lg:py-8">
+            <ProductGrid
+              eyebrow="Popular picks"
+              title="Best Sellers"
+              subtitle="Popular listings from the current catalog"
+              products={bestSellers}
+              viewAllHref="/search?sort=popular"
+            />
+          </section>
+        )}
 
-      {bestSellers.length > 0 && (
-        <section className="container-site py-8 sm:py-10">
-          <ProductGrid
-            title="Best Sellers"
-            subtitle="Popular listings from the current catalog"
-            products={bestSellers}
-            viewAllHref="/search?sort=popular"
-          />
-        </section>
-      )}
-
-      {newArrivals.length > 0 && (
-        <section className="container-site py-8 sm:py-10">
-          <ProductGrid
-            title="New Arrivals"
-            subtitle="Fresh finds, just landed"
-            products={newArrivals}
-            viewAllHref="/new-arrivals"
-          />
-        </section>
-      )}
+        {newArrivals.length > 0 && (
+          <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:pt-8">
+            <ProductGrid
+              eyebrow="Recently added"
+              title="New Arrivals"
+              subtitle="Fresh finds, just landed"
+              products={newArrivals}
+              viewAllHref="/new-arrivals"
+            />
+          </section>
+        )}
+      </div>
     </div>
   )
 }
