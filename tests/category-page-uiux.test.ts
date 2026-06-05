@@ -42,10 +42,21 @@ describe('category page UI/UX guardrails', () => {
     assert.match(source, /category-view-all/)
   })
 
-  it('renders a neutral missing-image placeholder instead of an empty dead image well', () => {
-    assert.match(source, /function EmptyMediaPlaceholder/)
-    assert.match(source, /image placeholder/)
-    assert.doesNotMatch(source, /data:image|placeholder\.jpg|placeholder\.png/)
+  it('renders neutral missing-image surfaces without repeated category icons or public placeholder copy', () => {
+    const surfaceStart = source.indexOf('function EmptyMediaSurface')
+    const surfaceEnd = source.indexOf('function ViewAllCategoryLink')
+    const surfaceSource = source.slice(surfaceStart, surfaceEnd)
+
+    assert.ok(surfaceStart > -1)
+    assert.ok(surfaceEnd > surfaceStart)
+    assert.doesNotMatch(surfaceSource, /LocalIcon|iconName|coming soon|admin upload|placeholder/i)
+    assert.doesNotMatch(source, /data:image|placeholder\.(?:jpg|jpeg|png|webp)|coming soon|admin upload/i)
+  })
+
+  it('keeps category page typography within the storefront page scale', () => {
+    assert.match(source, /text-\[1\.85rem\]/)
+    assert.match(source, /sm:text-3xl/)
+    assert.doesNotMatch(source, /font-black|font-extrabold|text-\[(?:3|4|5)\.[0-9]+rem\]/)
   })
 
   it('keeps required category UI icon files local and source-controlled', () => {

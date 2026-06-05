@@ -1,0 +1,1812 @@
+{
+  "createdAt": "2026-06-05T18:55:30.766Z",
+  "serverPort": 3155,
+  "cdpPort": 9355,
+  "evidence": [
+    {
+      "kind": "category",
+      "viewport": "desktop-1920x1080",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/desktop-1920x1080-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "documentWidth": 1910,
+        "clientWidth": 1910,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "36px",
+          "fontWeight": "600",
+          "lineHeight": "36px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "desktop-1536x864",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/desktop-1536x864-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 1536,
+          "height": 864
+        },
+        "documentWidth": 1526,
+        "clientWidth": 1526,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "36px",
+          "fontWeight": "600",
+          "lineHeight": "36px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "desktop-1366x768",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/desktop-1366x768-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "documentWidth": 1356,
+        "clientWidth": 1356,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "36px",
+          "fontWeight": "600",
+          "lineHeight": "36px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "tablet-1024x768",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/tablet-1024x768-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "documentWidth": 1014,
+        "clientWidth": 1014,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "36px",
+          "fontWeight": "600",
+          "lineHeight": "36px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "tablet-820x1180",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/tablet-820x1180-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 820,
+          "height": 1180
+        },
+        "documentWidth": 810,
+        "clientWidth": 810,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "30px",
+          "fontWeight": "600",
+          "lineHeight": "36px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "mobile-430x932",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/mobile-430x932-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "documentWidth": 430,
+        "clientWidth": 430,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "24.8px",
+          "fontWeight": "600",
+          "lineHeight": "31px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "mobile-390x844",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/mobile-390x844-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "documentWidth": 390,
+        "clientWidth": 390,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "24.8px",
+          "fontWeight": "600",
+          "lineHeight": "31px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "category",
+      "viewport": "mobile-375x812",
+      "route": "/category",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/mobile-375x812-default.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/category",
+        "title": "Boilabin Categories, Boilabin",
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "documentWidth": 375,
+        "clientWidth": 375,
+        "horizontalOverflow": false,
+        "hasAllCategories": true,
+        "hasViewAllElectronics": true,
+        "viewAllAfterSubcategories": true,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": true,
+        "h1": {
+          "text": "All Categories",
+          "fontSize": "29.6px",
+          "fontWeight": "600",
+          "lineHeight": "37px"
+        },
+        "categoryPanelHeading": {
+          "text": "Electronics",
+          "fontSize": "24.8px",
+          "fontWeight": "600",
+          "lineHeight": "31px"
+        },
+        "shopHeading": {
+          "text": "Shop by subcategory",
+          "fontSize": "14px",
+          "fontWeight": "600",
+          "lineHeight": "20px"
+        },
+        "homepageSectionTitle": null,
+        "emptyMediaSurfaceCount": 16,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 88,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/categories/view-all.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [
+          "/assets/icons/ui/categories/electronics.svg",
+          "/assets/icons/ui/categories/fashion.svg",
+          "/assets/icons/ui/categories/home-appliances.svg",
+          "/assets/icons/ui/categories/beauty-health.svg",
+          "/assets/icons/ui/categories/sports-fitness.svg",
+          "/assets/icons/ui/categories/books-stationery.svg",
+          "/assets/icons/ui/categories/gaming.svg",
+          "/assets/icons/ui/categories/toys-collectibles.svg",
+          "/assets/icons/ui/categories/view-all.svg"
+        ],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/electronics.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/fashion.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/home-appliances.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/beauty-health.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/sports-fitness.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/books-stationery.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/gaming.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/toys-collectibles.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/categories/view-all.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    },
+    {
+      "kind": "homepage-reference",
+      "viewport": "homepage-1536x864",
+      "route": "/",
+      "file": "audit-reports/302-category-page-typography-icon-correction/screenshots/homepage-1536x864-typography-reference.png",
+      "checks": {
+        "url": "http://127.0.0.1:3155/",
+        "title": "Boilabin, Online Shopping in Bangladesh, Boilabin",
+        "viewport": {
+          "width": 1536,
+          "height": 864
+        },
+        "documentWidth": 1526,
+        "clientWidth": 1526,
+        "horizontalOverflow": false,
+        "hasAllCategories": false,
+        "hasViewAllElectronics": false,
+        "viewAllAfterSubcategories": false,
+        "removedBenefitStripAbsent": true,
+        "publicPlaceholderTextAbsent": true,
+        "fakeImagesAbsent": false,
+        "h1": null,
+        "categoryPanelHeading": null,
+        "shopHeading": null,
+        "homepageSectionTitle": {
+          "text": "Shop by category",
+          "fontSize": "36.96px",
+          "fontWeight": "700",
+          "lineHeight": "35.4816px"
+        },
+        "emptyMediaSurfaceCount": 0,
+        "emptyMediaIconsInside": 0,
+        "localIconCount": 234,
+        "localIconUrls": [
+          "/assets/icons/ui/zap.svg",
+          "/assets/icons/ui/search.svg",
+          "/assets/icons/ui/compare.svg",
+          "/assets/icons/ui/cart.svg",
+          "/assets/icons/ui/user.svg",
+          "/assets/icons/ui/menu.svg",
+          "/assets/icons/ui/chevron-down.svg",
+          "/assets/icons/ui/chevron-right.svg",
+          "/assets/icons/ui/arrow-right.svg",
+          "/assets/icons/ui/heart.svg",
+          "/assets/icons/ui/star.svg",
+          "/assets/icons/ui/mail.svg",
+          "/assets/icons/ui/phone.svg",
+          "/assets/icons/ui/location.svg",
+          "/assets/icons/social/facebook.svg",
+          "/assets/icons/social/instagram.svg",
+          "/assets/icons/social/youtube.svg"
+        ],
+        "categoryIconUrls": [],
+        "subcategoryImageSources": [],
+        "iconStatuses": [
+          {
+            "url": "/assets/icons/ui/zap.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/search.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/compare.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/cart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/user.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/menu.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-down.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/chevron-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/arrow-right.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/heart.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/star.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/mail.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/phone.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/ui/location.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/facebook.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/instagram.svg",
+            "ok": true,
+            "status": 200
+          },
+          {
+            "url": "/assets/icons/social/youtube.svg",
+            "ok": true,
+            "status": 200
+          }
+        ],
+        "localIconsOk": true
+      },
+      "logs": []
+    }
+  ],
+  "categoryFailures": [],
+  "homepageReferenceNotes": [
+    "Homepage screenshot is typography comparison evidence; category-page fake-image assertions apply only to /category."
+  ]
+}
