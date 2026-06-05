@@ -1,0 +1,42 @@
+{
+  "step": 279,
+  "title": "Media ownership ledger, deletion ledger, and recycle-window policy design",
+  "startingCommit": "fc6da93 chore: add local db-aware media orphan audit mode",
+  "scope": "policy-docs-and-no-db-tests-only",
+  "currentAuditCapability": {
+    "defaultCliNoDb": true,
+    "defaultCliNoDelete": true,
+    "defaultCliAggregateOnly": true,
+    "localReadOnlyFlagExists": true,
+    "localReadOnlyFlagCountOnly": true,
+    "localReadOnlyFlagAggregateOnly": true,
+    "step278ReferencedActive": 6,
+    "step278ReferencedHistoricalEvidence": 0,
+    "step278UnreferencedManagedCandidate": 5,
+    "step278UnverifiedReferenceCheckFailed": 0
+  },
+  "policy": {
+    "unreferencedCandidateSafeToDelete": false,
+    "physicalDeletionRequiresOwnershipMetadata": true,
+    "physicalDeletionRequiresLedger": true,
+    "physicalDeletionRequiresRecycleWindow": true,
+    "deletionLedgerImplemented": false,
+    "recycleWindowImplemented": false,
+    "objectStorageImplemented": false,
+    "minimumHoldDaysBeforePermanentDelete": 30,
+    "manualApprovalRequired": true,
+    "restoreRequiredBeforePermanentDelete": true,
+    "backupRequiredBeforePermanentDelete": true,
+    "providerDeletePolicyRequired": true
+  },
+  "forbiddenInThisStep": {
+    "deletionModeAdded": false,
+    "databaseMutation": false,
+    "prismaSchemaChanged": false,
+    "migrationCreated": false,
+    "runtimeCleanupChanged": false,
+    "providerCleanupAdded": false,
+    "realFilesDeleted": false,
+    "publicAssetsTouched": false
+  }
+}

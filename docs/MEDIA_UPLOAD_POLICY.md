@@ -183,6 +183,122 @@ Physical media deletion should stay conservative:
 
 Product variant image cleanup is not enabled yet. The current reference guard can detect `ProductVariant.image` references, but admin product forms do not currently upload variant-specific images, and runtime product cleanup candidates are still based on `ProductImage.url`.
 
+## Ownership Metadata Required Before Deletion
+
+An orphan audit result is not ownership proof. Before Boilabin can permanently delete a file, the media record or future storage metadata must prove at least:
+
+- a stable `mediaId`;
+- a stable `storageKey`;
+- the public URL or a sanitized public URL fingerprint;
+- `ownerType`, `ownerId`, and `ownerField`;
+- the media `purpose`;
+- the `sourceSystem` that created it;
+- the `uploadedByUserId`, when applicable;
+- creation and replacement timestamps;
+- the last reference-audit timestamp;
+- checksum, byte size, MIME type, width, and height;
+- storage provider, bucket, and region;
+- whether the file is a source asset;
+- whether the file is a managed upload;
+- whether the file is historical evidence;
+- the current media status.
+
+Physical deletion must be refused when ownership metadata is missing or ambiguous. Current local upload prefixes are useful audit hints, not enough proof for production cleanup.
+
+## Deletion Ledger Policy
+
+A future deletion ledger must exist before any provider-backed or filesystem-backed delete job is enabled. The ledger should record:
+
+- `ledgerId`;
+- `mediaId`;
+- `storageKey`;
+- public URL hash or sanitized URL fingerprint;
+- detector name and detection run id;
+- reference-audit snapshot;
+- active reference count;
+- historical evidence reference count;
+- ownership status;
+- candidate reason;
+- refusal reason;
+- requested, approved, deleted, and restored actors;
+- requested, quarantined, eligible, deleted, and restored timestamps;
+- provider delete result;
+- sanitized error code only.
+
+Recommended ledger statuses:
+
+- `observed`;
+- `candidate`;
+- `refused`;
+- `quarantined`;
+- `pending_approval`;
+- `approved`;
+- `deleted`;
+- `delete_failed`;
+- `restored`;
+- `expired`;
+- `cancelled`.
+
+The ledger must not store raw tokens, private paths, full DB URLs, customer/order PII, raw provider errors, or matched record payloads.
+
+## Recycle And Restore Window
+
+Permanent deletion should require a recycle window. The minimum future hold period should be at least 30 days unless a stricter production policy is approved.
+
+During the recycle window:
+
+- the file is marked in the ledger and either quarantined by storage key or retained in place with deletion blocked;
+- manual approval is required before permanent delete;
+- restore must be possible before the window expires;
+- backup/restore coverage must be confirmed;
+- provider lifecycle rules must not erase files before the ledger window;
+- CDN/cache invalidation must be planned separately from deletion;
+- if the file becomes referenced again, deletion is cancelled or the file is restored;
+- if a later reference audit finds active or historical references, deletion is refused;
+- if provider deletion fails, the ledger moves to `delete_failed` and preserves the evidence.
+
+Current status: recycle-window behavior is policy only. No quarantine, restore, or physical deletion workflow is implemented.
+
+## Hard Refusal Rules
+
+Future deletion must refuse when any of these are true:
+
+- the path is under `/assets/*` or `/images/*`;
+- the path is remote or provider-hosted without an owned storage key;
+- the path is outside known managed roots;
+- ownership metadata is missing;
+- the reference check is incomplete;
+- any active reference exists;
+- any historical evidence reference exists;
+- the file belongs to order, review, return, user, support, or other historical evidence;
+- the file is linked to an archived product/category without an approved retention decision;
+- the file is a tracked repository or demo upload-like file without ownership proof;
+- the DB/file audit result is stale;
+- provider delete policy is not configured;
+- backup/restore policy is missing;
+- deletion ledger is missing;
+- the recycle window is not satisfied.
+
+## Product Variant Media Policy
+
+`ProductVariant.image` currently blocks deletion as a reference. It is not yet a cleanup candidate.
+
+Future variant media should become separate managed media records only after ownership metadata exists. A variant image may also be a shared product gallery image, so cleanup must avoid deleting a gallery image while a variant still references it. Variant cleanup should wait for media ownership metadata, ledger support, and dedicated route/UI tests.
+
+## Provider And Object Storage Requirements
+
+Future production storage cleanup requires:
+
+- stable storage keys that do not depend on mutable category folders;
+- object storage and CDN design;
+- provider delete API behavior and error mapping;
+- bucket lifecycle policy;
+- backup and restore policy;
+- deletion ledger;
+- recycle window;
+- audit job with count-only reference checks;
+- no use of public URL inference as ownership proof.
+
 ## Alt Text Requirement
 
 Product images should have meaningful alt text. Category and banner images should have text alternatives based on visible content, not generic "image" labels.

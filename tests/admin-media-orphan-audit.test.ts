@@ -384,6 +384,8 @@ describe('admin media orphan dry-run inventory', () => {
       assert.equal(inventory.classification.matchedRecordsIncluded, false)
       assert.equal(inventory.classification.deletionPerformed, false)
       assert.equal(calls.length, 4)
+      assert.match(inventory.note, /does not prove orphan status/)
+      assert.doesNotMatch(formatted, /safeToDelete|safeDeletion|safe-to-delete|safe to delete|deletable/i)
 
       for (const privateText of [
         'active-reference-private',

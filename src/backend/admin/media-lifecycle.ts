@@ -21,6 +21,72 @@ export const MANAGED_MEDIA_STORAGE_POLICY = {
   objectStorageImplemented: false,
   deletionLedgerImplemented: false,
   recycleWindowImplemented: false,
+  unreferencedCandidateSafeToDelete: false,
+  physicalDeletionRequiresOwnershipMetadata: true,
+  physicalDeletionRequiresLedger: true,
+  physicalDeletionRequiresRecycleWindow: true,
+} as const
+
+export const MEDIA_OWNERSHIP_REQUIRED_FOR_PHYSICAL_DELETE = [
+  'mediaId',
+  'storageKey',
+  'ownerType',
+  'ownerId',
+  'ownerField',
+  'purpose',
+  'sourceSystem',
+  'storageProvider',
+  'isManagedUpload',
+  'isSourceAsset',
+  'isHistoricalEvidence',
+  'status',
+  'createdAt',
+  'lastReferenceAuditAt',
+  'byteSize',
+  'mimeType',
+  'checksum',
+] as const
+
+export const MEDIA_DELETION_LEDGER_STATUSES = [
+  'observed',
+  'candidate',
+  'refused',
+  'quarantined',
+  'pending_approval',
+  'approved',
+  'deleted',
+  'delete_failed',
+  'restored',
+  'expired',
+  'cancelled',
+] as const
+
+export const MEDIA_DELETION_HARD_REFUSAL_REASONS = [
+  'source_asset_protected',
+  'outside_managed_root',
+  'remote_without_owned_storage_key',
+  'ownership_metadata_missing',
+  'reference_check_incomplete',
+  'active_reference_exists',
+  'historical_evidence_reference_exists',
+  'tracked_upload_like_file_without_ownership',
+  'audit_result_stale',
+  'provider_delete_policy_missing',
+  'backup_restore_policy_missing',
+  'deletion_ledger_missing',
+  'recycle_window_not_satisfied',
+] as const
+
+export const MEDIA_RECYCLE_WINDOW_POLICY = {
+  implemented: false,
+  minimumHoldDaysBeforePermanentDelete: 30,
+  manualApprovalRequired: true,
+  restoreMustBePossibleBeforePermanentDelete: true,
+  backupRequiredBeforePermanentDelete: true,
+  providerDeletePolicyRequired: true,
+  cdnInvalidationRequiredAfterDelete: true,
+  referencedAgainAction: 'cancel_or_restore_before_delete',
+  deleteFailureAction: 'mark_delete_failed_and_preserve_ledger',
 } as const
 
 export type ManagedMediaStorageNamespace = 'products' | 'admin'
