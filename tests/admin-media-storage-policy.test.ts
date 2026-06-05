@@ -4,10 +4,19 @@ import { describe, it } from 'node:test'
 
 import {
   MANAGED_MEDIA_STORAGE_POLICY,
+  MEDIA_ASSET_SCHEMA_PLAN_FIELDS,
+  MEDIA_ASSET_STATUS_PLAN,
+  MEDIA_BACKFILL_PHASE_PLAN,
   MEDIA_DELETION_HARD_REFUSAL_REASONS,
   MEDIA_DELETION_LEDGER_STATUSES,
+  MEDIA_DELETION_LEDGER_SCHEMA_PLAN_FIELDS,
+  MEDIA_EXISTING_FIELD_MIGRATION_PLAN,
+  MEDIA_MIGRATION_ROLLBACK_PLAN,
   MEDIA_OWNERSHIP_REQUIRED_FOR_PHYSICAL_DELETE,
+  MEDIA_OWNERSHIP_OWNER_TYPES,
   MEDIA_RECYCLE_WINDOW_POLICY,
+  MEDIA_SCHEMA_INDEX_CONSTRAINT_PLAN,
+  MEDIA_SOURCE_SYSTEM_PLAN,
   classifyAdminMediaPath,
   normalizeManagedMediaStorageSegment,
   planManagedMediaStorageKey,
@@ -163,5 +172,165 @@ describe('admin managed media storage policy', () => {
     assert.doesNotMatch(docs, /safe to delete/i)
     assert.doesNotMatch(docs, /provider deletion is implemented/i)
     assert.doesNotMatch(docs, /recycle window is implemented/i)
+  })
+
+  it('pins the future MediaAsset schema-plan fields without editing Prisma schema', () => {
+    assert.deepEqual(
+      MEDIA_ASSET_SCHEMA_PLAN_FIELDS,
+      [
+        'id',
+        'mediaId',
+        'storageKey',
+        'publicUrl',
+        'publicUrlHash',
+        'ownerType',
+        'ownerId',
+        'ownerField',
+        'purpose',
+        'sourceSystem',
+        'uploadedByUserId',
+        'createdAt',
+        'updatedAt',
+        'replacedAt',
+        'lastReferenceAuditAt',
+        'checksum',
+        'byteSize',
+        'mimeType',
+        'width',
+        'height',
+        'storageProvider',
+        'storageBucket',
+        'storageRegion',
+        'storageNamespace',
+        'isSourceAsset',
+        'isManagedUpload',
+        'isHistoricalEvidence',
+        'status',
+        'metadata',
+      ],
+    )
+    assert.deepEqual(MEDIA_OWNERSHIP_OWNER_TYPES, [
+      'user',
+      'seller',
+      'category',
+      'brand',
+      'product',
+      'product_variant',
+      'banner',
+      'system',
+      'unknown',
+    ])
+    assert.deepEqual(MEDIA_SOURCE_SYSTEM_PLAN, [
+      'admin_upload',
+      'product_editor',
+      'seller_upload',
+      'seed',
+      'source_asset',
+      'remote_import',
+      'legacy_url',
+      'unknown',
+    ])
+  })
+
+  it('pins future media status and deletion-ledger schema-plan vocabulary', () => {
+    assert.deepEqual(MEDIA_ASSET_STATUS_PLAN, [
+      'ownership_unverified',
+      'active',
+      'source_asset_protected',
+      'historical_preserve_only',
+      'replaced',
+      'recycle_pending',
+      'deletion_candidate',
+      'deletion_refused',
+      'delete_approved',
+      'deleted',
+      'delete_failed',
+      'restored',
+    ])
+    assert.deepEqual(MEDIA_DELETION_LEDGER_SCHEMA_PLAN_FIELDS, [
+      'id',
+      'ledgerId',
+      'mediaAssetId',
+      'storageKey',
+      'publicUrlHash',
+      'detectedBy',
+      'detectionRunId',
+      'referenceAuditSnapshot',
+      'activeReferenceCount',
+      'historicalEvidenceReferenceCount',
+      'ownershipStatus',
+      'candidateReason',
+      'refusalReason',
+      'status',
+      'requestedBy',
+      'approvedBy',
+      'deletedBy',
+      'restoredBy',
+      'requestedAt',
+      'quarantinedAt',
+      'eligibleForDeletionAt',
+      'deletedAt',
+      'restoredAt',
+      'providerDeleteResult',
+      'sanitizedErrorCode',
+      'createdAt',
+      'updatedAt',
+    ])
+  })
+
+  it('maps current media URL fields to conservative future backfill treatment', () => {
+    assert.deepEqual(
+      MEDIA_EXISTING_FIELD_MIGRATION_PLAN.map((item) => item.field),
+      [
+        'User.image',
+        'Seller.storeLogo',
+        'Seller.storeBanner',
+        'Category.image',
+        'Brand.logo',
+        'Brand.banner',
+        'ProductImage.url',
+        'ProductVariant.image',
+        'OrderItem.imageUrl',
+        'ReturnRequest.images',
+        'Review.images',
+        'Banner.imageUrl',
+        'Banner.mobileImageUrl',
+      ],
+    )
+
+    const productImage = MEDIA_EXISTING_FIELD_MIGRATION_PLAN.find((item) => item.field === 'ProductImage.url')
+    const variantImage = MEDIA_EXISTING_FIELD_MIGRATION_PLAN.find((item) => item.field === 'ProductVariant.image')
+    const historicalFields = MEDIA_EXISTING_FIELD_MIGRATION_PLAN.filter(
+      (item) => item.referenceKind === 'historical-evidence',
+    )
+
+    assert.equal(productImage?.canBackfillOwnership, true)
+    assert.equal(productImage?.canBecomeDeletionCandidate, false)
+    assert.equal(variantImage?.futureTreatment, 'reference-only-until-variant-ownership-designed')
+    assert.equal(variantImage?.canBackfillOwnership, false)
+    assert.equal(historicalFields.every((item) => item.canBecomeDeletionCandidate === false), true)
+    assert.equal(historicalFields.every((item) => item.futureTreatment === 'reference-only-preserve'), true)
+  })
+
+  it('keeps future backfill phases, indexes, and rollback plan migration-readiness only', () => {
+    assert.deepEqual(
+      MEDIA_BACKFILL_PHASE_PLAN.map((phase) => phase.name),
+      [
+        'current-url-fields-and-audits',
+        'future-schema-models-only',
+        'ownership-unverified-backfill',
+        'source-and-historical-protection',
+        'new-upload-mediaasset-writes',
+        'cleanup-ledger-and-recycle-gates',
+        'provider-storage-keys',
+        'approved-deletion-job',
+      ],
+    )
+    assert.match(MEDIA_BACKFILL_PHASE_PLAN[2]?.forbidden ?? '', /Do not mark backfilled rows deletion candidates/)
+    assert.match(MEDIA_BACKFILL_PHASE_PLAN[7]?.forbidden ?? '', /No automatic delete/)
+    assert.ok(MEDIA_SCHEMA_INDEX_CONSTRAINT_PLAN.includes('constraint-source-assets-never-delete-states'))
+    assert.ok(MEDIA_SCHEMA_INDEX_CONSTRAINT_PLAN.includes('constraint-historical-evidence-preserve-only'))
+    assert.ok(MEDIA_MIGRATION_ROLLBACK_PLAN.includes('never-physically-delete-media-during-migration'))
+    assert.ok(MEDIA_MIGRATION_ROLLBACK_PLAN.includes('keep-existing-url-fields-authoritative-during-migration'))
   })
 })

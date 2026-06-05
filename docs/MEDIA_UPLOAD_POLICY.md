@@ -299,6 +299,218 @@ Future production storage cleanup requires:
 - audit job with count-only reference checks;
 - no use of public URL inference as ownership proof.
 
+## Future MediaAsset Schema Plan
+
+Boilabin should eventually add a provider-ready media metadata model in a separate approved migration. A future `MediaAsset` record should describe ownership and storage; it must not replace existing public URL fields until compatibility tests prove old routes and mobile/API clients still work.
+
+Recommended future fields:
+
+- `id`;
+- `mediaId`;
+- `storageKey`;
+- `publicUrl`;
+- `publicUrlHash`;
+- `ownerType`;
+- `ownerId`;
+- `ownerField`;
+- `purpose`;
+- `sourceSystem`;
+- `uploadedByUserId`;
+- `createdAt`;
+- `updatedAt`;
+- `replacedAt`;
+- `lastReferenceAuditAt`;
+- `checksum`;
+- `byteSize`;
+- `mimeType`;
+- `width`;
+- `height`;
+- `storageProvider`;
+- `storageBucket`;
+- `storageRegion`;
+- `storageNamespace`;
+- `isSourceAsset`;
+- `isManagedUpload`;
+- `isHistoricalEvidence`;
+- `status`;
+- `metadata`.
+
+Required before any physical cleanup can be trusted:
+
+- stable `mediaId` and `storageKey`;
+- explicit owner fields: `ownerType`, `ownerId`, `ownerField`, and `purpose`;
+- clear `sourceSystem`, such as admin upload, product editor, seller upload, source asset, seed, remote import, or legacy URL;
+- storage provider and namespace metadata;
+- source/managed/historical flags;
+- checksum, byte size, MIME type, dimensions, and audit timestamps.
+
+The initial migration should treat existing rows conservatively. Existing URLs should stay authoritative during the transition, and backfilled media metadata should begin as `ownership_unverified` unless the upload origin is proven.
+
+Recommended future media statuses:
+
+- `ownership_unverified`;
+- `active`;
+- `source_asset_protected`;
+- `historical_preserve_only`;
+- `replaced`;
+- `recycle_pending`;
+- `deletion_candidate`;
+- `deletion_refused`;
+- `delete_approved`;
+- `deleted`;
+- `delete_failed`;
+- `restored`.
+
+## Future MediaDeletionLedger Schema Plan
+
+A future `MediaDeletionLedger` model should record every candidate, refusal, approval, quarantine, restore, provider delete result, and failure. The ledger should be durable audit history, not a transient log.
+
+Recommended future fields:
+
+- `id`;
+- `ledgerId`;
+- `mediaAssetId`;
+- `storageKey`;
+- `publicUrlHash`;
+- `detectedBy`;
+- `detectionRunId`;
+- `referenceAuditSnapshot`;
+- `activeReferenceCount`;
+- `historicalEvidenceReferenceCount`;
+- `ownershipStatus`;
+- `candidateReason`;
+- `refusalReason`;
+- `status`;
+- `requestedBy`;
+- `approvedBy`;
+- `deletedBy`;
+- `restoredBy`;
+- `requestedAt`;
+- `quarantinedAt`;
+- `eligibleForDeletionAt`;
+- `deletedAt`;
+- `restoredAt`;
+- `providerDeleteResult`;
+- `sanitizedErrorCode`;
+- `createdAt`;
+- `updatedAt`.
+
+Recommended transition shape:
+
+- `observed` after an audit sees a media value;
+- `candidate` only after ownership metadata exists and a count-only reference audit has no active or historical references;
+- `refused` when any hard blocker exists;
+- `quarantined` only when restore is available;
+- `pending_approval` and `approved` only after manual review;
+- `deleted` only after provider or filesystem deletion succeeds;
+- `delete_failed` when cleanup fails;
+- `restored`, `expired`, or `cancelled` when the recycle-window workflow resolves without permanent deletion.
+
+## Existing Media Field Migration Map
+
+Future migration and backfill should classify existing media URL fields as follows:
+
+| Field | Current reference class | Future treatment |
+| --- | --- | --- |
+| `User.image` | historical evidence | reference-only preserve; never cleanup candidate from URL alone |
+| `Seller.storeLogo` | active reference | owner candidate only after seller media policy and provider choice |
+| `Seller.storeBanner` | active reference | owner candidate only after seller media policy and provider choice |
+| `Category.image` | active reference | admin-owned candidate or source-protected, depending on URL class |
+| `Brand.logo` | active reference | admin-owned candidate or source-protected, depending on URL class |
+| `Brand.banner` | active reference | admin-owned candidate or source-protected, depending on URL class |
+| `ProductImage.url` | active reference | primary product owner candidate, still blocked from deletion until ledger/recycle gates exist |
+| `ProductVariant.image` | active reference | reference-only until variant ownership is separately designed |
+| `OrderItem.imageUrl` | historical evidence | preserve-only order evidence |
+| `ReturnRequest.images` | historical evidence | preserve-only return/support evidence |
+| `Review.images` | historical evidence | preserve-only customer/moderation evidence |
+| `Banner.imageUrl` | active reference | admin-owned candidate or source-protected, depending on URL class |
+| `Banner.mobileImageUrl` | active reference | admin-owned candidate or source-protected; may share desktop media |
+
+Backfill must not infer ownership from public URL shape alone. Source assets remain protected, remote URLs remain reference-only unless owned provider keys exist, and managed upload-like values remain ownership-unverified until provenance is proven.
+
+## Product Variant Ownership Plan
+
+`ProductVariant.image` should stay a reference guard field, not a cleanup source. Future variant media may become owned `MediaAsset` records only when uploaded through an approved product editor or seller flow.
+
+Variant-specific cleanup is deferred because:
+
+- a variant can reuse a product gallery image;
+- a variant can have a dedicated image;
+- existing rows do not prove which case applies;
+- deleting a shared gallery image could break product detail, cart, order, or future mobile views.
+
+Before variant cleanup is considered, tests must prove gallery reuse, dedicated variant uploads, order snapshots, product editor updates, and rollback behavior.
+
+## Backfill And Migration Phases
+
+Future phases should be additive and reversible:
+
+1. Phase 0, current URL fields and audits: keep existing fields, default orphan audit, and guarded local read-only aggregate audit. No schema or cleanup change.
+2. Phase 1, schema models only: add `MediaAsset` and `MediaDeletionLedger` in a separately approved migration. No backfill or route changes in the same step.
+3. Phase 2, ownership-unverified backfill: create metadata rows for known managed-root values as unverified. Existing URL fields remain authoritative.
+4. Phase 3, source and historical protection: classify source assets as protected and historical references as preserve-only.
+5. Phase 4, new upload media writes: newly approved upload flows create `MediaAsset` rows while existing URL fields stay compatible.
+6. Phase 5, cleanup ledger and recycle gates: cleanup planning requires ledger rows, approval, recycle window, fresh reference audit, and restore support.
+7. Phase 6, provider storage keys: add provider keys and namespaces after provider, CDN, backup, and restore choices are approved.
+8. Phase 7, approved deletion job: enable permanent cleanup only after owner approval and production smoke tests.
+
+Every phase must define allowed operations, forbidden operations, tests, rollback, and stop conditions. No phase may physically remove media during schema migration or backfill.
+
+## Constraints And Indexes To Consider Later
+
+Future schema work should consider:
+
+- unique `mediaId`;
+- unique `storageKey` where ownership is proven;
+- index on `publicUrlHash`;
+- index on `ownerType`, `ownerId`, and `ownerField`;
+- index on `status`;
+- index on `lastReferenceAuditAt`;
+- index on `eligibleForDeletionAt`;
+- index on `storageProvider`, `storageBucket`, and `storageNamespace`;
+- constraint or code guard preventing source assets from entering delete states;
+- constraint or code guard keeping historical evidence preserve-only;
+- ledger integrity checks requiring either a media asset or a refusal reason.
+
+## Rollback And Test Requirements
+
+Future migration rollback should require:
+
+- local DB backup before schema changes;
+- schema migration before backfill;
+- existing URL fields as the serving source of truth during migration;
+- backfill batch IDs so generated metadata rows can be removed without touching media files;
+- no physical deletion during migration or backfill;
+- storefront, admin, image rendering, and API response smoke tests before and after backfill;
+- rollback path for new `MediaAsset` writes;
+- provider object restore before public URLs are repointed.
+
+DB-backed tests required before implementation:
+
+- migration applies cleanly on local DB;
+- migration rollback works;
+- backfill does not change public URLs;
+- source assets are protected;
+- historical evidence is preserve-only;
+- unreferenced candidates remain audit findings until ledger/recycle approval exists;
+- provider keys are not inferred from public URLs alone;
+- route response behavior remains unchanged;
+- orphan audit works with metadata;
+- cleanup helpers refuse physical deletion without ledger approval.
+
+## Manual Approval Required Before Implementation
+
+The owner must approve:
+
+- storage provider choice;
+- whether Hostinger local disk is temporary storage or whether object storage starts first;
+- retention period and recycle-window days;
+- backup and restore owner;
+- product variant media ownership policy;
+- seller/vendor upload policy;
+- whether existing local uploads are real owner-uploaded data, demo data, or recovery artifacts;
+- how current unreferenced managed candidates should be backfilled, if at all.
+
 ## Alt Text Requirement
 
 Product images should have meaningful alt text. Category and banner images should have text alternatives based on visible content, not generic "image" labels.

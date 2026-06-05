@@ -1,0 +1,42 @@
+{
+  "step": 280,
+  "title": "Provider-ready media metadata schema and migration planning",
+  "startingCommit": "8ab6822 docs: design media deletion ledger policy",
+  "scope": "planning-docs-pure-policy-constants-and-no-db-tests-only",
+  "schemaPlan": {
+    "mediaAssetPlanned": true,
+    "mediaDeletionLedgerPlanned": true,
+    "prismaSchemaChanged": false,
+    "migrationCreated": false,
+    "databaseMutation": false,
+    "runtimeCleanupChanged": false,
+    "providerCleanupAdded": false,
+    "realFilesDeleted": false,
+    "publicAssetsTouched": false
+  },
+  "currentAuditBaseline": {
+    "defaultCliNoDb": true,
+    "defaultCliNoDelete": true,
+    "defaultCliAggregateOnly": true,
+    "localReadOnlyFlagExists": true,
+    "localReadOnlyFlagCountOnly": true,
+    "localReadOnlyFlagAggregateOnly": true,
+    "step278ReferencedActive": 6,
+    "step278ReferencedHistoricalEvidence": 0,
+    "step278UnreferencedManagedCandidate": 5,
+    "step278UnverifiedReferenceCheckFailed": 0,
+    "unreferencedManagedCandidateIsDeletionApproval": false
+  },
+  "futurePolicy": {
+    "physicalDeletionRequiresMediaAssetOwnership": true,
+    "physicalDeletionRequiresDeletionLedger": true,
+    "physicalDeletionRequiresRecycleWindow": true,
+    "physicalDeletionRequiresFreshReferenceAudit": true,
+    "physicalDeletionRequiresManualApproval": true,
+    "physicalDeletionRequiresBackupRestorePolicy": true,
+    "publicUrlIsOwnershipProof": false,
+    "managedUploadPrefixIsOwnershipProof": false,
+    "productVariantCleanupImplemented": false,
+    "providerDeletionImplemented": false
+  }
+}
