@@ -16,6 +16,19 @@ import {
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
 import { deleteManagedUpload } from '@/backend/admin/product-editor'
+import { AdminMediaReferenceSource } from '@/backend/admin/media-reference-guard'
+
+const noReferenceSource: AdminMediaReferenceSource = {
+  async countReferences(input) {
+    return {
+      complete: true,
+      fields: input.fields.map((field) => ({
+        fieldKey: field.key,
+        count: 0,
+      })),
+    }
+  },
+}
 
 async function withTempProject(callback: (root: string) => Promise<void>) {
   const originalCwd = process.cwd()
@@ -159,8 +172,8 @@ describe('admin media upload deletion lifecycle guardrails', () => {
       await fs.writeFile(productPath, 'product')
       await fs.writeFile(sourceAssetPath, 'source')
 
-      await deleteManagedAdminUpload('/uploads/admin/banners/banner.webp')
-      await deleteManagedUpload('/uploads/products/product.webp')
+      await deleteManagedAdminUpload('/uploads/admin/banners/banner.webp', { referenceSource: noReferenceSource })
+      await deleteManagedUpload('/uploads/products/product.webp', { referenceSource: noReferenceSource })
       await deleteManagedAdminUpload('/assets/banners/source.webp')
 
       await assert.rejects(fs.stat(adminPath), { code: 'ENOENT' })

@@ -3,10 +3,16 @@ import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
+import { createPrismaAdminMediaReferenceSource, AdminMediaPrismaLikeClient } from '@/backend/admin/media-reference-adapter'
 import {
   classifyAdminMediaPath,
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
+import {
+  AdminMediaReferenceExclusion,
+  AdminMediaReferenceSource,
+  planAdminMediaDeletionWithReferences,
+} from '@/backend/admin/media-reference-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 export async function requireAdminSession() {
@@ -103,22 +109,104 @@ export async function persistAdminUpload(url: string | null | undefined, folder:
   })
 }
 
-export async function deleteManagedAdminUpload(url: string | null | undefined) {
-  const filePath = url ? resolveManagedMediaFilePath(url, '/uploads/admin/') : null
-  if (!filePath) return
-
-  await fs.rm(filePath, { force: true })
+export type AdminMediaCleanupOptions = {
+  referenceSource?: AdminMediaReferenceSource
+  exclude?: readonly AdminMediaReferenceExclusion[]
+  publicRoot?: string
 }
 
-export async function cleanupManagedAdminUploads(urls: Array<string | null | undefined>) {
-  await Promise.all(urls.filter(Boolean).map((url) => deleteManagedAdminUpload(url)))
+function getAdminMediaReferenceSource(options: AdminMediaCleanupOptions) {
+  return options.referenceSource ?? createPrismaAdminMediaReferenceSource(db as unknown as AdminMediaPrismaLikeClient)
+}
+
+function logAdminUploadCleanupSkipped(input: {
+  errorCode: string
+  reason?: string
+  feature?: string
+}) {
+  logSecurityEvent({
+    type: 'admin_upload_cleanup_failed',
+    severity: 'warn',
+    errorCode: input.errorCode,
+    metadata: {
+      feature: input.feature ?? 'admin_media',
+      reason: input.reason?.slice(0, 120),
+    },
+  })
+}
+
+async function resolveReferenceSafeAdminDeletion(
+  url: string | null | undefined,
+  options: AdminMediaCleanupOptions,
+) {
+  try {
+    const classification = classifyAdminMediaPath(url)
+    if (
+      !classification.canDeleteLocalFile ||
+      !classification.normalizedPath ||
+      classification.managedPrefix !== '/uploads/admin/'
+    ) {
+      return null
+    }
+
+    const plan = await planAdminMediaDeletionWithReferences({
+      candidateUrl: classification.normalizedPath,
+      referenceSource: getAdminMediaReferenceSource(options),
+      exclude: options.exclude,
+    })
+
+    if (!plan.shouldDeleteLocalFile) {
+      if (plan.incomplete) {
+        logAdminUploadCleanupSkipped({
+          errorCode: 'admin_media_reference_check_incomplete',
+          reason: plan.reason,
+        })
+      }
+      return null
+    }
+
+    return resolveManagedMediaFilePath(classification.normalizedPath, '/uploads/admin/', options.publicRoot)
+  } catch {
+    logAdminUploadCleanupSkipped({
+      errorCode: 'admin_media_cleanup_plan_failed',
+      reason: 'Cleanup planning failed before physical deletion.',
+    })
+    return null
+  }
+}
+
+export async function deleteManagedAdminUpload(
+  url: string | null | undefined,
+  options: AdminMediaCleanupOptions = {},
+) {
+  const filePath = await resolveReferenceSafeAdminDeletion(url, options)
+  if (!filePath) return false
+
+  try {
+    await fs.rm(filePath, { force: true })
+    return true
+  } catch {
+    logAdminUploadCleanupSkipped({
+      errorCode: 'admin_media_file_delete_failed',
+      reason: 'Physical cleanup failed after reference-safe planning.',
+    })
+    return false
+  }
+}
+
+export async function cleanupManagedAdminUploads(
+  urls: Array<string | null | undefined>,
+  options: AdminMediaCleanupOptions = {},
+) {
+  return Promise.all(urls.filter(Boolean).map((url) => deleteManagedAdminUpload(url, options)))
 }
 
 export async function deleteReplacedAdminUploads(
   previousUrls: Array<string | null | undefined>,
   nextUrls: Array<string | null | undefined>,
+  options: AdminMediaCleanupOptions = {},
 ) {
   const nextSet = new Set(nextUrls.filter(Boolean))
   const removed = previousUrls.filter((url) => url && isManagedAdminUpload(url) && !nextSet.has(url))
-  await cleanupManagedAdminUploads(removed)
+  return cleanupManagedAdminUploads(removed, options)
 }
