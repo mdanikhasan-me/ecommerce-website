@@ -123,6 +123,8 @@ function isCatalogOrSeedContext(relativeFile) {
 function isIgnoredForStaticUiRisk(relativeFile) {
   return (
     relativeFile.startsWith('docs/') ||
+    relativeFile.startsWith('.agents/') ||
+    relativeFile.startsWith('public/') ||
     relativeFile.startsWith('audit-reports/') ||
     relativeFile.startsWith('tests/') ||
     relativeFile.startsWith('scripts/') ||
@@ -176,6 +178,33 @@ function collectMediaReferences(content, relativeFile) {
   }
 
   return references
+}
+
+function resolveLocalSourceAssetPath(reference, root) {
+  const value = String(reference ?? '').trim().split(/[?#]/, 1)[0]
+  if (!value) return null
+  if (value.endsWith('/')) return null
+
+  const publicRelative = value.startsWith('public/')
+    ? value
+    : value.startsWith('/assets/') || value.startsWith('/images/')
+      ? `public${value}`
+      : null
+
+  if (!publicRelative) return null
+
+  const publicRoot = path.resolve(root, 'public')
+  const resolved = path.resolve(root, publicRelative)
+  if (resolved === publicRoot || !resolved.startsWith(`${publicRoot}${path.sep}`)) return null
+  return resolved
+}
+
+function localSourceAssetExists(reference, root) {
+  const value = String(reference ?? '').trim().split(/[?#]/, 1)[0]
+  if (value.endsWith('/')) return true
+
+  const resolved = resolveLocalSourceAssetPath(reference, root)
+  return Boolean(resolved && existsSync(resolved))
 }
 
 function countLucideIconImports(content) {
@@ -248,6 +277,29 @@ async function collectPublicInventory(root) {
   return inventory
 }
 
+async function collectPaymentAssetConfigStatus(root) {
+  const assetSourcePath = path.join(root, 'src', 'shared', 'assets.ts')
+  let assetSource = ''
+
+  try {
+    assetSource = await fs.readFile(assetSourcePath, 'utf8')
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error
+  }
+
+  const stripeAssetDeclared = /\bSTRIPE\s*:\s*\{/.test(assetSource)
+  const stripeMissingAssetPathDeclared = /\/assets\/payments\/stripe\.svg/.test(assetSource)
+
+  return {
+    stripeAssetDeclared,
+    stripeMissingAssetPathDeclared,
+    stripeMissingAssetDecision: stripeAssetDeclared || stripeMissingAssetPathDeclared
+      ? 'stripe-asset-reference-still-declared'
+      : 'unused-stripe-asset-reference-removed-until-payment-provider-approval',
+    paymentBehaviorChanged: false,
+  }
+}
+
 export async function collectLocalAssetDependencyAudit({
   cwd = process.cwd(),
 } = {}) {
@@ -266,6 +318,8 @@ export async function collectLocalAssetDependencyAudit({
   const filesWithRemoteCatalogMedia = new Set()
   const filesWithManagedUploadReferences = new Set()
   const filesWithSourceAssetReferences = new Set()
+  const filesWithMissingSourceAssetReferences = new Set()
+  let missingLocalSourceAssetReferences = 0
 
   for (const filePath of files) {
     const relativeFile = normalizeRelativePath(path.relative(root, filePath))
@@ -286,6 +340,13 @@ export async function collectLocalAssetDependencyAudit({
         case 'local-source-asset':
           increment(summary, 'localSourceAsset')
           filesWithSourceAssetReferences.add(relativeFile)
+          if (
+            !isIgnoredForStaticUiRisk(relativeFile) &&
+            !localSourceAssetExists(reference.value, root)
+          ) {
+            missingLocalSourceAssetReferences += 1
+            filesWithMissingSourceAssetReferences.add(relativeFile)
+          }
           break
         case 'local-managed-upload':
           increment(summary, 'localManagedUpload')
@@ -318,6 +379,7 @@ export async function collectLocalAssetDependencyAudit({
     scannedFileCount: files.length,
     summary,
     publicInventory: await collectPublicInventory(root),
+    paymentAssetConfig: await collectPaymentAssetConfigStatus(root),
     safeAggregateOnly: true,
     privateEnvRead: false,
     deletionPerformed: false,
@@ -327,11 +389,14 @@ export async function collectLocalAssetDependencyAudit({
     remoteProductCatalogMediaFiles: [...filesWithRemoteCatalogMedia].sort(),
     managedUploadReferenceFiles: [...filesWithManagedUploadReferences].sort(),
     sourceAssetReferenceFiles: [...filesWithSourceAssetReferences].sort(),
+    missingLocalSourceAssetReferences,
+    missingLocalSourceAssetReferenceFiles: [...filesWithMissingSourceAssetReferences].sort(),
     notes: [
       'This audit is read-only and does not print matched media values.',
       'public/uploads is inventoried with aggregate counts only.',
       'Remote catalog media is tracked separately from static UI asset dependencies.',
       'Bundled lucide-react icon imports are treated as local application dependencies.',
+      'Missing local source asset warnings are aggregate-only and exclude docs, tests, scripts, prisma, and audit reports.',
     ],
   }
 }
@@ -345,11 +410,16 @@ export function createLocalAssetDependencyEvidence(audit) {
     scannedFileCount: audit.scannedFileCount,
     summary: audit.summary,
     publicInventory: audit.publicInventory,
+    paymentAssetConfig: audit.paymentAssetConfig,
     safeAggregateOnly: audit.safeAggregateOnly,
     privateEnvRead: audit.privateEnvRead,
     deletionPerformed: audit.deletionPerformed,
     realMediaFilesDeleted: audit.realMediaFilesDeleted,
     remoteStaticUiAssetRisk: audit.remoteStaticUiAssetRisk,
+    missingAssetWarnings: {
+      missingLocalSourceAssetReferenceCount: audit.missingLocalSourceAssetReferences,
+      filesWithMissingLocalSourceAssetReferenceCount: audit.missingLocalSourceAssetReferenceFiles.length,
+    },
     filesWithRemoteStaticUiAssetCount: audit.remoteStaticUiAssetFiles.length,
     filesWithRemoteProductCatalogMediaCount: audit.remoteProductCatalogMediaFiles.length,
     filesWithManagedUploadReferenceCount: audit.managedUploadReferenceFiles.length,

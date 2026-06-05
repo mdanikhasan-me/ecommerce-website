@@ -61,6 +61,13 @@ describe('local asset dependency policy', () => {
     assert.equal(audit.publicInventory.uploads.exists, true)
     assert.equal(evidence.filesWithRemoteStaticUiAssetCount, 0)
     assert.equal(evidence.summary.remoteProductCatalogMedia >= 0, true)
+    assert.equal(evidence.paymentAssetConfig.stripeAssetDeclared, false)
+    assert.equal(evidence.paymentAssetConfig.stripeMissingAssetPathDeclared, false)
+    assert.equal(
+      evidence.paymentAssetConfig.stripeMissingAssetDecision,
+      'unused-stripe-asset-reference-removed-until-payment-provider-approval',
+    )
+    assert.equal(evidence.paymentAssetConfig.paymentBehaviorChanged, false)
     assert.doesNotMatch(formatted, /private-|token=|postgresql:\/\//i)
   })
 
@@ -114,10 +121,35 @@ describe('local asset dependency policy', () => {
     for (const asset of [PAYMENT_ASSETS.BKASH, PAYMENT_ASSETS.NAGAD, PAYMENT_ASSETS.VISA, PAYMENT_ASSETS.MASTERCARD]) {
       assert.match(asset.src, /^\/assets\/payments\//)
       assert.match(assetSource, new RegExp(asset.src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+      await fs.stat(path.join(process.cwd(), 'public', asset.src.replace(/^\/+/, '')))
     }
 
+    assert.equal('STRIPE' in PAYMENT_ASSETS, false)
     assert.match(BRAND_ASSETS.mark, /^\/assets\/branding\//)
     assert.match(BRAND_ASSETS.wordmark, /^\/assets\/branding\//)
+  })
+
+  it('reports missing local source asset references as aggregate-only warnings', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'boilabin-local-asset-missing-'))
+
+    try {
+      await fs.mkdir(path.join(root, 'src'), { recursive: true })
+      await fs.writeFile(
+        path.join(root, 'src', 'fixture.tsx'),
+        "export const missing = '/assets/payments/private-missing-logo.svg'\n",
+      )
+
+      const audit = await collectLocalAssetDependencyAudit({ cwd: root })
+      const evidence = createLocalAssetDependencyEvidence(audit)
+      const formatted = JSON.stringify(evidence)
+
+      assert.equal(audit.missingLocalSourceAssetReferences, 1)
+      assert.equal(evidence.missingAssetWarnings.missingLocalSourceAssetReferenceCount, 1)
+      assert.equal(evidence.missingAssetWarnings.filesWithMissingLocalSourceAssetReferenceCount, 1)
+      assert.doesNotMatch(formatted, /private-missing-logo/)
+    } finally {
+      await fs.rm(root, { recursive: true, force: true })
+    }
   })
 
   it('generates app-owned placeholder images without remote hosts', () => {

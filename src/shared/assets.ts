@@ -42,10 +42,4 @@ export const PAYMENT_ASSETS = {
     width: 1000,
     height: 618,
   },
-  STRIPE: {
-    src: '/assets/payments/stripe.svg',
-    alt: 'Stripe',
-    width: 106,
-    height: 34,
-  },
 } as const

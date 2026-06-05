@@ -1,0 +1,85 @@
+{
+  "step": 285,
+  "safeAggregateOnly": true,
+  "privateEnvPrinted": false,
+  "fullPathsPrinted": false,
+  "fullUploadFilenamesPrinted": false,
+  "browserPathRan": false,
+  "browserPathReason": "No approved non-secret authenticated admin browser session was used in this helper-level proof.",
+  "apiHelperPathRan": true,
+  "preflight": {
+    "dbUrlSafetyPassed": true,
+    "databaseUrl": "local",
+    "shadowDatabaseUrl": "local",
+    "shadowDatabaseSeparate": true,
+    "localDbReachable": true
+  },
+  "adminFixtureReadiness": {
+    "browserAdminSessionAvailable": false,
+    "localPasswordMutationRun": false,
+    "reason": "Helper/API-level proof does not need admin credentials and does not print or mutate them."
+  },
+  "uploadRootsTested": {
+    "product": "/uploads/products/",
+    "banner": "/uploads/admin/banners/",
+    "category": "/uploads/admin/categories/"
+  },
+  "tempRecordTypesTested": [
+    "product",
+    "banner",
+    "category"
+  ],
+  "product": {
+    "created": true,
+    "uploadedToExpectedRoot": true,
+    "physicalFileAppeared": true,
+    "activeReferencePreserved": true,
+    "replaced": true,
+    "replacementDeletedOldFile": true,
+    "replacementKeptNewFile": true,
+    "deletedRecord": true,
+    "deleteRemovedCurrentFile": true
+  },
+  "banner": {
+    "created": true,
+    "uploadedToExpectedRoot": true,
+    "physicalFileAppeared": true,
+    "activeReferencePreserved": true,
+    "replaced": true,
+    "replacementDeletedOldFile": true,
+    "replacementKeptNewFile": true,
+    "deletedRecord": true,
+    "deleteRemovedCurrentFile": true
+  },
+  "category": {
+    "created": true,
+    "uploadedToExpectedRoot": true,
+    "physicalFileAppeared": true,
+    "activeReferencePreserved": true,
+    "replaced": true,
+    "replacementDeletedOldFile": true,
+    "replacementKeptNewFile": true,
+    "deletedRecord": true,
+    "deleteRemovedCurrentFile": true
+  },
+  "preservation": {
+    "productActiveReferencePreserved": true,
+    "productVariantReferencePreserved": true,
+    "historicalEvidenceSimulatedPreserved": true,
+    "referenceLookupFailurePreserved": true,
+    "incompleteReferenceCheckPreserved": true,
+    "adminSharedReferencePreserved": true,
+    "protectedSourceAssetPreserved": true
+  },
+  "cleanup": {
+    "tempRecordsCreated": 7,
+    "tempRecordsCleaned": true,
+    "tempFilesCreated": 10,
+    "tempFilesCleaned": true,
+    "realMediaFilesDeleted": false,
+    "deletionPerformedOnlyForTempFiles": true,
+    "cleanupErrors": 0
+  },
+  "stopped": false,
+  "stopReason": null
+}

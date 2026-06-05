@@ -1,0 +1,45 @@
+{
+  "defaultAudit": {
+    "dryRun": true,
+    "deletionPerformed": false,
+    "privateEnvRead": false,
+    "databaseUsed": false,
+    "dbAwareReferenceCheckEnabled": false,
+    "classificationSkippedNoDbAwareMode": 11,
+    "rootFileCounts": {
+      "admin": 1,
+      "products": 10
+    }
+  },
+  "localDbAwareAudit": {
+    "dryRun": true,
+    "deletionPerformed": false,
+    "privateEnvRead": false,
+    "databaseUsed": true,
+    "localDbReadOnlyAllowed": true,
+    "databaseUrl": "local",
+    "shadowDatabaseUrl": "local",
+    "shadowDatabaseSeparate": true,
+    "safeForLocalMigration": true,
+    "matchedRecordsIncluded": false,
+    "filenamesIncluded": false,
+    "classification": {
+      "referencedActive": 6,
+      "referencedHistoricalEvidence": 0,
+      "unreferencedManagedCandidate": 5,
+      "unverifiedReferenceCheckFailed": 0,
+      "unsafeOrUnsupported": 0,
+      "sourceAssetProtected": 0,
+      "outsideManagedRoots": 0
+    },
+    "rootFileCounts": {
+      "admin": 1,
+      "products": 10
+    }
+  },
+  "notes": [
+    "Both orphan audits were read-only and performed no deletion.",
+    "DB-aware orphan classification is aggregate-only and does not prove deletion approval.",
+    "No filenames, full paths, matched records, secrets, or DB URLs are included."
+  ]
+}
