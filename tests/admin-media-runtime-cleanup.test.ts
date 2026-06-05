@@ -72,6 +72,20 @@ function failingReferenceSource(): AdminMediaReferenceSource & { calls: number }
   }
 }
 
+function incompleteReferenceSource(): AdminMediaReferenceSource & { calls: number } {
+  return {
+    calls: 0,
+    async countReferences() {
+      this.calls += 1
+      return {
+        complete: false,
+        fields: [{ fieldKey: 'ProductImage.url', count: 0 }],
+        errors: ['partial failure token=secret'],
+      }
+    },
+  }
+}
+
 describe('admin media runtime cleanup reference guard', () => {
   it('deletes unreferenced admin-managed temp fixtures only after a complete reference check', async () => {
     await withTempPublicRoot(async (publicRoot) => {
@@ -201,6 +215,24 @@ describe('admin media runtime cleanup reference guard', () => {
     })
   })
 
+  it('preserves admin and product temp fixtures when reference checks are incomplete', async () => {
+    await withTempPublicRoot(async (publicRoot) => {
+      const adminUrl = '/uploads/admin/banners/incomplete.webp'
+      const productUrl = '/uploads/products/incomplete.webp'
+      const adminPath = await writeFixture(publicRoot, adminUrl)
+      const productPath = await writeFixture(publicRoot, productUrl)
+      const adminSource = incompleteReferenceSource()
+      const productSource = incompleteReferenceSource()
+
+      assert.equal(await deleteManagedAdminUpload(adminUrl, { referenceSource: adminSource, publicRoot }), false)
+      assert.equal(await deleteManagedUpload(productUrl, { referenceSource: productSource, publicRoot }), false)
+      assert.equal(adminSource.calls, 1)
+      assert.equal(productSource.calls, 1)
+      assert.equal(await exists(adminPath), true)
+      assert.equal(await exists(productPath), true)
+    })
+  })
+
   it('refuses protected, unsafe, and unknown cleanup paths before reference lookup', async () => {
     const source = referenceSource()
 
@@ -221,6 +253,45 @@ describe('admin media runtime cleanup reference guard', () => {
     }
 
     assert.equal(source.calls, 0)
+  })
+
+  it('preserves real temp source-asset fixtures and skips reference lookup for protected roots', async () => {
+    await withTempPublicRoot(async (publicRoot) => {
+      const assetUrl = '/assets/banners/source.webp'
+      const imageUrl = '/images/source.webp'
+      const assetPath = await writeFixture(publicRoot, assetUrl)
+      const imagePath = await writeFixture(publicRoot, imageUrl)
+      const source = referenceSource()
+
+      assert.equal(await deleteManagedAdminUpload(assetUrl, { referenceSource: source, publicRoot }), false)
+      assert.equal(await deleteManagedUpload(assetUrl, { referenceSource: source, publicRoot }), false)
+      assert.equal(await deleteManagedAdminUpload(imageUrl, { referenceSource: source, publicRoot }), false)
+      assert.equal(await deleteManagedUpload(imageUrl, { referenceSource: source, publicRoot }), false)
+      assert.equal(source.calls, 0)
+      assert.equal(await exists(assetPath), true)
+      assert.equal(await exists(imagePath), true)
+    })
+  })
+
+  it('returns false and preserves temp fixtures when physical deletion fails', async () => {
+    await withTempPublicRoot(async (publicRoot) => {
+      const adminUrl = '/uploads/admin/banners/delete-failure.webp'
+      const productUrl = '/uploads/products/delete-failure.webp'
+      const adminPath = path.join(publicRoot, adminUrl.replace(/^\/+/, ''))
+      const productPath = path.join(publicRoot, productUrl.replace(/^\/+/, ''))
+      const adminChild = path.join(adminPath, 'child.txt')
+      const productChild = path.join(productPath, 'child.txt')
+
+      await fs.mkdir(adminPath, { recursive: true })
+      await fs.mkdir(productPath, { recursive: true })
+      await fs.writeFile(adminChild, 'admin')
+      await fs.writeFile(productChild, 'product')
+
+      assert.equal(await deleteManagedAdminUpload(adminUrl, { referenceSource: referenceSource(), publicRoot }), false)
+      assert.equal(await deleteManagedUpload(productUrl, { referenceSource: referenceSource(), publicRoot }), false)
+      assert.equal(await exists(adminChild), true)
+      assert.equal(await exists(productChild), true)
+    })
   })
 
   it('keeps replaced-image cleanup exported helpers reference-safe', async () => {

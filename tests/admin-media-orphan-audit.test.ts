@@ -361,6 +361,11 @@ describe('admin media orphan dry-run inventory', () => {
           '/images/private-source.jpg',
           '/uploads/other/private-outside.webp',
           '/uploads/products/private-query.webp?token=secret',
+          'data:image/webp;base64,AAAA',
+          '/uploads/admin/',
+          '/uploads/products/',
+          '/uploads/admin/../assets/private-source.webp',
+          '/uploads/products/../../package.json',
           'https://cdn.example.test/private-remote.jpg',
         ],
       })
@@ -379,7 +384,7 @@ describe('admin media orphan dry-run inventory', () => {
       assert.equal(inventory.classification.unverifiedReferenceCheckFailed, 1)
       assert.equal(inventory.classification.sourceAssetProtected, 2)
       assert.equal(inventory.classification.outsideManagedRoots, 1)
-      assert.equal(inventory.classification.unsafeOrUnsupported, 2)
+      assert.equal(inventory.classification.unsafeOrUnsupported, 7)
       assert.equal(inventory.classification.filenamesIncluded, false)
       assert.equal(inventory.classification.matchedRecordsIncluded, false)
       assert.equal(inventory.classification.deletionPerformed, false)
@@ -395,6 +400,8 @@ describe('admin media orphan dry-run inventory', () => {
         'private-source',
         'private-outside',
         'private-query',
+        'AAAA',
+        'package.json',
         'private-remote',
         'token=secret',
       ]) {

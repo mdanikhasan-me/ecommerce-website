@@ -155,6 +155,14 @@ Managed local uploads currently live under:
 
 Those prefixes are only local/pre-launch ownership hints. They are not enough for long-term production deletion by themselves because the repository can contain demo or recovery files under upload-like paths. Production deletion should require an owned storage key or media metadata record, not only a public URL prefix.
 
+Current product uploads intentionally do not write to `public/assets/products`. The `public/assets` tree is deployment-owned and source-controlled. Admin/runtime uploads are user- or admin-created files and currently belong in `public/uploads/products` so they stay separate from committed UI assets, branding, category art, and payment logos.
+
+Current banner and category uploads use the admin upload helper and write under `public/uploads/admin/<purpose>`. The stored public values are `/uploads/admin/banners/...` for banner images and `/uploads/admin/categories/...` for category images. Existing source category or hero assets that point to `/assets/...` remain protected source assets, even when a database row references them.
+
+When an admin replaces or deletes a managed upload, the runtime cleanup helper may physically remove the old file only after the path is inside the matching managed root and the shared reference check reports no active or historical references. If the path is remote, a data URL, under `/assets` or `/images`, outside the managed root, decorated with query/fragment data, still referenced, historically referenced, or the reference check is incomplete, the helper preserves the file and returns a non-throwing failure result.
+
+This means current local filesystem cleanup is a best-effort pre-launch convenience, not a production media lifecycle. Hostinger local disk can be used temporarily only if the owner accepts backup, deploy persistence, and restore limitations. The safer production direction is object storage plus CDN after provider, backup, restore, retention, and deletion-ledger policy are approved.
+
 ## Storage Key Direction
 
 Category/subcategory folders can help humans browse storage, but folder names do not make images faster. Image performance comes from compression, resizing, cache/CDN behavior, responsive image delivery, and avoiding unused downloads.

@@ -1,0 +1,34 @@
+{
+  "dryRun": true,
+  "deletionPerformed": false,
+  "privateEnvRead": false,
+  "databaseUsed": true,
+  "localDbReadOnlyAllowed": true,
+  "dbAwareReferenceCheckEnabled": true,
+  "matchedRecordsIncluded": false,
+  "filenamesIncluded": false,
+  "databaseUrlClassification": "local",
+  "shadowDatabaseUrlClassification": "local",
+  "shadowDatabaseSeparate": true,
+  "safeForLocalMigration": true,
+  "classification": {
+    "referencedActive": 6,
+    "referencedHistoricalEvidence": 0,
+    "unreferencedManagedCandidate": 5,
+    "unverifiedReferenceCheckFailed": 0,
+    "unsafeOrUnsupported": 0,
+    "sourceAssetProtected": 0,
+    "outsideManagedRoots": 0
+  },
+  "managedRootInventory": {
+    "admin": {
+      "exists": true,
+      "fileCount": 1
+    },
+    "products": {
+      "exists": true,
+      "fileCount": 10
+    }
+  },
+  "note": "Aggregate-only read-only result. Unreferenced managed candidates are not deletion approval."
+}

@@ -1,0 +1,59 @@
+{
+  "scannedFileCount": 360,
+  "summary": {
+    "localSourceAsset": 129,
+    "localManagedUpload": 164,
+    "bundledIconImportFiles": 56,
+    "bundledIconImportCount": 320,
+    "inlineSvgOccurrences": 3,
+    "dataUrl": 17,
+    "remoteNonMediaLink": 539,
+    "remoteAllowedProviderCdn": 9,
+    "remoteProductCatalogMedia": 64,
+    "remoteStaticUiAsset": 0,
+    "unknown": 10
+  },
+  "publicInventory": {
+    "assets": {
+      "exists": true,
+      "fileCount": 25,
+      "totalBytes": 6003977,
+      "extensionCounts": {
+        ".jpg": 10,
+        ".png": 9,
+        ".svg": 5,
+        ".md": 1
+      }
+    },
+    "images": {
+      "exists": false,
+      "fileCount": 0,
+      "totalBytes": 0,
+      "extensionCounts": {}
+    },
+    "uploads": {
+      "exists": true,
+      "fileCount": 11,
+      "totalBytes": 1289834,
+      "extensionCounts": {
+        ".jpg": 8,
+        ".webp": 3
+      }
+    }
+  },
+  "safeAggregateOnly": true,
+  "privateEnvRead": false,
+  "deletionPerformed": false,
+  "realMediaFilesDeleted": false,
+  "remoteStaticUiAssetRisk": false,
+  "filesWithRemoteStaticUiAssetCount": 0,
+  "filesWithRemoteProductCatalogMediaCount": 10,
+  "filesWithManagedUploadReferenceCount": 26,
+  "filesWithSourceAssetReferenceCount": 29,
+  "notes": [
+    "This audit is read-only and does not print matched media values.",
+    "public/uploads is inventoried with aggregate counts only.",
+    "Remote catalog media is tracked separately from static UI asset dependencies.",
+    "Bundled lucide-react icon imports are treated as local application dependencies."
+  ]
+}

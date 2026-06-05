@@ -168,10 +168,14 @@ describe('admin media DB-aware shared-reference guard', () => {
 
     for (const candidate of [
       'https://cdn.example.test/product.webp',
+      'data:image/webp;base64,AAAA',
       '/assets/banners/home.webp',
       '/images/legacy.webp',
       '/uploads/admin/',
+      '/uploads/products/',
       '/uploads/admin/banners/banner.webp?download=1',
+      '/uploads/products/product.webp#preview',
+      '/uploads/admin/..\\assets\\source.webp',
       '/uploads/products/../../package.json',
       '/unknown/path.webp',
     ]) {
