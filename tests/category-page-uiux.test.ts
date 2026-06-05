@@ -53,6 +53,15 @@ describe('category page UI/UX guardrails', () => {
     assert.doesNotMatch(source, /data:image|placeholder\.(?:jpg|jpeg|png|webp)|coming soon|admin upload/i)
   })
 
+  it('keeps subcategory cards photo-ready instead of shrinking missing media into tiny buttons', () => {
+    assert.match(source, /aspect-\[16\/10\]/)
+    assert.match(source, /object-cover/)
+    assert.match(source, /data-empty-media-surface/)
+    assert.match(source, /min-h-\[104px\]/)
+    assert.match(source, /w-\[96px\]/)
+    assert.doesNotMatch(source, /h-12 w-12|w-\[70px\]|min-h-\[78px\]/)
+  })
+
   it('keeps category page typography within the storefront page scale', () => {
     assert.match(source, /text-\[1\.85rem\]/)
     assert.match(source, /sm:text-3xl/)

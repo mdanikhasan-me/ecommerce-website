@@ -156,7 +156,7 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
       {category.children.length > 0 && (
         <div className="pt-5">
           <h3 className="text-sm font-semibold text-foreground">Shop by subcategory</h3>
-          <div className="mt-3.5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-3.5 grid gap-3.5 md:grid-cols-2 xl:grid-cols-4">
             {category.children.map((child) => (
               <SubcategoryCard key={child.id} category={category} child={child} />
             ))}
@@ -178,50 +178,35 @@ function SubcategoryCard({
 }) {
   const imageSrc = getSubcategoryMediaPath(child)
 
-  if (!imageSrc) {
-    return (
-      <Link
-        href={`/category/${child.slug}`}
-        className="product-card group flex min-h-[78px] items-center gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
-          <EmptyMediaSurface />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block line-clamp-2 text-sm font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
-            {child.name}
-          </span>
-        </span>
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
-          <LocalIcon name="arrow-right" className="h-4 w-4" />
-        </span>
-      </Link>
-    )
-  }
-
   return (
     <Link
       href={`/category/${child.slug}`}
-      className="product-card group overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="product-card group flex h-full flex-col overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="relative aspect-[4/3] bg-muted">
-        <Image
-          src={imageSrc}
-          alt={child.name}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1280px) 25vw, 260px"
-          quality={84}
-        />
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={child.name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+            sizes="(max-width: 1024px) 42vw, (max-width: 1280px) 24vw, 260px"
+            quality={84}
+          />
+        ) : (
+          <EmptyMediaSurface />
+        )}
       </div>
-      <div className="flex min-h-[92px] items-start gap-3 p-3.5">
+      <div className="flex min-h-[104px] flex-1 items-start gap-3 p-3.5 sm:p-4">
         <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</h4>
-          <p className="mt-1 line-clamp-2 text-[12px] leading-5 text-muted-foreground">
+          <h4 className="line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
+            {child.name}
+          </h4>
+          <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
             {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
           </p>
         </div>
-        <span className="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>
@@ -234,9 +219,9 @@ function EmptyMediaSurface() {
     <div
       aria-hidden="true"
       data-empty-media-surface="true"
-      className="absolute inset-0 bg-[linear-gradient(135deg,hsl(var(--muted))_0%,hsl(var(--card))_52%,hsl(var(--secondary))_100%)]"
+      className="absolute inset-0 bg-[linear-gradient(135deg,hsl(var(--muted))_0%,hsl(var(--card))_48%,hsl(var(--secondary))_100%)]"
     >
-      <span className="absolute inset-2 rounded-lg border border-border/65 bg-card/35" />
+      <span className="absolute inset-3 rounded-[0.9rem] border border-border/65 bg-card/35 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset]" />
     </div>
   )
 }
@@ -245,18 +230,18 @@ function ViewAllCategoryLink({ category }: { category: CategoryItem }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group mt-5 flex min-h-[64px] items-center gap-3 rounded-[1rem] border border-border/80 bg-card/90 px-4 py-3 transition-colors hover:border-primary/20 hover:bg-secondary/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group mt-5 flex min-h-[72px] items-center gap-3 rounded-[1.05rem] border border-border/80 bg-card/90 px-4 py-3.5 transition-colors hover:border-primary/20 hover:bg-secondary/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-5"
     >
-      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
         <LocalIcon name="category-view-all" className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold leading-5 text-foreground">View All {category.name}</span>
+        <span className="block text-[15px] font-semibold leading-5 text-foreground">View All {category.name}</span>
         <span className="mt-0.5 block text-xs leading-5 text-muted-foreground sm:text-sm">
           Explore all {category.name.toLowerCase()} products and accessories.
         </span>
       </span>
-      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
         <LocalIcon name="arrow-right" className="h-4 w-4" />
       </span>
     </Link>
@@ -320,9 +305,9 @@ function MobileSubcategoryRow({
   return (
     <Link
       href={`/category/${child.slug}`}
-      className="product-card group flex min-h-[78px] items-center gap-3 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="product-card group flex min-h-[104px] items-stretch gap-3 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <span className="relative block h-[78px] w-[70px] shrink-0 overflow-hidden rounded-l-[1.05rem] bg-muted sm:w-[84px]">
+      <span className="relative block min-h-[104px] w-[96px] shrink-0 overflow-hidden rounded-l-[1.05rem] bg-muted min-[390px]:w-[104px] sm:w-[112px]">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -336,15 +321,13 @@ function MobileSubcategoryRow({
           <EmptyMediaSurface />
         )}
       </span>
-      <span className="min-w-0 flex-1 py-2.5 pr-1">
-        <span className="block line-clamp-2 text-sm font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
-        {imageSrc ? (
-          <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
-            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
-          </span>
-        ) : null}
+      <span className="min-w-0 flex-1 self-center py-3 pr-1">
+        <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
+        <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
+          {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
+        </span>
       </span>
-      <span className="mr-3 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+      <span className="mr-3 self-center inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
         <LocalIcon name="arrow-right" className="h-4 w-4" />
       </span>
     </Link>
