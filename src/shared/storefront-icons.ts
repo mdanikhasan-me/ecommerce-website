@@ -44,6 +44,15 @@ export const UI_ICON_ASSETS = {
   user: '/assets/icons/ui/user.svg',
   x: '/assets/icons/ui/x.svg',
   zap: '/assets/icons/ui/zap.svg',
+  'category-electronics': '/assets/icons/ui/categories/electronics.svg',
+  'category-fashion': '/assets/icons/ui/categories/fashion.svg',
+  'category-home-appliances': '/assets/icons/ui/categories/home-appliances.svg',
+  'category-beauty-health': '/assets/icons/ui/categories/beauty-health.svg',
+  'category-sports-fitness': '/assets/icons/ui/categories/sports-fitness.svg',
+  'category-books-stationery': '/assets/icons/ui/categories/books-stationery.svg',
+  'category-gaming': '/assets/icons/ui/categories/gaming.svg',
+  'category-toys-collectibles': '/assets/icons/ui/categories/toys-collectibles.svg',
+  'category-view-all': '/assets/icons/ui/categories/view-all.svg',
 } as const
 
 export const SOCIAL_ICON_ASSETS = {

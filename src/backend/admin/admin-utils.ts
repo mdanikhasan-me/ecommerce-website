@@ -6,11 +6,13 @@ import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
 import { createPrismaAdminMediaReferenceSource, AdminMediaPrismaLikeClient } from '@/backend/admin/media-reference-adapter'
 import {
   classifyAdminMediaPath,
+  MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX,
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
 import {
   buildManagedBannerUploadPath,
   buildManagedCategoryUploadPath,
+  buildManagedSubcategoryUploadPath,
 } from '@/backend/admin/media-paths'
 import {
   AdminMediaReferenceExclusion,
@@ -90,7 +92,11 @@ export async function ensureUniqueSlug(rawSlug: string, excludeId?: string) {
 
 export function isManagedAdminUpload(url: string) {
   const classification = classifyAdminMediaPath(url)
-  return classification.managedPrefix === '/uploads/admin/' && classification.canDeleteLocalFile
+  return (
+    classification.canDeleteLocalFile &&
+    (classification.managedPrefix === '/uploads/admin/' ||
+      classification.managedPrefix === MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX)
+  )
 }
 
 export function resolveManagedPublicUploadPath(url: string, managedPrefix: string) {
@@ -105,6 +111,7 @@ export type PersistAdminUploadOptions =
       purpose: AdminUploadPurpose
       ownerSlugOrId?: string | null
       mediaId?: string | number | null
+      categoryKind?: 'category' | 'subcategory'
     }
 
 function planAdminUploadPath(options: PersistAdminUploadOptions) {
@@ -119,6 +126,12 @@ function planAdminUploadPath(options: PersistAdminUploadOptions) {
     return buildManagedBannerUploadPath({
       bannerSlugOrId: options.ownerSlugOrId,
       mediaId: options.mediaId ?? options.purpose,
+    })
+  }
+
+  if (options.categoryKind === 'subcategory') {
+    return buildManagedSubcategoryUploadPath({
+      subcategorySlug: options.ownerSlugOrId,
     })
   }
 
@@ -144,6 +157,8 @@ export async function persistAdminUpload(url: string | null | undefined, options
     baseName: uploadPath.baseName,
     publicPathPrefix: uploadPath.publicPathPrefix,
     profile,
+    filenameStrategy:
+      typeof options !== 'string' && options.categoryKind === 'subcategory' ? 'stable' : 'unique',
   })
 }
 
@@ -182,7 +197,8 @@ async function resolveReferenceSafeAdminDeletion(
     if (
       !classification.canDeleteLocalFile ||
       !classification.normalizedPath ||
-      classification.managedPrefix !== '/uploads/admin/'
+      classification.managedPrefix !== '/uploads/admin/' &&
+      classification.managedPrefix !== MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX
     ) {
       return null
     }
@@ -245,6 +261,6 @@ export async function deleteReplacedAdminUploads(
   options: AdminMediaCleanupOptions = {},
 ) {
   const nextSet = new Set(nextUrls.filter(Boolean))
-  const removed = previousUrls.filter((url) => url && isManagedAdminUpload(url) && !nextSet.has(url))
+  const removed = previousUrls.filter((url) => url && classifyAdminMediaPath(url).canDeleteLocalFile && !nextSet.has(url))
   return cleanupManagedAdminUploads(removed, options)
 }

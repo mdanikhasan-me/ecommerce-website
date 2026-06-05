@@ -114,3 +114,19 @@ export function buildManagedCategoryUploadPath(input: {
     examplePublicPath: `${publicPathPrefix}/${media}.${extension}`,
   }
 }
+
+export function buildManagedSubcategoryUploadPath(input: {
+  subcategorySlug: string | null | undefined
+  extension?: string | null
+}): ManagedUploadPathPlan {
+  const subcategory = sanitizeMediaPathSegment(input.subcategorySlug, 'subcategory')
+  const extension = normalizeMediaExtension(input.extension)
+  const publicPathPrefix = '/assets/categories/subcategories'
+
+  return {
+    directorySegments: ['assets', 'categories', 'subcategories'],
+    publicPathPrefix,
+    baseName: subcategory,
+    examplePublicPath: `${publicPathPrefix}/${subcategory}.${extension}`,
+  }
+}

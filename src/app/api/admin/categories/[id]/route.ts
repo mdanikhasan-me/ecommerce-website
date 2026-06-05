@@ -46,6 +46,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       purpose: 'categories',
       ownerSlugOrId: slug,
       mediaId: 'image',
+      categoryKind: payload.parentId ? 'subcategory' : 'category',
     })
     const newUploads = [image].filter(
       (url): url is string => Boolean(url && url !== existingCategory.image && url.startsWith('/uploads/admin/')),

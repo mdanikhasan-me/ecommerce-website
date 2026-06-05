@@ -33,6 +33,7 @@ import {
 describe('admin managed media storage policy', () => {
   it('documents current local upload roots without claiming provider storage is implemented', () => {
     assert.deepEqual(MANAGED_MEDIA_STORAGE_POLICY.currentLocalUploadRoots, [
+      '/assets/categories/subcategories/',
       '/uploads/admin/',
       '/uploads/products/',
     ])
@@ -51,6 +52,10 @@ describe('admin managed media storage policy', () => {
     assert.equal(
       MANAGED_MEDIA_STORAGE_POLICY.currentAdminCategoryUploadPattern,
       '/uploads/admin/categories/<category>/<media>-<timestamp>-<random>.<ext>',
+    )
+    assert.equal(
+      MANAGED_MEDIA_STORAGE_POLICY.currentAdminSubcategoryImageUploadPattern,
+      '/assets/categories/subcategories/<subcategory>.webp',
     )
     assert.equal(MANAGED_MEDIA_STORAGE_POLICY.categoryFolderingRecommendation, 'current-local-organization-only')
     assert.equal(MANAGED_MEDIA_STORAGE_POLICY.categoryFolderingImprovesPerformance, false)

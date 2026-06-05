@@ -214,6 +214,7 @@ export async function persistOptimizedImageUpload(input: {
   baseName: string
   publicPathPrefix: string
   profile: string
+  filenameStrategy?: 'unique' | 'stable'
 }) {
   const parsed = await validateImageUploadPayload(input.dataUrl)
 
@@ -221,7 +222,9 @@ export async function persistOptimizedImageUpload(input: {
   const outputDir = path.join(process.cwd(), 'public', ...input.directorySegments)
   await fs.mkdir(outputDir, { recursive: true })
 
-  const baseFileName = `${input.baseName}-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`
+  const baseFileName = input.filenameStrategy === 'stable'
+    ? input.baseName
+    : `${input.baseName}-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`
   const webpFilename = `${baseFileName}.webp`
   const outputPath = path.join(outputDir, webpFilename)
 

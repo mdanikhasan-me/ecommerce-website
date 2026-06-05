@@ -86,3 +86,17 @@ export function getCategoryMediaPath(category: CategoryImageInput) {
 
   return versionCategoryAsset(CATEGORY_PHOTO_ASSETS.electronics)
 }
+
+export function getSubcategoryMediaPath(category: CategoryImageInput) {
+  const image = category.image?.trim()
+  if (!image) return null
+
+  if (
+    image.startsWith('/assets/categories/subcategories/') ||
+    image.startsWith('/uploads/admin/categories/')
+  ) {
+    return image
+  }
+
+  return null
+}

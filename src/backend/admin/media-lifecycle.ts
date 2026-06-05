@@ -5,7 +5,10 @@ export const PROTECTED_SOURCE_ASSET_PREFIXES = [
   '/images/',
 ] as const
 
+export const MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX = '/assets/categories/subcategories/' as const
+
 export const MANAGED_LOCAL_UPLOAD_PREFIXES = [
+  MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX,
   '/uploads/admin/',
   '/uploads/products/',
 ] as const
@@ -16,6 +19,7 @@ export const MANAGED_MEDIA_STORAGE_POLICY = {
   currentProductUploadPattern: '/uploads/products/<category>/<subcategory>/<product>/<media>-<timestamp>-<random>.<ext>',
   currentAdminBannerUploadPattern: '/uploads/admin/banners/<banner>/<media>-<timestamp>-<random>.<ext>',
   currentAdminCategoryUploadPattern: '/uploads/admin/categories/<category>/<media>-<timestamp>-<random>.<ext>',
+  currentAdminSubcategoryImageUploadPattern: '/assets/categories/subcategories/<subcategory>.webp',
   recommendedProductStorageKeyPattern: 'products/<product-id>/media/<media-id>/<variant>.<ext>',
   recommendedAdminStorageKeyPattern: 'admin/<purpose>/<record-id>/media/<media-id>/<variant>.<ext>',
   categoryFolderingRecommendation: 'current-local-organization-only',
@@ -695,8 +699,9 @@ export function classifyAdminMediaPath(value: string | null | undefined): AdminM
     }
   }
 
+  const managedPrefix = MANAGED_LOCAL_UPLOAD_PREFIXES.find((prefix) => normalizedPath.startsWith(prefix))
   const protectedPrefix = PROTECTED_SOURCE_ASSET_PREFIXES.find((prefix) => normalizedPath.startsWith(prefix))
-  if (protectedPrefix) {
+  if (protectedPrefix && !managedPrefix) {
     return {
       bucket: 'protected-source-code-asset',
       canDeleteLocalFile: false,
@@ -706,7 +711,6 @@ export function classifyAdminMediaPath(value: string | null | undefined): AdminM
     }
   }
 
-  const managedPrefix = MANAGED_LOCAL_UPLOAD_PREFIXES.find((prefix) => normalizedPath.startsWith(prefix))
   if (!managedPrefix) {
     return {
       bucket: normalizedPath.startsWith('/') ? 'unknown-local-path' : 'unknown',

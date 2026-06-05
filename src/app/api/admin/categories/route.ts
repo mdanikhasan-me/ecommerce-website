@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       purpose: 'categories',
       ownerSlugOrId: slug,
       mediaId: 'image',
+      categoryKind: payload.parentId ? 'subcategory' : 'category',
     })
 
     try {

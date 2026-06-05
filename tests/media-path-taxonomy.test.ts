@@ -13,6 +13,7 @@ import {
   buildManagedBannerUploadPath,
   buildManagedCategoryUploadPath,
   buildManagedProductUploadPath,
+  buildManagedSubcategoryUploadPath,
   sanitizeMediaPathSegment,
 } from '@/backend/admin/media-paths'
 import { deleteManagedUpload, normalizeProductImages } from '@/backend/admin/product-editor'
@@ -33,9 +34,11 @@ async function makePngDataUrl() {
 }
 
 async function removeUploadUrl(url: string | null | undefined) {
-  if (!url?.startsWith('/uploads/')) return
+  if (!url?.startsWith('/uploads/') && !url?.startsWith('/assets/categories/subcategories/')) return
   await fs.rm(path.join(process.cwd(), 'public', url.replace(/^\/+/, '')), { force: true })
-  await pruneEmptyParents(path.dirname(path.join(process.cwd(), 'public', url.replace(/^\/+/, ''))))
+  if (url.startsWith('/uploads/')) {
+    await pruneEmptyParents(path.dirname(path.join(process.cwd(), 'public', url.replace(/^\/+/, ''))))
+  }
 }
 
 async function pruneEmptyParents(start: string) {
@@ -110,6 +113,15 @@ describe('media path taxonomy', () => {
       buildManagedCategoryUploadPath({ categorySlug: 'Beauty & Health', mediaId: 'image' }).examplePublicPath,
       '/uploads/admin/categories/beauty-health/image.webp',
     )
+    assert.deepEqual(
+      buildManagedSubcategoryUploadPath({ subcategorySlug: 'Mobile Phones' }),
+      {
+        directorySegments: ['assets', 'categories', 'subcategories'],
+        publicPathPrefix: '/assets/categories/subcategories',
+        baseName: 'mobile-phones',
+        examplePublicPath: '/assets/categories/subcategories/mobile-phones.webp',
+      },
+    )
   })
 
   it('persists new product, banner, and category uploads under nested managed roots', async () => {
@@ -143,6 +155,15 @@ describe('media path taxonomy', () => {
       })
       createdUrls.push(categoryUrl ?? '')
       assert.match(categoryUrl ?? '', /^\/uploads\/admin\/categories\/mobile-phones\/image-.+\.webp$/)
+
+      const subcategoryUrl = await persistAdminUpload(dataUrl, {
+        purpose: 'categories',
+        ownerSlugOrId: 'mobile-phones',
+        mediaId: 'image',
+        categoryKind: 'subcategory',
+      })
+      createdUrls.push(subcategoryUrl ?? '')
+      assert.equal(subcategoryUrl, '/assets/categories/subcategories/mobile-phones.webp')
     } finally {
       await Promise.all(createdUrls.map(removeUploadUrl))
     }
@@ -156,8 +177,9 @@ describe('media path taxonomy', () => {
       const oldUrl = '/uploads/products/old-product.webp'
       const nestedUrl = '/uploads/products/electronics/mobile-phones/product-1/image.webp'
       const sourceUrl = '/assets/products/catalog/electronics/mobile-phones/product-1/main.webp'
+      const subcategoryUrl = '/assets/categories/subcategories/mobile-phones.webp'
 
-      for (const url of [oldUrl, nestedUrl, sourceUrl]) {
+      for (const url of [oldUrl, nestedUrl, sourceUrl, subcategoryUrl]) {
         const target = path.join(publicRoot, url.replace(/^\/+/, ''))
         await fs.mkdir(path.dirname(target), { recursive: true })
         await fs.writeFile(target, 'fixture')
@@ -166,6 +188,9 @@ describe('media path taxonomy', () => {
       assert.equal(classifyAdminMediaPath(oldUrl).canDeleteLocalFile, true)
       assert.equal(classifyAdminMediaPath(nestedUrl).canDeleteLocalFile, true)
       assert.equal(classifyAdminMediaPath(sourceUrl).canDeleteLocalFile, false)
+      assert.equal(classifyAdminMediaPath(subcategoryUrl).canDeleteLocalFile, true)
+      assert.equal(classifyAdminMediaPath('/assets/categories/electronics.jpg').canDeleteLocalFile, false)
+      assert.equal(classifyAdminMediaPath('/assets/categories/subcategories/../secret.webp').canDeleteLocalFile, false)
       assert.equal(classifyAdminMediaPath('/uploads/products/electronics/product.webp?token=1').canDeleteLocalFile, false)
 
       assert.equal(await deleteManagedUpload(oldUrl, { referenceSource: referenceSource(), publicRoot }), true)

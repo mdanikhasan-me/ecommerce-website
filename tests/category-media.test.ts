@@ -5,7 +5,12 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 
-import { CATEGORY_PHOTO_ASSETS, getCategoryMediaBasePath, getCategoryMediaPath } from '@/shared/category-media'
+import {
+  CATEGORY_PHOTO_ASSETS,
+  getCategoryMediaBasePath,
+  getCategoryMediaPath,
+  getSubcategoryMediaPath,
+} from '@/shared/category-media'
 
 const CANONICAL_CATEGORY_SLUGS = [
   'beauty-health',
@@ -57,5 +62,25 @@ describe('category media mapping', () => {
     assert.equal(publicAssetExists(mediaPath), true)
     assert.equal(getCategoryMediaBasePath({ slug: 'baby-kids' }), '/assets/categories/gaming.jpg')
     assert.match(mediaPath, /^\/assets\/categories\/gaming\.jpg\?v=[a-f0-9]{12}$/)
+  })
+
+  it('renders only local managed subcategory media on public category surfaces', () => {
+    assert.equal(
+      getSubcategoryMediaPath({
+        slug: 'mobile-phones',
+        image: '/assets/categories/subcategories/mobile-phones.webp',
+      }),
+      '/assets/categories/subcategories/mobile-phones.webp',
+    )
+    assert.equal(
+      getSubcategoryMediaPath({
+        slug: 'audio',
+        image: '/uploads/admin/categories/audio/image-test.webp',
+      }),
+      '/uploads/admin/categories/audio/image-test.webp',
+    )
+    assert.equal(getSubcategoryMediaPath({ slug: 'wearables', image: null }), null)
+    assert.equal(getSubcategoryMediaPath({ slug: 'laptops', image: 'https://example.com/laptop.webp' }), null)
+    assert.equal(getSubcategoryMediaPath({ slug: 'laptops', image: '/assets/categories/electronics.jpg' }), null)
   })
 })

@@ -99,6 +99,28 @@ describe('image upload validation', () => {
     }
   })
 
+  it('can persist a sanitized stable WebP filename when a managed category path requires it', async () => {
+    const outputDir = path.join(process.cwd(), 'public', 'assets', 'categories', 'subcategories')
+    const outputFile = path.join(outputDir, 'mobile-phones.webp')
+    await fs.rm(outputFile, { force: true })
+
+    try {
+      const publicUrl = await persistOptimizedImageUpload({
+        dataUrl: await makePngDataUrl(4, 4),
+        directorySegments: ['assets', 'categories', 'subcategories'],
+        baseName: 'mobile-phones',
+        publicPathPrefix: '/assets/categories/subcategories',
+        profile: 'categories',
+        filenameStrategy: 'stable',
+      })
+
+      assert.equal(publicUrl, '/assets/categories/subcategories/mobile-phones.webp')
+      await fs.access(outputFile)
+    } finally {
+      await fs.rm(outputFile, { force: true })
+    }
+  })
+
   it('exposes explicit media policy metadata without claiming variant storage is implemented', () => {
     const productProfile = getImageUploadProfile('products')
     const unknownProfile = getImageUploadProfile('unknown-profile')
