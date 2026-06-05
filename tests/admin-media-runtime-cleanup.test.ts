@@ -141,15 +141,24 @@ describe('admin media runtime cleanup reference guard', () => {
   it('skips product-managed deletion for active, historical, and failed reference checks', async () => {
     await withTempPublicRoot(async (publicRoot) => {
       const activeUrl = '/uploads/products/active.webp'
+      const variantUrl = '/uploads/products/variant.webp'
       const historicalUrl = '/uploads/products/history.webp'
       const failedUrl = '/uploads/products/failure.webp'
       const activePath = await writeFixture(publicRoot, activeUrl)
+      const variantPath = await writeFixture(publicRoot, variantUrl)
       const historicalPath = await writeFixture(publicRoot, historicalUrl)
       const failedPath = await writeFixture(publicRoot, failedUrl)
 
       assert.equal(
         await deleteManagedUpload(activeUrl, {
           referenceSource: referenceSource({ 'ProductImage.url': 1 }),
+          publicRoot,
+        }),
+        false,
+      )
+      assert.equal(
+        await deleteManagedUpload(variantUrl, {
+          referenceSource: referenceSource({ 'ProductVariant.image': 1 }),
           publicRoot,
         }),
         false,
@@ -170,6 +179,7 @@ describe('admin media runtime cleanup reference guard', () => {
       )
 
       assert.equal(await exists(activePath), true)
+      assert.equal(await exists(variantPath), true)
       assert.equal(await exists(historicalPath), true)
       assert.equal(await exists(failedPath), true)
     })

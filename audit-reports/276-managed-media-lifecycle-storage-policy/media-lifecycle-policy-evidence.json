@@ -1,0 +1,42 @@
+{
+  "step": 276,
+  "latestStartingCommit": "04ef1f4 fix: guard admin media deletion by shared references",
+  "mode": "docs-tests-pure-helper",
+  "runtimeDeletionBroadened": false,
+  "routeFilesEdited": false,
+  "realFilesDeleted": false,
+  "currentUploadRoots": {
+    "admin": "/uploads/admin/",
+    "products": "/uploads/products/"
+  },
+  "currentPhysicalDeletionScopes": {
+    "banner": "managed /uploads/admin/* only after classifier and complete zero-reference check",
+    "category": "managed /uploads/admin/* only on hard delete or replacement after classifier and complete zero-reference check",
+    "product": "managed ProductImage.url /uploads/products/* only after classifier and complete zero-reference check",
+    "productVariant": "not a cleanup candidate yet; ProductVariant.image is reference-guarded only"
+  },
+  "protectedRoots": [
+    "/assets/",
+    "/images/"
+  ],
+  "futureStorageRecommendation": {
+    "productKeyPattern": "products/<product-id>/media/<media-id>/<variant>.<ext>",
+    "adminKeyPattern": "admin/<purpose-or-record-id>/media/<media-id>/<variant>.<ext>",
+    "categoryFoldering": "metadata-only unless immutable snapshots and migration rules are approved",
+    "categoryFolderingImprovesPerformance": false,
+    "objectStorageImplemented": false,
+    "deletionLedgerImplemented": false,
+    "recycleWindowImplemented": false
+  },
+  "testsAddedOrUpdated": [
+    "tests/admin-media-storage-policy.test.ts",
+    "tests/admin-media-runtime-cleanup.test.ts"
+  ],
+  "remainingRisks": [
+    "tracked upload-like repo files can look like managed uploads without a future ownership model",
+    "variant physical cleanup remains deferred",
+    "DB-aware orphan audit remains dry-run inventory only",
+    "local public/uploads is not production storage",
+    "object storage, deletion ledger, recycle window, and media metadata table are not implemented"
+  ]
+}

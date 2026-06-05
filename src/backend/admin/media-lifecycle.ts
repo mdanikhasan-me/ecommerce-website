@@ -10,6 +10,95 @@ export const MANAGED_LOCAL_UPLOAD_PREFIXES = [
   '/uploads/products/',
 ] as const
 
+export const MANAGED_MEDIA_STORAGE_POLICY = {
+  currentLocalUploadRoots: MANAGED_LOCAL_UPLOAD_PREFIXES,
+  protectedSourceAssetRoots: PROTECTED_SOURCE_ASSET_PREFIXES,
+  currentProductUploadPattern: '/uploads/products/<slug>-<timestamp>-<random>.<ext>',
+  recommendedProductStorageKeyPattern: 'products/<product-id>/media/<media-id>/<variant>.<ext>',
+  recommendedAdminStorageKeyPattern: 'admin/<purpose>/<record-id>/media/<media-id>/<variant>.<ext>',
+  categoryFolderingRecommendation: 'metadata-only',
+  categoryFolderingImprovesPerformance: false,
+  objectStorageImplemented: false,
+  deletionLedgerImplemented: false,
+  recycleWindowImplemented: false,
+} as const
+
+export type ManagedMediaStorageNamespace = 'products' | 'admin'
+
+export type ManagedMediaStorageKeyPlan = {
+  key: string
+  namespace: ManagedMediaStorageNamespace
+  ownerSegment: string
+  mediaSegment: string
+  variantSegment: string
+  extension: string
+  ignoresMutableCategoryFolders: boolean
+  reason: string
+}
+
+const STORAGE_SEGMENT_FALLBACK = 'media'
+const STORAGE_EXTENSION_FALLBACK = 'webp'
+const ALLOWED_STORAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'])
+
+export function normalizeManagedMediaStorageSegment(
+  value: string | null | undefined,
+  fallback = STORAGE_SEGMENT_FALLBACK,
+) {
+  const normalized = value
+    ?.trim()
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+
+  return normalized || fallback
+}
+
+function normalizeStorageExtension(value: string | null | undefined) {
+  const extension = value
+    ?.trim()
+    .toLowerCase()
+    .replace(/^\.+/, '')
+    .replace(/[^a-z0-9]/g, '')
+
+  return extension && ALLOWED_STORAGE_EXTENSIONS.has(extension)
+    ? extension
+    : STORAGE_EXTENSION_FALLBACK
+}
+
+export function planManagedMediaStorageKey(input: {
+  namespace: ManagedMediaStorageNamespace
+  ownerId: string
+  mediaId: string
+  variant?: string | null
+  extension?: string | null
+  categorySlug?: string | null
+  subcategorySlug?: string | null
+}): ManagedMediaStorageKeyPlan {
+  const ownerSegment = normalizeManagedMediaStorageSegment(input.ownerId, 'owner')
+  const mediaSegment = normalizeManagedMediaStorageSegment(input.mediaId, 'media')
+  const variantSegment = normalizeManagedMediaStorageSegment(input.variant, 'original')
+  const extension = normalizeStorageExtension(input.extension)
+
+  const prefix = input.namespace === 'products'
+    ? `products/${ownerSegment}/media`
+    : `admin/${ownerSegment}/media`
+
+  return {
+    key: `${prefix}/${mediaSegment}/${variantSegment}.${extension}`,
+    namespace: input.namespace,
+    ownerSegment,
+    mediaSegment,
+    variantSegment,
+    extension,
+    ignoresMutableCategoryFolders: Boolean(input.categorySlug || input.subcategorySlug),
+    reason:
+      'Stable owner/media identifiers are safer than category or subcategory folder names because category assignments can change without moving stored files.',
+  }
+}
+
 export type AdminMediaPathBucket =
   | 'admin-managed-upload'
   | 'protected-source-code-asset'

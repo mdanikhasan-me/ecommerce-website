@@ -144,6 +144,45 @@ Local `public/uploads` is acceptable for local/pre-launch testing. It is not fin
 
 Future production should use object storage and CDN-backed delivery after provider decisions are approved.
 
+## Managed Uploads Vs Source Assets
+
+Source-controlled assets under `/assets/*` and `/images/*` are committed application assets. Admin cleanup must never delete them, even when a database row points at one of those paths.
+
+Managed local uploads currently live under:
+
+- `/uploads/admin/*` for banner, category, and other admin-managed artwork;
+- `/uploads/products/*` for product gallery uploads.
+
+Those prefixes are only local/pre-launch ownership hints. They are not enough for long-term production deletion by themselves because the repository can contain demo or recovery files under upload-like paths. Production deletion should require an owned storage key or media metadata record, not only a public URL prefix.
+
+## Storage Key Direction
+
+Category/subcategory folders can help humans browse storage, but folder names do not make images faster. Image performance comes from compression, resizing, cache/CDN behavior, responsive image delivery, and avoiding unused downloads.
+
+Do not make mutable category or subcategory names the durable storage identity for product media. Products can move categories, category names can be edited, and slugs can be repaired. Moving files when categories change creates broken URL and rollback risk.
+
+Future production storage should prefer stable owner/media keys such as:
+
+```text
+products/<product-id>/media/<media-id>/<variant>.webp
+admin/<purpose-or-record-id>/media/<media-id>/<variant>.webp
+```
+
+Category, subcategory, brand, placement, and alt-text data should be metadata, not the primary storage path. If category/subcategory foldering is ever approved for organization, it must use immutable slug snapshots, path traversal protections, and migration rules for category changes.
+
+## Deletion And Retention Direction
+
+Physical media deletion should stay conservative:
+
+- delete only files known to be owned managed uploads;
+- skip deletion when reference checks fail or are incomplete;
+- preserve files referenced by order, review, return, user, or other historical evidence records;
+- record future deletions in a ledger before provider-backed deletion is enabled;
+- use a recycle/restore window for production storage;
+- keep backups and object-storage lifecycle rules separate from customer-facing URLs.
+
+Product variant image cleanup is not enabled yet. The current reference guard can detect `ProductVariant.image` references, but admin product forms do not currently upload variant-specific images, and runtime product cleanup candidates are still based on `ProductImage.url`.
+
 ## Alt Text Requirement
 
 Product images should have meaningful alt text. Category and banner images should have text alternatives based on visible content, not generic "image" labels.
