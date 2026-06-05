@@ -1,0 +1,182 @@
+{
+  "timestamp": "2026-06-05T04:16:50.763Z",
+  "baseUrl": "http://127.0.0.1:3261",
+  "routeStatuses": [
+    {
+      "path": "/",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/category",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/category/electronics",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/category/fashion",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/category/beauty-health",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/search?q=phone",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/search?q=serum",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/products/iphone-15-pro-128gb",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/cart",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/track-order",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/checkout",
+      "status": 307,
+      "ok": true,
+      "location": "/auth/login?callbackUrl=/checkout&reason=checkout"
+    },
+    {
+      "path": "/deals",
+      "status": 404,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/api/admin/flash-sales",
+      "status": 404,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "ok": true,
+      "location": null
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "ok": true,
+      "location": null
+    }
+  ],
+  "routeStatusesOk": true,
+  "home": {
+    "headerInternalLinks": [
+      "/help",
+      "/about",
+      "/",
+      "/compare",
+      "/auth/login",
+      "/category/electronics",
+      "/category/fashion",
+      "/category/home-appliances",
+      "/category/beauty-health",
+      "/category/sports-fitness",
+      "/new-arrivals",
+      "/products/iphone-15-pro-128gb",
+      "/category",
+      "/category/books-stationery",
+      "/category/gaming",
+      "/category/toys-collectibles",
+      "/search?featured=true",
+      "/products/samsung-galaxy-s24-ultra-256gb",
+      "/products/xiaomi-buds-4-pro",
+      "/products/sony-wh-1000xm5",
+      "/products/dell-xps-15-9520-i7-oled",
+      "/products/apple-watch-series-9-41mm",
+      "/products/sony-playstation-5-slim",
+      "/products/samsung-55-neo-qled-qn90c",
+      "/search?sort=popular",
+      "/products/samsung-galaxy-watch-6-classic-44mm",
+      "/products/nike-air-max-270-running-shoes",
+      "/products/xiaomi-mi-smart-band-8",
+      "/products/xiaomi-redmi-note-13-pro-256gb",
+      "/products/samsung-galaxy-tab-s9-128gb",
+      "/products/dell-ultrasharp-27-4k-usb-c-u2723de",
+      "/products/hp-spectre-x360-14",
+      "/search",
+      "/track-order",
+      "/shipping",
+      "/returns",
+      "/faq",
+      "/contact",
+      "/account",
+      "/account/orders",
+      "/wishlist",
+      "/privacy",
+      "/terms",
+      "/sitemap.xml"
+    ],
+    "youtubeHref": "https://www.youtube.com/@Boilabin",
+    "youtubeExact": true,
+    "bkashPresent": true,
+    "nagadPresent": true,
+    "visaPresent": true,
+    "mastercardPresent": true,
+    "codAbsent": true
+  },
+  "product": {
+    "path": "/products/iphone-15-pro-128gb",
+    "heading": "iPhone 15 Pro 128GB",
+    "hasAddToCart": true,
+    "hasBuyNow": true
+  },
+  "checkout": {
+    "pathname": "/auth/login",
+    "search": "?callbackUrl=/checkout&reason=checkout",
+    "hasPlaceOrder": false,
+    "ok": true
+  },
+  "productViewInterception": {
+    "intercepted": 1,
+    "fulfilled": 1,
+    "continued": 0,
+    "paths": [
+      {
+        "method": "POST",
+        "path": "/api/products/cmpxdfphp001n5jm0h8q80qgv/view"
+      }
+    ],
+    "ok": true
+  },
+  "eventSummary": {
+    "consoleErrors": [],
+    "failedRequests": [],
+    "serverErrors": []
+  },
+  "ok": true
+}
