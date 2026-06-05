@@ -33,6 +33,8 @@ describe('admin media orphan dry-run inventory', () => {
       assert.equal(inventory.privateEnvRead, false)
       assert.equal(inventory.databaseUsed, false)
       assert.equal(inventory.canDetermineOrphansWithoutDbReferences, false)
+      assert.equal(inventory.dbAwareReferenceAdapterAvailable, true)
+      assert.equal(inventory.dbAwareReferenceCheckEnabled, false)
       assert.deepEqual(
         inventory.roots.map((rootSummary: { label: string; fileCount: number }) => [
           rootSummary.label,
@@ -44,6 +46,7 @@ describe('admin media orphan dry-run inventory', () => {
         ],
       )
       assert.match(formatted, /"dryRun": true/)
+      assert.match(formatted, /explicit reference adapter/)
       assert.doesNotMatch(formatted, /banner-private-name/)
       assert.doesNotMatch(formatted, /product-private-name/)
       await assert.doesNotReject(fs.stat(adminFile))

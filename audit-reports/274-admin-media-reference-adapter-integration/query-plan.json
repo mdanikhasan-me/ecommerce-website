@@ -1,0 +1,108 @@
+{
+  "step": 274,
+  "adapter": "src/backend/admin/media-reference-adapter.ts",
+  "runtimeIntegration": "deferred",
+  "queryPlanner": {
+    "scalarWhereShape": {
+      "field": "candidateUrl"
+    },
+    "arrayWhereShape": {
+      "field": {
+        "has": "candidateUrl"
+      }
+    },
+    "exclusionShape": {
+      "NOT": {
+        "id": {
+          "in": ["field-and-value-matched-record-ids"]
+        }
+      }
+    }
+  },
+  "delegateMap": [
+    {
+      "fieldKey": "ProductImage.url",
+      "delegateName": "productImage",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "ProductVariant.image",
+      "delegateName": "productVariant",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Category.image",
+      "delegateName": "category",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Brand.logo",
+      "delegateName": "brand",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Brand.banner",
+      "delegateName": "brand",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Seller.storeLogo",
+      "delegateName": "seller",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Seller.storeBanner",
+      "delegateName": "seller",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Banner.imageUrl",
+      "delegateName": "banner",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "Banner.mobileImageUrl",
+      "delegateName": "banner",
+      "valueKind": "scalar",
+      "referenceKind": "active-record"
+    },
+    {
+      "fieldKey": "OrderItem.imageUrl",
+      "delegateName": "orderItem",
+      "valueKind": "scalar",
+      "referenceKind": "historical-evidence"
+    },
+    {
+      "fieldKey": "ReturnRequest.images",
+      "delegateName": "returnRequest",
+      "valueKind": "array",
+      "referenceKind": "historical-evidence"
+    },
+    {
+      "fieldKey": "Review.images",
+      "delegateName": "review",
+      "valueKind": "array",
+      "referenceKind": "historical-evidence"
+    },
+    {
+      "fieldKey": "User.image",
+      "delegateName": "user",
+      "valueKind": "scalar",
+      "referenceKind": "historical-evidence"
+    }
+  ],
+  "notes": [
+    "Adapter is read-only and injected.",
+    "Tests use mocked Prisma-like delegates only.",
+    "Missing delegates, unconfigured fields, invalid counts, and thrown errors produce incomplete results.",
+    "No matched records or PII are returned."
+  ]
+}

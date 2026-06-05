@@ -81,7 +81,10 @@ export async function collectAdminMediaOrphanInventory({
     privateEnvRead: false,
     databaseUsed: false,
     canDetermineOrphansWithoutDbReferences: false,
-    note: 'Read-only inventory only. This script does not delete files and does not prove orphan status.',
+    dbAwareReferenceAdapterAvailable: true,
+    dbAwareReferenceCheckEnabled: false,
+    note:
+      'Read-only inventory only. This script does not delete files and does not prove orphan status. DB-aware confirmation requires an explicit reference adapter and is not enabled by default.',
     roots,
   }
 }
