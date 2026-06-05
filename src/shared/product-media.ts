@@ -7,6 +7,8 @@ export type CatalogProductMediaSource =
 
 export type CatalogProductMediaEntry = {
   slug: string
+  categorySlug: string
+  subcategorySlug: string
   path: `${typeof CATALOG_PRODUCT_MEDIA_ROOT}/${string}`
   sourceType: CatalogProductMediaSource
   sourceControlled: true
@@ -17,7 +19,9 @@ export type CatalogProductMediaEntry = {
 export const CATALOG_PRODUCT_MEDIA = [
   {
     slug: 'iphone-15-pro-128gb',
-    path: '/assets/products/catalog/iphone-15-pro-128gb.jpg',
+    categorySlug: 'electronics',
+    subcategorySlug: 'mobile-phones',
+    path: '/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg',
     sourceType: 'existing-local-source-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -25,7 +29,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'samsung-galaxy-s24-ultra-256gb',
-    path: '/assets/products/catalog/samsung-galaxy-s24-ultra-256gb.jpg',
+    categorySlug: 'electronics',
+    subcategorySlug: 'mobile-phones',
+    path: '/assets/products/catalog/electronics/mobile-phones/samsung-galaxy-s24-ultra-256gb/main.jpg',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -33,7 +39,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'xiaomi-buds-4-pro',
-    path: '/assets/products/catalog/xiaomi-buds-4-pro.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'audio',
+    path: '/assets/products/catalog/electronics/audio/xiaomi-buds-4-pro/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -41,7 +49,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'sony-wh-1000xm5',
-    path: '/assets/products/catalog/sony-wh-1000xm5.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'audio',
+    path: '/assets/products/catalog/electronics/audio/sony-wh-1000xm5/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -49,7 +59,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'dell-xps-15-9520-i7-oled',
-    path: '/assets/products/catalog/dell-xps-15-9520-i7-oled.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'laptops',
+    path: '/assets/products/catalog/electronics/laptops/dell-xps-15-9520-i7-oled/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -57,7 +69,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'hp-spectre-x360-14',
-    path: '/assets/products/catalog/hp-spectre-x360-14.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'laptops',
+    path: '/assets/products/catalog/electronics/laptops/hp-spectre-x360-14/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -65,7 +79,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'apple-watch-series-9-41mm',
-    path: '/assets/products/catalog/apple-watch-series-9-41mm.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'wearables',
+    path: '/assets/products/catalog/electronics/wearables/apple-watch-series-9-41mm/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -73,7 +89,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'samsung-galaxy-watch-6-classic-44mm',
-    path: '/assets/products/catalog/samsung-galaxy-watch-6-classic-44mm.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'wearables',
+    path: '/assets/products/catalog/electronics/wearables/samsung-galaxy-watch-6-classic-44mm/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -81,7 +99,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'anker-737-power-bank-24000mah',
-    path: '/assets/products/catalog/anker-737-power-bank-24000mah.webp',
+    categorySlug: 'electronics',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/electronics/general/anker-737-power-bank-24000mah/main.webp',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -89,7 +109,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'sony-playstation-5-slim',
-    path: '/assets/products/catalog/sony-playstation-5-slim.avif',
+    categorySlug: 'gaming',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/gaming/general/sony-playstation-5-slim/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -97,7 +119,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'xiaomi-pad-6-128gb-wifi',
-    path: '/assets/products/catalog/xiaomi-pad-6-128gb-wifi.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/electronics/general/xiaomi-pad-6-128gb-wifi/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -105,7 +129,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'nike-air-max-270-running-shoes',
-    path: '/assets/products/catalog/nike-air-max-270-running-shoes.avif',
+    categorySlug: 'sports-fitness',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/sports-fitness/general/nike-air-max-270-running-shoes/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -113,7 +139,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'bose-quietcomfort-45-headphones',
-    path: '/assets/products/catalog/bose-quietcomfort-45-headphones.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'audio',
+    path: '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -121,7 +149,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'samsung-55-neo-qled-qn90c',
-    path: '/assets/products/catalog/samsung-55-neo-qled-qn90c.avif',
+    categorySlug: 'home-appliances',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/home-appliances/general/samsung-55-neo-qled-qn90c/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -129,7 +159,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'sony-alpha-a7-iv-mirrorless-body',
-    path: '/assets/products/catalog/sony-alpha-a7-iv-mirrorless-body.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/electronics/general/sony-alpha-a7-iv-mirrorless-body/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -137,7 +169,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'xiaomi-mi-smart-band-8',
-    path: '/assets/products/catalog/xiaomi-mi-smart-band-8.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'wearables',
+    path: '/assets/products/catalog/electronics/wearables/xiaomi-mi-smart-band-8/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -145,7 +179,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'anker-511-nano-pro-65w-charger',
-    path: '/assets/products/catalog/anker-511-nano-pro-65w-charger.jpg',
+    categorySlug: 'electronics',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/electronics/general/anker-511-nano-pro-65w-charger/main.jpg',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -153,7 +189,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'apple-airpods-pro-2nd-gen',
-    path: '/assets/products/catalog/apple-airpods-pro-2nd-gen.avif',
+    categorySlug: 'electronics',
+    subcategorySlug: 'audio',
+    path: '/assets/products/catalog/electronics/audio/apple-airpods-pro-2nd-gen/main.avif',
     sourceType: 'existing-repo-seed-remote-localized',
     sourceControlled: true,
     ownerReviewNeeded: true,
@@ -161,7 +199,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'dell-ultrasharp-27-4k-usb-c-u2723de',
-    path: '/assets/products/catalog/dell-ultrasharp-27-4k-usb-c-u2723de.jpg',
+    categorySlug: 'electronics',
+    subcategorySlug: 'laptops',
+    path: '/assets/products/catalog/electronics/laptops/dell-ultrasharp-27-4k-usb-c-u2723de/main.jpg',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -169,7 +209,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'samsung-galaxy-tab-s9-128gb',
-    path: '/assets/products/catalog/samsung-galaxy-tab-s9-128gb.jpg',
+    categorySlug: 'electronics',
+    subcategorySlug: 'general',
+    path: '/assets/products/catalog/electronics/general/samsung-galaxy-tab-s9-128gb/main.jpg',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,
@@ -177,7 +219,9 @@ export const CATALOG_PRODUCT_MEDIA = [
   },
   {
     slug: 'xiaomi-redmi-note-13-pro-256gb',
-    path: '/assets/products/catalog/xiaomi-redmi-note-13-pro-256gb.webp',
+    categorySlug: 'electronics',
+    subcategorySlug: 'mobile-phones',
+    path: '/assets/products/catalog/electronics/mobile-phones/xiaomi-redmi-note-13-pro-256gb/main.webp',
     sourceType: 'committed-managed-demo-upload-copied',
     sourceControlled: true,
     ownerReviewNeeded: false,

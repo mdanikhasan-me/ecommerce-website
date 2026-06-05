@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Heart, ShoppingCart, Star, Eye, BarChart2 } from 'lucide-react'
 import { useCartStore, useWishlistStore, useCompareStore } from '@/frontend/stores'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
 import { ProductCardData } from '@/backend/types'
 import toast from 'react-hot-toast'
@@ -93,7 +93,7 @@ export function ProductCard({
             <h3 className="mt-0.5 min-h-[2.35rem] line-clamp-2 text-[13px] font-semibold leading-[1.15rem] text-foreground sm:mt-1 sm:text-[15px] sm:leading-6">{product.name}</h3>
           </Link>
           <div className="mt-1 flex min-h-[1rem] items-center gap-1" role="img" aria-label={ratingLabel}>
-            <Star className="h-3 w-3 star-filled" aria-hidden="true" />
+            <LocalIcon name="star-filled" className="h-3 w-3 star-filled" />
             <span className="text-[12px] font-semibold text-foreground/80">{product.rating.toFixed(1)}</span>
             <span className="text-[12px] font-medium text-foreground/55">
               {product.reviewCount > 0 ? `(${product.reviewCount})` : '(No reviews yet)'}
@@ -108,7 +108,7 @@ export function ProductCard({
         </div>
         <div className="flex flex-col items-end justify-between gap-2">
           <button type="button" aria-label={wishlistActionLabel} title={wishlistActionLabel} onClick={handleWishlist} className={cn('p-1.5 rounded-lg hover:bg-secondary transition-colors', isWished && 'text-red-500')}>
-            <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
+            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
           </button>
           <button type="button" aria-label={addToCartActionLabel} title={addToCartActionLabel} onClick={handleAddToCart} disabled={!inStock} className="btn-primary px-3 py-1.5 text-xs">
             Add to Cart
@@ -134,7 +134,7 @@ export function ProductCard({
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-              <Eye className="h-8 w-8" />
+              <LocalIcon name="eye" className="h-8 w-8" />
             </div>
           )}
 
@@ -156,7 +156,7 @@ export function ProductCard({
             )}
             aria-label={wishlistActionLabel}
           >
-            <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
+            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
           </button>
           <button type="button"
             onClick={(e) => {
@@ -179,7 +179,7 @@ export function ProductCard({
             aria-label={compareActionLabel}
             title={compareActionLabel}
           >
-            <BarChart2 className="h-4 w-4" />
+            <LocalIcon name="compare" className="h-4 w-4" />
           </button>
         </div>
 
@@ -190,7 +190,7 @@ export function ProductCard({
               aria-label={addToCartActionLabel}
               className="flex w-full items-center justify-center gap-1.5 bg-primary py-2 text-xs font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:gap-2 sm:py-3 sm:text-sm"
             >
-              <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <LocalIcon name="cart" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Add to Cart
             </button>
           </div>
@@ -204,9 +204,9 @@ export function ProductCard({
 
         <div className="mt-2 flex min-h-[0.9rem] items-center gap-0.5 sm:mt-2.5 sm:gap-1.5" role="img" aria-label={ratingLabel}>
           {[1, 2, 3, 4, 5].map((star) => (
-            <Star
+            <LocalIcon
+              name={star <= Math.round(product.rating) ? 'star-filled' : 'star'}
               key={star}
-              aria-hidden="true"
               className={cn('h-2.5 w-2.5 sm:h-3 sm:w-3', star <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
             />
           ))}

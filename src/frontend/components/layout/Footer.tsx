@@ -1,26 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import {
-  ChevronDown,
-  Facebook,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone,
-  Youtube,
-} from 'lucide-react'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
 import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
 
 const SOCIAL_LINKS = [
-  { icon: Facebook, href: FACEBOOK_URL, label: 'Facebook' },
-  { icon: Instagram, href: INSTAGRAM_URL, label: 'Instagram' },
-  { icon: Youtube, href: YOUTUBE_URL, label: 'YouTube' },
-]
+  { icon: 'facebook', href: FACEBOOK_URL, label: 'Facebook' },
+  { icon: 'instagram', href: INSTAGRAM_URL, label: 'Instagram' },
+  { icon: 'youtube', href: YOUTUBE_URL, label: 'YouTube' },
+] as const satisfies ReadonlyArray<{ icon: StorefrontIconName; href: string; label: string }>
 
 // Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
@@ -117,16 +110,16 @@ export function Footer() {
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:text-foreground"
                 >
-                  <Mail className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
+                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:text-foreground"
                 >
-                  <Phone className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
                 </a>
                 <span className="hidden items-center gap-1.5 min-[600px]:inline-flex">
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-primary/70" /> {CONTACT_ADDRESS}
+                  <LocalIcon name="location" className="h-3.5 w-3.5 shrink-0 text-primary/70" /> {CONTACT_ADDRESS}
                 </span>
               </div>
               <div className="mt-3 flex items-center gap-2">
@@ -139,7 +132,7 @@ export function Footer() {
                     aria-label={item.label}
                     className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
-                    <item.icon className="h-4 w-4" />
+                    <LocalIcon name={item.icon} className="h-4 w-4" />
                   </a>
                 ))}
               </div>
@@ -179,7 +172,7 @@ export function Footer() {
                 >
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2.5 text-[0.92rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
-                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
                   <ul className="space-y-0.5 pb-2">
                     {section.links.map((link) => (

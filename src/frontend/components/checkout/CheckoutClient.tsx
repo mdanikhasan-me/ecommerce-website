@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { MapPin, CreditCard, Truck, Check, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, applyCoupon, cn } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import toast from 'react-hot-toast'
@@ -135,7 +136,7 @@ export function CheckoutClient() {
                   'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-all',
                   i < step ? 'bg-primary text-white' : i === step ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'
                 )}>
-                  {i < step ? <Check className="h-4 w-4" /> : i + 1}
+                  {i < step ? <LocalIcon name="check" className="h-4 w-4" /> : i + 1}
                 </div>
                 <span className={cn('hidden truncate text-sm font-medium sm:block', i <= step ? 'text-foreground' : 'text-muted-foreground')}>
                   {s}
@@ -154,7 +155,7 @@ export function CheckoutClient() {
             {step === 0 && (
               <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)] sm:p-6">
                 <h2 className="font-display font-semibold text-lg mb-5 flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" /> Delivery Address
+                  <LocalIcon name="location" className="h-5 w-5 text-primary" /> Delivery Address
                 </h2>
 
                 <form onSubmit={handleSubmit(onAddressSubmit)} className="space-y-4">
@@ -214,7 +215,7 @@ export function CheckoutClient() {
             {step === 1 && (
               <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_34px_rgba(23,18,15,0.05)] sm:p-6">
                 <h2 className="font-display font-semibold text-lg mb-5 flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-primary" /> Payment Method
+                  <LocalIcon name="credit-card" className="h-5 w-5 text-primary" /> Payment Method
                 </h2>
 
                 <div className="space-y-3">
@@ -290,7 +291,7 @@ export function CheckoutClient() {
                           </div>
                         ) : null}
                         {selectedPayment === gateway.id && gateway.isAvailable ? (
-                          <Check className="h-4 w-4 flex-shrink-0 text-primary" />
+                          <LocalIcon name="check" className="h-4 w-4 flex-shrink-0 text-primary" />
                         ) : null}
                       </div>
                     </label>
@@ -387,7 +388,7 @@ export function CheckoutClient() {
               </div>
 
               <div className="mt-4 p-3 bg-green-50 rounded-xl text-green-700 text-xs text-center font-medium">
-                <Truck className="h-4 w-4 inline mr-1.5" />
+                <LocalIcon name="truck" className="mr-1.5 inline h-4 w-4" />
                 Delivery timing depends on address and availability
               </div>
             </div>

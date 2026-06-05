@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { getCategoryMediaPath } from '@/shared/category-media'
 
@@ -39,7 +39,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           className="editorial-link group self-start"
         >
           All categories
-          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          <LocalIcon name="arrow-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
         </Link>
       </div>
 
@@ -88,7 +88,7 @@ function MobileCategoryTile({ category }: { category: Category }) {
         </div>
 
         <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)]">
-          <ArrowRight className="h-3.5 w-3.5" />
+          <LocalIcon name="arrow-right" className="h-3.5 w-3.5" />
         </span>
       </div>
 
@@ -132,7 +132,7 @@ function CategoryTile({ category }: { category: Category }) {
         </div>
 
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
-          <ArrowRight className="h-4 w-4" />
+          <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>
 

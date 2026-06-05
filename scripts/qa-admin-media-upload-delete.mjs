@@ -76,6 +76,7 @@ function createFlowSummary() {
   return {
     created: false,
     uploadedToExpectedRoot: false,
+    uploadedToNestedTaxonomyRoot: false,
     physicalFileAppeared: false,
     activeReferencePreserved: false,
     replaced: false,
@@ -128,6 +129,23 @@ async function loadAppMediaHelpers(env) {
 
 function isExpectedRoot(url, root) {
   return typeof url === 'string' && url.startsWith(root)
+}
+
+function sanitizeExpectedMediaPathSegment(value, fallback = 'general') {
+  const raw = String(value ?? '').trim().toLowerCase()
+
+  if (!raw || /[\0-\x1f\x7f]/.test(raw) || raw.includes('..') || /[\\/]/.test(raw)) {
+    return fallback
+  }
+
+  const sanitized = raw
+    .replace(/['"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+
+  return sanitized || fallback
 }
 
 function publicFilePathForUrl(url, publicRoot = path.resolve(process.cwd(), 'public')) {
@@ -264,6 +282,7 @@ async function runProductFlow({
   const [firstImage] = await helpers.productEditor.normalizeProductImages(
     [{ url: imageA, alt: 'QA product image' }],
     slug,
+    { categorySlug: 'qa-category', subcategorySlug: 'qa-subcategory' },
   )
   createdUrls.add(firstImage.url)
 
@@ -296,6 +315,10 @@ async function runProductFlow({
   evidence.tempRecordTypesTested.push('product')
   evidence.product.created = true
   evidence.product.uploadedToExpectedRoot = isExpectedRoot(firstImage.url, UPLOAD_ROOTS.product)
+  evidence.product.uploadedToNestedTaxonomyRoot = isExpectedRoot(
+    firstImage.url,
+    `${UPLOAD_ROOTS.product}qa-category/qa-subcategory/${sanitizeExpectedMediaPathSegment(slug, 'product')}/`,
+  )
   evidence.product.physicalFileAppeared = await fileExistsForUrl(firstImage.url)
 
   const activeDelete = await helpers.productEditor.deleteManagedUpload(firstImage.url, { referenceSource })
@@ -305,6 +328,7 @@ async function runProductFlow({
   const [secondImage] = await helpers.productEditor.normalizeProductImages(
     [{ url: imageB, alt: 'QA product replacement image' }],
     slug,
+    { categorySlug: 'qa-category', subcategorySlug: 'qa-subcategory' },
   )
   createdUrls.add(secondImage.url)
 
@@ -344,7 +368,11 @@ async function runProductVariantPreservationFlow({
   const name = tempName(runId, 'variant_product')
   const slug = `${QA_PREFIX}-variant-product-${runId}`
   const sku = `${QA_PREFIX.toUpperCase()}-VAR-${runId}`
-  const [image] = await helpers.productEditor.normalizeProductImages([{ url: imageA, alt: 'QA variant image' }], slug)
+  const [image] = await helpers.productEditor.normalizeProductImages(
+    [{ url: imageA, alt: 'QA variant image' }],
+    slug,
+    { categorySlug: 'qa-category', subcategorySlug: 'qa-subcategory' },
+  )
   createdUrls.add(image.url)
 
   const seller = await prisma.seller.findFirst({
@@ -398,12 +426,17 @@ async function runBannerFlow({
   createdUrls,
   evidence,
 }) {
-  const firstUrl = await helpers.adminUtils.persistAdminUpload(imageA, 'banners')
+  const bannerOwner = tempName(runId, 'banner')
+  const firstUrl = await helpers.adminUtils.persistAdminUpload(imageA, {
+    purpose: 'banners',
+    ownerSlugOrId: bannerOwner,
+    mediaId: 'desktop',
+  })
   createdUrls.add(firstUrl)
 
   const banner = await prisma.banner.create({
     data: {
-      title: tempName(runId, 'banner'),
+      title: bannerOwner,
       imageUrl: firstUrl,
       position: `${QA_PREFIX}_position_${runId}`,
       isActive: false,
@@ -414,12 +447,20 @@ async function runBannerFlow({
   evidence.tempRecordTypesTested.push('banner')
   evidence.banner.created = true
   evidence.banner.uploadedToExpectedRoot = isExpectedRoot(firstUrl, UPLOAD_ROOTS.banner)
+  evidence.banner.uploadedToNestedTaxonomyRoot = isExpectedRoot(
+    firstUrl,
+    `${UPLOAD_ROOTS.banner}${sanitizeExpectedMediaPathSegment(bannerOwner, 'banner')}/`,
+  )
   evidence.banner.physicalFileAppeared = await fileExistsForUrl(firstUrl)
 
   const activeDelete = await helpers.adminUtils.deleteManagedAdminUpload(firstUrl, { referenceSource })
   evidence.banner.activeReferencePreserved = activeDelete === false && await fileExistsForUrl(firstUrl)
 
-  const secondUrl = await helpers.adminUtils.persistAdminUpload(imageB, 'banners')
+  const secondUrl = await helpers.adminUtils.persistAdminUpload(imageB, {
+    purpose: 'banners',
+    ownerSlugOrId: bannerOwner,
+    mediaId: 'desktop',
+  })
   createdUrls.add(secondUrl)
   await prisma.banner.update({
     where: { id: banner.id },
@@ -450,7 +491,12 @@ async function runAdminSharedPreservationFlow({
   createdUrls,
   evidence,
 }) {
-  const sharedUrl = await helpers.adminUtils.persistAdminUpload(imageA, 'banners')
+  const sharedOwner = tempName(runId, 'shared_banner')
+  const sharedUrl = await helpers.adminUtils.persistAdminUpload(imageA, {
+    purpose: 'banners',
+    ownerSlugOrId: sharedOwner,
+    mediaId: 'desktop',
+  })
   createdUrls.add(sharedUrl)
 
   const [first, second] = await Promise.all([
@@ -490,12 +536,17 @@ async function runCategoryFlow({
   createdUrls,
   evidence,
 }) {
-  const firstUrl = await helpers.adminUtils.persistAdminUpload(imageA, 'categories')
+  const categorySlug = `${QA_PREFIX}-category-${runId}`
+  const firstUrl = await helpers.adminUtils.persistAdminUpload(imageA, {
+    purpose: 'categories',
+    ownerSlugOrId: categorySlug,
+    mediaId: 'image',
+  })
   createdUrls.add(firstUrl)
   const category = await prisma.category.create({
     data: {
       name: tempName(runId, 'category'),
-      slug: `${QA_PREFIX}-category-${runId}`,
+      slug: categorySlug,
       image: firstUrl,
       isActive: false,
     },
@@ -505,12 +556,20 @@ async function runCategoryFlow({
   evidence.tempRecordTypesTested.push('category')
   evidence.category.created = true
   evidence.category.uploadedToExpectedRoot = isExpectedRoot(firstUrl, UPLOAD_ROOTS.category)
+  evidence.category.uploadedToNestedTaxonomyRoot = isExpectedRoot(
+    firstUrl,
+    `${UPLOAD_ROOTS.category}${sanitizeExpectedMediaPathSegment(categorySlug, 'category')}/`,
+  )
   evidence.category.physicalFileAppeared = await fileExistsForUrl(firstUrl)
 
   const activeDelete = await helpers.adminUtils.deleteManagedAdminUpload(firstUrl, { referenceSource })
   evidence.category.activeReferencePreserved = activeDelete === false && await fileExistsForUrl(firstUrl)
 
-  const secondUrl = await helpers.adminUtils.persistAdminUpload(imageB, 'categories')
+  const secondUrl = await helpers.adminUtils.persistAdminUpload(imageB, {
+    purpose: 'categories',
+    ownerSlugOrId: categorySlug,
+    mediaId: 'image',
+  })
   createdUrls.add(secondUrl)
   await prisma.category.update({ where: { id: category.id }, data: { image: secondUrl } })
 
@@ -532,10 +591,15 @@ async function runCategoryFlow({
 }
 
 async function runSyntheticPreservationChecks({ helpers, imageA, createdUrls, evidence }) {
-  const adminUrl = await helpers.adminUtils.persistAdminUpload(imageA, 'banners')
+  const adminUrl = await helpers.adminUtils.persistAdminUpload(imageA, {
+    purpose: 'banners',
+    ownerSlugOrId: `${QA_PREFIX}-synthetic-banner`,
+    mediaId: 'desktop',
+  })
   const productUrl = (await helpers.productEditor.normalizeProductImages(
     [{ url: imageA, alt: 'QA synthetic product image' }],
     `${QA_PREFIX}-synthetic`,
+    { categorySlug: 'qa-category', subcategorySlug: 'qa-subcategory' },
   ))[0].url
   createdUrls.add(adminUrl)
   createdUrls.add(productUrl)
@@ -566,6 +630,7 @@ function assertCoreQaPassed(evidence) {
   const flowChecks = [
     evidence.product.created,
     evidence.product.uploadedToExpectedRoot,
+    evidence.product.uploadedToNestedTaxonomyRoot,
     evidence.product.physicalFileAppeared,
     evidence.product.activeReferencePreserved,
     evidence.product.replaced,
@@ -575,6 +640,7 @@ function assertCoreQaPassed(evidence) {
     evidence.product.deleteRemovedCurrentFile,
     evidence.banner.created,
     evidence.banner.uploadedToExpectedRoot,
+    evidence.banner.uploadedToNestedTaxonomyRoot,
     evidence.banner.physicalFileAppeared,
     evidence.banner.activeReferencePreserved,
     evidence.banner.replaced,
@@ -584,6 +650,7 @@ function assertCoreQaPassed(evidence) {
     evidence.banner.deleteRemovedCurrentFile,
     evidence.category.created,
     evidence.category.uploadedToExpectedRoot,
+    evidence.category.uploadedToNestedTaxonomyRoot,
     evidence.category.physicalFileAppeared,
     evidence.category.activeReferencePreserved,
     evidence.category.replaced,

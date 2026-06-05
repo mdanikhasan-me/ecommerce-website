@@ -4,19 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import {
-  ShoppingCart,
-  Heart,
-  BarChart2,
-  Share2,
-  Shield,
-  Truck,
-  RefreshCcw,
-  Star,
-  Plus,
-  Minus,
-  Zap,
-} from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore, useWishlistStore, useCompareStore } from '@/frontend/stores'
 import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
 import type { ProductDetailData, VariantData } from '@/backend/types'
@@ -192,7 +180,11 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className={cn('h-4 w-4', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')} />
+                <LocalIcon
+                  key={s}
+                  name={s <= Math.round(product.rating) ? 'star-filled' : 'star'}
+                  className={cn('h-4 w-4', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
+                />
               ))}
             </div>
             <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
@@ -260,7 +252,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="p-2.5 transition-colors hover:bg-secondary"
               >
-                <Minus className="h-4 w-4" />
+                <LocalIcon name="minus" className="h-4 w-4" />
               </button>
               <span className="w-12 text-center text-sm font-semibold">{quantity}</span>
               <button
@@ -270,7 +262,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 onClick={() => setQuantity(Math.min(stock, quantity + 1))}
                 className="p-2.5 transition-colors hover:bg-secondary"
               >
-                <Plus className="h-4 w-4" />
+                <LocalIcon name="plus" className="h-4 w-4" />
               </button>
             </div>
             <span className={cn('text-sm font-medium', stockColor)}>{stockLabel}</span>
@@ -284,7 +276,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             disabled={!inStock}
             className="btn-outline flex items-center justify-center gap-2 py-2.5"
           >
-            <ShoppingCart className="h-4 w-4" />
+            <LocalIcon name="shopping-cart" className="h-4 w-4" />
             Add to Cart
           </button>
           <button
@@ -293,7 +285,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             disabled={!inStock}
             className="btn-primary flex items-center justify-center gap-2 py-2.5"
           >
-            <Zap className="h-4 w-4" />
+            <LocalIcon name="zap" className="h-4 w-4" />
             Buy Now
           </button>
         </div>
@@ -311,7 +303,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               isWished ? 'border-red-200 bg-red-50 text-red-500' : 'border-border hover:border-red-200 hover:text-red-500'
             )}
           >
-            <Heart className={cn('h-4 w-4', isWished && 'fill-current')} />
+            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
             {isWished ? 'Wishlisted' : 'Wishlist'}
           </button>
           <button
@@ -330,7 +322,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               isCompared ? 'border-primary/30 bg-primary/5 text-primary' : 'border-border'
             )}
           >
-            <BarChart2 className="h-4 w-4" />
+            <LocalIcon name="bar-chart-2" className="h-4 w-4" />
             {isCompared ? 'Open compare' : 'Compare'}
           </button>
           <button
@@ -343,13 +335,13 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             }}
             className="flex items-center justify-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-medium transition-all hover:border-primary/50"
           >
-            <Share2 className="h-4 w-4" />
+            <LocalIcon name="share" className="h-4 w-4" />
           </button>
         </div>
 
         <div className="space-y-2.5 rounded-2xl bg-secondary p-3.5 sm:p-4">
           <div className="flex items-start gap-3 text-sm">
-            <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+            <LocalIcon name="truck" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
               <span className="font-medium">Free delivery</span>
               <span className="text-muted-foreground"> on orders over Tk 2,000</span>
@@ -357,14 +349,14 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm">
-            <RefreshCcw className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+            <LocalIcon name="refresh-ccw" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
               <span className="font-medium">Seven day return policy</span>
               <p className="mt-0.5 text-xs text-muted-foreground">Return eligibility is reviewed against the policy</p>
             </div>
           </div>
           <div className="flex items-start gap-3 text-sm">
-            <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+            <LocalIcon name="credit-card" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <div>
               <span className="font-medium">Checkout and payment</span>
               <p className="mt-0.5 text-xs text-muted-foreground">Cash on delivery is available for eligible orders.</p>

@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowRight, CheckCircle, CreditCard, MapPin, Package } from 'lucide-react'
 
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { generateNoIndexPageMetadata } from '@/backend/seo'
 import { formatPrice } from '@/backend/utils'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -43,7 +43,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
       <div className="max-w-2xl">
         <div className="mb-10 text-center">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-10 w-10 text-green-600" />
+            <LocalIcon name="check-circle" className="h-10 w-10 text-green-600" />
           </div>
           <h1 className="font-display text-3xl font-bold">Order Confirmed!</h1>
           <p className="mt-2 text-muted-foreground">
@@ -58,7 +58,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
         <div className="space-y-4">
           <div className="overflow-hidden rounded-2xl border border-border bg-card">
             <div className="flex items-center gap-2 border-b border-border px-5 py-4 font-semibold">
-              <Package className="h-4 w-4 text-primary" /> Order Items
+              <LocalIcon name="package" className="h-4 w-4 text-primary" /> Order Items
             </div>
             <div className="divide-y divide-border">
               {order.items.map((item) => (
@@ -94,7 +94,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
             {order.address ? (
               <div className="rounded-2xl border border-border bg-card p-5">
                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                  <MapPin className="h-4 w-4 text-primary" /> Delivery Address
+                  <LocalIcon name="location" className="h-4 w-4 text-primary" /> Delivery Address
                 </div>
                 <div className="space-y-0.5 text-sm text-muted-foreground">
                   <p className="font-medium text-foreground">{order.address.fullName}</p>
@@ -110,7 +110,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
             <div className="rounded-2xl border border-border bg-card p-5">
               <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <CreditCard className="h-4 w-4 text-primary" /> Payment
+                <LocalIcon name="credit-card" className="h-4 w-4 text-primary" /> Payment
               </div>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
@@ -134,7 +134,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href="/account/orders" className="btn-primary flex flex-1 items-center justify-center gap-2">
-            Track Order <ArrowRight className="h-4 w-4" />
+            Track Order <LocalIcon name="arrow-right" className="h-4 w-4" />
           </Link>
           <Link href="/" className="btn-outline flex flex-1 items-center justify-center">
             Continue Shopping

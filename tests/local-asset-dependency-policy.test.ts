@@ -121,8 +121,10 @@ describe('local asset dependency policy', () => {
     ])
 
     assert.match(footerSource, /https:\/\/www\.youtube\.com\/@Boilabin/)
-    assert.match(footerSource, /from 'lucide-react'/)
-    assert.match(headerSource, /from 'lucide-react'/)
+    assert.match(footerSource, /LocalIcon/)
+    assert.match(headerSource, /LocalIcon/)
+    assert.doesNotMatch(footerSource, /from 'lucide-react'/)
+    assert.doesNotMatch(headerSource, /from 'lucide-react'/)
     assert.match(headerSource, /BoilabinLogo/)
     assert.doesNotMatch(footerSource, /PAYMENT_ASSETS\.CASH_ON_DELIVERY/)
     assert.doesNotMatch(footerSource, /PAYMENT_ASSETS\.STRIPE/)

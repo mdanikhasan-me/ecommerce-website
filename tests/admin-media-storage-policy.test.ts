@@ -40,6 +40,19 @@ describe('admin managed media storage policy', () => {
       '/assets/',
       '/images/',
     ])
+    assert.equal(
+      MANAGED_MEDIA_STORAGE_POLICY.currentProductUploadPattern,
+      '/uploads/products/<category>/<subcategory>/<product>/<media>-<timestamp>-<random>.<ext>',
+    )
+    assert.equal(
+      MANAGED_MEDIA_STORAGE_POLICY.currentAdminBannerUploadPattern,
+      '/uploads/admin/banners/<banner>/<media>-<timestamp>-<random>.<ext>',
+    )
+    assert.equal(
+      MANAGED_MEDIA_STORAGE_POLICY.currentAdminCategoryUploadPattern,
+      '/uploads/admin/categories/<category>/<media>-<timestamp>-<random>.<ext>',
+    )
+    assert.equal(MANAGED_MEDIA_STORAGE_POLICY.categoryFolderingRecommendation, 'current-local-organization-only')
     assert.equal(MANAGED_MEDIA_STORAGE_POLICY.categoryFolderingImprovesPerformance, false)
     assert.equal(MANAGED_MEDIA_STORAGE_POLICY.objectStorageImplemented, false)
     assert.equal(MANAGED_MEDIA_STORAGE_POLICY.deletionLedgerImplemented, false)

@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BarChart2, ShoppingCart, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { calculateDiscount, cn, formatPrice, getStockStatus } from '@/backend/utils'
 
 type CompareProduct = {
@@ -150,7 +150,7 @@ export default function ComparePage() {
       ) : orderedProducts.length === 0 ? (
         <div className="rounded-[32px] border border-border bg-card px-6 py-16 text-center shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <BarChart2 className="h-7 w-7" />
+            <LocalIcon name="compare" className="h-7 w-7" />
           </div>
           <h2 className="mt-5 font-display text-2xl font-semibold text-foreground">
             Your compare list is empty
@@ -185,7 +185,7 @@ export default function ComparePage() {
                         className="absolute right-4 top-4 rounded-full border border-border bg-background/90 p-2 text-muted-foreground shadow-sm transition-colors hover:border-destructive/20 hover:text-destructive"
                         aria-label={`Remove ${product.name} from compare`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <LocalIcon name="trash-2" className="h-4 w-4" />
                       </button>
 
                       <Link
@@ -330,7 +330,7 @@ export default function ComparePage() {
                         }}
                         className="btn-primary"
                       >
-                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        <LocalIcon name="cart" className="mr-2 h-4 w-4" />
                         Add to cart
                       </button>
                       <Link href={`/products/${product.slug}`} className="btn-outline">

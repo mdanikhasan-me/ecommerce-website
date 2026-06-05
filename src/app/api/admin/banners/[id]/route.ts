@@ -31,8 +31,17 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     const parsed = parseAdminBannerPayload(await req.json())
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
-    const imageUrl = await persistAdminUpload(payload.imageUrl, 'banners')
-    const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, 'banners')
+    const bannerOwner = existingBanner.id || payload.title || payload.position || 'banner'
+    const imageUrl = await persistAdminUpload(payload.imageUrl, {
+      purpose: 'banners',
+      ownerSlugOrId: bannerOwner,
+      mediaId: 'desktop',
+    })
+    const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, {
+      purpose: 'banners',
+      ownerSlugOrId: bannerOwner,
+      mediaId: 'mobile',
+    })
     const newUploads = [imageUrl, mobileImageUrl].filter(
       (url): url is string =>
         Boolean(

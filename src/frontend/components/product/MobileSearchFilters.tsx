@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 
 type MobileSearchFiltersProps = {
@@ -34,7 +34,7 @@ export function MobileSearchFilters({
         aria-label={`Open ${label.toLowerCase()} filters`}
         className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-semibold shadow-[0_10px_24px_rgba(23,18,15,0.05)] sm:gap-2 sm:px-4 sm:py-2 sm:text-sm"
       >
-        <SlidersHorizontal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <LocalIcon name="filter" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         Filters
       </button>
 
@@ -64,7 +64,7 @@ export function MobileSearchFilters({
                 onClick={() => setOpen(false)}
                 className="rounded-full border border-border bg-card p-2"
               >
-                <X className="h-4 w-4" />
+                <LocalIcon name="close" className="h-4 w-4" />
               </button>
             </div>
             <div className="max-h-[calc(86vh-4.5rem)] overflow-y-auto px-5 py-5">

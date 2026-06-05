@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = parsed.data
-    const { sellerId } = await validateProductRelations(payload)
+    const { sellerId, mediaTaxonomy } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name)
-    const images = await normalizeProductImages(payload.images, slug)
+    const images = await normalizeProductImages(payload.images, slug, mediaTaxonomy)
     const variants = normalizeVariants(payload.variants)
     const uploadedImageUrls = images.map((image) => image.url)
 

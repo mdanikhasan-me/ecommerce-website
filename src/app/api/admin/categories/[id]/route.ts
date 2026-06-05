@@ -42,7 +42,11 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     await assertValidCategoryParent(payload.parentId, existingCategory.id)
 
     const slug = await ensureUniqueSlug(payload.slug ?? payload.name, existingCategory.id)
-    const image = await persistAdminUpload(payload.image, 'categories')
+    const image = await persistAdminUpload(payload.image, {
+      purpose: 'categories',
+      ownerSlugOrId: slug,
+      mediaId: 'image',
+    })
     const newUploads = [image].filter(
       (url): url is string => Boolean(url && url !== existingCategory.image && url.startsWith('/uploads/admin/')),
     )

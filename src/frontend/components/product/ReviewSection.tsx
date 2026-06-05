@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Star, CheckCircle } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatDateRelative, cn } from '@/backend/utils'
 import toast from 'react-hot-toast'
 
@@ -39,7 +39,7 @@ function StarBar({ count, total, star }: { count: number; total: number; star: n
   return (
     <div className="flex items-center gap-3 text-sm">
       <span className="w-4 text-right text-muted-foreground">{star}</span>
-      <Star className="h-3.5 w-3.5 star-filled flex-shrink-0" />
+      <LocalIcon name="star-filled" className="h-3.5 w-3.5 star-filled flex-shrink-0" />
       <progress
         className="progress-track progress-amber flex-1"
         value={pct}
@@ -142,7 +142,11 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
               <span className="font-display text-6xl font-bold">{product.rating.toFixed(1)}</span>
               <div className="flex gap-0.5 my-2">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={cn('h-5 w-5', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')} />
+                  <LocalIcon
+                    key={s}
+                    name={s <= Math.round(product.rating) ? 'star-filled' : 'star'}
+                    className={cn('h-5 w-5', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
+                  />
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">{product.reviewCount} reviews</span>
@@ -178,8 +182,8 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
                         className="sr-only"
                       />
                       <span className="sr-only">Rate {s} {s === 1 ? 'star' : 'stars'}</span>
-                      <Star
-                        aria-hidden="true"
+                      <LocalIcon
+                        name={s <= (form.hoverRating || form.rating) ? 'star-filled' : 'star'}
                         className={cn('h-8 w-8 transition-colors', s <= (form.hoverRating || form.rating) ? 'star-filled' : 'text-muted')}
                       />
                     </label>
@@ -231,7 +235,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
           {/* Reviews List */}
           {sorted.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground">
-              <Star className="h-10 w-10 mx-auto mb-3 opacity-30" />
+              <LocalIcon name="star" className="h-10 w-10 mx-auto mb-3 opacity-30" />
               <p>No customer reviews yet.</p>
               {canWriteReview && !showForm && (
                 <button type="button" onClick={() => setShowForm(true)} className="mt-3 btn-primary">Leave a Review</button>
@@ -257,7 +261,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
                         <span className="font-medium text-sm">{review.user.name ?? 'Customer'}</span>
                         {review.isVerifiedBuy && (
                           <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
-                            <CheckCircle className="h-3 w-3" /> Verified Purchase
+                            <LocalIcon name="check-circle" className="h-3 w-3" /> Verified Purchase
                           </span>
                         )}
                         <span className="text-xs text-muted-foreground ml-auto">
@@ -267,7 +271,11 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
 
                       <div className="flex gap-0.5 mt-1 mb-2">
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <Star key={s} className={cn('h-3.5 w-3.5', s <= review.rating ? 'star-filled' : 'star-empty')} />
+                          <LocalIcon
+                            key={s}
+                            name={s <= review.rating ? 'star-filled' : 'star'}
+                            className={cn('h-3.5 w-3.5', s <= review.rating ? 'star-filled' : 'star-empty')}
+                          />
                         ))}
                       </div>
 

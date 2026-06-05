@@ -4,9 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Eye, EyeOff, Loader2, ShoppingBag } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 interface LoginFormProps {
   callbackUrl: string
@@ -59,7 +60,7 @@ export function LoginForm({ callbackUrl, reason }: LoginFormProps) {
         {/* Checkout gate message */}
         {reason === 'checkout' && (
           <div className="flex items-start gap-3 bg-accent/10 border border-accent/20 rounded-lg p-3.5 mb-5">
-            <ShoppingBag className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+            <LocalIcon name="shopping-bag" className="h-4 w-4 text-accent mt-0.5 shrink-0" />
             <div>
               <p className="text-sm font-medium text-foreground">Sign in to complete your order</p>
               <p className="text-xs text-muted-foreground mt-0.5">Your cart items are saved and ready for checkout.</p>
@@ -115,7 +116,7 @@ export function LoginForm({ callbackUrl, reason }: LoginFormProps) {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
                 </button>
               </div>
             </div>

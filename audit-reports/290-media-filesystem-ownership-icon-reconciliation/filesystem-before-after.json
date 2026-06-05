@@ -1,0 +1,38 @@
+{
+  "safeAggregateOnly": true,
+  "privateUploadFilenamesPrinted": false,
+  "deletionPerformed": false,
+  "realMediaFilesDeleted": false,
+  "before": {
+    "trackedCatalogFileCount": 21,
+    "trackedCatalogTopLevelFileCount": 0,
+    "trackedIconFileCount": 0,
+    "productCatalogShape": "flat source catalog files under public/assets/products/catalog",
+    "managedUploadTaxonomySupport": "flat managed roots existed and cleanup supported managed prefixes"
+  },
+  "after": {
+    "physicalCatalogFileCount": 25,
+    "physicalCatalogImageCount": 21,
+    "catalogCategoryFolderCount": 8,
+    "catalogSubcategoryFolderCount": 8,
+    "catalogProductFolderCount": 21,
+    "catalogCategoryFolders": [
+      "beauty-health",
+      "books-stationery",
+      "electronics",
+      "fashion",
+      "gaming",
+      "home-appliances",
+      "sports-fitness",
+      "toys-collectibles"
+    ],
+    "physicalIconFileCount": 49,
+    "physicalUiIconFileCount": 46,
+    "physicalSocialIconFileCount": 3,
+    "managedUploadTaxonomySupport": "new local path planners and upload integrations support nested product, banner, and category roots"
+  },
+  "notes": [
+    "Before counts come from git HEAD before this working-tree step; after counts come from the current filesystem.",
+    "public/uploads inventory remains aggregate-only; no public/uploads files are staged as evidence."
+  ]
+}

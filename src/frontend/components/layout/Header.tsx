@@ -4,31 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
-import {
-  ArrowRight,
-  BarChart2,
-  ChevronDown,
-  Grid3X3,
-  Heart,
-  HelpCircle,
-  LayoutDashboard,
-  LifeBuoy,
-  LogOut,
-  MapPin,
-  Menu,
-  Package,
-  RefreshCcw,
-  Search,
-  ShoppingCart,
-  Sparkles,
-  Truck,
-  User,
-  X,
-  Zap,
-} from 'lucide-react'
 import { cn } from '@/backend/utils'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
+import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 const NAV_CATEGORIES = [
   {
@@ -58,16 +38,22 @@ const NAV_CATEGORIES = [
   { name: 'Sports & Fitness', slug: 'sports-fitness', sub: [] },
 ]
 
-const MOBILE_SHOP_LINKS = [
-  { label: 'New Arrivals', href: '/new-arrivals', icon: Sparkles },
+type MobileMenuLink = {
+  label: string
+  href: string
+  icon: StorefrontIconName
+}
+
+const MOBILE_SHOP_LINKS: MobileMenuLink[] = [
+  { label: 'New Arrivals', href: '/new-arrivals', icon: 'sparkles' },
 ]
 
-const MOBILE_SUPPORT_LINKS = [
-  { label: 'Help Center', href: '/help', icon: LifeBuoy },
-  { label: 'Track Order', href: '/track-order', icon: Package },
-  { label: 'Contact Us', href: '/contact', icon: HelpCircle },
-  { label: 'Returns', href: '/returns', icon: RefreshCcw },
-  { label: 'Shipping Info', href: '/shipping', icon: Truck },
+const MOBILE_SUPPORT_LINKS: MobileMenuLink[] = [
+  { label: 'Help Center', href: '/help', icon: 'life-buoy' },
+  { label: 'Track Order', href: '/track-order', icon: 'package' },
+  { label: 'Contact Us', href: '/contact', icon: 'help-circle' },
+  { label: 'Returns', href: '/returns', icon: 'refresh-ccw' },
+  { label: 'Shipping Info', href: '/shipping', icon: 'truck' },
 ]
 
 type Suggestion =
@@ -165,7 +151,7 @@ export function Header() {
     <div data-search-root="true" ref={searchRef} className={cn('relative', className)}>
       <form onSubmit={handleSearch} className="flex items-center">
         <div className="relative w-full">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42 sm:left-4" />
+          <LocalIcon name="search" className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42 sm:left-4" />
           <input
             aria-label="Search products..."
             title="Search products..."
@@ -191,7 +177,7 @@ export function Header() {
               className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-secondary/70"
               onClick={() => setShowSuggestions(false)}
             >
-              <Search className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+              <LocalIcon name="search" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
               <span className="min-w-0 flex-1 truncate">{s.name}</span>
             </Link>
           ))}
@@ -205,7 +191,7 @@ export function Header() {
       <div className="border-b border-black/6 bg-foreground text-background">
         <div className="container-site flex min-h-8 items-center justify-between gap-3 text-[10px] tracking-[0.02em] text-background/84 sm:min-h-9 sm:text-[11px]">
           <span className="flex items-center gap-1.5 font-medium">
-            <Zap className="h-3 w-3 text-[hsl(var(--buttermilk))]" />
+            <LocalIcon name="zap" className="h-3 w-3 text-[hsl(var(--buttermilk))]" />
             Free delivery on orders over Tk 2,000
           </span>
           <div className="hidden items-center gap-5 sm:flex">
@@ -243,7 +229,7 @@ export function Header() {
                 aria-label="Compare products"
                 title="Compare products"
               >
-                <BarChart2 className="h-5 w-5" />
+                <LocalIcon name="compare" className="h-5 w-5" />
                 {compareCount > 0 ? (
                   <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                     {compareCount > 9 ? '9+' : compareCount}
@@ -258,7 +244,7 @@ export function Header() {
                 onClick={openCart}
                 className="relative rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2"
               >
-                <ShoppingCart className="h-5 w-5" />
+                <LocalIcon name="cart" className="h-5 w-5" />
                 {cartCount > 0 ? (
                   <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
                     {cartCount > 9 ? '9+' : cartCount}
@@ -289,7 +275,7 @@ export function Header() {
                         </span>
                       )}
                     </div>
-                    <ChevronDown className="hidden h-3 w-3 text-muted-foreground sm:block" />
+                    <LocalIcon name="chevron-down" className="hidden h-3 w-3 text-muted-foreground sm:block" />
                   </button>
 
                   <div className="invisible absolute right-0 top-full z-50 w-52 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
@@ -320,28 +306,28 @@ export function Header() {
                       <div className="p-1">
                         {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
                           <Link href="/admin" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary">
-                            <LayoutDashboard className="h-4 w-4" />
+                            <LocalIcon name="layout-dashboard" className="h-4 w-4" />
                             Admin Panel
                           </Link>
                         ) : null}
                         <Link href="/account" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <User className="h-4 w-4" />
+                          <LocalIcon name="user" className="h-4 w-4" />
                           My Account
                         </Link>
                         <Link href="/track-order" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <Package className="h-4 w-4" />
+                          <LocalIcon name="package" className="h-4 w-4" />
                           Track Order
                         </Link>
                         <Link href="/wishlist" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <Heart className="h-4 w-4" />
+                          <LocalIcon name="heart" className="h-4 w-4" />
                           Wishlist
                         </Link>
                         <Link href="/account/orders" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <Package className="h-4 w-4" />
+                          <LocalIcon name="package" className="h-4 w-4" />
                           My Orders
                         </Link>
                         <Link href="/account/addresses" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <MapPin className="h-4 w-4" />
+                          <LocalIcon name="location" className="h-4 w-4" />
                           Addresses
                         </Link>
                         <button
@@ -349,7 +335,7 @@ export function Header() {
                           onClick={() => signOut({ callbackUrl: '/' })}
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-destructive transition-colors hover:bg-secondary"
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LocalIcon name="log-out" className="h-4 w-4" />
                           Sign Out
                         </button>
                       </div>
@@ -361,7 +347,7 @@ export function Header() {
                   href="/auth/login"
                   className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90 sm:flex"
                 >
-                  <User className="h-4 w-4" />
+                  <LocalIcon name="user" className="h-4 w-4" />
                   <span>Sign In</span>
                 </Link>
               )}
@@ -377,7 +363,7 @@ export function Header() {
                 }}
                 className="rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2 lg:hidden"
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <LocalIcon name="close" className="h-5 w-5" /> : <LocalIcon name="menu" className="h-5 w-5" />}
               </button>
             </div>
           </div>
@@ -408,7 +394,7 @@ export function Header() {
                   )}
                 >
                   {cat.name}
-                  {cat.sub.length > 0 ? <ChevronDown className="h-3 w-3" /> : null}
+                  {cat.sub.length > 0 ? <LocalIcon name="chevron-down" className="h-3 w-3" /> : null}
                 </Link>
 
                 {hoveredCategory === cat.slug && cat.sub.length > 0 ? (
@@ -468,7 +454,7 @@ export function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-foreground"
                   >
-                    <X className="h-4 w-4" />
+                    <LocalIcon name="close" className="h-4 w-4" />
                   </button>
                 </div>
 
@@ -507,7 +493,7 @@ export function Header() {
                             className="flex items-center gap-2 rounded-2xl border border-primary/15 bg-primary/8 px-3 py-3 text-sm font-semibold text-primary"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            <LayoutDashboard className="h-4 w-4 shrink-0" />
+                            <LocalIcon name="layout-dashboard" className="h-4 w-4 shrink-0" />
                             <span className="truncate">Admin</span>
                           </Link>
                         ) : null}
@@ -516,7 +502,7 @@ export function Header() {
                           className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <User className="h-4 w-4 shrink-0" />
+                          <LocalIcon name="user" className="h-4 w-4 shrink-0" />
                           <span className="truncate">Account</span>
                         </Link>
                         <Link
@@ -524,7 +510,7 @@ export function Header() {
                           className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <Package className="h-4 w-4 shrink-0" />
+                          <LocalIcon name="package" className="h-4 w-4 shrink-0" />
                           <span className="truncate">Orders</span>
                         </Link>
                         <Link
@@ -532,7 +518,7 @@ export function Header() {
                           className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <Heart className="h-4 w-4 shrink-0" />
+                          <LocalIcon name="heart" className="h-4 w-4 shrink-0" />
                           <span className="truncate">Wishlist</span>
                         </Link>
                         <Link
@@ -541,7 +527,7 @@ export function Header() {
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <span className="flex min-w-0 items-center gap-2">
-                            <BarChart2 className="h-4 w-4 shrink-0" />
+                            <LocalIcon name="compare" className="h-4 w-4 shrink-0" />
                             <span className="truncate">Compare</span>
                           </span>
                           {compareCount > 0 ? (
@@ -560,7 +546,7 @@ export function Header() {
                         }}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm font-semibold text-destructive"
                       >
-                        <LogOut className="h-4 w-4" />
+                        <LocalIcon name="log-out" className="h-4 w-4" />
                         Sign Out
                       </button>
                     </div>
@@ -571,7 +557,7 @@ export function Header() {
                         className="btn-primary justify-center"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <User className="h-4 w-4" />
+                        <LocalIcon name="user" className="h-4 w-4" />
                         Sign In
                       </Link>
                       <Link
@@ -579,7 +565,7 @@ export function Header() {
                         className="flex items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <BarChart2 className="h-4 w-4" />
+                        <LocalIcon name="compare" className="h-4 w-4" />
                         Compare
                       </Link>
                     </div>
@@ -598,14 +584,15 @@ export function Header() {
                   >
                       <span className="flex min-w-0 items-center gap-3">
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <Grid3X3 className="h-4 w-4" />
+                          <LocalIcon name="grid" className="h-4 w-4" />
                         </span>
                         <span>
                           <span className="block text-sm font-semibold text-foreground">Shop categories</span>
                           <span className="mt-0.5 block text-xs text-muted-foreground">Departments and subcategories</span>
                         </span>
                       </span>
-                    <ChevronDown
+                    <LocalIcon
+                      name="chevron-down"
                       className={cn(
                         'h-4 w-4 shrink-0 text-muted-foreground transition-transform',
                         (expandedMobileCategory === 'all-categories' ||
@@ -641,7 +628,7 @@ export function Header() {
                                     setExpandedMobileCategory(isExpanded ? 'all-categories' : `category-${cat.slug}`)
                                   }
                                 >
-                                  <ChevronDown className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-180')} />
+                                  <LocalIcon name="chevron-down" className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-180')} />
                                 </button>
                               ) : null}
                             </div>
@@ -682,7 +669,7 @@ export function Header() {
                         )}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
+                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
                         <span className="truncate">{item.label}</span>
                       </Link>
                     ))}
@@ -702,10 +689,10 @@ export function Header() {
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <span className="flex min-w-0 items-center gap-3">
-                          <item.icon className="h-4 w-4 shrink-0 text-primary" />
+                          <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-primary" />
                           <span className="truncate">{item.label}</span>
                         </span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <LocalIcon name="arrow-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </Link>
                     ))}
                   </div>

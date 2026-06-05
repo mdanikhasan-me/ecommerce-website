@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { ArrowRight } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 type HomepageNewsletterFormProps = {
   variant?: 'dark' | 'light'
@@ -72,7 +72,7 @@ export function HomepageNewsletterForm({
         ) : (
           <>
             <span className={isInline ? 'hidden sm:inline' : undefined}>Subscribe</span>
-            {isInline ? <ArrowRight className="mx-auto h-4 w-4 sm:hidden" /> : null}
+            {isInline ? <LocalIcon name="arrow-right" className="mx-auto h-4 w-4 sm:hidden" /> : null}
           </>
         )}
       </button>

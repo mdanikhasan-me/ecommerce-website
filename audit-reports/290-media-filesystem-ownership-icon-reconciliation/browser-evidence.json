@@ -1,0 +1,116 @@
+{
+  "safeAggregateOnly": true,
+  "mode": "start",
+  "ok": true,
+  "routes": [
+    "/",
+    "/category",
+    "/category/electronics",
+    "/search?q=phone",
+    "/products/iphone-15-pro-128gb",
+    "/cart",
+    "/checkout",
+    "/track-order",
+    "/faq",
+    "/returns",
+    "/contact",
+    "/deals",
+    "/api/admin/flash-sales"
+  ],
+  "viewports": [
+    "mobile-360",
+    "mobile-390",
+    "mobile-430",
+    "narrow-480",
+    "small-600",
+    "mid-700",
+    "tablet-768",
+    "tablet-900",
+    "desktop-1024",
+    "desktop-1366"
+  ],
+  "routeCount": 13,
+  "viewportCount": 10,
+  "checkCount": 130,
+  "screenshotCount": 12,
+  "screenshots": [
+    {
+      "route": "/",
+      "viewport": "mobile-390",
+      "file": "screenshots/home-mobile-390.png"
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "mobile-390",
+      "file": "screenshots/category-electronics-mobile-390.png"
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "mobile-390",
+      "file": "screenshots/search-mobile-390.png"
+    },
+    {
+      "route": "/products/iphone-15-pro-128gb",
+      "viewport": "mobile-390",
+      "file": "screenshots/products-iphone-15-pro-128gb-mobile-390.png"
+    },
+    {
+      "route": "/cart",
+      "viewport": "mobile-390",
+      "file": "screenshots/cart-mobile-390.png"
+    },
+    {
+      "route": "/checkout",
+      "viewport": "mobile-390",
+      "file": "screenshots/checkout-mobile-390.png"
+    },
+    {
+      "route": "/track-order",
+      "viewport": "mobile-390",
+      "file": "screenshots/track-order-mobile-390.png"
+    },
+    {
+      "route": "/",
+      "viewport": "desktop-1366",
+      "file": "screenshots/home-desktop-1366.png"
+    },
+    {
+      "route": "/category/electronics",
+      "viewport": "desktop-1366",
+      "file": "screenshots/category-electronics-desktop-1366.png"
+    },
+    {
+      "route": "/search?q=phone",
+      "viewport": "desktop-1366",
+      "file": "screenshots/search-desktop-1366.png"
+    },
+    {
+      "route": "/products/iphone-15-pro-128gb",
+      "viewport": "desktop-1366",
+      "file": "screenshots/products-iphone-15-pro-128gb-desktop-1366.png"
+    },
+    {
+      "route": "/cart",
+      "viewport": "desktop-1366",
+      "file": "screenshots/cart-desktop-1366.png"
+    }
+  ],
+  "brokenImageCount": 0,
+  "missingIconCount": 0,
+  "failedRequestCount": 0,
+  "consoleErrorCount": 0,
+  "serverErrorCount": 0,
+  "horizontalOverflowCount": 0,
+  "productViewPostInterceptedCount": 10,
+  "removedRoutes": {
+    "dealsChecked": true,
+    "dealsOk": true,
+    "adminFlashSalesChecked": true,
+    "adminFlashSalesOk": true
+  },
+  "failedChecks": [],
+  "privateEnvRead": false,
+  "databaseMutationPerformed": false,
+  "rawUrlsStored": false,
+  "detailedEvidencePath": "audit-reports/290-media-filesystem-ownership-icon-reconciliation/browser/responsive-browser-evidence.json"
+}

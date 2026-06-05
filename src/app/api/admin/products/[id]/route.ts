@@ -45,10 +45,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     }
 
     const payload = parsed.data
-    const { sellerId } = await validateProductRelations(payload)
+    const { sellerId, mediaTaxonomy } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name, existingProduct.id)
-    const images = await normalizeProductImages(payload.images, slug)
+    const images = await normalizeProductImages(payload.images, slug, mediaTaxonomy)
     const variants = normalizeVariants(payload.variants)
     const existingImageUrls = existingProduct.images.map((image) => image.url)
     const nextImageUrls = images.map((image) => image.url)

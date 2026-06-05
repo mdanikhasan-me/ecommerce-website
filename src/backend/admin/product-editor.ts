@@ -9,6 +9,10 @@ import {
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
 import {
+  buildManagedProductUploadPath,
+  ProductMediaTaxonomy,
+} from '@/backend/admin/media-paths'
+import {
   AdminMediaReferenceExclusion,
   AdminMediaReferenceSource,
   planAdminMediaDeletionWithReferences,
@@ -271,16 +275,28 @@ export async function ensureUniqueProductSlug(rawSlug: string, excludeId?: strin
   }
 }
 
-async function persistImage(url: string, slug: string) {
+async function persistImage(
+  url: string,
+  slug: string,
+  taxonomy: ProductMediaTaxonomy | undefined,
+  index: number,
+) {
   if (!url.startsWith('data:image/')) {
     return url.trim()
   }
 
+  const uploadPath = buildManagedProductUploadPath({
+    categorySlug: taxonomy?.categorySlug,
+    subcategorySlug: taxonomy?.subcategorySlug,
+    productSlugOrId: slug,
+    mediaId: `image-${index + 1}`,
+  })
+
   return persistOptimizedImageUpload({
     dataUrl: url,
-    directorySegments: ['uploads', 'products'],
-    baseName: slug,
-    publicPathPrefix: '/uploads/products',
+    directorySegments: uploadPath.directorySegments,
+    baseName: uploadPath.baseName,
+    publicPathPrefix: uploadPath.publicPathPrefix,
     profile: 'products',
   })
 }
@@ -372,7 +388,11 @@ export async function cleanupManagedUploads(urls: string[], options: ProductMedi
   return Promise.all(urls.filter(isManagedUpload).map((url) => deleteManagedUpload(url, options)))
 }
 
-export async function normalizeProductImages(images: ProductImageInput[] | undefined, slug: string) {
+export async function normalizeProductImages(
+  images: ProductImageInput[] | undefined,
+  slug: string,
+  taxonomy?: ProductMediaTaxonomy,
+) {
   const cleanedInputs = (images ?? [])
     .map((image) => ({
       url: image.url?.trim() ?? '',
@@ -382,7 +402,7 @@ export async function normalizeProductImages(images: ProductImageInput[] | undef
 
   const normalized = []
   for (const [index, image] of cleanedInputs.entries()) {
-    const persistedUrl = await persistImage(image.url, slug)
+    const persistedUrl = await persistImage(image.url, slug, taxonomy, index)
     normalized.push({
       url: persistedUrl,
       alt: image.alt || null,
@@ -471,7 +491,13 @@ export async function validateProductRelations(payload: AdminProductPayload) {
   const [category, officialSeller] = await Promise.all([
     db.category.findUnique({
       where: { id: payload.categoryId },
-      select: { id: true },
+      select: {
+        id: true,
+        slug: true,
+        parent: {
+          select: { slug: true },
+        },
+      },
     }),
     getOfficialSeller(),
   ])
@@ -481,6 +507,10 @@ export async function validateProductRelations(payload: AdminProductPayload) {
     brandId: null,
     sellerId: officialSeller.id,
     officialStoreName: officialSeller.storeName,
+    mediaTaxonomy: {
+      categorySlug: category.parent?.slug ?? category.slug,
+      subcategorySlug: category.parent ? category.slug : 'general',
+    },
   }
 }
 

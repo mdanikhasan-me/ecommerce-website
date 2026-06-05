@@ -150,14 +150,15 @@ Source-controlled assets under `/assets/*` and `/images/*` are committed applica
 
 Source-controlled catalog/demo product media now lives under:
 
-- `/assets/products/catalog/*` for committed seed/demo product images.
+- `/assets/products/catalog/<category-slug>/<subcategory-slug-or-general>/<product-slug>/main.<ext>` for committed seed/demo product images.
 
 These files are changed by developers through source control, not by admin delete/replace actions. They are appropriate for pre-launch demo catalog rows, static fixtures, and source-controlled product examples. They must not be treated as runtime uploads or deletion candidates.
 
 Managed local uploads currently live under:
 
-- `/uploads/admin/*` for banner, category, and other admin-managed artwork;
-- `/uploads/products/*` for product gallery uploads.
+- `/uploads/products/<category-slug>/<subcategory-slug-or-general>/<product-slug-or-id>/<media-id-or-safe-file>.<ext>` for product gallery uploads;
+- `/uploads/admin/banners/<banner-id-or-slug>/<media-id-or-safe-file>.<ext>` for banner artwork;
+- `/uploads/admin/categories/<category-slug>/<media-id-or-safe-file>.<ext>` for category artwork.
 
 Those prefixes are only local/pre-launch ownership hints. They are not enough for long-term production deletion by themselves because the repository can contain demo or recovery files under upload-like paths. Production deletion should require an owned storage key or media metadata record, not only a public URL prefix.
 
@@ -168,6 +169,45 @@ Current banner and category uploads use the admin upload helper and write under 
 When an admin replaces or deletes a managed upload, the runtime cleanup helper may physically remove the old file only after the path is inside the matching managed root and the shared reference check reports no active or historical references. If the path is remote, a data URL, under `/assets` or `/images`, outside the managed root, decorated with query/fragment data, still referenced, historically referenced, or the reference check is incomplete, the helper preserves the file and returns a non-throwing failure result.
 
 This means current local filesystem cleanup is a best-effort pre-launch convenience, not a production media lifecycle. Hostinger local disk can be used temporarily only if the owner accepts backup, deploy persistence, and restore limitations. The safer production direction is object storage plus CDN after provider, backup, restore, retention, and deletion-ledger policy are approved.
+
+## Source Catalog Ownership And Local Reconciliation
+
+The admin product UI can display a product image that points to `/assets/products/catalog/...`, but that does not make the file admin-owned. A product delete or image replace action must not delete a source-controlled catalog file from Git. Source catalog files are templates, seed fixtures, and developer-owned project assets.
+
+To make an existing local product image cleanup-owned by admin runtime deletion, the image URL must point under `/uploads/products/...`. Step 290 adds a local-only reconciliation helper for that conversion:
+
+```text
+node scripts/reconcile-product-media-ownership.mjs --dry-run
+```
+
+The dry-run reports aggregate counts only. If a developer intentionally wants to convert local source-catalog product image rows into managed local upload rows, the explicit apply mode is:
+
+```text
+node scripts/reconcile-product-media-ownership.mjs --apply-managed-upload-backfill
+```
+
+Apply mode is guarded by the local database URL safety checker, copies source catalog files into the organized `/uploads/products/...` taxonomy, updates local `ProductImage.url` rows, and writes a backup mapping under the Step 290 evidence folder. It does not run seed, does not delete source catalog files, and must not be used against production or staging credentials.
+
+Developer cleanup of unused source catalog folders is a separate source-control decision. Step 290 adds a dry-run source catalog prune helper:
+
+```text
+node scripts/audit-source-catalog-product-prune.mjs --dry-run
+```
+
+This helper scans `public/assets/products/catalog` and the source catalog manifest, identifies aggregate unreferenced source catalog folders, and does not delete anything. Source catalog pruning must be reviewed and committed like any other Git asset change; it is not an admin runtime cleanup action.
+
+Category and subcategory folders are for human organization and ownership clarity. They do not make images faster. Performance still comes from appropriate image dimensions, output format, lazy loading, responsive delivery, cache headers, CDN behavior, and avoiding unnecessary downloads.
+
+## Local Icon Asset Policy
+
+Physical storefront icon files now live under:
+
+- `/assets/icons/ui/*` for generic interface icons;
+- `/assets/icons/social/*` for social icons.
+
+Public storefront components should prefer these local physical SVG files where safe. Some bundled `lucide-react` icons may remain temporarily in admin-only areas, loaders, detailed content pages, or deferred components when replacing them would be unrelated to the current public storefront ownership task. Remaining bundled usage must be allowlisted by tests or documented in the Step 290 report.
+
+Payment logos, branding logos, category images, and banner source images are separate asset families and should not be mixed into the generic UI icon folders.
 
 ## Storage Key Direction
 

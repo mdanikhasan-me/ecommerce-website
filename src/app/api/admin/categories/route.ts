@@ -23,7 +23,11 @@ export async function POST(req: NextRequest) {
     await assertValidCategoryParent(payload.parentId)
 
     const slug = await ensureUniqueSlug(payload.slug ?? payload.name)
-    const image = await persistAdminUpload(payload.image, 'categories')
+    const image = await persistAdminUpload(payload.image, {
+      purpose: 'categories',
+      ownerSlugOrId: slug,
+      mediaId: 'image',
+    })
 
     try {
       const category = await db.category.create({

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, Minus, Plus, Trash2, ShoppingBag, Tag, ArrowRight, ChevronRight } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, applyCoupon } from '@/backend/utils'
 import toast from 'react-hot-toast'
 
@@ -52,7 +52,7 @@ export default function CartPage() {
     return (
       <div className="container-site flex flex-col items-center justify-center py-12 text-center sm:py-16 lg:py-20">
         <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-secondary sm:h-24 sm:w-24">
-          <ShoppingBag className="h-10 w-10 text-muted-foreground sm:h-12 sm:w-12" />
+          <LocalIcon name="shopping-bag" className="h-10 w-10 text-muted-foreground sm:h-12 sm:w-12" />
         </div>
         <h1 className="font-display text-2xl font-bold">Your cart is empty</h1>
         <p className="mb-5 mt-2 max-w-sm text-muted-foreground">Looks like you haven&apos;t added anything yet.</p>
@@ -65,7 +65,7 @@ export default function CartPage() {
     <div className="container-site py-5 sm:py-6 lg:py-8">
       <nav className="mb-4 flex items-center gap-2 text-xs text-muted-foreground sm:mb-5 sm:text-sm">
         <Link href="/" className="hover:text-foreground">Home</Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
         <span className="text-foreground">Shopping Cart</span>
       </nav>
 
@@ -99,7 +99,7 @@ export default function CartPage() {
                       onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
                       className="p-2 hover:bg-secondary transition-colors"
                     >
-                      <Minus className="h-3.5 w-3.5" />
+                      <LocalIcon name="minus" className="h-3.5 w-3.5" />
                     </button>
                     <span className="px-4 text-sm font-semibold">{item.quantity}</span>
                     <button
@@ -110,7 +110,7 @@ export default function CartPage() {
                       disabled={item.quantity >= item.stockQuantity}
                       className="p-2 hover:bg-secondary transition-colors disabled:opacity-40"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <LocalIcon name="plus" className="h-3.5 w-3.5" />
                     </button>
                   </div>
 
@@ -128,7 +128,7 @@ export default function CartPage() {
                       onClick={() => removeItem(item.productId, item.variantId)}
                       className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <LocalIcon name="trash-2" className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -147,7 +147,7 @@ export default function CartPage() {
                   onClick={() => removeItem(item.productId, item.variantId)}
                   className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <LocalIcon name="trash-2" className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function CartPage() {
 
             <div className="mb-5">
               <p className="text-sm font-medium mb-2 flex items-center gap-1.5">
-                <Tag className="h-4 w-4 text-primary" /> Coupon Code
+                <LocalIcon name="tag" className="h-4 w-4 text-primary" /> Coupon Code
               </p>
               <div className="flex gap-2">
                 <input
@@ -182,7 +182,7 @@ export default function CartPage() {
               {appliedCoupon && (
                 <div className="mt-2 flex items-center justify-between gap-3 text-xs text-green-600">
                   <p className="flex items-center gap-1 font-medium">
-                    <Check className="h-3.5 w-3.5" />
+                    <LocalIcon name="check" className="h-3.5 w-3.5" />
                     {appliedCoupon.name} applied, {formatPrice(discount)} off
                   </p>
                   <button type="button" onClick={clearAppliedCoupon} className="font-semibold hover:underline">
@@ -214,7 +214,7 @@ export default function CartPage() {
             </div>
 
             <Link href="/checkout" className="btn-primary w-full mt-5 flex items-center justify-center gap-2">
-              Proceed to Checkout <ArrowRight className="h-4 w-4" />
+              Proceed to Checkout <LocalIcon name="arrow-right" className="h-4 w-4" />
             </Link>
 
             <p className="mt-3 text-center text-xs text-muted-foreground">

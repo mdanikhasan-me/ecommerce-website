@@ -32,6 +32,36 @@ const SOURCE_ASSET_PREFIXES = ['/assets/', '/images/']
 const MANAGED_UPLOAD_PREFIXES = ['/uploads/admin/', '/uploads/products/']
 export const PRODUCT_SOURCE_ASSET_PREFIX = '/assets/products/'
 export const PRODUCT_SOURCE_PUBLIC_ROOT = 'public/assets/products'
+export const ICON_SOURCE_PUBLIC_ROOT = 'public/assets/icons'
+const REQUIRED_UI_ICON_FILES = [
+  'arrow-right.svg',
+  'cart.svg',
+  'chevron-down.svg',
+  'chevron-up.svg',
+  'close.svg',
+  'compare.svg',
+  'eye.svg',
+  'filter.svg',
+  'grid.svg',
+  'heart.svg',
+  'location.svg',
+  'mail.svg',
+  'menu.svg',
+  'minus.svg',
+  'package.svg',
+  'phone.svg',
+  'plus.svg',
+  'search.svg',
+  'share.svg',
+  'star-filled.svg',
+  'star.svg',
+  'user.svg',
+]
+const REQUIRED_SOCIAL_ICON_FILES = [
+  'facebook.svg',
+  'instagram.svg',
+  'youtube.svg',
+]
 const KNOWN_REMOTE_IMAGE_HOSTS = new Set([
   'images.unsplash.com',
   'images.pexels.com',
@@ -186,6 +216,7 @@ function resolveLocalSourceAssetPath(reference, root) {
   const value = String(reference ?? '').trim().split(/[?#]/, 1)[0]
   if (!value) return null
   if (value.endsWith('/')) return null
+  if (value.includes('${')) return null
 
   const publicRelative = value.startsWith('public/')
     ? value
@@ -204,6 +235,7 @@ function resolveLocalSourceAssetPath(reference, root) {
 function localSourceAssetExists(reference, root) {
   const value = String(reference ?? '').trim().split(/[?#]/, 1)[0]
   if (value.endsWith('/')) return true
+  if (value.includes('${')) return true
 
   const resolved = resolveLocalSourceAssetPath(reference, root)
   return Boolean(resolved && existsSync(resolved))
@@ -281,26 +313,94 @@ async function collectPublicInventory(root) {
 
 async function collectProductSourceAssetInventory(root) {
   const absoluteRoot = path.join(root, PRODUCT_SOURCE_PUBLIC_ROOT)
+  const catalogRoot = path.join(absoluteRoot, 'catalog')
   const summary = {
     exists: false,
     fileCount: 0,
     totalBytes: 0,
     extensionCounts: {},
+    catalogRoot: `${PRODUCT_SOURCE_PUBLIC_ROOT}/catalog`,
+    categoryFolderCount: 0,
+    subcategoryFolderCount: 0,
+    productFolderCount: 0,
+    categoryFolders: [],
   }
 
   if (!existsSync(absoluteRoot)) return summary
 
   summary.exists = true
+  const categoryFolders = new Set()
+  const subcategoryFolders = new Set()
+  const productFolders = new Set()
+
+  if (existsSync(catalogRoot)) {
+    const entries = await fs.readdir(catalogRoot, { withFileTypes: true })
+    for (const entry of entries) {
+      if (entry.isDirectory()) categoryFolders.add(entry.name)
+    }
+  }
+
   const files = await walkFiles(absoluteRoot)
+
   for (const filePath of files) {
     const stats = await fs.stat(filePath)
     const extension = path.extname(filePath).toLowerCase() || '[none]'
+    const isCatalogFile = filePath.startsWith(`${catalogRoot}${path.sep}`)
+    const relative = isCatalogFile ? normalizeRelativePath(path.relative(catalogRoot, filePath)) : ''
+    const parts = relative ? relative.split('/') : []
+
     summary.fileCount += 1
     summary.totalBytes += stats.size
     summary.extensionCounts[extension] = (summary.extensionCounts[extension] ?? 0) + 1
+    if (isCatalogFile && parts.length >= 4) {
+      categoryFolders.add(parts[0])
+      subcategoryFolders.add(`${parts[0]}/${parts[1]}`)
+      productFolders.add(`${parts[0]}/${parts[1]}/${parts[2]}`)
+    }
   }
 
+  summary.categoryFolderCount = categoryFolders.size
+  summary.subcategoryFolderCount = subcategoryFolders.size
+  summary.productFolderCount = productFolders.size
+  summary.categoryFolders = [...categoryFolders].sort()
+
   return summary
+}
+
+async function collectPhysicalIconInventory(root) {
+  const iconRoot = path.join(root, ICON_SOURCE_PUBLIC_ROOT)
+  const uiRoot = path.join(iconRoot, 'ui')
+  const socialRoot = path.join(iconRoot, 'social')
+
+  async function collect(rootPath, requiredFiles) {
+    const summary = {
+      exists: existsSync(rootPath),
+      fileCount: 0,
+      requiredFileCount: requiredFiles.length,
+      missingRequiredFiles: [],
+    }
+
+    if (summary.exists) {
+      const files = await walkFiles(rootPath)
+      summary.fileCount = files.filter((filePath) => path.extname(filePath).toLowerCase() === '.svg').length
+    }
+
+    summary.missingRequiredFiles = requiredFiles.filter((fileName) => !existsSync(path.join(rootPath, fileName)))
+    return summary
+  }
+
+  const ui = await collect(uiRoot, REQUIRED_UI_ICON_FILES)
+  const social = await collect(socialRoot, REQUIRED_SOCIAL_ICON_FILES)
+
+  return {
+    exists: existsSync(iconRoot),
+    root: ICON_SOURCE_PUBLIC_ROOT,
+    ui,
+    social,
+    requiredIconCount: ui.requiredFileCount + social.requiredFileCount,
+    requiredMissingIconCount: ui.missingRequiredFiles.length + social.missingRequiredFiles.length,
+    physicalIconFileCount: ui.fileCount + social.fileCount,
+  }
 }
 
 function collectProductSeedEntries(seedText) {
@@ -497,6 +597,7 @@ export async function collectLocalAssetDependencyAudit({
     summary,
     publicInventory: await collectPublicInventory(root),
     productSourceAssetFolder: await collectProductSourceAssetInventory(root),
+    physicalIconAssets: await collectPhysicalIconInventory(root),
     productSeedMedia: await collectProductSeedMediaSummary(root),
     paymentAssetConfig: await collectPaymentAssetConfigStatus(root),
     safeAggregateOnly: true,
@@ -514,7 +615,7 @@ export async function collectLocalAssetDependencyAudit({
       'This audit is read-only and does not print matched media values.',
       'public/uploads is inventoried with aggregate counts only.',
       'Remote catalog media is tracked separately from static UI asset dependencies.',
-      'Bundled lucide-react icon imports are treated as local application dependencies.',
+      'Physical public/assets/icons SVG files are tracked separately from bundled lucide-react imports.',
       'Missing local source asset warnings are aggregate-only and exclude docs, tests, scripts, prisma, and audit reports.',
     ],
   }
@@ -530,6 +631,7 @@ export function createLocalAssetDependencyEvidence(audit) {
     summary: audit.summary,
     publicInventory: audit.publicInventory,
     productSourceAssetFolder: audit.productSourceAssetFolder,
+    physicalIconAssets: audit.physicalIconAssets,
     productSeedMedia: audit.productSeedMedia,
     remoteCatalogBacklog: {
       remainingRemoteProductCatalogMediaCount: audit.summary.remoteProductCatalogMedia,

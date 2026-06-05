@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { ProductCardData } from '@/backend/types'
 import { cn } from '@/backend/utils'
 
@@ -41,7 +41,7 @@ export function ProductGrid({
             className="editorial-link group w-fit shrink-0"
             aria-label={viewAllLabel}
           >
-            View all <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            View all <LocalIcon name="chevron-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
         )}
       </div>

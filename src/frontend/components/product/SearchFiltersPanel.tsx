@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Star, SlidersHorizontal, X } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { cn } from '@/backend/utils'
 
 interface Props {
@@ -79,11 +79,11 @@ export function SearchFiltersPanel({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 font-display font-semibold">
-          <SlidersHorizontal className="h-4 w-4" /> Filters
+          <LocalIcon name="filter" className="h-4 w-4" /> Filters
         </h3>
         {hasFilters && (
           <button type="button" onClick={clearAll} aria-label="Clear all product filters" className="flex items-center gap-1 text-xs text-primary hover:underline">
-            <X className="h-3 w-3" /> Clear All
+            <LocalIcon name="close" className="h-3 w-3" /> Clear All
           </button>
         )}
       </div>
@@ -196,7 +196,7 @@ export function SearchFiltersPanel({
               </span>
               <div className="flex items-center gap-1">
                 {Array(rating).fill(0).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 star-filled" />
+                  <LocalIcon key={i} name="star-filled" className="h-3.5 w-3.5 star-filled" />
                 ))}
                 <span className="text-sm text-muted-foreground">and up</span>
               </div>

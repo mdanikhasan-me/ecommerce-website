@@ -1,0 +1,42 @@
+{
+  "dryRun": true,
+  "deletionPerformed": false,
+  "realMediaFilesDeleted": false,
+  "safeAggregateOnly": true,
+  "sourceCatalogRoot": "public/assets/products/catalog",
+  "referencedCatalogProductCount": 21,
+  "physicalCatalogImageCount": 21,
+  "categoryFolderCount": 8,
+  "subcategoryFolderCount": 8,
+  "productFolderCount": 21,
+  "categoryFolders": [
+    "beauty-health",
+    "books-stationery",
+    "electronics",
+    "fashion",
+    "gaming",
+    "home-appliances",
+    "sports-fitness",
+    "toys-collectibles"
+  ],
+  "subcategoryFolders": [
+    "electronics/audio",
+    "electronics/general",
+    "electronics/laptops",
+    "electronics/mobile-phones",
+    "electronics/wearables",
+    "gaming/general",
+    "home-appliances/general",
+    "sports-fitness/general"
+  ],
+  "unreferencedCatalogImageCount": 0,
+  "unreferencedProductFolderCount": 0,
+  "missingReferencedCatalogImageCount": 0,
+  "referencedProductFolderCount": 21,
+  "notes": [
+    "This script is dry-run only in Step 290.",
+    "It only inspects source-controlled catalog assets under public/assets/products/catalog.",
+    "It never deletes public/uploads and never runs from admin runtime cleanup.",
+    "Source catalog files are developer/source-owned, not admin-managed upload files."
+  ]
+}

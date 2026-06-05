@@ -3,8 +3,8 @@
 import { useRef, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { X, ShoppingCart, Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react'
 import { useCartStore } from '@/frontend/stores'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, cn } from '@/backend/utils'
 
 export function CartDrawer() {
@@ -57,7 +57,7 @@ export function CartDrawer() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3.5 sm:px-5 sm:py-4">
           <div className="flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5" />
+            <LocalIcon name="cart" className="h-5 w-5" />
             <h2 className="font-display font-semibold text-lg">Your Cart</h2>
             {items.length > 0 && (
               <span className="bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -72,7 +72,7 @@ export function CartDrawer() {
             onClick={closeCart}
             className="p-2 rounded-lg hover:bg-secondary transition-colors"
           >
-            <X className="h-5 w-5" />
+            <LocalIcon name="close" className="h-5 w-5" />
           </button>
         </div>
 
@@ -88,7 +88,7 @@ export function CartDrawer() {
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 px-7 text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary sm:h-20 sm:w-20">
-                <ShoppingBag className="h-8 w-8 text-muted-foreground sm:h-10 sm:w-10" />
+                <LocalIcon name="shopping-bag" className="h-8 w-8 text-muted-foreground sm:h-10 sm:w-10" />
               </div>
               <div>
                 <p className="font-semibold text-lg">Your cart is empty</p>
@@ -135,7 +135,7 @@ export function CartDrawer() {
                           onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
                           className="p-1.5 hover:bg-secondary transition-colors"
                         >
-                          <Minus className="h-3 w-3" />
+                          <LocalIcon name="minus" className="h-3 w-3" />
                         </button>
                         <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                         <button
@@ -146,7 +146,7 @@ export function CartDrawer() {
                           disabled={item.quantity >= item.stockQuantity}
                           className="p-1.5 hover:bg-secondary transition-colors disabled:opacity-40"
                         >
-                          <Plus className="h-3 w-3" />
+                          <LocalIcon name="plus" className="h-3 w-3" />
                         </button>
                       </div>
 
@@ -167,7 +167,7 @@ export function CartDrawer() {
                     onClick={() => removeItem(item.productId, item.variantId)}
                     className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <LocalIcon name="trash-2" className="h-4 w-4" />
                   </button>
                 </div>
               ))}
@@ -209,7 +209,7 @@ export function CartDrawer() {
                 onClick={closeCart}
                 className="btn-primary flex items-center justify-center gap-2"
               >
-                Checkout <ArrowRight className="h-4 w-4" />
+                Checkout <LocalIcon name="arrow-right" className="h-4 w-4" />
               </Link>
               <Link
                 href="/cart"

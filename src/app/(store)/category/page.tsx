@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { ChevronDown, ChevronRight } from 'lucide-react'
 import { generatePageMetadata } from '@/backend/seo'
 import { db } from '@/backend/database'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin Categories',
@@ -37,7 +37,7 @@ export default async function CategoriesPage() {
         <Link href="/" className="transition-colors hover:text-foreground">
           Home
         </Link>
-        <ChevronRight className="h-3.5 w-3.5" />
+        <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
         <span className="font-medium text-foreground">All Categories</span>
       </nav>
 
@@ -78,7 +78,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
           <p className="mt-1.5 max-w-3xl text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-6">{summary}</p>
         </div>
         <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#161616] transition-transform duration-200 group-hover:translate-x-0.5">
-          <ChevronRight className="h-4 w-4" />
+          <LocalIcon name="chevron-right" className="h-4 w-4" />
         </span>
       </Link>
     )
@@ -93,7 +93,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
             <p className="mt-1.5 max-w-3xl text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-6">{summary}</p>
           </div>
           <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#161616] transition-transform duration-200 group-open:rotate-180">
-            <ChevronDown className="h-4 w-4" />
+            <LocalIcon name="chevron-down" className="h-4 w-4" />
           </span>
         </div>
       </summary>
@@ -105,7 +105,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
             className="group flex items-center justify-between border-b border-black/6 py-3.5 text-sm font-medium text-[#161616] transition-colors hover:text-black"
           >
             <span>All {category.name}</span>
-            <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            <LocalIcon name="chevron-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
           {category.children.map((child) => (
             <Link
@@ -114,7 +114,7 @@ function CategoryAccordionRow({ category }: { category: CategoryItem }) {
               className="group flex items-center justify-between border-b border-black/6 py-3.5 text-sm font-medium text-[#161616] transition-colors last:border-b-0 hover:text-black"
             >
               <span>{child.name}</span>
-              <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              <LocalIcon name="chevron-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           ))}
         </div>

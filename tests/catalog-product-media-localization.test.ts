@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 
+import { buildCatalogProductAssetPath } from '@/backend/admin/media-paths'
 import { classifyAdminMediaPath } from '@/backend/admin/media-lifecycle'
 import { deleteManagedUpload } from '@/backend/admin/product-editor'
 import {
@@ -49,7 +50,19 @@ describe('catalog product media localization', () => {
 
     for (const entry of CATALOG_PRODUCT_MEDIA) {
       assert.equal(entry.sourceControlled, true)
-      assert.match(entry.path, /^\/assets\/products\/catalog\/[a-z0-9-]+\.(?:avif|jpe?g|webp)$/)
+      assert.match(
+        entry.path,
+        /^\/assets\/products\/catalog\/[a-z0-9-]+\/[a-z0-9-]+\/[a-z0-9-]+\/main\.(?:avif|jpe?g|webp)$/,
+      )
+      assert.equal(
+        entry.path,
+        buildCatalogProductAssetPath({
+          categorySlug: entry.categorySlug,
+          subcategorySlug: entry.subcategorySlug,
+          productSlug: entry.slug,
+          extension: entry.path.split('.').pop() ?? 'webp',
+        }),
+      )
       assert.equal(publicAssetExists(entry.path), true, `${entry.slug} catalog asset should exist`)
       assert.doesNotMatch(entry.path, /^\/uploads\//)
     }
@@ -73,7 +86,7 @@ describe('catalog product media localization', () => {
   })
 
   it('keeps product source assets protected from managed upload cleanup', async () => {
-    const sourcePath = '/assets/products/catalog/iphone-15-pro-128gb.jpg'
+    const sourcePath = '/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg'
     const classification = classifyAdminMediaPath(sourcePath)
     let referenceChecks = 0
 
@@ -99,9 +112,17 @@ describe('catalog product media localization', () => {
     const audit = await collectLocalAssetDependencyAudit()
     const evidence = createLocalAssetDependencyEvidence(audit)
     const formatted = JSON.stringify(evidence)
+    const catalogImageCount = (
+      (evidence.productSourceAssetFolder.extensionCounts['.avif'] ?? 0) +
+      (evidence.productSourceAssetFolder.extensionCounts['.jpg'] ?? 0) +
+      (evidence.productSourceAssetFolder.extensionCounts['.jpeg'] ?? 0) +
+      (evidence.productSourceAssetFolder.extensionCounts['.png'] ?? 0) +
+      (evidence.productSourceAssetFolder.extensionCounts['.webp'] ?? 0)
+    )
 
     assert.equal(evidence.productSourceAssetFolder.exists, true)
-    assert.equal(evidence.productSourceAssetFolder.fileCount, CATALOG_PRODUCT_MEDIA.length)
+    assert.equal(catalogImageCount, CATALOG_PRODUCT_MEDIA.length)
+    assert.equal(evidence.productSourceAssetFolder.productFolderCount, CATALOG_PRODUCT_MEDIA.length)
     assert.equal(evidence.productSeedMedia.productSeedProductCount, CATALOG_PRODUCT_MEDIA.length)
     assert.equal(evidence.productSeedMedia.productSeedLocalProductSourceAssetCount, CATALOG_PRODUCT_MEDIA.length)
     assert.equal(evidence.productSeedMedia.productSeedLocalManagedUploadCount, 0)

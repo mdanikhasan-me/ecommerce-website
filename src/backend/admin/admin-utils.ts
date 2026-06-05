@@ -9,6 +9,10 @@ import {
   resolveManagedMediaFilePath,
 } from '@/backend/admin/media-lifecycle'
 import {
+  buildManagedBannerUploadPath,
+  buildManagedCategoryUploadPath,
+} from '@/backend/admin/media-paths'
+import {
   AdminMediaReferenceExclusion,
   AdminMediaReferenceSource,
   planAdminMediaDeletionWithReferences,
@@ -93,19 +97,53 @@ export function resolveManagedPublicUploadPath(url: string, managedPrefix: strin
   return resolveManagedMediaFilePath(url, managedPrefix)
 }
 
-export async function persistAdminUpload(url: string | null | undefined, folder: string) {
+export type AdminUploadPurpose = 'banners' | 'categories'
+
+export type PersistAdminUploadOptions =
+  | AdminUploadPurpose
+  | {
+      purpose: AdminUploadPurpose
+      ownerSlugOrId?: string | null
+      mediaId?: string | number | null
+    }
+
+function planAdminUploadPath(options: PersistAdminUploadOptions) {
+  if (typeof options === 'string') {
+    if (options === 'banners') {
+      return buildManagedBannerUploadPath({ bannerSlugOrId: 'general', mediaId: options })
+    }
+    return buildManagedCategoryUploadPath({ categorySlug: 'general', mediaId: options })
+  }
+
+  if (options.purpose === 'banners') {
+    return buildManagedBannerUploadPath({
+      bannerSlugOrId: options.ownerSlugOrId,
+      mediaId: options.mediaId ?? options.purpose,
+    })
+  }
+
+  return buildManagedCategoryUploadPath({
+    categorySlug: options.ownerSlugOrId,
+    mediaId: options.mediaId ?? options.purpose,
+  })
+}
+
+export async function persistAdminUpload(url: string | null | undefined, options: PersistAdminUploadOptions) {
   const cleaned = url?.trim()
   if (!cleaned) return null
   if (!cleaned.startsWith('data:image/')) {
     return cleaned
   }
 
+  const uploadPath = planAdminUploadPath(options)
+  const profile = typeof options === 'string' ? options : options.purpose
+
   return persistOptimizedImageUpload({
     dataUrl: cleaned,
-    directorySegments: ['uploads', 'admin', folder],
-    baseName: folder,
-    publicPathPrefix: `/uploads/admin/${folder}`,
-    profile: folder,
+    directorySegments: uploadPath.directorySegments,
+    baseName: uploadPath.baseName,
+    publicPathPrefix: uploadPath.publicPathPrefix,
+    profile,
   })
 }
 

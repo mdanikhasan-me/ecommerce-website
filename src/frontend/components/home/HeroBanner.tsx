@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/backend/utils'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 interface Banner {
   id: string
@@ -135,7 +135,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                       className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-4 py-2.5 text-xs font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white sm:px-5 sm:text-sm"
                     >
                       Explore collection
-                      <ChevronRight className="h-4 w-4" />
+                      <LocalIcon name="chevron-right" className="h-4 w-4" />
                     </Link>
                   ) : null}
                 </div>
@@ -152,7 +152,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 onClick={prev}
                 className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <LocalIcon name="arrow-left" className="h-5 w-5" />
               </button>
               <button
                 type="button"
@@ -161,7 +161,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 onClick={next}
                 className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
               >
-                <ChevronRight className="h-5 w-5" />
+                <LocalIcon name="chevron-right" className="h-5 w-5" />
               </button>
 
               <div className="absolute bottom-3.5 left-1/2 flex -translate-x-1/2 gap-2 sm:bottom-5">

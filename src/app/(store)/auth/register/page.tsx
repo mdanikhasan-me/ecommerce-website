@@ -4,9 +4,10 @@ import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
 
 const MIN_PASSWORD_LENGTH = 8
@@ -82,7 +83,7 @@ function RegisterForm() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
                 </button>
               </div>
               <p className="text-xs text-muted-foreground mt-1">Minimum {MIN_PASSWORD_LENGTH} characters</p>

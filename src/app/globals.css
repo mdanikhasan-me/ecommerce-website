@@ -235,6 +235,18 @@
     mask-size: contain;
   }
 
+  .local-icon {
+    background-color: currentColor;
+    -webkit-mask-image: var(--local-icon-url);
+    mask-image: var(--local-icon-url);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
   .footer-heading {
     color: hsl(var(--footer-heading));
   }
