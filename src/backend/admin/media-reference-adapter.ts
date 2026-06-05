@@ -9,7 +9,7 @@ import {
   AdminMediaReferenceSource,
   AdminMediaReferenceValueKind,
   planAdminMediaDeletionWithReferences,
-} from '@/backend/admin/media-reference-guard'
+} from './media-reference-guard'
 
 export type AdminMediaPrismaDelegate = {
   count(args: { where: Record<string, unknown> }): Promise<number> | number
