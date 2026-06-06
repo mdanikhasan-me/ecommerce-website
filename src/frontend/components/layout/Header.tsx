@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { cn } from '@/backend/utils'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
@@ -96,6 +97,7 @@ export function Header() {
   const { getItemCount, openCart } = useCartStore()
   const { items: compareItems } = useCompareStore()
   const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const mobileSearchButtonRef = useRef<HTMLButtonElement>(null)
   const categoriesRootRef = useRef<HTMLDivElement>(null)
   const accountRootRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
@@ -141,7 +143,11 @@ export function Header() {
 
       if (isSearchOpen) {
         setIsSearchOpen(false)
-        searchButtonRef.current?.focus()
+        if (window.matchMedia('(min-width: 1024px)').matches) {
+          searchButtonRef.current?.focus()
+        } else {
+          mobileSearchButtonRef.current?.focus()
+        }
       }
 
       if (isMobileMenuOpen) {
@@ -261,7 +267,7 @@ export function Header() {
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <span className="text-2xl font-semibold leading-none text-foreground">B O I L A B I N</span>
+            <BoilabinLogo variant="wordmark" size={34} priority className="h-[34px] w-auto" />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
@@ -513,7 +519,7 @@ export function Header() {
 
         <div
           data-testid="mobile-header"
-          className="relative flex h-16 items-center justify-between lg:hidden"
+          className="grid h-16 grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] items-center lg:hidden"
         >
           <button
             ref={mobileMenuButtonRef}
@@ -523,9 +529,11 @@ export function Header() {
             title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             onClick={() => {
               setIsMobileMenuOpen((open) => !open)
+              setIsSearchOpen(false)
+              setShowSuggestions(false)
               setExpandedMobileCategory(null)
             }}
-            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            className="flex h-10 w-10 items-center justify-center justify-self-start rounded-full transition-colors hover:bg-secondary"
           >
             {isMobileMenuOpen ? (
               <LocalIcon name="close" className="h-5 w-5" />
@@ -536,20 +544,45 @@ export function Header() {
 
           <Link
             href="/"
+            data-testid="mobile-brand-link"
             aria-label="Boilabin home"
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="flex min-w-0 justify-self-center"
           >
-            <span className="text-2xl font-semibold leading-none text-foreground">B O I L A B I N</span>
+            <BoilabinLogo
+              variant="wordmark"
+              size={24}
+              priority
+              className="h-auto w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
+            />
           </Link>
 
-          <div className="flex items-center justify-end gap-1">
+          <div className="flex items-center justify-end gap-0 justify-self-end">
+            <button
+              ref={mobileSearchButtonRef}
+              type="button"
+              data-search-trigger="true"
+              data-testid="mobile-search-button"
+              aria-expanded={isSearchOpen}
+              aria-label="Search products"
+              title="Search products"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                setExpandedMobileCategory(null)
+                setIsSearchOpen((open) => !open)
+                setShowSuggestions(true)
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            >
+              <LocalIcon name="search" className="h-5 w-5" />
+            </button>
+
             <button
               type="button"
               data-testid="mobile-cart-button"
               aria-label="Cart"
               title="Cart"
               onClick={openCart}
-              className="relative flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
             >
               <LocalIcon name="cart" className="h-5 w-5" />
               {cartCount > 0 ? (
@@ -564,7 +597,7 @@ export function Header() {
               data-testid="mobile-profile-link"
               aria-label={session ? 'My account' : 'Sign in'}
               title={session ? 'My account' : 'Sign in'}
-              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
+              className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
             >
               {session?.user.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -580,6 +613,12 @@ export function Header() {
             </Link>
           </div>
         </div>
+
+        {isSearchOpen ? (
+          <div className="pb-3 lg:hidden">
+            {renderSearchPanel('mx-auto max-w-[30rem]')}
+          </div>
+        ) : null}
       </div>
 
       {isMobileMenuOpen ? (

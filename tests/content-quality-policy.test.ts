@@ -126,6 +126,6 @@ describe('content quality marketing-copy guardrail', () => {
     assert.match(footer, /PAYMENT_ASSETS\.MASTERCARD/)
     assert.doesNotMatch(footer, /PAYMENT_ASSETS\.CASH_ON_DELIVERY/)
     assert.doesNotMatch(footer, />We accept</)
-    assert.match(footer, /Availability is shown at checkout/)
+    assert.doesNotMatch(footer, /Availability is shown at checkout/)
   })
 })

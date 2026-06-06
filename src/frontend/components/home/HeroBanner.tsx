@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
@@ -18,6 +18,8 @@ interface Banner {
 export function HeroBanner({ banners }: { banners: Banner[] }) {
   const [current, setCurrent] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const touchStartX = useRef<number | null>(null)
+  const touchStartY = useRef<number | null>(null)
   const heroTitleClass =
     'font-display font-bold leading-[0.9] text-[hsl(var(--buttermilk))] [text-shadow:0_6px_24px_rgba(16,12,10,0.42)]'
   const heroSubtitleClass =
@@ -32,6 +34,26 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
   const prev = useCallback(() => goTo((current - 1 + banners.length) % banners.length), [banners.length, current, goTo])
   const next = useCallback(() => goTo((current + 1) % banners.length), [banners.length, current, goTo])
+
+  const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (banners.length <= 1) return
+    const touch = event.touches[0]
+    touchStartX.current = touch.clientX
+    touchStartY.current = touch.clientY
+  }, [banners.length])
+
+  const handleTouchEnd = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (banners.length <= 1 || touchStartX.current === null || touchStartY.current === null) return
+    const touch = event.changedTouches[0]
+    const deltaX = touch.clientX - touchStartX.current
+    const deltaY = touch.clientY - touchStartY.current
+    touchStartX.current = null
+    touchStartY.current = null
+
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return
+    if (deltaX < 0) next()
+    else prev()
+  }, [banners.length, next, prev])
 
   useEffect(() => {
     if (banners.length <= 1) return
@@ -75,7 +97,18 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   return (
     <section className="w-full">
       <div className="group relative overflow-hidden bg-foreground">
-        <div className="relative aspect-[3/2] w-full sm:aspect-[19/9] lg:aspect-[24/8]">
+        <div
+          className="relative aspect-[3/2] w-full sm:aspect-[19/9] lg:aspect-[24/8]"
+          role="region"
+          aria-label="Homepage banner carousel"
+          aria-roledescription="carousel"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={() => {
+            touchStartX.current = null
+            touchStartY.current = null
+          }}
+        >
           {hasMobileImage ? (
             <Image
               key={`${banner.id}-mobile`}
@@ -150,7 +183,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Previous slide"
                 title="Previous slide"
                 onClick={prev}
-                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
+                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:flex"
               >
                 <LocalIcon name="arrow-left" className="h-5 w-5" />
               </button>
@@ -159,7 +192,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Next slide"
                 title="Next slide"
                 onClick={next}
-                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:group-hover:flex"
+                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-all hover:bg-black/30 sm:flex"
               >
                 <LocalIcon name="chevron-right" className="h-5 w-5" />
               </button>
