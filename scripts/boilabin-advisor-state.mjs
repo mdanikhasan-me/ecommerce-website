@@ -254,7 +254,10 @@ export function findRecommendedBroadStaging(files) {
     const lines = file.content.split(/\r?\n/);
     lines.forEach((line, index) => {
       const lower = line.toLowerCase();
-      const isWarning = lower.includes('do not') || lower.includes('never') || lower.includes('forbid');
+      const isWarning = lower.includes('do not')
+        || lower.includes('never')
+        || lower.includes('forbid')
+        || lower.includes('prohibit');
       if (isWarning) {
         return;
       }

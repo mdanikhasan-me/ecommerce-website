@@ -231,7 +231,7 @@ test('Advisor broad staging scanner ignores warnings but flags recommendations',
   const findings = findRecommendedBroadStaging([
     {
       relativePath: 'safe.md',
-      content: 'Never use git add .\nDo not run git add -A',
+      content: 'Never use git add .\nDo not run git add -A\nProhibit git add . in prompts\nBroad staging is prohibited: git add -A',
     },
     {
       relativePath: 'unsafe.md',

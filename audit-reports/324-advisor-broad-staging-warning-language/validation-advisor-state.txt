@@ -1,0 +1,15 @@
+﻿Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/324_ADVISOR_BROAD_STAGING_WARNING_LANGUAGE.md
+Latest audit title: Step 324 Advisor Broad Staging Warning Language
+Latest report commit reference: 5a83820 fix: clean up advisor summary truncation
+Current git commit: 5a83820 fix: clean up advisor summary truncation
+Validation summary: Focused and full validation passed: - `git diff --check -- scripts/boilabin-advisor-state.mjs tests/boilabin-advisor-workflow.test.ts audit-reports/324_ADVISOR_BROAD_STAGING_WARNING_LANGUAGE.md audit-reports/324_NEXT_PROMPT_DRAFT.md audit-reports/324-advisor-broad-staging-warning-language` passed. - `npx tsx --test tests/boilabin-advisor-workflow.test.ts` passed: 17 tests, 0 failures. - `npx tsx --test tests/boilabin-advisor-workflow.test.ts tests/boilabin-terminal-loop-workflow.test.ts` passed: 31 tests, 0 failures. - `node scripts/boilabin-advisor-state.mjs` passed. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another explicitly non-media prelaunch closure task.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok
