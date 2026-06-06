@@ -49,10 +49,68 @@ describe('admin product validation', () => {
     }
   })
 
+  it('applies defaults and normalizes blank optional product values', () => {
+    const parsed = parseAdminProductPayload({
+      name: 'Desk Lamp',
+      slug: '',
+      description: 'Adjustable lamp for study tables.',
+      sku: 'LAMP-001',
+      basePrice: '850',
+      categoryId: 'cat_lighting',
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.slug, undefined)
+      assert.equal(parsed.data.salePrice, null)
+      assert.equal(parsed.data.costPrice, null)
+      assert.equal(parsed.data.stockQuantity, 0)
+      assert.equal(parsed.data.lowStockThreshold, 5)
+      assert.equal(parsed.data.weight, null)
+      assert.deepEqual(parsed.data.tags, [])
+      assert.equal(parsed.data.isActive, true)
+      assert.equal(parsed.data.isFeatured, false)
+      assert.equal(parsed.data.isNew, true)
+      assert.equal(parsed.data.isBestSeller, false)
+      assert.deepEqual(parsed.data.images, [])
+      assert.deepEqual(parsed.data.variants, [])
+    }
+  })
+
   it('rejects sale prices above base prices', () => {
     const parsed = parseAdminProductPayload({ ...validProduct, salePrice: 1300 })
 
     assert.equal(parsed.success, false)
+  })
+
+  it('rejects variant sale prices above variant prices', () => {
+    const parsed = parseAdminProductPayload({
+      ...validProduct,
+      variants: [
+        {
+          name: 'Large',
+          sku: 'SHIRT-001-L',
+          price: 1200,
+          salePrice: 1300,
+          stockQuantity: 1,
+        },
+      ],
+    })
+
+    assert.equal(parsed.success, false)
+  })
+
+  it('rejects negative numeric product values', () => {
+    const basePrice = parseAdminProductPayload({ ...validProduct, basePrice: -1 })
+    const stockQuantity = parseAdminProductPayload({ ...validProduct, stockQuantity: -1 })
+    const variantStock = parseAdminProductPayload({
+      ...validProduct,
+      variants: [{ name: 'Large', sku: 'SHIRT-001-L', stockQuantity: -1 }],
+    })
+
+    assert.equal(basePrice.success, false)
+    assert.equal(stockQuantity.success, false)
+    assert.equal(variantStock.success, false)
   })
 
   it('rejects duplicate variant SKUs', () => {

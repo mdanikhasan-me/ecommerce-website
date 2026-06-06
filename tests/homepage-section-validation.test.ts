@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
+import { Prisma } from '@prisma/client'
 import { parseAdminHomepageSectionPayload } from '@/backend/admin/homepage-section-editor'
 
 describe('admin homepage section validation', () => {
@@ -31,6 +32,35 @@ describe('admin homepage section validation', () => {
     })
 
     assert.equal(parsed.success, true)
+  })
+
+  it('normalizes blank config to Prisma JsonNull and preserves inactive state', () => {
+    const parsed = parseAdminHomepageSectionPayload({
+      type: 'promo_banner',
+      config: '',
+      isActive: false,
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.config, Prisma.JsonNull)
+      assert.equal(parsed.data.isActive, false)
+      assert.equal(parsed.data.sortOrder, 0)
+    }
+  })
+
+  it('rejects config values that are not JSON-safe', () => {
+    const withUndefined = parseAdminHomepageSectionPayload({
+      type: 'promo_banner',
+      config: { headline: undefined },
+    })
+    const withInfiniteNumber = parseAdminHomepageSectionPayload({
+      type: 'promo_banner',
+      config: { limit: Number.POSITIVE_INFINITY },
+    })
+
+    assert.equal(withUndefined.success, false)
+    assert.equal(withInfiniteNumber.success, false)
   })
 
   it('rejects invalid config JSON', () => {

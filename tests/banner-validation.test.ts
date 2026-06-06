@@ -36,6 +36,38 @@ describe('admin banner validation', () => {
     assert.equal(parsed.success, true)
   })
 
+  it('applies banner defaults and preserves explicit inactive state', () => {
+    const parsed = parseAdminBannerPayload({
+      title: 'Weekend deals',
+      isActive: false,
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.subtitle, null)
+      assert.equal(parsed.data.imageUrl, null)
+      assert.equal(parsed.data.mobileImageUrl, null)
+      assert.equal(parsed.data.linkUrl, null)
+      assert.equal(parsed.data.position, 'hero')
+      assert.equal(parsed.data.sortOrder, 0)
+      assert.equal(parsed.data.isActive, false)
+      assert.equal(parsed.data.startsAt, null)
+      assert.equal(parsed.data.endsAt, null)
+    }
+  })
+
+  it('allows absolute http links', () => {
+    const parsed = parseAdminBannerPayload({
+      title: 'External campaign',
+      linkUrl: ' https://example.com/campaign ',
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.linkUrl, 'https://example.com/campaign')
+    }
+  })
+
   it('rejects empty banners', () => {
     const parsed = parseAdminBannerPayload({ title: '', subtitle: '', imageUrl: '', mobileImageUrl: '' })
 
@@ -46,6 +78,20 @@ describe('admin banner validation', () => {
     const parsed = parseAdminBannerPayload({ title: 'Offer', linkUrl: 'javascript:alert(1)' })
 
     assert.equal(parsed.success, false)
+  })
+
+  it('rejects invalid schedule dates and out-of-range sort orders', () => {
+    const badDate = parseAdminBannerPayload({
+      title: 'Offer',
+      startsAt: 'not-a-date',
+    })
+    const highSortOrder = parseAdminBannerPayload({
+      title: 'Offer',
+      sortOrder: 10000,
+    })
+
+    assert.equal(badDate.success, false)
+    assert.equal(highSortOrder.success, false)
   })
 
   it('rejects inline base64 image data for desktop and mobile images', () => {

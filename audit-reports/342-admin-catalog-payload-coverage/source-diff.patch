@@ -1,0 +1,225 @@
+diff --git a/tests/banner-validation.test.ts b/tests/banner-validation.test.ts
+index 87110ed..d5d710a 100644
+--- a/tests/banner-validation.test.ts
++++ b/tests/banner-validation.test.ts
+@@ -36,6 +36,38 @@ describe('admin banner validation', () => {
+     assert.equal(parsed.success, true)
+   })
+
++  it('applies banner defaults and preserves explicit inactive state', () => {
++    const parsed = parseAdminBannerPayload({
++      title: 'Weekend deals',
++      isActive: false,
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.subtitle, null)
++      assert.equal(parsed.data.imageUrl, null)
++      assert.equal(parsed.data.mobileImageUrl, null)
++      assert.equal(parsed.data.linkUrl, null)
++      assert.equal(parsed.data.position, 'hero')
++      assert.equal(parsed.data.sortOrder, 0)
++      assert.equal(parsed.data.isActive, false)
++      assert.equal(parsed.data.startsAt, null)
++      assert.equal(parsed.data.endsAt, null)
++    }
++  })
++
++  it('allows absolute http links', () => {
++    const parsed = parseAdminBannerPayload({
++      title: 'External campaign',
++      linkUrl: ' https://example.com/campaign ',
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.linkUrl, 'https://example.com/campaign')
++    }
++  })
++
+   it('rejects empty banners', () => {
+     const parsed = parseAdminBannerPayload({ title: '', subtitle: '', imageUrl: '', mobileImageUrl: '' })
+
+@@ -48,6 +80,20 @@ describe('admin banner validation', () => {
+     assert.equal(parsed.success, false)
+   })
+
++  it('rejects invalid schedule dates and out-of-range sort orders', () => {
++    const badDate = parseAdminBannerPayload({
++      title: 'Offer',
++      startsAt: 'not-a-date',
++    })
++    const highSortOrder = parseAdminBannerPayload({
++      title: 'Offer',
++      sortOrder: 10000,
++    })
++
++    assert.equal(badDate.success, false)
++    assert.equal(highSortOrder.success, false)
++  })
++
+   it('rejects inline base64 image data for desktop and mobile images', () => {
+     for (const fieldName of ['imageUrl', 'mobileImageUrl'] as const) {
+       const parsed = parseAdminBannerPayload({
+diff --git a/tests/category-validation.test.ts b/tests/category-validation.test.ts
+index b40a2eb..6b078cc 100644
+--- a/tests/category-validation.test.ts
++++ b/tests/category-validation.test.ts
+@@ -38,6 +38,20 @@ describe('admin category validation', () => {
+     }
+   })
+
++  it('preserves inactive categories and allowed negative sort order', () => {
++    const parsed = parseAdminCategoryPayload({
++      name: 'Archive',
++      isActive: false,
++      sortOrder: '-10',
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.isActive, false)
++      assert.equal(parsed.data.sortOrder, -10)
++    }
++  })
++
+   it('rejects missing category names', () => {
+     const parsed = parseAdminCategoryPayload({ name: '   ' })
+
+@@ -49,4 +63,12 @@ describe('admin category validation', () => {
+
+     assert.equal(parsed.success, false)
+   })
++
++  it('rejects out-of-range sort orders', () => {
++    const low = parseAdminCategoryPayload({ name: 'Gaming', sortOrder: -10000 })
++    const high = parseAdminCategoryPayload({ name: 'Gaming', sortOrder: 10000 })
++
++    assert.equal(low.success, false)
++    assert.equal(high.success, false)
++  })
+ })
+diff --git a/tests/homepage-section-validation.test.ts b/tests/homepage-section-validation.test.ts
+index a8b56ca..222507d 100644
+--- a/tests/homepage-section-validation.test.ts
++++ b/tests/homepage-section-validation.test.ts
+@@ -1,6 +1,7 @@
+ import assert from 'node:assert/strict'
+ import { describe, it } from 'node:test'
+
++import { Prisma } from '@prisma/client'
+ import { parseAdminHomepageSectionPayload } from '@/backend/admin/homepage-section-editor'
+
+ describe('admin homepage section validation', () => {
+@@ -33,6 +34,35 @@ describe('admin homepage section validation', () => {
+     assert.equal(parsed.success, true)
+   })
+
++  it('normalizes blank config to Prisma JsonNull and preserves inactive state', () => {
++    const parsed = parseAdminHomepageSectionPayload({
++      type: 'promo_banner',
++      config: '',
++      isActive: false,
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.config, Prisma.JsonNull)
++      assert.equal(parsed.data.isActive, false)
++      assert.equal(parsed.data.sortOrder, 0)
++    }
++  })
++
++  it('rejects config values that are not JSON-safe', () => {
++    const withUndefined = parseAdminHomepageSectionPayload({
++      type: 'promo_banner',
++      config: { headline: undefined },
++    })
++    const withInfiniteNumber = parseAdminHomepageSectionPayload({
++      type: 'promo_banner',
++      config: { limit: Number.POSITIVE_INFINITY },
++    })
++
++    assert.equal(withUndefined.success, false)
++    assert.equal(withInfiniteNumber.success, false)
++  })
++
+   it('rejects invalid config JSON', () => {
+     const parsed = parseAdminHomepageSectionPayload({
+       type: 'featured_categories',
+diff --git a/tests/product-validation.test.ts b/tests/product-validation.test.ts
+index 2cd4791..c0d6856 100644
+--- a/tests/product-validation.test.ts
++++ b/tests/product-validation.test.ts
+@@ -49,12 +49,70 @@ describe('admin product validation', () => {
+     }
+   })
+
++  it('applies defaults and normalizes blank optional product values', () => {
++    const parsed = parseAdminProductPayload({
++      name: 'Desk Lamp',
++      slug: '',
++      description: 'Adjustable lamp for study tables.',
++      sku: 'LAMP-001',
++      basePrice: '850',
++      categoryId: 'cat_lighting',
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.slug, undefined)
++      assert.equal(parsed.data.salePrice, null)
++      assert.equal(parsed.data.costPrice, null)
++      assert.equal(parsed.data.stockQuantity, 0)
++      assert.equal(parsed.data.lowStockThreshold, 5)
++      assert.equal(parsed.data.weight, null)
++      assert.deepEqual(parsed.data.tags, [])
++      assert.equal(parsed.data.isActive, true)
++      assert.equal(parsed.data.isFeatured, false)
++      assert.equal(parsed.data.isNew, true)
++      assert.equal(parsed.data.isBestSeller, false)
++      assert.deepEqual(parsed.data.images, [])
++      assert.deepEqual(parsed.data.variants, [])
++    }
++  })
++
+   it('rejects sale prices above base prices', () => {
+     const parsed = parseAdminProductPayload({ ...validProduct, salePrice: 1300 })
+
+     assert.equal(parsed.success, false)
+   })
+
++  it('rejects variant sale prices above variant prices', () => {
++    const parsed = parseAdminProductPayload({
++      ...validProduct,
++      variants: [
++        {
++          name: 'Large',
++          sku: 'SHIRT-001-L',
++          price: 1200,
++          salePrice: 1300,
++          stockQuantity: 1,
++        },
++      ],
++    })
++
++    assert.equal(parsed.success, false)
++  })
++
++  it('rejects negative numeric product values', () => {
++    const basePrice = parseAdminProductPayload({ ...validProduct, basePrice: -1 })
++    const stockQuantity = parseAdminProductPayload({ ...validProduct, stockQuantity: -1 })
++    const variantStock = parseAdminProductPayload({
++      ...validProduct,
++      variants: [{ name: 'Large', sku: 'SHIRT-001-L', stockQuantity: -1 }],
++    })
++
++    assert.equal(basePrice.success, false)
++    assert.equal(stockQuantity.success, false)
++    assert.equal(variantStock.success, false)
++  })
++
+   it('rejects duplicate variant SKUs', () => {
+     const parsed = parseAdminProductPayload({
+       ...validProduct,

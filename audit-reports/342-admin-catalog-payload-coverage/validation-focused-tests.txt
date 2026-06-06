@@ -1,0 +1,46 @@
+▶ admin banner validation
+  ✔ normalizes text fields and dates (2.5966ms)
+  ✔ allows text-only banners (0.8138ms)
+  ✔ applies banner defaults and preserves explicit inactive state (0.3533ms)
+  ✔ allows absolute http links (0.2861ms)
+  ✔ rejects empty banners (0.387ms)
+  ✔ rejects unsafe link URLs (0.3209ms)
+  ✔ rejects invalid schedule dates and out-of-range sort orders (0.4422ms)
+  ✔ rejects inline base64 image data for desktop and mobile images (0.3699ms)
+  ✔ rejects schedules where end is before start (0.2366ms)
+✔ admin banner validation (7.5447ms)
+▶ admin category validation
+  ✔ trims category fields and normalizes blank optional values (7.914ms)
+  ✔ defaults activity and sort order (0.3504ms)
+  ✔ preserves inactive categories and allowed negative sort order (0.2255ms)
+  ✔ rejects missing category names (0.438ms)
+  ✔ rejects non-integer sort orders (0.212ms)
+  ✔ rejects out-of-range sort orders (0.4919ms)
+✔ admin category validation (10.5933ms)
+▶ admin homepage section validation
+  ✔ normalizes text fields and parses config JSON (2.7612ms)
+  ✔ accepts object config input (0.3161ms)
+  ✔ normalizes blank config to Prisma JsonNull and preserves inactive state (0.2327ms)
+  ✔ rejects config values that are not JSON-safe (0.2816ms)
+  ✔ rejects invalid config JSON (0.1872ms)
+  ✔ rejects unsupported section types (0.3866ms)
+  ✔ rejects non-integer sort order (0.197ms)
+✔ admin homepage section validation (5.3601ms)
+▶ admin product validation
+  ✔ normalizes product payloads (8.2965ms)
+  ✔ applies defaults and normalizes blank optional product values (0.7772ms)
+  ✔ rejects sale prices above base prices (0.495ms)
+  ✔ rejects variant sale prices above variant prices (0.325ms)
+  ✔ rejects negative numeric product values (0.52ms)
+  ✔ rejects duplicate variant SKUs (0.2513ms)
+  ✔ rejects unsafe image URLs and partial variant options (1.6694ms)
+  ✔ normalizes tags to lowercase unique-ish values (0.2636ms)
+✔ admin product validation (13.5774ms)
+ℹ tests 30
+ℹ suites 4
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 655.8835
