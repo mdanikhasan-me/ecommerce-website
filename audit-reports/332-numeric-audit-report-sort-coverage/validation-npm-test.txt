@@ -1,0 +1,814 @@
+
+> boilabin@1.0.0 test
+> tsx --test tests/**/*.test.ts
+
+▶ accessibility ARIA source guardrails
+  ✔ rejects quoted literal JSX expression values on ARIA and role attributes (73.6343ms)
+  ✔ keeps Edge Tools problem-prone ARIA state and role expressions behind typed helpers (56.5879ms)
+  ✔ keeps Header disclosure state attributes semantic without direct TSX state expressions (0.7246ms)
+  ✔ keeps product filter controls and mobile filter dialog on valid ARIA state helpers (0.4852ms)
+  ✔ keeps LocalIcon decorative by default and explicit when meaningful (0.3266ms)
+✔ accessibility ARIA source guardrails (133.767ms)
+▶ address validation
+  ✔ trims valid address fields (2.9867ms)
+  ✔ normalizes blank optional fields to null (0.4969ms)
+  ✔ rejects invalid phone numbers (0.7331ms)
+  ✔ defaults isDefault to false (0.4523ms)
+✔ address validation (6.1747ms)
+▶ admin shell authenticated QA guardrails
+  ✔ keeps removed Flash admin navigation out of the admin sidebar (1.0439ms)
+  ✔ keeps the mobile admin menu reachable by an accessible button (0.2602ms)
+  ✔ keeps Escape wired to close the mobile admin menu (0.214ms)
+✔ admin shell authenticated QA guardrails (2.8426ms)
+▶ admin banner upload base64 fix
+  ✔ persists desktop and mobile banner files as short managed URLs (81.5513ms)
+  ✔ rejects inline banner data URLs before JSON save payloads hit persistence (12.8846ms)
+  ✔ keeps source banner assets protected while managed banner uploads stay cleanup eligible (0.9166ms)
+  ✔ keeps traversal-like banner owner values inside the approved managed root (1.8795ms)
+  ✔ continues to allow source banner paths and storefront rendering of managed upload paths (5.6781ms)
+  ✔ wires the banner form to managed upload instead of storing file reader data URLs (3.744ms)
+✔ admin banner upload base64 fix (114.6585ms)
+▶ admin media upload deletion lifecycle guardrails
+  ✔ allows only known managed local upload roots as local deletion candidates (24.096ms)
+  ✔ does not allow managed upload root directories as local deletion candidates (0.3281ms)
+  ✔ protects committed source-code assets from admin local deletion (0.2181ms)
+  ✔ does not treat remote URLs or inline upload payloads as local deletion candidates (0.2413ms)
+  ✔ refuses path traversal and unknown local paths (0.3494ms)
+  ✔ refuses query strings and fragments on managed upload paths (0.2036ms)
+  ✔ resolves managed upload candidates inside public uploads only (0.3397ms)
+  ✔ plans deletion only when callers provide no remaining active references (0.5641ms)
+  ✔ routes admin cleanup helper path resolution through the classifier (0.5108ms)
+  ✔ deletes only temp managed admin and product fixtures (68.3973ms)
+  ✔ refuses temp managed root, traversal, query, fragment, remote, and data cleanup inputs (30.3643ms)
+  ✔ keeps admin and product cleanup roots isolated from each other (24.9459ms)
+✔ admin media upload deletion lifecycle guardrails (152.8985ms)
+▶ admin media orphan dry-run inventory
+  ✔ summarizes managed upload roots without deleting files or printing names (195.6168ms)
+  ✔ requires explicit injected references before DB-aware classification is enabled (12.23ms)
+  ✔ refuses explicit local DB-aware CLI mode before Prisma when local guard is unsafe (14.9369ms)
+  ✔ runs explicit local DB-aware CLI mode through a mocked count-only source (220.335ms)
+  ✔ rejects unsupported CLI options without enabling deletion or local DB reads (4.8511ms)
+  ✔ classifies DB-aware orphan candidates with aggregate counts only (138.1287ms)
+✔ admin media orphan dry-run inventory (588.507ms)
+▶ admin media Prisma-compatible reference adapter
+  ✔ represents every shared media reference field from the guard map (2.1633ms)
+  ✔ builds exact equality where clauses for scalar fields (0.5476ms)
+  ✔ builds Prisma array containment where clauses for list fields (0.269ms)
+  ✔ applies operation-specific exclusions by exact model, field, id, and value (0.2683ms)
+  ✔ counts all mapped fields with mocked Prisma delegates and returns field counts only (1.2995ms)
+  ✔ marks missing delegates incomplete without returning matched records or PII (0.7791ms)
+  ✔ marks unconfigured fields and invalid count results incomplete (0.4023ms)
+  ✔ marks thrown delegate errors incomplete and redacts sensitive details (0.7413ms)
+  ✔ integrates with the shared-reference planner without requiring a live database (1.7614ms)
+✔ admin media Prisma-compatible reference adapter (10.0952ms)
+▶ admin media DB-aware shared-reference guard
+  ✔ maps every known Prisma media reference field (1.978ms)
+  ✔ plans classifier-approved unreferenced admin and product uploads as deletable in mock context (1.2229ms)
+  ✔ blocks media referenced by another active banner, category, product, variant, or brand field (0.9941ms)
+  ✔ preserves historical evidence references from orders, returns, reviews, and users (0.4535ms)
+  ✔ refuses remote, source, unknown, and unsafe paths before reference lookup (0.5ms)
+  ✔ fails safe when the reference source throws or returns incomplete results (0.7683ms)
+  ✔ supports excluding the current record without ignoring other records (0.4845ms)
+  ✔ uses field-aware exclusions so retained fields on the same record still block deletion (0.3559ms)
+✔ admin media DB-aware shared-reference guard (8.4696ms)
+▶ admin media runtime cleanup reference guard
+  ✔ deletes unreferenced admin-managed temp fixtures only after a complete reference check (40.6186ms)
+  ✔ deletes unreferenced subcategory managed asset fixtures with the classified managed prefix (8.8839ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.263Z',
+  severity: 'warn',
+  errorCode: 'admin_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Reference check failed; physical deletion must be skipped.'
+  }
+}
+  ✔ skips admin-managed deletion for active, historical, and failed reference checks (21.3229ms)
+  ✔ deletes unreferenced product-managed temp fixtures only after a complete reference check (23.0441ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.318Z',
+  severity: 'warn',
+  errorCode: 'product_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Reference check failed; physical deletion must be skipped.'
+  }
+}
+  ✔ skips product-managed deletion for active, historical, and failed reference checks (28.2664ms)
+  ✔ keeps admin and product cleanup scopes isolated from each other (32.3899ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.385Z',
+  severity: 'warn',
+  errorCode: 'admin_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Reference check was incomplete; physical deletion must be skipped.'
+  }
+}
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.385Z',
+  severity: 'warn',
+  errorCode: 'product_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Reference check was incomplete; physical deletion must be skipped.'
+  }
+}
+  ✔ preserves admin and product temp fixtures when reference checks are incomplete (48.2508ms)
+  ✔ refuses protected, unsafe, and unknown cleanup paths before reference lookup (0.7103ms)
+  ✔ preserves real temp source-asset fixtures and skips reference lookup for protected roots (16.9147ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.459Z',
+  severity: 'warn',
+  errorCode: 'admin_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.461Z',
+  severity: 'warn',
+  errorCode: 'product_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+  ✔ returns false and preserves temp fixtures when physical deletion fails (43.258ms)
+  ✔ keeps replaced-image cleanup exported helpers reference-safe (32.6179ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T21:39:30.523Z',
+  severity: 'warn',
+  errorCode: 'admin_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+  ✔ keeps batch cleanup helpers and cleanup failures non-fatal (36.5989ms)
+  ✔ keeps route-facing response contracts unchanged while cleanup helpers stay non-throwing (6.6791ms)
+✔ admin media runtime cleanup reference guard (343.0753ms)
+▶ admin managed media storage policy
+  ✔ documents current local upload roots without claiming provider storage is implemented (2.1665ms)
+  ✔ plans product storage keys from stable product/media identifiers instead of category folders (0.7494ms)
+  ✔ normalizes unsafe storage-key segments and falls back to safe extensions (0.2981ms)
+  ✔ keeps storage-key planning separate from current local deletion classification (0.6804ms)
+  ✔ keeps source-controlled catalog product assets protected from admin cleanup (0.26ms)
+  ✔ documents future ownership metadata required before physical deletion can be trusted (0.2117ms)
+  ✔ keeps future deletion ledger statuses stable without enabling deletion (0.1957ms)
+  ✔ requires recycle-window and hard-refusal policy before future physical deletion (0.2167ms)
+  ✔ keeps the media upload docs clear that ledger and recycle behavior are future policy only (1.0925ms)
+  ✔ pins the future MediaAsset schema-plan fields without editing Prisma schema (0.4225ms)
+  ✔ pins future media status and deletion-ledger schema-plan vocabulary (0.3016ms)
+  ✔ maps current media URL fields to conservative future backfill treatment (0.3595ms)
+  ✔ keeps future backfill phases, indexes, and rollback plan migration-readiness only (0.4911ms)
+  ✔ pins the migration-safe implementation checklist without enabling schema work (2.7536ms)
+  ✔ pins local prerequisites, approvals, phase gates, and stop conditions (0.615ms)
+  ✔ pins future dry-run, rollback, and DB-backed test requirements (0.5032ms)
+  ✔ keeps Step 281 docs and Prisma schema migration-readiness only (0.8746ms)
+  ✔ keeps Step 281 report and evidence from claiming implementation happened (0.8253ms)
+✔ admin managed media storage policy (17.9481ms)
+▶ guarded admin media upload-delete QA harness
+  ✔ stops before helper imports or DB mutation when local DB URL safety fails (12.7869ms)
+  ✔ sanitizes secrets, emails, and full database URLs from evidence strings (2.7416ms)
+✔ guarded admin media upload-delete QA harness (16.8538ms)
+▶ admin product image delete lifecycle
+  ✔ keeps update route replacing stored ProductImage rows from the submitted payload (11.4085ms)
+  ✔ keeps admin form remove action and save payload tied to current image state (0.8548ms)
+  ✔ classifies only product managed upload paths as product cleanup candidates (2.0907ms)
+  ✔ does not send removed remote or source catalog product images to filesystem cleanup (1.1908ms)
+  ✔ does not delete a removed managed product file that is still referenced elsewhere (64.1258ms)
+  ✔ deletes an unreferenced managed product file and its empty product folder (34.7679ms)
+  ✔ keeps a managed product folder when sibling media remains (44.4269ms)
+  ✔ refuses traversal, product upload root, and cross-scope category cleanup from product helpers (0.8144ms)
+  ✔ preserves the current Bose source catalog asset because it is source controlled (0.4845ms)
+✔ admin product image delete lifecycle (162.2922ms)
+▶ admin report date range parsing
+  ✔ uses explicit dates and normalizes the end date to end-of-day (12.1756ms)
+  ✔ falls back safely for missing dates (0.3704ms)
+  ✔ falls back safely for invalid dates (0.2293ms)
+  ✔ preserves reversed ranges for route compatibility (0.1883ms)
+✔ admin report date range parsing (14.4258ms)
+▶ admin report CSV escaping
+  ✔ quotes commas and double quotes (0.43ms)
+  ✔ escapes spreadsheet formula prefixes (0.2353ms)
+  ✔ handles empty and non-string values without widening the CSV contract (0.1968ms)
+  ✔ quotes line breaks that could split CSV rows (0.1952ms)
+✔ admin report CSV escaping (1.4634ms)
+▶ admin report export sensitivity metadata
+  ✔ covers the current report export types (1.3154ms)
+  ✔ preserves the orders CSV field contract and sensitivity categories (0.6445ms)
+  ✔ preserves the products CSV field contract and business sensitivity categories (0.2821ms)
+  ✔ preserves the customers CSV field contract and highest PII risk labels (0.2947ms)
+  ✔ provides UI-ready warning labels for every report export (0.393ms)
+  ✔ wires export confirmation through existing metadata without changing export hrefs (0.3864ms)
+  ✔ keeps the export confirmation client-side and cancelable without route calls (0.443ms)
+  ✔ keeps confirmation copy metadata-driven without assuming CSV payload contents (0.3462ms)
+  ✔ keeps the confirmation guard as navigation-only UI, not route enforcement (0.3465ms)
+  ✔ documents CSV handling guidance without changing export behavior (0.6198ms)
+✔ admin report export sensitivity metadata (5.6661ms)
+▶ admin export audit event helper
+  ✔ builds a sanitized no-DB event from static export metadata (2.9519ms)
+  ✔ omits invalid report types and unsupported actor details (0.5662ms)
+  ✔ accepts only the current report export type enum (0.164ms)
+  ✔ derives sensitivity flags for every report type from export metadata (0.2474ms)
+  ✔ keeps route data pathname-only and never accepts raw query input (0.1805ms)
+  ✔ bounds result, error code, status code, and actor role values (0.2799ms)
+  ✔ builds a security-log event without payment-named metadata keys (0.5421ms)
+✔ admin export audit event helper (5.3036ms)
+▶ admin report export route audit logging source contract
+  ✔ imports only the approved sanitized audit helper and security logger (0.5151ms)
+  ✔ isolates audit logging as fail-open source behavior (0.4719ms)
+  ✔ keeps invalid export type response unchanged while logging a bounded blocked event (0.3627ms)
+  ✔ logs successful exports only after CSV construction and without inspecting CSV contents (0.7266ms)
+  ✔ keeps catch-path client response behavior while logging only bounded failure data (0.5914ms)
+  ✔ does not pass raw request, query, date, header, actor, or CSV values into audit logging (0.4436ms)
+✔ admin report export route audit logging source contract (3.4585ms)
+▶ admin user validation
+  ✔ normalizes editable user fields (3.093ms)
+  ✔ normalizes blank optional profile fields to null (0.5145ms)
+  ✔ rejects invalid roles and phone characters (1.2527ms)
+  ✔ normalizes list filters and ignores invalid roles (0.339ms)
+  ✔ builds typed list filters for search and role (0.2632ms)
+✔ admin user validation (7.014ms)
+✔ mutation guard returns a stable forbidden JSON response (31.9745ms)
+✔ mutation guard returns missing-source JSON response when production requires a source signal (1.9617ms)
+✔ rate limiter returns contract error JSON and rate-limit headers (2.1933ms)
+✔ rate limiter treats unsafe forwarded identifiers as unknown but keeps the response contract (1.549ms)
+✔ CSP report endpoint returns disabled-by-default JSON contract (1.5278ms)
+✔ CSP report endpoint returns unsupported content-type contract when enabled (1.2544ms)
+✔ CSP report endpoint returns invalid JSON contract when enabled (1.6856ms)
+✔ CSP report endpoint returns invalid report contract when enabled (1.705ms)
+✔ contact API validation returns error JSON before database writes (1.3831ms)
+✔ contact API invalid email and subject branches return validation JSON before database writes (1.7051ms)
+✔ newsletter API validation returns error JSON before database writes (0.8854ms)
+✔ newsletter API malformed JSON returns validation JSON before database writes (0.8507ms)
+✔ register API validation returns error JSON before database lookup (4.7069ms)
+✔ register API missing name and short password return validation JSON before database lookup (3.4762ms)
+✔ coupon validation missing-code branch returns error JSON before database lookup (3.4369ms)
+✔ coupon validation invalid amount returns coupon error JSON before database lookup (1.2469ms)
+✔ coupon validation malformed productIds are ignored before database lookup when code is missing (0.9763ms)
+✔ reviews GET missing productId returns validation JSON before database lookup (0.9489ms)
+✔ reviews GET invalid productId returns validation JSON before database lookup (0.6348ms)
+✔ search suggestions short sanitized query returns empty suggestions before database lookup (0.9872ms)
+✔ product view invalid id returns not found before database lookup (0.9188ms)
+✔ reviews POST blocked-origin branch returns before auth or database access (1.3218ms)
+✔ contact, newsletter, and register blocked-origin branches return before database access (2.8967ms)
+✔ product view blocked-origin branch returns before auth or database access (1.0979ms)
+✔ order creation blocked-origin branch returns before auth or database access (1.3601ms)
+✔ product view rate limit returns the shared 429 contract before product lookup (9.837ms)
+✔ return request blocked-origin branch returns before auth or database access (0.9149ms)
+✔ return request rate limit returns the shared 429 contract before authenticated work (1.7673ms)
+▶ auth host configuration
+  ✔ trusts local auth origins during local production verification (1.2726ms)
+  ✔ honors an explicit AUTH_TRUST_HOST override (0.2295ms)
+  ✔ does not silently trust unknown custom production hosts (0.3228ms)
+  ✔ warns about missing or inconsistent canonical origins (1.1715ms)
+✔ auth host configuration (4.5968ms)
+▶ authenticated checkout local fixture guardrails
+  ✔ keeps the readiness audit file-only and manual-action gated (3.6546ms)
+  ✔ keeps checkout page behind server auth redirect before client shell loads (0.5683ms)
+  ✔ keeps checkout order creation tied to explicit place-order click only (0.5927ms)
+  ✔ keeps the buyer fixture local-only, customer-only, and non-migration capable (0.5047ms)
+  ✔ keeps package scripts exact and opt-in for local buyer fixture work (0.3941ms)
+✔ authenticated checkout local fixture guardrails (7.3141ms)
+▶ admin banner validation
+  ✔ normalizes text fields and dates (3.6775ms)
+  ✔ allows text-only banners (1.3741ms)
+  ✔ rejects empty banners (1.0683ms)
+  ✔ rejects unsafe link URLs (0.5844ms)
+  ✔ rejects inline base64 image data for desktop and mobile images (0.6245ms)
+  ✔ rejects schedules where end is before start (2.8449ms)
+✔ admin banner validation (11.706ms)
+✔ Step 123 Advisor files exist (2.0264ms)
+✔ Advisor skill frontmatter uses only name and description (3.3819ms)
+✔ Advisor skill includes required workflow sections (0.4793ms)
+✔ Advisor skill preserves major Boilabin decisions (0.6798ms)
+✔ Advisor workflow doc describes human approval and realistic automation limits (0.5448ms)
+✔ Advisor quickstart documents activation and approval boundaries (0.7665ms)
+✔ Advisor quickstart includes required user-facing sections (0.4453ms)
+✔ Advisor state script avoids removed promotion literals that existing script scans reject (0.434ms)
+✔ Advisor state script reports ready state without reading env files (84.0318ms)
+✔ Advisor audit report listing keeps same-step prompt drafts before completed reports (4.0882ms)
+✔ Advisor audit report listing ignores malformed files and directories (4.1384ms)
+✔ Advisor audit report listing sorts numeric step prefixes numerically (3.5761ms)
+✔ Advisor safe file reader rejects all private env filename variants (0.777ms)
+✔ Advisor state can read the current git commit without relying on report text (91.9228ms)
+✔ Advisor section summaries stop cleanly instead of cutting mid-line (0.2714ms)
+✔ Advisor section summaries truncate single overlong lines at word boundaries (0.3464ms)
+✔ Advisor section summaries signal omitted lines after the line cap (0.1612ms)
+✔ Advisor secret scanner flags obvious risky values in Advisor docs only (0.1764ms)
+✔ Advisor broad staging scanner ignores warnings but flags recommendations (0.2339ms)
+✔ Advisor files do not contain obvious secret-looking values (2.0937ms)
+✔ Step 124 next prompt draft exists and is a single guarded prompt (0.4765ms)
+✔ terminal-loop workflow files exist (1.8837ms)
+✔ terminal-loop activation phrase is documented across workflow surfaces (8.5384ms)
+✔ terminal-loop doc defines the bounded 10-step terminal-first workflow (0.6459ms)
+✔ terminal batch loop mode is documented as optional and capped (0.975ms)
+✔ terminal batch loop mode rejects autonomous automation language (1.289ms)
+✔ terminal-loop docs preserve stop and approval boundaries (0.7706ms)
+✔ terminal-loop docs preserve exact-file staging rules (0.4194ms)
+✔ terminal-loop docs preserve protected Boilabin decisions (0.8524ms)
+✔ terminal-loop state script avoids removed promotion literals that active script scans reject (0.4041ms)
+✔ terminal-loop state script reports ready state (109.0499ms)
+✔ terminal-loop audit report listing keeps same-step prompt drafts before completed reports (4.8166ms)
+✔ terminal-loop audit report listing ignores malformed files and directories (4.2633ms)
+✔ terminal-loop audit report listing sorts numeric step prefixes numerically (3.9139ms)
+✔ terminal-loop state can read the current git commit without relying on report text (72.4789ms)
+✔ terminal-loop safe file reader rejects all private env filename variants (0.7276ms)
+✔ terminal-loop scanner flags unsafe broad staging recommendations (0.2654ms)
+✔ terminal-loop scanner flags obvious secret-like strings (1.0517ms)
+✔ terminal-loop files do not contain obvious secret-looking values (2.1819ms)
+▶ buyer order payload validation
+  ✔ normalizes a valid checkout payload before database lookups (2.7648ms)
+  ✔ rejects unavailable payment methods and empty carts with existing error messages (1.8404ms)
+  ✔ rejects unsafe product ids, variant ids, and coupon codes before database lookups (0.4159ms)
+  ✔ rejects invalid, non-finite, fractional, and oversized item quantities (0.5723ms)
+  ✔ caps item count and strips unsafe client image URLs (0.3872ms)
+  ✔ rejects incomplete or oversized delivery address fields (0.2702ms)
+✔ buyer order payload validation (8.2255ms)
+▶ buyer return request validation
+  ✔ normalizes valid return request payloads before database lookups (2.5722ms)
+  ✔ rejects unsafe order ids and out-of-bounds return text (1.8374ms)
+✔ buyer return request validation (4.7654ms)
+▶ mocked authenticated buyer order creation coverage
+  ✔ returns existing success shape without trusting client totals or unsafe image URLs (4.3087ms)
+  ✔ returns safe product unavailable and stock errors without mutations (0.7397ms)
+  ✔ returns safe coupon and transaction-race errors with existing response text (0.8845ms)
+  ✔ applies a mocked coupon while preserving user-scoped usage checks (0.9406ms)
+✔ mocked authenticated buyer order creation coverage (8.4237ms)
+▶ mocked authenticated buyer return request coverage
+  ✔ keeps return lookup scoped to the authenticated buyer (4.348ms)
+  ✔ returns safe eligibility errors without leaking order details (0.8479ms)
+  ✔ creates a mocked return request with existing success shape and revalidation paths (0.7104ms)
+✔ mocked authenticated buyer return request coverage (7.2982ms)
+▶ catalog product media localization
+  ✔ keeps the source-controlled product media manifest under public assets (12.9839ms)
+  ✔ points every seeded product image at a committed catalog product asset (2.1136ms)
+  ✔ keeps product source assets protected from managed upload cleanup (0.8862ms)
+  ✔ reports product catalog source assets with aggregate-safe audit evidence (1269.8219ms)
+✔ catalog product media localization (1287.3814ms)
+▶ category media mapping
+  ✔ keeps canonical category image URLs local and content-versioned (7.679ms)
+  ✔ resolves toys and collectibles to a non-missing local image fallback (0.4226ms)
+  ✔ keeps the legacy baby-kids slug from pointing at the deleted image (0.305ms)
+  ✔ renders only local managed subcategory media on public category surfaces (0.2186ms)
+✔ category media mapping (9.9649ms)
+▶ category page UI/UX guardrails
+  ✔ keeps the approved category labels and default Electronics selection available (1.2008ms)
+  ✔ renders subcategory items before the View All category CTA (0.2955ms)
+  ✔ does not include the removed service benefit strip copy (0.252ms)
+  ✔ uses managed subcategory media instead of hardcoded product photos (0.2636ms)
+  ✔ uses local category icon assets instead of lucide icons on the category page (0.1844ms)
+  ✔ renders neutral missing-image surfaces without repeated category icons or public placeholder copy (0.3636ms)
+  ✔ keeps subcategory cards photo-ready instead of shrinking missing media into tiny buttons (0.2698ms)
+  ✔ keeps category page typography within the storefront page scale (0.244ms)
+  ✔ keeps required category UI icon files local and source-controlled (0.9681ms)
+✔ category page UI/UX guardrails (5.8063ms)
+▶ category product counts
+  ✔ collects parent and child category ids once (12.336ms)
+  ✔ rolls direct and child product counts into the parent card count (0.4796ms)
+  ✔ returns zero for categories with no visible products (0.2069ms)
+✔ category product counts (14.5001ms)
+▶ admin category tree utilities
+  ✔ finds direct and nested descendants (1.9416ms)
+  ✔ does not include unrelated branches (0.4343ms)
+✔ admin category tree utilities (3.7946ms)
+▶ admin category validation
+  ✔ trims category fields and normalizes blank optional values (18.3838ms)
+  ✔ defaults activity and sort order (0.6856ms)
+  ✔ rejects missing category names (0.8017ms)
+  ✔ rejects non-integer sort orders (0.5013ms)
+✔ admin category validation (22.2181ms)
+✔ safe validation messages pass through (2.2884ms)
+✔ unauthorized messages keep the existing status behavior (1.0097ms)
+✔ Prisma and database internals are replaced with fallback messages (0.2372ms)
+✔ stack traces, file paths, tokens, and full URLs are unsafe (0.2811ms)
+✔ unknown non-error values use fallback messages (0.1951ms)
+▶ Codex single-chat multi-agent workflow guardrails
+  ✔ keeps required Codex workflow files present (1.6503ms)
+  ✔ keeps custom agent files with required fields (1.2256ms)
+  ✔ keeps skill frontmatter valid (0.4806ms)
+  ✔ documents single-chat limitation, simulated lanes, and one writer rule (0.4527ms)
+  ✔ documents exact-file staging and forbids broad staging commands (4.9247ms)
+  ✔ preserves Flash Deals removal and media decisions (0.5423ms)
+  ✔ keeps new workflow docs and config free of obvious secret-looking strings (6.3193ms)
+  ✔ runs the Codex workflow audit cleanly (3.4939ms)
+✔ Codex single-chat multi-agent workflow guardrails (22.2813ms)
+▶ commerce utilities
+  ✔ formats BDT prices without fractional noise (32.469ms)
+  ✔ calculates sale discounts only when the sale price is lower (0.2828ms)
+  ✔ applies free shipping once the threshold is met (0.2134ms)
+  ✔ caps percentage coupons at maxDiscount (0.1986ms)
+  ✔ never lets fixed coupons discount more than subtotal (0.1796ms)
+  ✔ maps stock quantities to customer-facing states (1.15ms)
+✔ commerce utilities (36.1085ms)
+▶ content quality marketing-copy guardrail
+  ✔ flags unsupported generic marketplace claims (14.586ms)
+  ✔ allows factual product/category wording (3.6525ms)
+  ✔ keeps private env files outside content scans (3.0507ms)
+  ✔ classifies review-only claims without weakening hard-blocked findings (5.3395ms)
+  ✔ keeps functional internal labels from becoming visible-copy findings (4.1999ms)
+  ✔ classifies schema and social-preview surfaces explicitly (3.4517ms)
+  ✔ keeps the repository marketing-copy audit free of unsupported public claims (669.069ms)
+  ✔ keeps checkout, product detail, and tracking copy factual before payment/tracking integrations (2.5808ms)
+  ✔ keeps footer payment logos display-only without COD or acceptance wording (0.3726ms)
+✔ content quality marketing-copy guardrail (708.1291ms)
+▶ admin coupon validation
+  ✔ normalizes coupon text and relation ids (18.4231ms)
+  ✔ normalizes blank optional fields to null (2.2417ms)
+  ✔ rejects percentage discounts above 100 (0.7778ms)
+  ✔ rejects schedules where expiry is before start (0.7579ms)
+  ✔ rejects invalid usage limits (1.2923ms)
+✔ admin coupon validation (25.582ms)
+✔ sanitizeCspReportUrl strips query strings and fragments (1.309ms)
+✔ sanitizeCspReportPayload keeps only capped sanitized report fields (2.9737ms)
+✔ CSP report endpoint is disabled by default (11.5789ms)
+✔ CSP report endpoint rejects unsupported content types when enabled (2.5427ms)
+✔ CSP report endpoint safely rejects invalid JSON when enabled (7.1781ms)
+✔ CSP report endpoint rejects oversized report bodies when enabled (1.9952ms)
+✔ CSP report endpoint logs only sanitized report data when enabled (4.9242ms)
+▶ route-aware CSP helper
+  ✔ classifies route families without applying CSP to static assets (1.6352ms)
+  ✔ generates explicit report-only policies for every route family (3.4038ms)
+  ✔ keeps current known image hosts in page policies (0.7504ms)
+  ✔ does not include payment or tracking domains before those integrations exist (0.3545ms)
+  ✔ keeps API and metadata policies minimal (1.1397ms)
+  ✔ keeps report-only header disabled by default (3.2039ms)
+  ✔ returns a report-only header only when explicitly enabled (0.4804ms)
+  ✔ adds report-uri only when report-only and collection are both enabled (0.467ms)
+✔ route-aware CSP helper (14.8769ms)
+▶ middleware CSP report-only behavior
+  ✔ does not add CSP headers by default and preserves protected redirects (8.8991ms)
+  ✔ adds report-only CSP when enabled without adding enforced CSP (1.1074ms)
+✔ middleware CSP report-only behavior (10.3375ms)
+▶ featured categories layout guardrails
+  ✔ keeps the homepage category heading from being constrained on desktop (1.0171ms)
+  ✔ allows category cards to shrink inside responsive grids (0.2818ms)
+✔ featured categories layout guardrails (2.6397ms)
+✔ Flash Deals is absent from active source, schema, seed, scripts, and docs (66.8748ms)
+✔ Flash Deals storefront and admin routes are removed (0.4794ms)
+✔ Step 307 global navbar removes promo strip and uses compact responsive controls (1.8286ms)
+✔ Step 307 help page has the new support layout and no retired help copy (0.608ms)
+✔ Step 307 help and navbar links use existing routes (1.4524ms)
+✔ Step 307 local icons used by help and navbar resolve to files (1.7312ms)
+▶ homepage product-grid rhythm contracts
+  ✔ keeps ProductGrid as the shared homepage product section rhythm owner (1.6331ms)
+  ✔ keeps homepage product sections on the shared ProductGrid rhythm path (0.4814ms)
+  ✔ keeps product-grid action labels specific without changing product card behavior (0.5132ms)
+  ✔ keeps ProductGrid DB-free and API-free (0.3944ms)
+  ✔ keeps rhythm CSS scoped away from media assets and paused visual surfaces (0.6683ms)
+✔ homepage product-grid rhythm contracts (5.2502ms)
+▶ admin homepage section validation
+  ✔ normalizes text fields and parses config JSON (4.5395ms)
+  ✔ accepts object config input (0.5422ms)
+  ✔ rejects invalid config JSON (0.433ms)
+  ✔ rejects unsupported section types (0.7586ms)
+  ✔ rejects non-integer sort order (0.3712ms)
+✔ admin homepage section validation (8.2498ms)
+▶ image upload validation
+  ✔ accepts valid allowlisted image payloads (14.124ms)
+  ✔ rejects unsupported image MIME types (1.6106ms)
+  ✔ rejects corrupt images with a safe error (2.0847ms)
+  ✔ rejects MIME types that do not match decoded image data (6.1998ms)
+  ✔ rejects payloads above the encoded byte limit before decoding (22.6454ms)
+  ✔ rejects oversized dimensions with a specific safe error (3.5858ms)
+  ✔ rejects decoded pixel counts above the policy cap (331.3728ms)
+  ✔ prefers WebP output for persisted optimized uploads (24.2507ms)
+  ✔ can persist a sanitized stable WebP filename when a managed category path requires it (11.5342ms)
+  ✔ exposes explicit media policy metadata without claiming variant storage is implemented (0.4171ms)
+  ✔ keeps rejected upload errors bounded and free of raw payload data (0.3403ms)
+✔ image upload validation (420.4192ms)
+▶ admin inventory validation
+  ✔ normalizes numeric strings and trims notes (4.553ms)
+  ✔ defaults variants to an empty list (0.7242ms)
+  ✔ rejects duplicate variant updates (0.9837ms)
+  ✔ rejects negative stock quantities (0.4244ms)
+  ✔ rejects missing adjustment notes (0.2601ms)
+✔ admin inventory validation (8.7812ms)
+✔ local admin password plan refuses a remote-looking app DB URL (4.1988ms)
+✔ local admin password plan refuses same app and shadow DB (2.3577ms)
+✔ local admin password validation requires strong local-only input (1.0881ms)
+✔ local admin password runner refuses missing password without touching DB (2.5783ms)
+✔ local admin password update refuses ambiguous multiple admins without selector (1.0598ms)
+✔ local admin password update does not log or store raw password in update payload (0.6788ms)
+✔ local admin password CLI output omits password and hash values (2.9414ms)
+✔ sanitizeAdminPasswordOutput redacts URLs, emails, passwords, hashes, and secrets (0.6346ms)
+▶ local asset dependency policy
+  ✔ classifies source assets, managed uploads, bundled icons, and remote media separately (1.9653ms)
+  ✔ keeps static UI assets local or bundled and separates remote catalog media backlog (947.6485ms)
+  ✔ does not include matched private media values in formatted audit output (64.8367ms)
+  ✔ keeps footer social/payment/logo dependencies local or bundled (4.6843ms)
+  ✔ reports missing local source asset references as aggregate-only warnings (26.1485ms)
+  ✔ does not report Next image localPatterns globs as missing literal assets (13.5672ms)
+  ✔ generates app-owned placeholder images without remote hosts (0.8667ms)
+  ✔ keeps category source media under source assets, not managed upload roots (0.4479ms)
+✔ local asset dependency policy (1067.9777ms)
+✔ local buyer fixture plan refuses a remote-looking app DB URL (4.2724ms)
+✔ local buyer fixture plan refuses same app and shadow DB (2.334ms)
+✔ local buyer fixture validates local-only email and strong password input (1.1437ms)
+✔ local buyer fixture CLI refuses missing password without touching DB (2.6673ms)
+✔ local buyer fixture refuses to overwrite a non-customer account (1.1321ms)
+✔ local buyer fixture creates customer account with cart and wishlist without storing raw password (0.6301ms)
+✔ local buyer fixture CLI output omits password, hash, full email, and DB URL values (2.6642ms)
+✔ sanitizeBuyerFixtureOutput redacts URLs, emails, passwords, hashes, and secrets (0.6122ms)
+▶ local physical storefront icon assets
+  ✔ keeps required UI and social icon files source-controlled under public assets (2.6068ms)
+  ✔ uses local icons in critical storefront surfaces and preserves payment logo policy (0.9055ms)
+✔ local physical storefront icon assets (4.8582ms)
+▶ media path taxonomy
+  ✔ sanitizes unsafe folder segments before planning local media paths (10.4269ms)
+  ✔ builds organized source catalog and managed upload paths (2.33ms)
+  ✔ persists new product, banner, and category uploads under nested managed roots (105.7297ms)
+  ✔ keeps old and nested upload paths cleanup-compatible while protecting source assets (43.0247ms)
+✔ media path taxonomy (164.1364ms)
+▶ public media source-of-truth audit guardrails
+  ✔ classifies bundled source assets as never-delete media (1.3884ms)
+  ✔ classifies managed upload roots separately from source assets (0.273ms)
+  ✔ refuses traversal-looking paths and flags remote image references (0.4183ms)
+  ✔ keeps the audit script free of media and database mutation calls (0.5398ms)
+  ✔ keeps Step 311 iPhone product image repair evidence bounded to the wrong-owner row (2.5216ms)
+✔ public media source-of-truth audit guardrails (6.6406ms)
+▶ media upload readiness policy guardrail
+  ✔ keeps the multi-vendor scale example explicit (18.4453ms)
+  ✔ detects current safe upload foundations and missing variant generation (58.0484ms)
+✔ media upload readiness policy guardrail (78.3493ms)
+✔ Step 308 mobile navbar has balanced local-icon controls (5.8406ms)
+✔ Step 308 footer is compacted while payment logos remain (1.4346ms)
+✔ Step 308 homepage banner source and multi-banner controls are route-safe (9.2072ms)
+✔ Step 308 does not add fake storefront routes or remote navbar icons (1.692ms)
+▶ Step 312 desktop navbar categories dropdown redesign
+  ✔ renders the main category rail with Electronics as the default selected department (2.6288ms)
+  ✔ renders Electronics subcategory tiles before the View all electronics tile (0.8083ms)
+  ✔ uses local category and subcategory icons without remote icon URLs (3.2703ms)
+  ✔ preserves header guardrails and existing route behavior (0.9524ms)
+  ✔ keeps mobile header controls available while limiting the redesign to desktop dropdown markup (0.4136ms)
+  ✔ keeps desktop dropdown keyboard and dismissal hooks wired (0.3749ms)
+  ✔ keeps the Step 313 dropdown calmer and does not select categories on hover (0.5391ms)
+✔ Step 312 desktop navbar categories dropdown redesign (12.2324ms)
+▶ admin notification validation
+  ✔ normalizes notification payloads (3.192ms)
+  ✔ requires a user for direct notifications (1.0068ms)
+  ✔ rejects invalid links and notification types (1.4651ms)
+  ✔ validates read toggles (0.6826ms)
+  ✔ builds audience filters (1.1839ms)
+✔ admin notification validation (9.0446ms)
+▶ buyer order PII boundary guardrails
+  ✔ keeps order confirmation noindex and scoped to owner or admin before loading delivery address (2.851ms)
+  ✔ keeps account order listing authenticated and user-scoped even with order-number filters (0.7654ms)
+  ✔ keeps track-order noindex and redirects lookup into authenticated account orders (0.6136ms)
+  ✔ does not reintroduce public order lookup APIs or Flash Deals order logic (0.9294ms)
+✔ buyer order PII boundary guardrails (7.3088ms)
+▶ admin order update validation
+  ✔ accepts all operational order statuses and trims notes (3.5686ms)
+  ✔ normalizes blank order status notes to null (0.3708ms)
+  ✔ rejects invalid order statuses (0.9607ms)
+  ✔ accepts payment statuses and trims notes (0.3717ms)
+  ✔ rejects long admin notes (0.3917ms)
+✔ admin order update validation (8.3955ms)
+▶ payment disabled boundary guardrails
+  ✔ keeps online checkout methods as disabled placeholders without provider handoff code (1.5867ms)
+  ✔ does not expose public payment provider or webhook API routes before integration approval (0.8719ms)
+  ✔ keeps buyer order creation on server-side totals and a pending internal payment record (0.532ms)
+✔ payment disabled boundary guardrails (4.5339ms)
+▶ tracking disabled and guest PII boundary guardrails
+  ✔ does not expose public guest tracking or order lookup APIs (0.5914ms)
+  ✔ keeps track-order as noindex and redirects into authenticated account order filtering (0.6948ms)
+  ✔ keeps order confirmation and account order detail scoped before delivery PII is rendered (0.655ms)
+✔ tracking disabled and guest PII boundary guardrails (2.258ms)
+▶ buyer API contract source guardrails
+  ✔ keeps unauthenticated buyer order and return mutation response contracts stable (0.6891ms)
+  ✔ keeps buyer order and return success payload shapes mobile-stable (0.7114ms)
+✔ buyer API contract source guardrails (1.7097ms)
+▶ prelaunch env readiness docs and script
+  ✔ keeps the deployment docs and audit script present (1.476ms)
+  ✔ does not configure private env files as readable audit inputs (0.3046ms)
+  ✔ keeps deployment docs free of obvious real-secret patterns (2.0842ms)
+  ✔ documents core environment variables from the example files (0.5907ms)
+  ✔ documents disabled payment/tracking, staging noindex, migrations, and mobile compatibility (1.0002ms)
+  ✔ does not reintroduce Flash Deals as an active deployment feature (2.5341ms)
+  ✔ creates a safe no-network/no-db readiness report without requiring configured secrets (26.5593ms)
+✔ prelaunch env readiness docs and script (36.5228ms)
+✔ DB URL safety loads .env first and .env.local as the local override (6.1006ms)
+✔ DB URL safety rejects app and shadow database URLs that target the same database (0.3825ms)
+✔ Prisma local command resolver allows only explicit local Prisma commands (1.7634ms)
+✔ Prisma local plan refuses unsafe remote-looking DB URL classification (2.4196ms)
+✔ Prisma local runner passes merged local env values to the spawned Prisma command (3.3802ms)
+✔ Prisma seed local plan uses .env.local to override a remote-looking .env (3.5523ms)
+✔ Prisma seed local plan refuses a remote-looking app database URL (2.4581ms)
+✔ Prisma seed local runner refuses missing shadow DB and does not spawn seed (2.7722ms)
+✔ Prisma seed local runner refuses same app and shadow database (2.5573ms)
+✔ Prisma seed local runner redacts seed credential and URL output (3.441ms)
+✔ sanitizeSeedOutput redacts database URLs, emails, and credential lines (0.2762ms)
+▶ product local catalog image replacement
+  ✔ resolves the Bose local catalog image from the committed product catalog (9.8708ms)
+  ✔ refuses ambiguous or missing local catalog image matches (0.2841ms)
+  ✔ maps the Bose remote ProductImage row to its local catalog path (1.1032ms)
+  ✔ does not change already-local image rows (3.1136ms)
+  ✔ does not change remote rows when no matching local catalog asset exists (1.1124ms)
+  ✔ keeps active seed/catalog product source from preferring Unsplash when local media exists (2.5219ms)
+  ✔ keeps Step 305 product cleanup from deleting source catalog product images (0.5583ms)
+✔ product local catalog image replacement (20.007ms)
+▶ effective price filtering helpers
+  ✔ sorts by sale price when present and base price otherwise (20.4044ms)
+  ✔ selects only the requested effective-price page (0.3497ms)
+  ✔ restores fetched products to the previously sorted ID order (0.3627ms)
+✔ effective price filtering helpers (22.6293ms)
+▶ admin product validation
+  ✔ normalizes product payloads (10.1182ms)
+  ✔ rejects sale prices above base prices (0.8173ms)
+  ✔ rejects duplicate variant SKUs (0.5749ms)
+  ✔ rejects unsafe image URLs and partial variant options (2.4717ms)
+  ✔ normalizes tags to lowercase unique-ish values (0.6529ms)
+✔ admin product validation (16.0636ms)
+▶ product visibility policy
+  ✔ defines active as the only buyer-visible lifecycle state (2.4027ms)
+  ✔ builds buyer-visible product filters from one shared base (1.1802ms)
+  ✔ uses the same policy for sitemap and product detail visibility (0.3779ms)
+  ✔ evaluates loaded product records with category and seller state (0.2426ms)
+  ✔ keeps out-of-stock active products visible but marks JSON-LD availability (0.2588ms)
+✔ product visibility policy (6.1071ms)
+▶ profile validation
+  ✔ trims names and phone numbers (2.7015ms)
+  ✔ normalizes blank phone values to null (0.6236ms)
+  ✔ rejects missing names (1.108ms)
+  ✔ rejects non-phone characters (0.3491ms)
+✔ profile validation (6.5714ms)
+▶ provider decision workbook docs and script
+  ✔ keeps the three decision docs and audit script present (1.4046ms)
+  ✔ keeps required sections in each decision doc (4.1137ms)
+  ✔ keeps decision docs free of obvious real-secret patterns and deployment commands (3.2153ms)
+  ✔ does not declare a specific provider as chosen (1.0875ms)
+  ✔ documents database separation, shadow DB safety, backups, and staging noindex (2.4595ms)
+  ✔ documents payment/tracking disabled caution and future mobile compatibility (0.8244ms)
+  ✔ does not reintroduce Flash Deals as an active feature (1.5817ms)
+  ✔ runs the provider decision docs audit cleanly without network, DB, or env values (3.8039ms)
+✔ provider decision workbook docs and script (20.428ms)
+▶ public API input parsing
+  ✔ normalizes safe public ids and rejects unsafe ids (1.2654ms)
+  ✔ deduplicates, caps, and sanitizes public id lists (0.6249ms)
+  ✔ normalizes coupon codes and amounts (0.4885ms)
+  ✔ bounds public search text and words (1.5193ms)
+✔ public API input parsing (5.4784ms)
+▶ mutation request guard
+  ✔ allows safe methods without source headers (1.5646ms)
+  ✔ allows same-origin mutation origins (0.3217ms)
+  ✔ allows configured origins and same-origin referers (0.2839ms)
+  ✔ blocks cross-site mutation sources (0.2916ms)
+  ✔ requires a source signal when configured to do so (0.3483ms)
+  ✔ normalizes valid origins and rejects invalid values (0.3808ms)
+✔ mutation request guard (5.1671ms)
+▶ admin return validation
+  ✔ normalizes refund amounts and notes (4.0084ms)
+  ✔ normalizes blank optional values to null (0.6361ms)
+  ✔ rejects invalid statuses and refund amounts (1.2341ms)
+  ✔ ignores invalid status filters (0.2939ms)
+  ✔ maps return statuses to order statuses (0.2805ms)
+✔ admin return validation (8.0107ms)
+▶ admin review moderation validation
+  ✔ accepts moderation statuses (1.7632ms)
+  ✔ rejects unsupported review statuses (1.0847ms)
+✔ admin review moderation validation (4.0725ms)
+▶ review validation
+  ✔ coerces valid rating and trims text fields (14.1276ms)
+  ✔ normalizes blank titles to null (0.6991ms)
+  ✔ rejects ratings outside the 1 to 5 range (1.5511ms)
+  ✔ rejects short review bodies (0.5051ms)
+  ✔ rejects unsafe product ids before review database work (1.075ms)
+✔ review validation (19.5799ms)
+▶ post-Flash runtime stability config
+  ✔ loads Tailwind config without CommonJS require (1.0957ms)
+  ✔ allows the image qualities used by active storefront components (0.9741ms)
+  ✔ allows versioned public assets and admin uploads through Next local image patterns (2.6229ms)
+  ✔ keeps split hero images from advertising hidden variants as full viewport (0.5964ms)
+  ✔ lets public listing pages mark only one product-card image as the LCP candidate (0.7706ms)
+✔ post-Flash runtime stability config (7.5962ms)
+▶ local runtime smoke helper
+  ✔ parses safe local smoke modes and ports (1.0664ms)
+  ✔ creates direct Next commands for local-only dev and start smoke runs (0.3959ms)
+  ✔ keeps explicit status contracts and JSON leak detection stable (0.8524ms)
+  ✔ covers only safe prelaunch smoke routes and removed Flash endpoints (0.32ms)
+✔ local runtime smoke helper (3.2572ms)
+▶ local browser runtime check helper
+  ✔ parses local browser check options without allowing ambiguous ports (0.7861ms)
+  ✔ uses isolated browser launch arguments and keeps the checked public route set stable (0.3205ms)
+  ✔ does not treat intentionally hidden responsive image variants as broken visible images (0.3994ms)
+  ✔ opens the mobile search control before checking mobile search input focus (0.3487ms)
+✔ local browser runtime check helper (2.1283ms)
+▶ known broken seeded image URLs
+  ✔ are absent from active seed data (0.5587ms)
+  ✔ are repaired with exact-match product and banner updates only (0.7426ms)
+  ✔ refuses non-local database configuration before creating a repair plan (5.0153ms)
+✔ known broken seeded image URLs (6.645ms)
+▶ safe callback URL
+  ✔ allows internal callback paths (1.1902ms)
+  ✔ rejects external and protocol-relative callback URLs (0.2559ms)
+  ✔ uses the provided fallback for blank or invalid values (0.1947ms)
+✔ safe callback URL (3.0627ms)
+▶ search parameter parsing
+  ✔ preserves valid buyer search parameters (2.6047ms)
+  ✔ falls back safely for malformed numeric and sort parameters (0.3527ms)
+  ✔ bounds page and price values before they reach Prisma (0.2836ms)
+  ✔ rejects non-integer and non-positive page values (0.2186ms)
+  ✔ keeps inverted price ranges safe without rewriting the buyer filter (0.2332ms)
+  ✔ sanitizes text and slug-like filters (0.3742ms)
+  ✔ uses the first repeated parameter value (0.2269ms)
+  ✔ parses valid category listing filters without database access (0.4288ms)
+  ✔ falls back safely for malformed category listing filters (0.2938ms)
+  ✔ parses valid public product API params while preserving the existing response contract inputs (0.6922ms)
+  ✔ bounds malformed public product API page and limit params before Prisma (0.3085ms)
+  ✔ defaults invalid product API limits and uses first repeated URLSearchParams values (0.2462ms)
+  ✔ caps product API ids and ignores unsafe id tokens (1.5293ms)
+✔ search parameter parsing (9.7515ms)
+▶ search verification readiness audit
+  ✔ runs without network, private env, database, or provider CLI requirements (27.019ms)
+  ✔ reports the required staging/search verification docs and search surfaces (12.707ms)
+  ✔ keeps future verification areas marked as blocked or future work (10.3278ms)
+  ✔ does not claim external search verification is complete (9.7333ms)
+  ✔ keeps staging verification docs free of obvious secret values (10.9862ms)
+✔ search verification readiness audit (72.7694ms)
+▶ security headers config
+  ✔ sets conservative global browser hardening headers (1.2633ms)
+  ✔ enables HSTS only for production builds (0.4142ms)
+  ✔ serves optimized SVGs with defensive content handling (0.1889ms)
+✔ security headers config (3.2553ms)
+✔ sanitizeUrlForLog strips query strings and fragments (1.4258ms)
+✔ sanitizeUrlForLog handles unsupported and invalid URLs safely (0.4827ms)
+✔ sanitizeStringForLog caps strings and redacts obvious secret patterns (0.5145ms)
+✔ maskEmailForLog masks email addresses (0.3951ms)
+✔ sanitizeSecurityEvent keeps a safe bounded shape (3.084ms)
+✔ sanitizeSecurityEvent ignores raw errors and stack metadata (2.6443ms)
+✔ logSecurityEvent emits sanitized structured data only (0.5266ms)
+▶ security runtime route boundary guardrails
+  ✔ keeps account and admin page families behind middleware redirects (1.9384ms)
+  ✔ keeps checkout and order confirmation private before sensitive order data loads (1.0632ms)
+  ✔ keeps private and utility route families out of public robots/sitemap discovery (0.959ms)
+✔ security runtime route boundary guardrails (5.9974ms)
+▶ public and buyer API guardrail source coverage
+  ✔ keeps public and buyer mutation routes origin-guarded and rate-limited (1.5647ms)
+  ✔ keeps GET-only public APIs from using mutation guard response contracts (0.6357ms)
+✔ public and buyer API guardrail source coverage (2.5321ms)
+▶ public and buyer API error leakage guardrails
+  ✔ does not return obvious raw internal error objects, stacks, URLs, or secrets (1.6785ms)
+✔ public and buyer API error leakage guardrails (1.9083ms)
+▶ technical SEO policy
+  ✔ normalizes canonical site URLs and avoids localhost in production (8.7293ms)
+  ✔ converts relative media paths to absolute URLs (0.1854ms)
+  ✔ detects faceted category URLs that should not be indexed (0.1965ms)
+  ✔ keeps base category pages indexable and marks faceted category pages noindex (0.5921ms)
+  ✔ marks search pages noindex with a stable canonical URL (0.2985ms)
+  ✔ generates absolute product metadata and Product JSON-LD URLs (20.9567ms)
+  ✔ keeps Product Offer schema useful without unsupported merchant claims (0.3716ms)
+  ✔ keeps metadata fallbacks factual and canonical without hard-blocked hype (0.6316ms)
+  ✔ keeps Organization, WebSite, OnlineStore, and FAQ JSON-LD factual (0.5749ms)
+  ✔ generates absolute breadcrumb and item-list JSON-LD URLs (0.5482ms)
+  ✔ escapes JSON-LD script-breaking characters before rendering (0.2802ms)
+  ✔ excludes utility and private routes from static sitemap entries (0.3892ms)
+  ✔ disallows private routes but allows search and faceted URLs to expose noindex (0.29ms)
+✔ technical SEO policy (35.4118ms)
+▶ admin settings validation
+  ✔ normalizes allowed settings (3.3209ms)
+  ✔ rejects unsupported settings (0.3232ms)
+  ✔ rejects invalid email and phone settings (1.3749ms)
+  ✔ rejects invalid low stock thresholds (0.3311ms)
+✔ admin settings validation (6.5629ms)
+▶ storefront image source of truth
+  ✔ keeps active category media on canonical local asset files (1.1389ms)
+  ✔ keeps Toys & Collectibles canonical without restoring Baby & Kids artwork (0.2705ms)
+  ✔ keeps homepage banner seed references on recoverable local assets (0.7335ms)
+  ✔ keeps approved product seed image replacements on local source-of-truth assets (0.5597ms)
+  ✔ repairs only Category.image and Banner.imageUrl fields (1.0099ms)
+✔ storefront image source of truth (4.7033ms)
+▶ storefront media remote policy inventory
+  ✔ keeps Step 116 category and hero assets present without restoring Baby Kids (5.643ms)
+  ✔ reports accepted remote media without reintroducing retired hero remotes into seed heroes (2.8707ms)
+  ✔ keeps approved product image replacements on committed local assets (1.9854ms)
+✔ storefront media remote policy inventory (11.8889ms)
+▶ storefront ProductCard and filter UI contracts
+  ✔ keeps ProductCard action names product-aware and state-aware (1.1443ms)
+  ✔ keeps ProductCard media, price, rating, and badge semantics renderable without DB access (0.3611ms)
+  ✔ gives listing filters explicit groups while preserving query behavior (0.2877ms)
+  ✔ uses specific sort and mobile filter labels without changing navigation contracts (0.3647ms)
+  ✔ does not introduce unsupported public claims into the changed storefront UI files (0.5613ms)
+✔ storefront ProductCard and filter UI contracts (3.7893ms)
+▶ UI/UX redesign readiness inventory
+  ✔ keeps the planned browser matrix broad enough for storefront redesign evidence (0.8072ms)
+  ✔ maps storefront routes and design-system readiness without database or private env access (105.4815ms)
+  ✔ emits sanitized media constraint evidence without raw URLs or local absolute paths (137.0811ms)
+✔ UI/UX redesign readiness inventory (244.8197ms)
+ℹ tests 566
+ℹ suites 83
+ℹ pass 566
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3924.7812

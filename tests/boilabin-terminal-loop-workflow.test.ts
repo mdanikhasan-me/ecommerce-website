@@ -211,6 +211,27 @@ test('terminal-loop audit report listing ignores malformed files and directories
   }
 });
 
+test('terminal-loop audit report listing sorts numeric step prefixes numerically', () => {
+  const tempRoot = mkdtempSync(path.join(tmpdir(), 'boilabin-terminal-audit-'));
+
+  try {
+    const auditDir = path.join(tempRoot, 'audit-reports');
+    mkdirSync(auditDir);
+    writeFileSync(path.join(auditDir, '10_TEN.md'), '# Step 10 Ten\n');
+    writeFileSync(path.join(auditDir, '2_TWO.md'), '# Step 2 Two\n');
+    writeFileSync(path.join(auditDir, '001_ONE.md'), '# Step 1 One\n');
+
+    const reports = listAuditReports(tempRoot);
+
+    assert.deepEqual(
+      reports.map((report) => report.name),
+      ['001_ONE.md', '2_TWO.md', '10_TEN.md'],
+    );
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('terminal-loop state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
 });

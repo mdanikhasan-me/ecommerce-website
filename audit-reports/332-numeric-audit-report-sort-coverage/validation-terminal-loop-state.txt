@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/332_NUMERIC_AUDIT_REPORT_SORT_COVERAGE.md
+Latest audit title: Step 332 Numeric Audit Report Sort Coverage
+Latest commit mention: b2cb3c7 test: cover malformed audit report filtering
+Current git commit: b2cb3c7 test: cover malformed audit report filtering
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes

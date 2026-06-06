@@ -201,6 +201,27 @@ test('Advisor audit report listing ignores malformed files and directories', () 
   }
 });
 
+test('Advisor audit report listing sorts numeric step prefixes numerically', () => {
+  const tempRoot = mkdtempSync(path.join(tmpdir(), 'boilabin-advisor-audit-'));
+
+  try {
+    const auditDir = path.join(tempRoot, 'audit-reports');
+    mkdirSync(auditDir);
+    writeFileSync(path.join(auditDir, '10_TEN.md'), '# Step 10 Ten\n');
+    writeFileSync(path.join(auditDir, '2_TWO.md'), '# Step 2 Two\n');
+    writeFileSync(path.join(auditDir, '001_ONE.md'), '# Step 1 One\n');
+
+    const reports = listAuditReports(tempRoot);
+
+    assert.deepEqual(
+      reports.map((report) => report.name),
+      ['001_ONE.md', '2_TWO.md', '10_TEN.md'],
+    );
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('Advisor safe file reader rejects all private env filename variants', () => {
   for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
     assert.throws(
