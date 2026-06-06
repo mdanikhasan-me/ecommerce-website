@@ -187,12 +187,47 @@ export function extractSectionSummary(content, heading) {
     sectionLines.push(lines[index]);
   }
 
-  return sectionLines
+  const cleanedLines = sectionLines
     .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, 6)
-    .join(' ')
-    .slice(0, 600);
+    .filter(Boolean);
+  const selectedLines = cleanedLines.slice(0, 6);
+  const summary = summarizeSectionLines(selectedLines);
+
+  if (cleanedLines.length > selectedLines.length && summary && !summary.endsWith('...')) {
+    return `${summary} ...`;
+  }
+
+  return summary;
+}
+
+export function summarizeSectionLines(lines, maxLength = 600) {
+  const summaryLines = [];
+
+  for (const line of lines) {
+    const candidate = [...summaryLines, line].join(' ');
+    if (candidate.length > maxLength) {
+      if (summaryLines.length === 0) {
+        return `${truncateSummaryLine(line, maxLength)}...`;
+      }
+
+      return `${summaryLines.join(' ')} ...`;
+    }
+
+    summaryLines.push(line);
+  }
+
+  return summaryLines.join(' ');
+}
+
+function truncateSummaryLine(line, maxLength) {
+  const clipped = line.slice(0, maxLength);
+  const wordBoundary = clipped.lastIndexOf(' ');
+  const cutIndex = wordBoundary >= Math.floor(maxLength * 0.6) ? wordBoundary : maxLength;
+
+  return clipped
+    .slice(0, cutIndex)
+    .trimEnd()
+    .replace(/[.,;:]+$/, '');
 }
 
 export function findSuspiciousSecrets(files) {

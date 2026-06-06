@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import {
   ADVISOR_ACTIVATION_PHRASE,
   createBoilabinAdvisorState,
+  extractSectionSummary,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatBoilabinAdvisorState,
@@ -154,6 +155,64 @@ test('Advisor state script reports ready state without reading env files', () =>
 
 test('Advisor state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
+});
+
+test('Advisor section summaries stop cleanly instead of cutting mid-line', () => {
+  const oversizedBullet = `- ${'validated-helper-output '.repeat(40)}`;
+  const content = [
+    '# Example',
+    '',
+    '## Validation Results',
+    '',
+    'Focused validation passed.',
+    oversizedBullet,
+    '- This line should not be reached.',
+    '',
+    '## Recommended Next Step',
+    '',
+    'Continue safely.',
+  ].join('\n');
+
+  assert.equal(
+    extractSectionSummary(content, 'Validation Results'),
+    'Focused validation passed. ...',
+  );
+});
+
+test('Advisor section summaries truncate single overlong lines at word boundaries', () => {
+  const content = [
+    '# Example',
+    '',
+    '## Recommended Next Step',
+    '',
+    'Continue with ' + 'bounded-workflow '.repeat(80),
+  ].join('\n');
+  const summary = extractSectionSummary(content, 'Recommended Next Step');
+
+  assert.ok(summary.length <= 603);
+  assert.match(summary, /\.\.\.$/);
+  assert.doesNotMatch(summary, /bounded-wo\.\.\.$/);
+});
+
+test('Advisor section summaries signal omitted lines after the line cap', () => {
+  const content = [
+    '# Example',
+    '',
+    '## Validation Results',
+    '',
+    'Line one.',
+    'Line two.',
+    'Line three.',
+    'Line four.',
+    'Line five.',
+    'Line six.',
+    'Line seven.',
+  ].join('\n');
+
+  assert.equal(
+    extractSectionSummary(content, 'Validation Results'),
+    'Line one. Line two. Line three. Line four. Line five. Line six. ...',
+  );
 });
 
 test('Advisor secret scanner flags obvious risky values in Advisor docs only', () => {
