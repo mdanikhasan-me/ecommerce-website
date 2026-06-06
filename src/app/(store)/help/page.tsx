@@ -1,143 +1,193 @@
-import Image from 'next/image'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  CreditCard,
-  PackageCheck,
-  Phone,
-  RefreshCcw,
-  ShieldCheck,
-  Truck,
-} from 'lucide-react'
-import type { Metadata } from 'next'
-
-import { generatePageMetadata } from '@/backend/seo'
-import { BRAND_ASSETS } from '@/shared/assets'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+import type { StorefrontIconName } from '@/shared/storefront-icons'
 
-export const metadata: Metadata = generatePageMetadata(
-  'Boilabin Help Center',
-  'Find help with Boilabin orders, delivery, returns, payments, accounts, and support requests.',
-  '/help',
-)
+type ActionCard = {
+  title: string
+  description: string
+  href: string
+  icon: StorefrontIconName
+}
 
-const HELP_LINKS = [
-  { icon: PackageCheck, label: 'Track order', href: '/track-order' },
-  { icon: RefreshCcw, label: 'Returns', href: '/returns' },
-  { icon: Truck, label: 'Shipping', href: '/shipping' },
-  { icon: CreditCard, label: 'Payments', href: '/faq#payments' },
-  { icon: ShieldCheck, label: 'Account help', href: '/faq#account' },
+const QUICK_ACTIONS: ActionCard[] = [
+  {
+    title: 'Track order',
+    description: 'Check your order status anytime',
+    href: '/track-order',
+    icon: 'package',
+  },
+  {
+    title: 'Returns',
+    description: 'Start or check a return',
+    href: '/returns',
+    icon: 'refresh-ccw',
+  },
+  {
+    title: 'Shipping',
+    description: 'Delivery info and timelines',
+    href: '/shipping',
+    icon: 'truck',
+  },
+  {
+    title: 'Payments',
+    description: 'Payment methods and issues',
+    href: '/faq',
+    icon: 'credit-card',
+  },
+  {
+    title: 'Account help',
+    description: 'Login, profile and account support',
+    href: '/account',
+    icon: 'user',
+  },
 ]
+
+const REACH_CARDS: Array<ActionCard & { detail?: string }> = [
+  {
+    title: 'Contact form',
+    description: 'Send us a message',
+    href: '/contact',
+    icon: 'mail',
+  },
+  {
+    title: 'Call us',
+    description: 'Talk to our team',
+    detail: CONTACT_PHONE,
+    href: `tel:${CONTACT_PHONE.replace(/[^\d+]/g, '')}`,
+    icon: 'phone',
+  },
+  {
+    title: 'Bangladesh addresses',
+    description: 'View all locations',
+    href: '/contact',
+    icon: 'location',
+  },
+  {
+    title: 'Email us',
+    description: "We'll reply soon",
+    detail: CONTACT_EMAIL,
+    href: `mailto:${CONTACT_EMAIL}`,
+    icon: 'mail',
+  },
+]
+
+function QuickActionCard({ action }: { action: ActionCard }) {
+  return (
+    <Link
+      href={action.href}
+      className="group flex min-h-[10.75rem] min-w-[9rem] flex-col justify-between rounded-lg border border-black/10 bg-[#fff] p-5 transition-colors hover:border-foreground/30 sm:min-w-0"
+    >
+      <LocalIcon name={action.icon} className="h-9 w-9 text-foreground" />
+      <span>
+        <span className="block text-base font-semibold text-foreground">{action.title}</span>
+        <span className="mt-1 hidden text-sm leading-5 text-muted-foreground sm:block">
+          {action.description}
+        </span>
+      </span>
+      <LocalIcon
+        name="chevron-right"
+        className="hidden h-4 w-4 self-end text-foreground/70 transition-transform group-hover:translate-x-0.5 sm:block"
+      />
+    </Link>
+  )
+}
+
+function ReachCard({ action }: { action: ActionCard & { detail?: string } }) {
+  const content = (
+    <>
+      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
+        <LocalIcon name={action.icon} className="h-7 w-7" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-lg font-semibold leading-6 text-foreground">{action.title}</span>
+        <span className="mt-1 block text-sm leading-5 text-muted-foreground">{action.description}</span>
+        {action.detail ? (
+          <span className="mt-1 block break-words text-sm font-medium text-blue-600">{action.detail}</span>
+        ) : null}
+      </span>
+      <LocalIcon name="chevron-right" className="h-5 w-5 shrink-0 text-foreground/70" />
+    </>
+  )
+
+  const className =
+    'flex min-h-[7rem] items-center gap-4 rounded-lg border border-black/10 bg-[#fff] px-5 py-4 transition-colors hover:border-foreground/30'
+
+  if (action.href.startsWith('tel:') || action.href.startsWith('mailto:')) {
+    return (
+      <a href={action.href} className={className}>
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <Link href={action.href} className={className}>
+      {content}
+    </Link>
+  )
+}
 
 export default function HelpPage() {
   return (
-    <main className="bg-background">
-      <section className="container-site py-8 sm:py-10 lg:py-12">
-        <div className="overflow-hidden rounded-[2rem] bg-[#17111b] text-white shadow-[0_24px_80px_rgba(28,15,35,0.18)]">
-          <div className="grid lg:grid-cols-[1.08fr_0.92fr]">
-            <div className="relative p-6 sm:p-9 lg:p-12">
-              <Image
-                src={BRAND_ASSETS.mark}
-                alt=""
-                width={260}
-                height={180}
-                className="pointer-events-none absolute -right-14 top-8 h-auto w-56 opacity-[0.08] sm:w-72 lg:right-8"
-                priority
+    <div className="bg-[#fffdfa] text-foreground">
+      <section className="bg-[#050505] text-[#fff]">
+        <div className="container-site flex min-h-[23rem] flex-col items-center justify-center py-14 text-center sm:min-h-[19rem] sm:py-16">
+          <h1 className="text-5xl font-bold leading-none sm:text-6xl">We&rsquo;re here to help</h1>
+          <p className="mt-5 max-w-[36rem] text-xl leading-8 text-white/72 sm:text-2xl sm:leading-9">
+            Quick answers, helpful guides,
+            <br />
+            and real support&mdash;when you need it.
+          </p>
+
+          <form action="/search" className="mt-9 w-full max-w-[36rem] sm:hidden">
+            <label className="sr-only" htmlFor="help-search">
+              Search help topics
+            </label>
+            <div className="relative">
+              <LocalIcon
+                name="search"
+                className="absolute left-5 top-1/2 h-7 w-7 -translate-y-1/2 text-foreground"
               />
-
-              <div className="relative max-w-2xl">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">
-                  Boilabin Support
-                </p>
-                <h1 className="mt-5 max-w-xl font-display text-4xl font-semibold tracking-[-0.045em] text-white sm:text-5xl lg:text-[4.35rem] lg:leading-[0.9]">
-                  Help that feels built for your order.
-                </h1>
-                <p className="mt-5 max-w-xl text-sm leading-7 text-white/[0.72] sm:text-base">
-                  Delivery, returns, payments, and account help in one calm place.
-                </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/track-order" className="btn-primary justify-center bg-white text-[#241232] hover:bg-white/90">
-                    Track My Order
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="btn-outline justify-center border-white/20 bg-white/[0.05] text-white hover:bg-white/10"
-                  >
-                    Contact Us
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative mt-9 grid gap-3 sm:grid-cols-3">
-                {[
-                  ['Support channel', 'Contact form'],
-                  ['Delivery', 'Bangladesh addresses'],
-                  ['Direct reply', CONTACT_EMAIL],
-                ].map(([label, value]) => (
-                  <div key={label} className="border-l border-white/[0.15] pl-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">{label}</p>
-                    <p className="mt-2 break-words text-sm font-medium text-white">{value}</p>
-                  </div>
-                ))}
-              </div>
+              <input
+                id="help-search"
+                name="q"
+                type="search"
+                placeholder="Search help topics..."
+                className="h-20 w-full rounded-full border border-white/20 bg-[#fff] pl-16 pr-6 text-2xl text-foreground shadow-[0_16px_36px_rgba(255,255,255,0.12)] placeholder:text-foreground/45 focus:outline-none focus:ring-2 focus:ring-white/40"
+              />
             </div>
-
-            <aside className="border-t border-white/10 bg-[#211927] p-5 sm:p-7 lg:border-l lg:border-t-0 lg:p-8">
-              <div className="flex h-full flex-col justify-between gap-7">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/[0.45]">
-                    Support Desk
-                  </p>
-                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-white">
-                    Choose the next step.
-                  </h2>
-
-                  <div className="mt-6 divide-y divide-white/10 rounded-[1.35rem] border border-white/10 bg-white/[0.05]">
-                    {HELP_LINKS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="group flex items-center justify-between gap-4 px-4 py-4"
-                      >
-                        <span className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#28133a]">
-                            <item.icon className="h-4 w-4" />
-                          </span>
-                          <span className="truncate text-sm font-semibold text-white">{item.label}</span>
-                        </span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-white/[0.45] transition-transform group-hover:translate-x-1 group-hover:text-white" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-[1.35rem] border border-white/10 bg-[#17111b] p-4">
-                  <p className="text-sm font-semibold text-white">Need a direct reply?</p>
-                  <p className="mt-2 text-sm leading-6 text-white/[0.72]">
-                    Send the order number and issue from the contact page.
-                  </p>
-                  <div className="mt-4 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-                    <Link href="/contact" className="btn-primary justify-center bg-white text-[#241232] hover:bg-white/90">
-                      Contact Us
-                    </Link>
-                    <a
-                      href={`tel:${CONTACT_PHONE}`}
-                      className="btn-outline justify-center border-white/20 bg-white/[0.05] text-white hover:bg-white/10"
-                    >
-                      <Phone className="h-4 w-4" />
-                      Call
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </div>
+          </form>
         </div>
       </section>
 
-      <div className="pb-8 lg:pb-12" />
-    </main>
+      <section className="container-site py-10 sm:py-12">
+        <h2 className="text-2xl font-bold leading-8">Quick actions</h2>
+        <div className="mt-5 flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-5">
+          {QUICK_ACTIONS.map((action) => (
+            <QuickActionCard key={action.href} action={action} />
+          ))}
+        </div>
+
+        <div className="my-10 h-px bg-black/10" />
+
+        <h2 className="text-2xl font-bold leading-8">Reach us</h2>
+        <div className="mt-5 grid gap-3 lg:grid-cols-4">
+          {REACH_CARDS.map((action) => (
+            <ReachCard key={`${action.title}-${action.href}`} action={action} />
+          ))}
+        </div>
+
+        <div className="mt-12 border-t border-black/10 pt-8">
+          <div className="mx-auto flex max-w-[38rem] items-center justify-center gap-4 text-center sm:text-left">
+            <LocalIcon name="shield" className="h-7 w-7 shrink-0 text-foreground/72" />
+            <div>
+              <p className="text-base font-semibold text-foreground">Your privacy matters.</p>
+              <p className="text-sm text-muted-foreground">We&rsquo;ll never share your details.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

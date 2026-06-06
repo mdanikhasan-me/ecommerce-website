@@ -32,6 +32,7 @@ export const UI_ICON_ASSETS = {
   'refresh-ccw': '/assets/icons/ui/refresh-ccw.svg',
   search: '/assets/icons/ui/search.svg',
   share: '/assets/icons/ui/share.svg',
+  shield: '/assets/icons/ui/shield.svg',
   'shopping-bag': '/assets/icons/ui/shopping-bag.svg',
   'shopping-cart': '/assets/icons/ui/shopping-cart.svg',
   'sliders-horizontal': '/assets/icons/ui/sliders-horizontal.svg',

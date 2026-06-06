@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { cn } from '@/backend/utils'
-import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
@@ -14,6 +13,7 @@ const NAV_CATEGORIES = [
   {
     name: 'Electronics',
     slug: 'electronics',
+    icon: 'category-electronics',
     sub: [
       { name: 'Mobile Phones', slug: 'mobile-phones' },
       { name: 'Laptops', slug: 'laptops' },
@@ -24,6 +24,7 @@ const NAV_CATEGORIES = [
   {
     name: 'Fashion',
     slug: 'fashion',
+    icon: 'category-fashion',
     sub: [
       { name: "Men's Fashion", slug: 'mens-fashion' },
       { name: "Women's Fashion", slug: 'womens-fashion' },
@@ -32,10 +33,25 @@ const NAV_CATEGORIES = [
   {
     name: 'Home & Appliances',
     slug: 'home-appliances',
+    icon: 'category-home-appliances',
     sub: [{ name: 'Kitchen', slug: 'kitchen' }],
   },
-  { name: 'Beauty & Health', slug: 'beauty-health', sub: [] },
-  { name: 'Sports & Fitness', slug: 'sports-fitness', sub: [] },
+  { name: 'Beauty & Health', slug: 'beauty-health', icon: 'category-beauty-health', sub: [] },
+  { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'category-sports-fitness', sub: [] },
+  { name: 'Books & Stationery', slug: 'books-stationery', icon: 'category-books-stationery', sub: [] },
+  { name: 'Gaming', slug: 'gaming', icon: 'category-gaming', sub: [] },
+  { name: 'Toys & Collectibles', slug: 'toys-collectibles', icon: 'category-toys-collectibles', sub: [] },
+] satisfies Array<{
+  name: string
+  slug: string
+  icon: StorefrontIconName
+  sub: Array<{ name: string; slug: string }>
+}>
+
+const DESKTOP_NAV_LINKS = [
+  { label: 'New Arrivals', href: '/new-arrivals' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Help', href: '/help' },
 ]
 
 type MobileMenuLink = {
@@ -46,25 +62,32 @@ type MobileMenuLink = {
 
 const MOBILE_SHOP_LINKS: MobileMenuLink[] = [
   { label: 'New Arrivals', href: '/new-arrivals', icon: 'sparkles' },
+  { label: 'Compare', href: '/compare', icon: 'compare' },
 ]
 
 const MOBILE_SUPPORT_LINKS: MobileMenuLink[] = [
   { label: 'Help Center', href: '/help', icon: 'life-buoy' },
   { label: 'Track Order', href: '/track-order', icon: 'package' },
-  { label: 'Contact Us', href: '/contact', icon: 'help-circle' },
+  { label: 'Contact Us', href: '/contact', icon: 'mail' },
   { label: 'Returns', href: '/returns', icon: 'refresh-ccw' },
   { label: 'Shipping Info', href: '/shipping', icon: 'truck' },
 ]
 
-type Suggestion =
-  { type: 'product'; name: string; slug: string; href: string }
+type Suggestion = {
+  type: 'product'
+  name: string
+  slug: string
+  href: string
+}
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
+  const [isAccountOpen, setIsAccountOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
@@ -72,7 +95,9 @@ export function Header() {
   const { data: session } = useSession()
   const { getItemCount, openCart } = useCartStore()
   const { items: compareItems } = useCompareStore()
-  const searchRef = useRef<HTMLDivElement>(null)
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const categoriesRootRef = useRef<HTMLDivElement>(null)
+  const accountRootRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
   const cartCount = mounted ? getItemCount() : 0
   const compareCount = mounted ? compareItems.length : 0
@@ -82,12 +107,26 @@ export function Header() {
   }, [])
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('[data-search-root="true"]')) {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+
+      if (
+        !target.closest('[data-search-root="true"]') &&
+        !target.closest('[data-search-trigger="true"]')
+      ) {
         setShowSuggestions(false)
+        setIsSearchOpen(false)
+      }
+
+      if (categoriesRootRef.current && !categoriesRootRef.current.contains(target)) {
+        setIsCategoriesOpen(false)
+      }
+
+      if (accountRootRef.current && !accountRootRef.current.contains(target)) {
+        setIsAccountOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
@@ -97,7 +136,13 @@ export function Header() {
       if (event.key !== 'Escape') return
 
       setShowSuggestions(false)
-      setHoveredCategory(null)
+      setIsCategoriesOpen(false)
+      setIsAccountOpen(false)
+
+      if (isSearchOpen) {
+        setIsSearchOpen(false)
+        searchButtonRef.current?.focus()
+      }
 
       if (isMobileMenuOpen) {
         setIsMobileMenuOpen(false)
@@ -108,7 +153,16 @@ export function Header() {
 
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [isMobileMenuOpen])
+  }, [isMobileMenuOpen, isSearchOpen])
+
+  useEffect(() => {
+    setShowSuggestions(false)
+    setIsSearchOpen(false)
+    setIsCategoriesOpen(false)
+    setIsAccountOpen(false)
+    setIsMobileMenuOpen(false)
+    setExpandedMobileCategory(null)
+  }, [pathname])
 
   useEffect(() => {
     const query = searchQuery.trim()
@@ -139,46 +193,62 @@ export function Header() {
     }
   }, [searchQuery])
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`)
 
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    setShowSuggestions(false)
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+    setExpandedMobileCategory(null)
   }
 
-  const renderSearch = (className?: string) => (
-    <div data-search-root="true" ref={searchRef} className={cn('relative', className)}>
+  const handleSearch = (event: FormEvent) => {
+    event.preventDefault()
+    const query = searchQuery.trim()
+    if (!query) return
+
+    router.push(`/search?q=${encodeURIComponent(query)}`)
+    setShowSuggestions(false)
+    setIsSearchOpen(false)
+    closeMobileMenu()
+  }
+
+  const renderSearchPanel = (className?: string) => (
+    <div data-search-root="true" className={cn('relative', className)}>
       <form onSubmit={handleSearch} className="flex items-center">
         <div className="relative w-full">
-          <LocalIcon name="search" className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/42 sm:left-4" />
+          <LocalIcon
+            name="search"
+            className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/45"
+          />
           <input
-            aria-label="Search products..."
-            title="Search products..."
+            aria-label="Search products"
+            title="Search products"
             type="search"
             placeholder="Search products..."
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value)
+            onChange={(event) => {
+              setSearchQuery(event.target.value)
               setShowSuggestions(true)
             }}
             onFocus={() => setShowSuggestions(true)}
-            className="h-9 w-full rounded-full border border-black/8 bg-card pl-10 pr-4 text-[13px] text-foreground shadow-[0_6px_16px_rgba(23,18,15,0.03)] transition-colors placeholder:text-foreground/40 focus:border-primary/25 focus:outline-none sm:h-11 sm:pl-11 sm:pr-5 sm:text-sm"
+            className="h-11 w-full rounded-full border border-black/10 bg-[#fff] pl-11 pr-4 text-sm text-foreground shadow-[0_12px_32px_rgba(20,18,16,0.08)] transition-colors placeholder:text-foreground/45 focus:border-foreground/35 focus:outline-none"
           />
         </div>
       </form>
 
       {showSuggestions && suggestions.length > 0 ? (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-[1.1rem] border border-black/6 bg-card shadow-[0_20px_44px_rgba(23,18,15,0.1)]">
-          {suggestions.map((s) => (
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-black/10 bg-[#fff] shadow-[0_18px_38px_rgba(20,18,16,0.14)]">
+          {suggestions.map((suggestion) => (
             <Link
-              key={`${s.type}-${s.slug}`}
-              href={s.href}
-              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-secondary/70"
-              onClick={() => setShowSuggestions(false)}
+              key={`${suggestion.type}-${suggestion.slug}`}
+              href={suggestion.href}
+              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-secondary"
+              onClick={() => {
+                setShowSuggestions(false)
+                setIsSearchOpen(false)
+              }}
             >
-              <LocalIcon name="search" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
-              <span className="min-w-0 flex-1 truncate">{s.name}</span>
+              <LocalIcon name="search" className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate">{suggestion.name}</span>
             </Link>
           ))}
         </div>
@@ -187,517 +257,575 @@ export function Header() {
   )
 
   return (
-    <header className="relative z-40 w-full border-b border-black/6 bg-background">
-      <div className="border-b border-black/6 bg-foreground text-background">
-        <div className="container-site flex min-h-8 items-center justify-between gap-3 text-[10px] tracking-[0.02em] text-background/84 sm:min-h-9 sm:text-[11px]">
-          <span className="flex items-center gap-1.5 font-medium">
-            <LocalIcon name="zap" className="h-3 w-3 text-[hsl(var(--buttermilk))]" />
-            Free delivery on orders over Tk 2,000
-          </span>
-          <div className="hidden items-center gap-5 sm:flex">
-            <Link href="/help" className="transition-colors hover:text-[hsl(var(--buttermilk))]">
-              Help
-            </Link>
-            <Link href="/about" className="transition-colors hover:text-[hsl(var(--buttermilk))]">
-              About
-            </Link>
-          </div>
-        </div>
-      </div>
+    <header className="relative z-40 w-full border-b border-black/10 bg-[#fffdfa]">
+      <div className="container-site">
+        <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
+          <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
+            <span className="text-2xl font-semibold leading-none text-foreground">B O I L A B I N</span>
+          </Link>
 
-      <div className="border-b border-black/6 bg-background">
-        <div className="container-site">
-          <div className="flex min-h-[3.2rem] items-center gap-2.5 py-1.5 sm:min-h-[4.2rem] sm:gap-3 sm:py-3 lg:gap-5">
-            <Link
-              href="/"
-              className="group flex flex-shrink-0 items-center gap-2 sm:gap-3"
-              aria-label="Boilabin home"
-            >
-              <BoilabinLogo variant="mark" size={32} priority />
-              <span className="hidden font-display text-base font-bold leading-none text-foreground min-[360px]:block sm:hidden">
-                Boilabin
-              </span>
-              <BoilabinLogo variant="wordmark" size={24} className="hidden sm:block" priority />
-            </Link>
-
-            {renderSearch('hidden flex-1 sm:block')}
-
-            <div className="ml-auto flex items-center justify-end gap-0.5 sm:ml-0 sm:gap-1 lg:gap-1.5">
-              <Link
-                href="/compare"
-                className="relative hidden rounded-lg p-2 transition-colors hover:bg-secondary sm:block"
-                aria-label="Compare products"
-                title="Compare products"
-              >
-                <LocalIcon name="compare" className="h-5 w-5" />
-                {compareCount > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
-                    {compareCount > 9 ? '9+' : compareCount}
-                  </span>
-                ) : null}
-              </Link>
-
-              <button
-                type="button"
-                title="Cart"
-                aria-label="Cart"
-                onClick={openCart}
-                className="relative rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2"
-              >
-                <LocalIcon name="cart" className="h-5 w-5" />
-                {cartCount > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </span>
-                ) : null}
-              </button>
-
-              {session ? (
-                <div className="relative group">
-                  <button
-                    type="button"
-                    aria-label="Open account menu"
-                    title="Open account menu"
-                    className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-secondary sm:px-2"
-                  >
-                    <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
-                      {session.user.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={session.user.image}
-                          alt=""
-                          className="h-full w-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span className="text-xs font-semibold text-primary">
-                          {session.user.name?.[0]?.toUpperCase() ?? 'U'}
-                        </span>
-                      )}
-                    </div>
-                    <LocalIcon name="chevron-down" className="hidden h-3 w-3 text-muted-foreground sm:block" />
-                  </button>
-
-                  <div className="invisible absolute right-0 top-full z-50 w-52 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                    <div className="overflow-hidden rounded-[1.1rem] border border-black/6 bg-card shadow-[0_20px_44px_rgba(23,18,15,0.1)]">
-                      <div className="border-b border-border p-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
-                            {session.user.image ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={session.user.image}
-                                alt=""
-                                className="h-full w-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                            ) : (
-                              <span className="text-sm font-semibold text-primary">
-                                {session.user.name?.[0]?.toUpperCase() ?? 'U'}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">{session.user.name}</p>
-                            <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-1">
-                        {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
-                          <Link href="/admin" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary">
-                            <LocalIcon name="layout-dashboard" className="h-4 w-4" />
-                            Admin Panel
-                          </Link>
-                        ) : null}
-                        <Link href="/account" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <LocalIcon name="user" className="h-4 w-4" />
-                          My Account
-                        </Link>
-                        <Link href="/track-order" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <LocalIcon name="package" className="h-4 w-4" />
-                          Track Order
-                        </Link>
-                        <Link href="/wishlist" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <LocalIcon name="heart" className="h-4 w-4" />
-                          Wishlist
-                        </Link>
-                        <Link href="/account/orders" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <LocalIcon name="package" className="h-4 w-4" />
-                          My Orders
-                        </Link>
-                        <Link href="/account/addresses" className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary">
-                          <LocalIcon name="location" className="h-4 w-4" />
-                          Addresses
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => signOut({ callbackUrl: '/' })}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-destructive transition-colors hover:bg-secondary"
-                        >
-                          <LocalIcon name="log-out" className="h-4 w-4" />
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90 sm:flex"
-                >
-                  <LocalIcon name="user" className="h-4 w-4" />
-                  <span>Sign In</span>
-                </Link>
-              )}
-
-              <button
-                ref={mobileMenuButtonRef}
-                type="button"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                onClick={() => {
-                  setIsMobileMenuOpen(!isMobileMenuOpen)
-                  setExpandedMobileCategory(null)
-                }}
-                className="rounded-lg p-1.5 transition-colors hover:bg-secondary sm:p-2 lg:hidden"
-              >
-                {isMobileMenuOpen ? <LocalIcon name="close" className="h-5 w-5" /> : <LocalIcon name="menu" className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          <div className="pb-2 sm:hidden">
-            {renderSearch()}
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden border-b border-black/6 bg-background lg:block">
-        <div className="container-site">
-          <nav className="flex h-12 items-center gap-1.5">
-            {NAV_CATEGORIES.map((cat) => (
-              <div
-                key={cat.slug}
-                className="relative group"
-                onMouseEnter={() => (cat.sub.length > 0 ? setHoveredCategory(cat.slug) : null)}
-                onMouseLeave={() => setHoveredCategory(null)}
-              >
-                <Link
-                  href={`/category/${cat.slug}`}
-                  className={cn(
-                    'flex items-center gap-1 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
-                    hoveredCategory === cat.slug
-                      ? 'bg-secondary text-primary'
-                      : 'text-foreground/78 hover:bg-secondary hover:text-primary'
-                  )}
-                >
-                  {cat.name}
-                  {cat.sub.length > 0 ? <LocalIcon name="chevron-down" className="h-3 w-3" /> : null}
-                </Link>
-
-                {hoveredCategory === cat.slug && cat.sub.length > 0 ? (
-                  <div className="absolute left-0 top-full z-50 w-48 pt-2">
-                    <div className="overflow-hidden rounded-[1rem] border border-black/6 bg-card shadow-[0_16px_36px_rgba(23,18,15,0.08)]">
-                      {cat.sub.map((sub) => (
-                        <Link
-                          key={sub.slug}
-                          href={`/category/${sub.slug}`}
-                          className="block px-4 py-2.5 text-sm transition-colors hover:bg-secondary hover:text-primary"
-                        >
-                          {sub.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            ))}
-
+          <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
             <Link
               href="/new-arrivals"
               className={cn(
-                'ml-auto rounded-lg px-3 py-2 text-[13px] font-medium transition-colors',
-                pathname === '/new-arrivals'
-                  ? 'bg-secondary text-primary'
-                  : 'text-foreground/78 hover:bg-secondary hover:text-primary'
+                'transition-colors hover:text-foreground',
+                isActive('/new-arrivals') ? 'text-foreground' : 'text-foreground/72'
               )}
             >
               New Arrivals
             </Link>
-          </nav>
-        </div>
-      </div>
 
-      {isMobileMenuOpen ? (
-        <div className="absolute left-0 right-0 top-full z-50 bg-transparent px-3 pb-4 pt-3 lg:hidden">
-          <div
-            className="absolute inset-x-0 top-0 -z-10 h-[calc(100vh-4rem)] bg-foreground/[0.14] backdrop-blur-[2px]"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <div className="mx-auto max-w-[30rem] overflow-hidden rounded-[1.35rem] border border-black/10 bg-background shadow-[0_28px_70px_rgba(23,18,15,0.22)]">
-            <div className="max-h-[calc(100vh-9.25rem)] overflow-y-auto">
-              <div className="border-b border-border bg-card p-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <BoilabinLogo variant="mark" size={36} priority />
-                    <div>
-                      <p className="text-base font-semibold leading-none text-foreground">Menu</p>
-                      <p className="mt-1 text-xs text-muted-foreground">Shop and support</p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    aria-label="Close menu"
-                    title="Close menu"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-background text-foreground"
-                  >
-                    <LocalIcon name="close" className="h-4 w-4" />
-                  </button>
-                </div>
+            <div
+              ref={categoriesRootRef}
+              className="relative"
+              onMouseEnter={() => setIsCategoriesOpen(true)}
+              onMouseLeave={() => setIsCategoriesOpen(false)}
+            >
+              <button
+                type="button"
+                aria-expanded={isCategoriesOpen}
+                aria-haspopup="menu"
+                aria-controls="desktop-categories-menu"
+                onClick={() => setIsCategoriesOpen((open) => !open)}
+                onFocus={() => setIsCategoriesOpen(true)}
+                className={cn(
+                  'flex items-center gap-1.5 transition-colors hover:text-foreground',
+                  pathname?.startsWith('/category') ? 'text-foreground' : 'text-foreground/72'
+                )}
+              >
+                Categories
+                <LocalIcon
+                  name="chevron-down"
+                  className={cn('h-3.5 w-3.5 transition-transform', isCategoriesOpen && 'rotate-180')}
+                />
+              </button>
 
-              </div>
-
-              <div className="space-y-3 p-3">
-                <section className="rounded-[1.25rem] border border-border bg-card p-3">
-                  {session ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3 px-1 pb-2">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
-                          {session.user.image ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={session.user.image}
-                              alt=""
-                              className="h-full w-full object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <span className="text-sm font-semibold text-primary">
-                              {session.user.name?.[0]?.toUpperCase() ?? 'U'}
+              {isCategoriesOpen ? (
+                <div
+                  id="desktop-categories-menu"
+                  role="menu"
+                  className="absolute left-1/2 top-full z-50 mt-6 w-[42rem] -translate-x-1/2 rounded-lg border border-black/10 bg-[#fff] p-3 shadow-[0_24px_56px_rgba(20,18,16,0.16)]"
+                >
+                  <div className="grid grid-cols-2 gap-2">
+                    {NAV_CATEGORIES.map((category) => (
+                      <div key={category.slug} className="rounded-lg border border-black/8 p-3">
+                        <Link
+                          href={`/category/${category.slug}`}
+                          role="menuitem"
+                          className="flex items-center justify-between gap-3 rounded-md p-2 transition-colors hover:bg-secondary"
+                          onClick={() => setIsCategoriesOpen(false)}
+                        >
+                          <span className="flex min-w-0 items-center gap-3">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
+                              <LocalIcon name={category.icon} className="h-5 w-5" />
                             </span>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">{session.user.name ?? 'My Account'}</p>
-                          <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
-                          <Link
-                            href="/admin"
-                            className="flex items-center gap-2 rounded-2xl border border-primary/15 bg-primary/8 px-3 py-3 text-sm font-semibold text-primary"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            <LocalIcon name="layout-dashboard" className="h-4 w-4 shrink-0" />
-                            <span className="truncate">Admin</span>
-                          </Link>
-                        ) : null}
-                        <Link
-                          href="/account"
-                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <LocalIcon name="user" className="h-4 w-4 shrink-0" />
-                          <span className="truncate">Account</span>
-                        </Link>
-                        <Link
-                          href="/account/orders"
-                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <LocalIcon name="package" className="h-4 w-4 shrink-0" />
-                          <span className="truncate">Orders</span>
-                        </Link>
-                        <Link
-                          href="/wishlist"
-                          className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <LocalIcon name="heart" className="h-4 w-4 shrink-0" />
-                          <span className="truncate">Wishlist</span>
-                        </Link>
-                        <Link
-                          href="/compare"
-                          className="flex items-center justify-between gap-2 rounded-2xl border border-border bg-background px-3 py-3 text-sm font-semibold text-foreground"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <span className="flex min-w-0 items-center gap-2">
-                            <LocalIcon name="compare" className="h-4 w-4 shrink-0" />
-                            <span className="truncate">Compare</span>
+                            <span className="truncate text-sm font-semibold">{category.name}</span>
                           </span>
-                          {compareCount > 0 ? (
-                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-white">
-                              {compareCount > 9 ? '9+' : compareCount}
-                            </span>
-                          ) : null}
+                          <LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
                         </Link>
-                      </div>
 
+                        {category.sub.length > 0 ? (
+                          <div className="mt-2 grid grid-cols-2 gap-1 pl-14">
+                            {category.sub.map((sub) => (
+                              <Link
+                                key={sub.slug}
+                                href={`/category/${sub.slug}`}
+                                role="menuitem"
+                                className="rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                                onClick={() => setIsCategoriesOpen(false)}
+                              >
+                                {sub.name}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                  <Link
+                    href="/category"
+                    role="menuitem"
+                    className="mt-2 flex items-center justify-between rounded-lg border border-black/8 bg-secondary/55 px-4 py-3 text-sm font-semibold transition-colors hover:bg-secondary"
+                    onClick={() => setIsCategoriesOpen(false)}
+                  >
+                    View all categories
+                    <LocalIcon name="arrow-right" className="h-4 w-4" />
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+
+            {DESKTOP_NAV_LINKS.slice(1).map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'transition-colors hover:text-foreground',
+                  isActive(item.href) ? 'text-foreground' : 'text-foreground/72'
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="relative flex shrink-0 items-center justify-end gap-4">
+            <button
+              ref={searchButtonRef}
+              type="button"
+              data-search-trigger="true"
+              aria-expanded={isSearchOpen}
+              aria-label="Open search"
+              title="Open search"
+              onClick={() => {
+                setIsSearchOpen((open) => !open)
+                setShowSuggestions(true)
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            >
+              <LocalIcon name="search" className="h-5 w-5" />
+            </button>
+
+            {session ? (
+              <div ref={accountRootRef} className="relative">
+                <button
+                  type="button"
+                  aria-expanded={isAccountOpen}
+                  aria-haspopup="menu"
+                  aria-label="Open account menu"
+                  title="Open account menu"
+                  onClick={() => setIsAccountOpen((open) => !open)}
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
+                >
+                  {session.user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={session.user.image}
+                      alt=""
+                      className="h-8 w-8 rounded-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <LocalIcon name="user" className="h-5 w-5" />
+                  )}
+                </button>
+
+                {isAccountOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-50 mt-4 w-56 overflow-hidden rounded-lg border border-black/10 bg-[#fff] shadow-[0_24px_56px_rgba(20,18,16,0.16)]"
+                  >
+                    <div className="border-b border-border px-4 py-3">
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {session.user.name ?? 'My Account'}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
+                    </div>
+                    <div className="p-1.5">
+                      {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
+                        <Link
+                          href="/admin"
+                          role="menuitem"
+                          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-secondary"
+                        >
+                          <LocalIcon name="layout-dashboard" className="h-4 w-4" />
+                          Admin Panel
+                        </Link>
+                      ) : null}
+                      <Link
+                        href="/account"
+                        role="menuitem"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <LocalIcon name="user" className="h-4 w-4" />
+                        My Account
+                      </Link>
+                      <Link
+                        href="/account/orders"
+                        role="menuitem"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <LocalIcon name="package" className="h-4 w-4" />
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/account/addresses"
+                        role="menuitem"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <LocalIcon name="location" className="h-4 w-4" />
+                        Addresses
+                      </Link>
+                      <Link
+                        href="/wishlist"
+                        role="menuitem"
+                        className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-secondary"
+                      >
+                        <LocalIcon name="heart" className="h-4 w-4" />
+                        Wishlist
+                      </Link>
                       <button
                         type="button"
-                        onClick={() => {
-                          setIsMobileMenuOpen(false)
-                          signOut({ callbackUrl: '/' })
-                        }}
-                        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm font-semibold text-destructive"
+                        role="menuitem"
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors hover:bg-secondary"
                       >
                         <LocalIcon name="log-out" className="h-4 w-4" />
                         Sign Out
                       </button>
                     </div>
-                  ) : (
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <Link
+                href="/auth/login"
+                aria-label="Sign in"
+                title="Sign in"
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+              >
+                <LocalIcon name="user" className="h-5 w-5" />
+              </Link>
+            )}
+
+            <button
+              type="button"
+              aria-label="Cart"
+              title="Cart"
+              onClick={openCart}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            >
+              <LocalIcon name="cart" className="h-5 w-5" />
+              {cartCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[11px] font-bold text-background">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              ) : null}
+            </button>
+
+            {isSearchOpen ? (
+              <div className="absolute right-0 top-full z-50 mt-4 w-[22rem] max-w-[calc(100vw-2rem)]">
+                {renderSearchPanel()}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div
+          data-testid="mobile-header"
+          className="relative flex h-16 items-center justify-between lg:hidden"
+        >
+          <button
+            ref={mobileMenuButtonRef}
+            type="button"
+            data-testid="mobile-menu-button"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => {
+              setIsMobileMenuOpen((open) => !open)
+              setExpandedMobileCategory(null)
+            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+          >
+            {isMobileMenuOpen ? (
+              <LocalIcon name="close" className="h-5 w-5" />
+            ) : (
+              <LocalIcon name="menu" className="h-5 w-5" />
+            )}
+          </button>
+
+          <Link
+            href="/"
+            aria-label="Boilabin home"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <span className="text-2xl font-semibold leading-none text-foreground">B O I L A B I N</span>
+          </Link>
+
+          <div className="flex items-center justify-end gap-1">
+            <button
+              type="button"
+              data-testid="mobile-cart-button"
+              aria-label="Cart"
+              title="Cart"
+              onClick={openCart}
+              className="relative flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            >
+              <LocalIcon name="cart" className="h-5 w-5" />
+              {cartCount > 0 ? (
+                <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[11px] font-bold text-background">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              ) : null}
+            </button>
+
+            <Link
+              href={session ? '/account' : '/auth/login'}
+              data-testid="mobile-profile-link"
+              aria-label={session ? 'My account' : 'Sign in'}
+              title={session ? 'My account' : 'Sign in'}
+              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
+            >
+              {session?.user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={session.user.image}
+                  alt=""
+                  className="h-8 w-8 rounded-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <LocalIcon name="user" className="h-5 w-5" />
+              )}
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {isMobileMenuOpen ? (
+        <div className="absolute left-0 right-0 top-full z-50 bg-transparent px-4 pb-5 pt-3 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close menu overlay"
+            className="absolute inset-x-0 top-0 -z-10 h-[calc(100vh-4rem)] w-full bg-foreground/20 backdrop-blur-sm"
+            onClick={closeMobileMenu}
+          />
+          <div className="mx-auto max-w-[30rem] overflow-hidden rounded-lg border border-black/10 bg-[#fffdfa] shadow-[0_28px_70px_rgba(20,18,16,0.22)]">
+            <div className="max-h-[calc(100vh-8.5rem)] overflow-y-auto p-3">
+              {renderSearchPanel('mb-3')}
+
+              <section className="rounded-lg border border-black/10 bg-[#fff] p-3">
+                {session ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary">
+                        {session.user.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={session.user.image}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <LocalIcon name="user" className="h-5 w-5" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {session.user.name ?? 'My Account'}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-2">
+                      {session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN' ? (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-2 rounded-lg border border-primary/15 bg-primary/10 px-3 py-3 text-sm font-semibold text-primary"
+                          onClick={closeMobileMenu}
+                        >
+                          <LocalIcon name="layout-dashboard" className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Admin</span>
+                        </Link>
+                      ) : null}
                       <Link
-                        href="/auth/login"
-                        className="btn-primary justify-center"
-                        onClick={() => setIsMobileMenuOpen(false)}
+                        href="/account"
+                        className="flex items-center gap-2 rounded-lg border border-border bg-[#fffdfa] px-3 py-3 text-sm font-semibold text-foreground"
+                        onClick={closeMobileMenu}
                       >
-                        <LocalIcon name="user" className="h-4 w-4" />
-                        Sign In
+                        <LocalIcon name="user" className="h-4 w-4 shrink-0" />
+                        <span className="truncate">Account</span>
+                      </Link>
+                      <Link
+                        href="/account/orders"
+                        className="flex items-center gap-2 rounded-lg border border-border bg-[#fffdfa] px-3 py-3 text-sm font-semibold text-foreground"
+                        onClick={closeMobileMenu}
+                      >
+                        <LocalIcon name="package" className="h-4 w-4 shrink-0" />
+                        <span className="truncate">Orders</span>
+                      </Link>
+                      <Link
+                        href="/wishlist"
+                        className="flex items-center gap-2 rounded-lg border border-border bg-[#fffdfa] px-3 py-3 text-sm font-semibold text-foreground"
+                        onClick={closeMobileMenu}
+                      >
+                        <LocalIcon name="heart" className="h-4 w-4 shrink-0" />
+                        <span className="truncate">Wishlist</span>
                       </Link>
                       <Link
                         href="/compare"
-                        className="flex items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-semibold text-foreground"
-                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center justify-between gap-2 rounded-lg border border-border bg-[#fffdfa] px-3 py-3 text-sm font-semibold text-foreground"
+                        onClick={closeMobileMenu}
                       >
-                        <LocalIcon name="compare" className="h-4 w-4" />
-                        Compare
+                        <span className="flex min-w-0 items-center gap-2">
+                          <LocalIcon name="compare" className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Compare</span>
+                        </span>
+                        {compareCount > 0 ? (
+                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1.5 text-[10px] font-bold text-background">
+                            {compareCount > 9 ? '9+' : compareCount}
+                          </span>
+                        ) : null}
                       </Link>
                     </div>
-                  )}
-                </section>
 
-                <section className="overflow-hidden rounded-[1.25rem] border border-border bg-card">
-                  <button
-                    type="button"
-                    className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
-                    onClick={() =>
-                      setExpandedMobileCategory(
-                        expandedMobileCategory === 'all-categories' ? null : 'all-categories'
-                      )
-                    }
-                  >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                          <LocalIcon name="grid" className="h-4 w-4" />
-                        </span>
-                        <span>
-                          <span className="block text-sm font-semibold text-foreground">Shop categories</span>
-                          <span className="mt-0.5 block text-xs text-muted-foreground">Departments and subcategories</span>
-                        </span>
-                      </span>
-                    <LocalIcon
-                      name="chevron-down"
-                      className={cn(
-                        'h-4 w-4 shrink-0 text-muted-foreground transition-transform',
-                        (expandedMobileCategory === 'all-categories' ||
-                          expandedMobileCategory?.startsWith('category-')) &&
-                          'rotate-180'
-                      )}
-                    />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeMobileMenu()
+                        signOut({ callbackUrl: '/' })
+                      }}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm font-semibold text-destructive"
+                    >
+                      <LocalIcon name="log-out" className="h-4 w-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/auth/login"
+                      className="flex items-center justify-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background"
+                      onClick={closeMobileMenu}
+                    >
+                      <LocalIcon name="user" className="h-4 w-4" />
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/compare"
+                      className="flex items-center justify-center gap-2 rounded-full border border-border bg-[#fffdfa] px-4 py-2.5 text-sm font-semibold text-foreground"
+                      onClick={closeMobileMenu}
+                    >
+                      <LocalIcon name="compare" className="h-4 w-4" />
+                      Compare
+                    </Link>
+                  </div>
+                )}
+              </section>
 
-                  {expandedMobileCategory === 'all-categories' ||
-                  expandedMobileCategory?.startsWith('category-') ? (
-                    <div className="space-y-2 border-t border-border bg-background p-3">
-                      {NAV_CATEGORIES.map((cat) => {
-                        const isExpanded = expandedMobileCategory === `category-${cat.slug}`
+              <section className="mt-3 overflow-hidden rounded-lg border border-black/10 bg-[#fff]">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
+                  onClick={() =>
+                    setExpandedMobileCategory(
+                      expandedMobileCategory === 'all-categories' ? null : 'all-categories'
+                    )
+                  }
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
+                      <LocalIcon name="grid" className="h-4 w-4" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-foreground">Shop categories</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">Departments and subcategories</span>
+                    </span>
+                  </span>
+                  <LocalIcon
+                    name="chevron-down"
+                    className={cn(
+                      'h-4 w-4 shrink-0 text-muted-foreground transition-transform',
+                      (expandedMobileCategory === 'all-categories' ||
+                        expandedMobileCategory?.startsWith('category-')) &&
+                        'rotate-180'
+                    )}
+                  />
+                </button>
 
-                        return (
-                          <div key={cat.slug} className="rounded-2xl border border-border bg-card">
-                            <div className="flex items-center">
-                              <Link
-                                href={`/category/${cat.slug}`}
-                                className="min-w-0 flex-1 px-3 py-3 text-sm font-semibold text-foreground"
-                                onClick={() => setIsMobileMenuOpen(false)}
+                {expandedMobileCategory === 'all-categories' ||
+                expandedMobileCategory?.startsWith('category-') ? (
+                  <div className="space-y-2 border-t border-border bg-[#fffdfa] p-3">
+                    {NAV_CATEGORIES.map((category) => {
+                      const isExpanded = expandedMobileCategory === `category-${category.slug}`
+
+                      return (
+                        <div key={category.slug} className="rounded-lg border border-border bg-[#fff]">
+                          <div className="flex items-center">
+                            <Link
+                              href={`/category/${category.slug}`}
+                              className="min-w-0 flex-1 px-3 py-3 text-sm font-semibold text-foreground"
+                              onClick={closeMobileMenu}
+                            >
+                              {category.name}
+                            </Link>
+                            {category.sub.length > 0 ? (
+                              <button
+                                type="button"
+                                aria-label={`Expand ${category.name}`}
+                                title={`Expand ${category.name}`}
+                                className="mr-1 flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                onClick={() =>
+                                  setExpandedMobileCategory(isExpanded ? 'all-categories' : `category-${category.slug}`)
+                                }
                               >
-                                {cat.name}
-                              </Link>
-                              {cat.sub.length > 0 ? (
-                                <button
-                                  type="button"
-                                  aria-label={`Expand ${cat.name}`}
-                                  title={`Expand ${cat.name}`}
-                                  className="mr-1 flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary"
-                                  onClick={() =>
-                                    setExpandedMobileCategory(isExpanded ? 'all-categories' : `category-${cat.slug}`)
-                                  }
-                                >
-                                  <LocalIcon name="chevron-down" className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-180')} />
-                                </button>
-                              ) : null}
-                            </div>
-
-                            {isExpanded ? (
-                              <div className="grid grid-cols-2 gap-1 border-t border-border px-2 pb-2 pt-2">
-                                {cat.sub.map((sub) => (
-                                  <Link
-                                    key={sub.slug}
-                                    href={`/category/${sub.slug}`}
-                                    className="rounded-xl px-2 py-2 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                  >
-                                    {sub.name}
-                                  </Link>
-                                ))}
-                              </div>
+                                <LocalIcon
+                                  name="chevron-down"
+                                  className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-180')}
+                                />
+                              </button>
                             ) : null}
                           </div>
-                        )
-                      })}
-                    </div>
-                  ) : null}
-                </section>
 
-                <section>
-                  <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Shopping
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {MOBILE_SHOP_LINKS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          'flex items-center gap-2 rounded-2xl border px-3 py-3 text-sm font-semibold',
-                          'border-border bg-card text-foreground'
-                        )}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
+                          {isExpanded ? (
+                            <div className="grid grid-cols-2 gap-1 border-t border-border px-2 pb-2 pt-2">
+                              {category.sub.map((sub) => (
+                                <Link
+                                  key={sub.slug}
+                                  href={`/category/${sub.slug}`}
+                                  className="rounded-md px-2 py-2 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                  onClick={closeMobileMenu}
+                                >
+                                  {sub.name}
+                                </Link>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : null}
+              </section>
+
+              <section className="mt-3">
+                <p className="mb-2 px-1 text-[11px] font-semibold uppercase text-muted-foreground">Shopping</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {MOBILE_SHOP_LINKS.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center gap-2 rounded-lg border border-border bg-[#fff] px-3 py-3 text-sm font-semibold text-foreground"
+                      onClick={closeMobileMenu}
+                    >
+                      <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+
+              <section className="mt-3 rounded-lg border border-border bg-[#fff] p-3">
+                <p className="mb-1 px-1 text-[11px] font-semibold uppercase text-muted-foreground">Support</p>
+                <div className="divide-y divide-border">
+                  {MOBILE_SUPPORT_LINKS.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-foreground"
+                      onClick={closeMobileMenu}
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-foreground" />
                         <span className="truncate">{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-
-                <section className="rounded-[1.25rem] border border-border bg-card p-3">
-                  <p className="mb-1 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Support
-                  </p>
-                  <div className="divide-y divide-border">
-                    {MOBILE_SUPPORT_LINKS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center justify-between gap-3 py-3 text-sm font-medium text-foreground"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <span className="flex min-w-0 items-center gap-3">
-                          <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-primary" />
-                          <span className="truncate">{item.label}</span>
-                        </span>
-                        <LocalIcon name="arrow-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              </div>
+                      </span>
+                      <LocalIcon name="arrow-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </Link>
+                  ))}
+                </div>
+              </section>
             </div>
           </div>
         </div>
