@@ -1,0 +1,20 @@
+▶ admin coupon validation
+  ✔ normalizes coupon text and relation ids (8.7927ms)
+  ✔ normalizes blank optional fields to null (0.9247ms)
+  ✔ defaults optional limits and relation lists for fixed coupons (0.4539ms)
+  ✔ trims relation ids before deduping them (0.2631ms)
+  ✔ allows exact percentage boundary values and explicit inactive coupons (0.2744ms)
+  ✔ rejects percentage discounts above 100 (0.3315ms)
+  ✔ rejects schedules where expiry is before start (0.1912ms)
+  ✔ rejects invalid discount amounts, limits, and blank relation ids (0.7584ms)
+  ✔ rejects malformed required coupon fields (0.7496ms)
+  ✔ resolves coupon mutation errors without leaking unsafe internals (0.7712ms)
+✔ admin coupon validation (14.6533ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 268.6189

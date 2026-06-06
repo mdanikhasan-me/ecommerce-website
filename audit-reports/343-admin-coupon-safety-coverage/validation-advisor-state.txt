@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/342_ADMIN_CATALOG_PAYLOAD_COVERAGE.md
+Latest audit title: Step 342 Admin Catalog Payload Coverage
+Latest report commit reference: 5f0d6c3 test: cover string utilities
+Current git commit: a642f86 test: cover admin catalog payloads
+Validation summary: Focused and standard validation passed: - `git diff --check -- tests/product-validation.test.ts tests/category-validation.test.ts tests/banner-validation.test.ts tests/homepage-section-validation.test.ts audit-reports/342_ADMIN_CATALOG_PAYLOAD_COVERAGE.md audit-reports/342_NEXT_PROMPT_DRAFT.md audit-reports/342-admin-catalog-payload-coverage` passed. - `npx tsx --test tests/product-validation.test.ts tests/category-validation.test.ts tests/banner-validation.test.ts tests/homepage-section-validation.test.ts` passed: 30 tests, 4 suites, 0 failures. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another bounded non-media prelaunch closure task and push the completed commit to GitHub.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok
