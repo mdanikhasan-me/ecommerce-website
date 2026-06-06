@@ -179,6 +179,28 @@ test('Advisor audit report listing keeps same-step prompt drafts before complete
   }
 });
 
+test('Advisor audit report listing ignores malformed files and directories', () => {
+  const tempRoot = mkdtempSync(path.join(tmpdir(), 'boilabin-advisor-audit-'));
+
+  try {
+    const auditDir = path.join(tempRoot, 'audit-reports');
+    mkdirSync(auditDir);
+    mkdirSync(path.join(auditDir, '999_DIRECTORY.md'));
+    writeFileSync(path.join(auditDir, 'README.md'), '# Notes\n');
+    writeFileSync(path.join(auditDir, 'LATEST_REPORT.md'), '# Missing step prefix\n');
+    writeFileSync(path.join(auditDir, '999_VALID_REPORT.md'), '# Step 999 Valid Report\n');
+
+    const reports = listAuditReports(tempRoot);
+
+    assert.deepEqual(
+      reports.map((report) => report.name),
+      ['999_VALID_REPORT.md'],
+    );
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('Advisor safe file reader rejects all private env filename variants', () => {
   for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
     assert.throws(

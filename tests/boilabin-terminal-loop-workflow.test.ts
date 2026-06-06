@@ -189,6 +189,28 @@ test('terminal-loop audit report listing keeps same-step prompt drafts before co
   }
 });
 
+test('terminal-loop audit report listing ignores malformed files and directories', () => {
+  const tempRoot = mkdtempSync(path.join(tmpdir(), 'boilabin-terminal-audit-'));
+
+  try {
+    const auditDir = path.join(tempRoot, 'audit-reports');
+    mkdirSync(auditDir);
+    mkdirSync(path.join(auditDir, '999_DIRECTORY.md'));
+    writeFileSync(path.join(auditDir, 'README.md'), '# Notes\n');
+    writeFileSync(path.join(auditDir, 'LATEST_REPORT.md'), '# Missing step prefix\n');
+    writeFileSync(path.join(auditDir, '999_VALID_REPORT.md'), '# Step 999 Valid Report\n');
+
+    const reports = listAuditReports(tempRoot);
+
+    assert.deepEqual(
+      reports.map((report) => report.name),
+      ['999_VALID_REPORT.md'],
+    );
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('terminal-loop state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
 });
