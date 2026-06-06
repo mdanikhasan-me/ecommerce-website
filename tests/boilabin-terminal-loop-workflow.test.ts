@@ -248,6 +248,12 @@ test('terminal-loop latest commit extraction supports fenced and inline report f
   );
 });
 
+test('terminal-loop latest commit extraction ignores invalid commit references', () => {
+  assert.equal(extractLatestCommit('Latest commit before this step: not-a-commit'), null);
+  assert.equal(extractLatestCommit('Commit hash: `abc123 too short`'), null);
+  assert.equal(extractLatestCommit('Commit hash: `zzzzzzz not hex`'), null);
+});
+
 test('terminal-loop safe file reader rejects all private env filename variants', () => {
   for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
     assert.throws(

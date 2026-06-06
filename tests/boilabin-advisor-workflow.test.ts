@@ -248,6 +248,12 @@ test('Advisor latest commit extraction supports fenced and inline report formats
   );
 });
 
+test('Advisor latest commit extraction ignores invalid commit references', () => {
+  assert.equal(extractLatestCommit('Latest commit before this step: not-a-commit'), null);
+  assert.equal(extractLatestCommit('Commit hash: `abc123 too short`'), null);
+  assert.equal(extractLatestCommit('Commit hash: `zzzzzzz not hex`'), null);
+});
+
 test('Advisor section summaries stop cleanly instead of cutting mid-line', () => {
   const oversizedBullet = `- ${'validated-helper-output '.repeat(40)}`;
   const content = [
