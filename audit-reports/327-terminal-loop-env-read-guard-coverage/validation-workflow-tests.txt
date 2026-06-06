@@ -1,0 +1,41 @@
+✔ Step 123 Advisor files exist (1.1688ms)
+✔ Advisor skill frontmatter uses only name and description (1.4248ms)
+✔ Advisor skill includes required workflow sections (0.4426ms)
+✔ Advisor skill preserves major Boilabin decisions (0.5149ms)
+✔ Advisor workflow doc describes human approval and realistic automation limits (0.4103ms)
+✔ Advisor quickstart documents activation and approval boundaries (0.5367ms)
+✔ Advisor quickstart includes required user-facing sections (0.2421ms)
+✔ Advisor state script avoids removed promotion literals that existing script scans reject (0.2765ms)
+✔ Advisor state script reports ready state without reading env files (44.9544ms)
+✔ Advisor safe file reader rejects all private env filename variants (0.51ms)
+✔ Advisor state can read the current git commit without relying on report text (37.6462ms)
+✔ Advisor section summaries stop cleanly instead of cutting mid-line (0.2173ms)
+✔ Advisor section summaries truncate single overlong lines at word boundaries (0.1945ms)
+✔ Advisor section summaries signal omitted lines after the line cap (0.115ms)
+✔ Advisor secret scanner flags obvious risky values in Advisor docs only (0.1658ms)
+✔ Advisor broad staging scanner ignores warnings but flags recommendations (0.143ms)
+✔ Advisor files do not contain obvious secret-looking values (1.6394ms)
+✔ Step 124 next prompt draft exists and is a single guarded prompt (0.2947ms)
+✔ terminal-loop workflow files exist (1.8366ms)
+✔ terminal-loop activation phrase is documented across workflow surfaces (0.9924ms)
+✔ terminal-loop doc defines the bounded 10-step terminal-first workflow (0.4635ms)
+✔ terminal batch loop mode is documented as optional and capped (0.6212ms)
+✔ terminal batch loop mode rejects autonomous automation language (0.7323ms)
+✔ terminal-loop docs preserve stop and approval boundaries (0.6288ms)
+✔ terminal-loop docs preserve exact-file staging rules (0.4324ms)
+✔ terminal-loop docs preserve protected Boilabin decisions (0.6554ms)
+✔ terminal-loop state script avoids removed promotion literals that active script scans reject (0.3621ms)
+✔ terminal-loop state script reports ready state (43.5251ms)
+✔ terminal-loop state can read the current git commit without relying on report text (35.852ms)
+✔ terminal-loop safe file reader rejects all private env filename variants (0.5057ms)
+✔ terminal-loop scanner flags unsafe broad staging recommendations (0.7228ms)
+✔ terminal-loop scanner flags obvious secret-like strings (0.1999ms)
+✔ terminal-loop files do not contain obvious secret-looking values (1.5744ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 315.6584

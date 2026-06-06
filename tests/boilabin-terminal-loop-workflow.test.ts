@@ -11,6 +11,7 @@ import {
   findSuspiciousSecrets,
   formatTerminalLoopState,
   readCurrentGitCommit,
+  readSafeFile,
 } from '../scripts/boilabin-terminal-loop-state.mjs';
 
 const repoRoot = process.cwd();
@@ -165,6 +166,16 @@ test('terminal-loop state script reports ready state', () => {
 
 test('terminal-loop state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
+});
+
+test('terminal-loop safe file reader rejects all private env filename variants', () => {
+  for (const relativePath of ['.env', '.env.local', '.env.production', 'config/.env.staging']) {
+    assert.throws(
+      () => readSafeFile(repoRoot, relativePath),
+      /Refusing to read private env file/,
+      `${relativePath} should be refused before any file read`,
+    );
+  }
 });
 
 test('terminal-loop scanner flags unsafe broad staging recommendations', () => {
