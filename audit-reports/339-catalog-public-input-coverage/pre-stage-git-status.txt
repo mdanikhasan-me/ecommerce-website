@@ -1,0 +1,16 @@
+ M public/assets/icons/ui/categories/beauty-health.svg
+ M public/assets/icons/ui/categories/books-stationery.svg
+ M public/assets/icons/ui/categories/electronics.svg
+ M public/assets/icons/ui/categories/fashion.svg
+ M public/assets/icons/ui/categories/gaming.svg
+ M public/assets/icons/ui/categories/home-appliances.svg
+ M public/assets/icons/ui/categories/sports-fitness.svg
+ M public/assets/icons/ui/categories/toys-collectibles.svg
+ M tests/public-input.test.ts
+ M tests/request-guard.test.ts
+ M tests/safe-callback-url.test.ts
+ M tests/search-params.test.ts
+?? audit-reports/339-catalog-public-input-coverage/
+?? audit-reports/339_CATALOG_PUBLIC_INPUT_COVERAGE.md
+?? audit-reports/339_NEXT_PROMPT_DRAFT.md
+?? public/uploads/admin/banners/hero/

@@ -127,6 +127,46 @@ describe('search parameter parsing', () => {
     assert.equal(parsed.page, 2)
   })
 
+  it('parses URLSearchParams search inputs with normalized booleans and text', () => {
+    const params = new URLSearchParams()
+    params.append('q', ' phone\u0000case ')
+    params.append('category', ' Electronics ')
+    params.append('inStock', ' true ')
+    params.append('featured', ' TRUE ')
+    params.append('rating', '5')
+
+    const parsed = parseSearchParams(params)
+
+    assert.equal(parsed.q, 'phone case')
+    assert.equal(parsed.category, 'electronics')
+    assert.equal(parsed.inStock, true)
+    assert.equal(parsed.featured, false)
+    assert.equal(parsed.rating, 5)
+    assert.deepEqual(parsed.queryParams, {
+      q: 'phone case',
+      category: 'electronics',
+      rating: '5',
+      inStock: 'true',
+    })
+  })
+
+  it('keeps decimal prices and ratings bounded without rounding', () => {
+    const parsed = parseSearchParams({
+      minPrice: '100.5',
+      maxPrice: '250.75',
+      rating: '4.5',
+    })
+
+    assert.equal(parsed.minPrice, 100.5)
+    assert.equal(parsed.maxPrice, 250.75)
+    assert.equal(parsed.rating, 4.5)
+    assert.deepEqual(parsed.queryParams, {
+      minPrice: '100.5',
+      maxPrice: '250.75',
+      rating: '4.5',
+    })
+  })
+
   it('parses valid category listing filters without database access', () => {
     const parsed = parseCategorySearchParams({
       category: 'mobile-phones',
@@ -242,6 +282,20 @@ describe('search parameter parsing', () => {
     assert.equal(parsed.page, 3)
     assert.equal(parsed.limit, DEFAULT_CATALOG_LIMIT)
     assert.equal(parsed.sort, 'price_desc')
+  })
+
+  it('bounds product API page and limit upper edges', () => {
+    const parsed = parseProductApiParams(new URLSearchParams({
+      page: '999999999999',
+      limit: '0',
+    }))
+    const capped = parseProductApiParams(new URLSearchParams({
+      limit: '999999999999',
+    }))
+
+    assert.equal(parsed.page, MAX_SEARCH_PAGE)
+    assert.equal(parsed.limit, DEFAULT_CATALOG_LIMIT)
+    assert.equal(capped.limit, MAX_CATALOG_LIMIT)
   })
 
   it('caps product API ids and ignores unsafe id tokens', () => {

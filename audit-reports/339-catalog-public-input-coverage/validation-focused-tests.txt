@@ -1,0 +1,46 @@
+▶ public API input parsing
+  ✔ normalizes safe public ids and rejects unsafe ids (0.7091ms)
+  ✔ deduplicates, caps, and sanitizes public id lists (0.7328ms)
+  ✔ normalizes coupon codes and amounts (0.246ms)
+  ✔ bounds public search text and words (0.4275ms)
+✔ public API input parsing (2.9899ms)
+▶ mutation request guard
+  ✔ allows safe methods without source headers (0.715ms)
+  ✔ allows same-origin mutation origins (0.1631ms)
+  ✔ allows configured origins and same-origin referers (0.1639ms)
+  ✔ blocks cross-site mutation sources (0.1513ms)
+  ✔ treats explicit origin as authoritative before fetch metadata (0.1367ms)
+  ✔ requires a source signal when configured to do so (0.5999ms)
+  ✔ normalizes valid origins and rejects invalid values (0.1748ms)
+✔ mutation request guard (3.0568ms)
+▶ safe callback URL
+  ✔ allows internal callback paths (0.8143ms)
+  ✔ rejects external and protocol-relative callback URLs (0.132ms)
+  ✔ uses the provided fallback for blank or invalid values (0.1161ms)
+✔ safe callback URL (1.9155ms)
+▶ search parameter parsing
+  ✔ preserves valid buyer search parameters (1.7232ms)
+  ✔ falls back safely for malformed numeric and sort parameters (0.2159ms)
+  ✔ bounds page and price values before they reach Prisma (0.16ms)
+  ✔ rejects non-integer and non-positive page values (0.1425ms)
+  ✔ keeps inverted price ranges safe without rewriting the buyer filter (0.1708ms)
+  ✔ sanitizes text and slug-like filters (0.2476ms)
+  ✔ uses the first repeated parameter value (0.1484ms)
+  ✔ parses URLSearchParams search inputs with normalized booleans and text (0.1719ms)
+  ✔ keeps decimal prices and ratings bounded without rounding (0.1617ms)
+  ✔ parses valid category listing filters without database access (0.2893ms)
+  ✔ falls back safely for malformed category listing filters (0.2285ms)
+  ✔ parses valid public product API params while preserving the existing response contract inputs (0.3593ms)
+  ✔ bounds malformed public product API page and limit params before Prisma (0.1371ms)
+  ✔ defaults invalid product API limits and uses first repeated URLSearchParams values (0.1349ms)
+  ✔ bounds product API page and limit upper edges (0.1411ms)
+  ✔ caps product API ids and ignores unsafe id tokens (0.2329ms)
+✔ search parameter parsing (5.9876ms)
+ℹ tests 30
+ℹ suites 4
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 303.7319

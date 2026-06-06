@@ -16,7 +16,10 @@ import {
 describe('public API input parsing', () => {
   it('normalizes safe public ids and rejects unsafe ids', () => {
     assert.equal(parsePublicId(' product_123 '), 'product_123')
+    assert.equal(parsePublicId('product-123'), 'product-123')
     assert.equal(parsePublicId('../../bad'), null)
+    assert.equal(parsePublicId('bad id'), null)
+    assert.equal(parsePublicId(''), null)
     assert.equal(parsePublicId('x'.repeat(100)), null)
     assert.equal(parsePublicId(null), null)
   })
@@ -28,17 +31,22 @@ describe('public API input parsing', () => {
     assert.equal(parsed[0], 'prod-1')
     assert.equal(parsed.includes('../../bad'), false)
     assert.equal(parsed.length, MAX_PUBLIC_PRODUCT_IDS)
+    assert.deepEqual(parsePublicIdList(['prod-1']), [])
   })
 
   it('normalizes coupon codes and amounts', () => {
     assert.equal(parseCouponCode(' save500 '), 'SAVE500')
+    assert.equal(parseCouponCode('save_500-bd'), 'SAVE_500-BD')
     assert.equal(parseCouponCode('bad code'), null)
+    assert.equal(parseCouponCode(''), null)
     assert.equal(parseCouponCode('x'.repeat(100)), null)
     assert.equal(parseCouponAmount(''), 0)
+    assert.equal(parseCouponAmount(' 250.75 '), 250.75)
     assert.equal(parseCouponAmount('5000'), 5000)
     assert.equal(parseCouponAmount('999999999999'), MAX_COUPON_AMOUNT)
     assert.equal(parseCouponAmount('-1'), null)
     assert.equal(parseCouponAmount('not-a-number'), null)
+    assert.equal(parseCouponAmount(500), null)
   })
 
   it('bounds public search text and words', () => {
@@ -58,5 +66,18 @@ describe('public API input parsing', () => {
     ])
     assert.equal(parsePublicSearchQuery('\u0000 a '), 'a')
     assert.equal(parsePublicSearchQuery('   '), null)
+    assert.equal(parsePublicSearchQuery(null), null)
+    assert.deepEqual(getPublicSearchWords('a bb cc bb dd ee ff gg hh ii jj kk'), [
+      'bb',
+      'cc',
+      'dd',
+      'ee',
+      'ff',
+      'gg',
+      'hh',
+      'ii',
+      'jj',
+      'kk',
+    ])
   })
 })

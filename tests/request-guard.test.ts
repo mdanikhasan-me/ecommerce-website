@@ -6,12 +6,13 @@ import { isRequestSourceAllowed, normalizeOrigin } from '@/backend/security/requ
 describe('mutation request guard', () => {
   it('allows safe methods without source headers', () => {
     const result = isRequestSourceAllowed({
-      method: 'GET',
+      method: 'get',
       requestOrigin: 'https://boilabin.test',
       requireSourceHeader: true,
     })
 
     assert.equal(result.allowed, true)
+    assert.equal(result.reason, 'safe-method')
   })
 
   it('allows same-origin mutation origins', () => {
@@ -23,6 +24,7 @@ describe('mutation request guard', () => {
     })
 
     assert.equal(result.allowed, true)
+    assert.equal(result.reason, 'allowed-origin')
   })
 
   it('allows configured origins and same-origin referers', () => {
@@ -42,6 +44,8 @@ describe('mutation request guard', () => {
 
     assert.equal(configured.allowed, true)
     assert.equal(referer.allowed, true)
+    assert.equal(configured.reason, 'allowed-origin')
+    assert.equal(referer.reason, 'allowed-referer')
   })
 
   it('blocks cross-site mutation sources', () => {
@@ -60,6 +64,21 @@ describe('mutation request guard', () => {
 
     assert.equal(origin.allowed, false)
     assert.equal(fetchMetadata.allowed, false)
+    assert.equal(origin.reason, 'blocked-source')
+    assert.equal(fetchMetadata.reason, 'blocked-source')
+  })
+
+  it('treats explicit origin as authoritative before fetch metadata', () => {
+    const result = isRequestSourceAllowed({
+      method: 'POST',
+      requestOrigin: 'https://boilabin.test',
+      origin: 'https://evil.test',
+      secFetchSite: 'same-origin',
+      requireSourceHeader: true,
+    })
+
+    assert.equal(result.allowed, false)
+    assert.equal(result.reason, 'blocked-source')
   })
 
   it('requires a source signal when configured to do so', () => {
@@ -70,11 +89,19 @@ describe('mutation request guard', () => {
     })
 
     assert.equal(result.allowed, false)
+    assert.equal(result.reason, 'missing-source')
+    assert.deepEqual(isRequestSourceAllowed({
+      method: 'POST',
+      requestOrigin: 'https://boilabin.test',
+      requireSourceHeader: false,
+    }), { allowed: true, reason: 'missing-source' })
   })
 
   it('normalizes valid origins and rejects invalid values', () => {
     assert.equal(normalizeOrigin('https://Boilabin.test/account?x=1'), 'https://boilabin.test')
+    assert.equal(normalizeOrigin(' http://localhost:3000/admin '), 'http://localhost:3000')
     assert.equal(normalizeOrigin('javascript:alert(1)'), null)
+    assert.equal(normalizeOrigin('ftp://boilabin.test'), null)
     assert.equal(normalizeOrigin('not a url'), null)
   })
 })
