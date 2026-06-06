@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 
@@ -10,6 +11,7 @@ import {
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatTerminalLoopState,
+  listAuditReports,
   readCurrentGitCommit,
   readSafeFile,
 } from '../scripts/boilabin-terminal-loop-state.mjs';
@@ -164,6 +166,27 @@ test('terminal-loop state script reports ready state', () => {
   assert.match(formatted, /Latest audit title: Step \d+ .+/);
   assert.match(formatted, /Current git commit: [0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Batch loop cap found: yes/);
+});
+
+test('terminal-loop audit report listing keeps same-step prompt drafts before completed reports', () => {
+  const tempRoot = mkdtempSync(path.join(tmpdir(), 'boilabin-terminal-audit-'));
+
+  try {
+    mkdirSync(path.join(tempRoot, 'audit-reports'));
+    writeFileSync(path.join(tempRoot, 'audit-reports', '998_OLDER_REPORT.md'), '# Step 998 Older\n');
+    writeFileSync(path.join(tempRoot, 'audit-reports', '999_NEXT_PROMPT_DRAFT.md'), '# Step 1000 Next Prompt Draft\n');
+    writeFileSync(path.join(tempRoot, 'audit-reports', '999_COMPLETED_REPORT.md'), '# Step 999 Completed Report\n');
+
+    const reports = listAuditReports(tempRoot);
+
+    assert.deepEqual(
+      reports.map((report) => report.name),
+      ['998_OLDER_REPORT.md', '999_NEXT_PROMPT_DRAFT.md', '999_COMPLETED_REPORT.md'],
+    );
+    assert.equal(reports.at(-1)?.name, '999_COMPLETED_REPORT.md');
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
 });
 
 test('terminal-loop state can read the current git commit without relying on report text', () => {
