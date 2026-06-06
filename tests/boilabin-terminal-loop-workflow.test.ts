@@ -9,6 +9,7 @@ import {
   TERMINAL_LOOP_ACTIVATION_PHRASE,
   createTerminalLoopState,
   extractLatestCommit,
+  extractTitle,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatTerminalLoopState,
@@ -252,6 +253,11 @@ test('terminal-loop latest commit extraction ignores invalid commit references',
   assert.equal(extractLatestCommit('Latest commit before this step: not-a-commit'), null);
   assert.equal(extractLatestCommit('Commit hash: `abc123 too short`'), null);
   assert.equal(extractLatestCommit('Commit hash: `zzzzzzz not hex`'), null);
+});
+
+test('terminal-loop title extraction reads the first markdown H1 only', () => {
+  assert.equal(extractTitle(['Intro', '', '# Step 999 Report Title', '', '## Scope'].join('\n')), 'Step 999 Report Title');
+  assert.equal(extractTitle('## Scope\nNo top-level heading'), null);
 });
 
 test('terminal-loop safe file reader rejects all private env filename variants', () => {

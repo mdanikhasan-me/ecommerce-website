@@ -9,6 +9,7 @@ import {
   createBoilabinAdvisorState,
   extractLatestCommit,
   extractSectionSummary,
+  extractTitle,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatBoilabinAdvisorState,
@@ -252,6 +253,11 @@ test('Advisor latest commit extraction ignores invalid commit references', () =>
   assert.equal(extractLatestCommit('Latest commit before this step: not-a-commit'), null);
   assert.equal(extractLatestCommit('Commit hash: `abc123 too short`'), null);
   assert.equal(extractLatestCommit('Commit hash: `zzzzzzz not hex`'), null);
+});
+
+test('Advisor title extraction reads the first markdown H1 only', () => {
+  assert.equal(extractTitle(['Intro', '', '# Step 999 Report Title', '', '## Scope'].join('\n')), 'Step 999 Report Title');
+  assert.equal(extractTitle('## Scope\nNo top-level heading'), null);
 });
 
 test('Advisor section summaries stop cleanly instead of cutting mid-line', () => {
