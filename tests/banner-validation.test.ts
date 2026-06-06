@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
+import { BANNER_IMAGE_DATA_URL_ERROR } from '@/backend/admin/banner-image-policy'
 import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
 
 describe('admin banner validation', () => {
@@ -45,6 +46,18 @@ describe('admin banner validation', () => {
     const parsed = parseAdminBannerPayload({ title: 'Offer', linkUrl: 'javascript:alert(1)' })
 
     assert.equal(parsed.success, false)
+  })
+
+  it('rejects inline base64 image data for desktop and mobile images', () => {
+    for (const fieldName of ['imageUrl', 'mobileImageUrl'] as const) {
+      const parsed = parseAdminBannerPayload({
+        title: 'Offer',
+        [fieldName]: 'data:image/png;base64,AAAA',
+      })
+
+      assert.equal(parsed.success, false)
+      assert.equal(parsed.error, BANNER_IMAGE_DATA_URL_ERROR)
+    }
   })
 
   it('rejects schedules where end is before start', () => {

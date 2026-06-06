@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { BANNER_IMAGE_DATA_URL_ERROR, isImageDataUrl } from '@/backend/admin/banner-image-policy'
+
+const INLINE_BANNER_IMAGE_DATA_URL = '__INLINE_BANNER_IMAGE_DATA_URL__'
 
 const optionalTrimmedString = (max: number) =>
   z
@@ -8,6 +11,20 @@ const optionalTrimmedString = (max: number) =>
     .optional()
     .nullable()
     .transform((value) => value || null)
+
+const optionalBannerImageUrl = z
+  .preprocess(
+    (value) => (typeof value === 'string' && isImageDataUrl(value) ? INLINE_BANNER_IMAGE_DATA_URL : value),
+    optionalTrimmedString(500_000),
+  )
+  .superRefine((value, ctx) => {
+    if (value === INLINE_BANNER_IMAGE_DATA_URL) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: BANNER_IMAGE_DATA_URL_ERROR,
+      })
+    }
+  })
 
 const optionalDate = (message: string) =>
   z
@@ -22,8 +39,8 @@ const bannerPayloadSchema = z
   .object({
     title: optionalTrimmedString(140),
     subtitle: optionalTrimmedString(240),
-    imageUrl: optionalTrimmedString(500_000),
-    mobileImageUrl: optionalTrimmedString(500_000),
+    imageUrl: optionalBannerImageUrl,
+    mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
     position: z.string().trim().min(1).max(80).optional().default('hero'),
     sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),

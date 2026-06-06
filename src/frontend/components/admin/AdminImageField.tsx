@@ -9,6 +9,15 @@ interface AdminImageFieldProps {
   value: string
   onChange: (value: string) => void
   helperText?: string
+  uploadImage?: (file: File) => Promise<string>
+  rejectDataUrls?: boolean
+  dataUrlErrorMessage?: string
+}
+
+const DEFAULT_DATA_URL_ERROR = 'Upload the image file instead of pasting base64 image data.'
+
+function isImageDataUrl(value: string) {
+  return value.trim().toLowerCase().startsWith('data:image/')
 }
 
 export function AdminImageField({
@@ -16,6 +25,9 @@ export function AdminImageField({
   value,
   onChange,
   helperText,
+  uploadImage,
+  rejectDataUrls = false,
+  dataUrlErrorMessage = DEFAULT_DATA_URL_ERROR,
 }: AdminImageFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -29,14 +41,29 @@ export function AdminImageField({
     setIsUploading(true)
 
     try {
-      const dataUrl = await readFileAsDataUrl(file)
-      onChange(dataUrl)
+      const nextValue = uploadImage ? await uploadImage(file) : await readFileAsDataUrl(file)
+      if (rejectDataUrls && isImageDataUrl(nextValue)) {
+        throw new Error(dataUrlErrorMessage)
+      }
+
+      onChange(nextValue)
     } catch (uploadError: any) {
       setError(uploadError.message || 'Could not load image')
     } finally {
       setIsUploading(false)
       event.target.value = ''
     }
+  }
+
+  const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = event.target.value
+    if (rejectDataUrls && isImageDataUrl(nextValue)) {
+      setError(dataUrlErrorMessage)
+      return
+    }
+
+    setError('')
+    onChange(nextValue)
   }
 
   return (
@@ -62,6 +89,7 @@ export function AdminImageField({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
             className="btn-outline gap-2 px-3 py-2 text-xs"
           >
             {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
@@ -70,7 +98,10 @@ export function AdminImageField({
           {value && (
             <button
               type="button"
-              onClick={() => onChange('')}
+              onClick={() => {
+                setError('')
+                onChange('')
+              }}
               className="btn-outline gap-2 px-3 py-2 text-xs text-red-600"
             >
               <Trash2 className="h-4 w-4" />
@@ -89,7 +120,7 @@ export function AdminImageField({
         <div className="mt-3">
           <input aria-label="Form input" title="Form input"
             value={value}
-            onChange={(event) => onChange(event.target.value)}
+            onChange={handleUrlChange}
             className="input-base text-sm"
             placeholder="Paste image URL"
           />

@@ -148,6 +148,14 @@ describe('media path taxonomy', () => {
       createdUrls.push(bannerUrl ?? '')
       assert.match(bannerUrl ?? '', /^\/uploads\/admin\/banners\/home-hero\/desktop-.+\.webp$/)
 
+      const mobileBannerUrl = await persistAdminUpload(dataUrl, {
+        purpose: 'banners',
+        ownerSlugOrId: 'Home Hero',
+        mediaId: 'mobile',
+      })
+      createdUrls.push(mobileBannerUrl ?? '')
+      assert.match(mobileBannerUrl ?? '', /^\/uploads\/admin\/banners\/home-hero\/mobile-.+\.webp$/)
+
       const categoryUrl = await persistAdminUpload(dataUrl, {
         purpose: 'categories',
         ownerSlugOrId: 'mobile-phones',

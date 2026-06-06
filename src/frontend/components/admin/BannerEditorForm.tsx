@@ -6,6 +6,15 @@ import { Loader2, Save, Trash2 } from 'lucide-react'
 import { AdminImageField } from './AdminImageField'
 import { toDateTimeLocalValue } from './form-utils'
 
+const BANNER_IMAGE_DATA_URL_ERROR =
+  'Banner images must be uploaded as files before saving. Base64 image data is not allowed.'
+
+function isBannerImageDataUrl(value: string | null | undefined) {
+  return value?.trim().toLowerCase().startsWith('data:image/') ?? false
+}
+
+type BannerImageSlot = 'desktop' | 'mobile'
+
 interface EditableBanner {
   id: string
   title: string
@@ -66,10 +75,37 @@ export function BannerEditorForm({
     endsAt: form.endsAt || null,
   })
 
+  const getBannerUploadOwner = () => banner?.id || form.title.trim() || form.position.trim() || 'banner'
+
+  const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
+    const uploadForm = new FormData()
+    uploadForm.set('file', file)
+    uploadForm.set('slot', slot)
+    uploadForm.set('owner', getBannerUploadOwner())
+
+    const response = await fetch('/api/admin/banners/upload', {
+      method: 'POST',
+      body: uploadForm,
+    })
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok || typeof data?.url !== 'string') {
+      throw new Error(data?.error || 'Could not upload banner image')
+    }
+
+    return data.url
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    setIsSaving(true)
     setError('')
+
+    if (isBannerImageDataUrl(form.imageUrl) || isBannerImageDataUrl(form.mobileImageUrl)) {
+      setError(BANNER_IMAGE_DATA_URL_ERROR)
+      return
+    }
+
+    setIsSaving(true)
 
     try {
       const response = await fetch(
@@ -171,6 +207,9 @@ export function BannerEditorForm({
               value={form.imageUrl}
               onChange={(value) => updateField('imageUrl', value)}
               helperText="Shown on tablet and desktop. Remove it if you want a text-only banner there."
+              uploadImage={(file) => uploadBannerImage('desktop', file)}
+              rejectDataUrls
+              dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR}
             />
           </section>
 
@@ -180,6 +219,9 @@ export function BannerEditorForm({
               value={form.mobileImageUrl}
               onChange={(value) => updateField('mobileImageUrl', value)}
               helperText="Optional phone-only artwork. If empty, the desktop image is reused on mobile."
+              uploadImage={(file) => uploadBannerImage('mobile', file)}
+              rejectDataUrls
+              dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR}
             />
           </section>
         </div>

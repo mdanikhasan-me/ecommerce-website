@@ -1,0 +1,31 @@
+{
+  "step": 314,
+  "scope": "admin banner image upload base64/data-url bugfix",
+  "method": "focused helper/source tests instead of browser DB mutation",
+  "browserQaStatus": "blocked: no authenticated admin browser session supplied; create/edit banner QA would mutate the local database",
+  "focusedTestCommand": "npx tsx --test tests/admin-banner-upload-base64-fix.test.ts tests/banner-validation.test.ts tests/media-path-taxonomy.test.ts",
+  "focusedTestResult": {
+    "suites": 3,
+    "tests": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "verifiedDesktopPattern": "/uploads/admin/banners/step-314-banner-upload/desktop-<timestamp>-<random>.webp",
+  "verifiedMobilePattern": "/uploads/admin/banners/step-314-banner-upload/mobile-<timestamp>-<random>.webp",
+  "verifiedBehaviors": [
+    "desktop upload helper returns a short managed public path",
+    "mobile upload helper returns a short managed public path",
+    "temporary helper-upload files exist before test cleanup",
+    "temporary helper-upload directory is removed after the test",
+    "parser rejects data:image payloads for imageUrl and mobileImageUrl",
+    "source banner paths under /assets/banners remain allowed and cleanup-protected",
+    "managed banner upload paths under /uploads/admin/banners remain cleanup-eligible",
+    "traversal-like banner owner/media values are sanitized to approved fallback path segments",
+    "HeroBanner uses imageUrl/mobileImageUrl directly, so /uploads/admin/banners paths remain renderable"
+  ],
+  "temporaryUploadFoldersAfterFocusedTest": {
+    "public/uploads/admin/banners/step-314-banner-upload": false,
+    "public/uploads/admin/banners/home-hero": false
+  },
+  "largeOrCommittedUploadedImages": false
+}
