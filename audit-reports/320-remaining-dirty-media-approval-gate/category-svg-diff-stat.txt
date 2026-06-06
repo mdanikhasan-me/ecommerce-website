@@ -1,0 +1,9 @@
+﻿ public/assets/icons/ui/categories/beauty-health.svg     |  8 +-------
+ public/assets/icons/ui/categories/books-stationery.svg  |  8 +++-----
+ public/assets/icons/ui/categories/electronics.svg       |  9 ++-------
+ public/assets/icons/ui/categories/fashion.svg           |  7 +++----
+ public/assets/icons/ui/categories/gaming.svg            |  9 +++------
+ public/assets/icons/ui/categories/home-appliances.svg   |  8 +++-----
+ public/assets/icons/ui/categories/sports-fitness.svg    | 11 +++--------
+ public/assets/icons/ui/categories/toys-collectibles.svg |  8 +++-----
+ 8 files changed, 21 insertions(+), 47 deletions(-)

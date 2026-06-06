@@ -1,0 +1,9 @@
+﻿path: public/uploads/admin/banners/hero/
+status: untracked working-tree upload directory
+file_count: 1
+directory_count: 0
+total_bytes: 86330
+oldest_file_utc: 2026-06-06T18:30:27.4700000Z
+latest_file_utc: 2026-06-06T18:30:27.4700000Z
+extensions:
+.webp: 1

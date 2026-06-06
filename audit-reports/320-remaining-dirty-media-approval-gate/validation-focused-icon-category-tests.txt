@@ -1,0 +1,32 @@
+﻿▶ category page UI/UX guardrails
+  ✔ keeps the approved category labels and default Electronics selection available (0.7576ms)
+  ✔ renders subcategory items before the View All category CTA (0.1563ms)
+  ✔ does not include the removed service benefit strip copy (0.1379ms)
+  ✔ uses managed subcategory media instead of hardcoded product photos (0.1652ms)
+  ✔ uses local category icon assets instead of lucide icons on the category page (0.1172ms)
+  ✔ renders neutral missing-image surfaces without repeated category icons or public placeholder copy (0.2256ms)
+  ✔ keeps subcategory cards photo-ready instead of shrinking missing media into tiny buttons (0.1736ms)
+  ✔ keeps category page typography within the storefront page scale (0.1565ms)
+  ✔ keeps required category UI icon files local and source-controlled (0.6262ms)
+✔ category page UI/UX guardrails (3.5941ms)
+▶ local physical storefront icon assets
+  ✔ keeps required UI and social icon files source-controlled under public assets (1.5787ms)
+  ✔ uses local icons in critical storefront surfaces and preserves payment logo policy (0.7236ms)
+✔ local physical storefront icon assets (3.2308ms)
+▶ Step 312 desktop navbar categories dropdown redesign
+  ✔ renders the main category rail with Electronics as the default selected department (0.846ms)
+  ✔ renders Electronics subcategory tiles before the View all electronics tile (0.2228ms)
+  ✔ uses local category and subcategory icons without remote icon URLs (1.2553ms)
+  ✔ preserves header guardrails and existing route behavior (0.2759ms)
+  ✔ keeps mobile header controls available while limiting the redesign to desktop dropdown markup (0.1186ms)
+  ✔ keeps desktop dropdown keyboard and dismissal hooks wired (0.1377ms)
+  ✔ keeps the Step 313 dropdown calmer and does not select categories on hover (0.2054ms)
+✔ Step 312 desktop navbar categories dropdown redesign (4.0961ms)
+ℹ tests 18
+ℹ suites 3
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 210.4687

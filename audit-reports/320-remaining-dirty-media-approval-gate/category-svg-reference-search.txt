@@ -1,0 +1,188 @@
+﻿tests\accessibility-aria-problems.test.ts:86:  it('keeps LocalIcon decorative by default and explicit when meaningful', () => {
+tests\accessibility-aria-problems.test.ts:87:    const localIcon = read('src/frontend/components/ui/LocalIcon.tsx')
+src\shared\storefront-icons.ts:48:  'subcategory-mobile-phone': '/assets/icons/ui/subcategories/mobile-phone.svg',
+src\shared\storefront-icons.ts:49:  'subcategory-laptop': '/assets/icons/ui/subcategories/laptop.svg',
+src\shared\storefront-icons.ts:50:  'subcategory-headphones': '/assets/icons/ui/subcategories/headphones.svg',
+src\shared\storefront-icons.ts:51:  'subcategory-watch': '/assets/icons/ui/subcategories/watch.svg',
+src\shared\storefront-icons.ts:52:  'subcategory-grid': '/assets/icons/ui/subcategories/grid.svg',
+src\shared\storefront-icons.ts:53:  'category-electronics': '/assets/icons/ui/categories/electronics.svg',
+src\shared\storefront-icons.ts:54:  'category-fashion': '/assets/icons/ui/categories/fashion.svg',
+src\shared\storefront-icons.ts:55:  'category-home-appliances': '/assets/icons/ui/categories/home-appliances.svg',
+src\shared\storefront-icons.ts:56:  'category-beauty-health': '/assets/icons/ui/categories/beauty-health.svg',
+src\shared\storefront-icons.ts:57:  'category-sports-fitness': '/assets/icons/ui/categories/sports-fitness.svg',
+src\shared\storefront-icons.ts:58:  'category-books-stationery': '/assets/icons/ui/categories/books-stationery.svg',
+src\shared\storefront-icons.ts:59:  'category-gaming': '/assets/icons/ui/categories/gaming.svg',
+src\shared\storefront-icons.ts:60:  'category-toys-collectibles': '/assets/icons/ui/categories/toys-collectibles.svg',
+src\shared\storefront-icons.ts:61:  'category-view-all': '/assets/icons/ui/categories/view-all.svg',
+src\frontend\components\ui\LocalIcon.tsx:9:type LocalIconProps = {
+src\frontend\components\ui\LocalIcon.tsx:16:type LocalIconStyle = CSSProperties & {
+src\frontend\components\ui\LocalIcon.tsx:20:export function LocalIcon({
+src\frontend\components\ui\LocalIcon.tsx:25:}: LocalIconProps) {
+src\frontend\components\ui\LocalIcon.tsx:26:  const iconStyle = { '--local-icon-url': `url(${STOREFRONT_ICON_ASSETS[name]})` } as LocalIconStyle
+tests\category-page-uiux.test.ts:39:  it('uses local category icon assets instead of lucide icons on the category page', () => {
+tests\category-page-uiux.test.ts:45:  it('renders neutral missing-image surfaces without repeated category icons or public placeholder copy', () => {
+tests\category-page-uiux.test.ts:52:    assert.doesNotMatch(surfaceSource, /LocalIcon|iconName|coming soon|admin upload|placeholder/i)
+tests\category-page-uiux.test.ts:71:  it('keeps required category UI icon files local and source-controlled', () => {
+src\frontend\components\product\SearchFiltersPanel.tsx:5:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\product\SearchFiltersPanel.tsx:83:          <LocalIcon name="filter" className="h-4 w-4" /> Filters
+src\frontend\components\product\SearchFiltersPanel.tsx:87:            <LocalIcon name="close" className="h-3 w-3" /> Clear All
+src\frontend\components\product\SearchFiltersPanel.tsx:199:                  <LocalIcon key={i} name="star-filled" className="h-3.5 w-3.5 star-filled" />
+tests\local-icon-assets.test.ts:70:    assert.match(footer, /LocalIcon/)
+tests\local-icon-assets.test.ts:71:    assert.match(header, /LocalIcon/)
+tests\local-icon-assets.test.ts:72:    assert.match(productCard, /LocalIcon/)
+tests\navbar-categories-dropdown-redesign.test.ts:14:function expectLocalIcon(iconName: keyof typeof STOREFRONT_ICON_ASSETS) {
+tests\navbar-categories-dropdown-redesign.test.ts:63:  it('uses local category and subcategory icons without remote icon URLs', () => {
+tests\navbar-categories-dropdown-redesign.test.ts:80:      expectLocalIcon(icon)
+src\frontend\components\product\ReviewSection.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\product\ReviewSection.tsx:42:      <LocalIcon name="star-filled" className="h-3.5 w-3.5 star-filled flex-shrink-0" />
+src\frontend\components\product\ReviewSection.tsx:145:                  <LocalIcon
+src\frontend\components\product\ReviewSection.tsx:185:                      <LocalIcon
+src\frontend\components\product\ReviewSection.tsx:238:              <LocalIcon name="star" className="h-10 w-10 mx-auto mb-3 opacity-30" />
+src\frontend\components\product\ReviewSection.tsx:264:                            <LocalIcon name="check-circle" className="h-3 w-3" /> Verified Purchase
+src\frontend\components\product\ReviewSection.tsx:274:                          <LocalIcon
+tests\navbar-banner-footer-polish.test.ts:48:    assert.match(header, new RegExp(`LocalIcon[\\s\\S]*?name="${icon}"`));
+tests\local-asset-dependency-policy.test.ts:124:    assert.match(footerSource, /LocalIcon/)
+tests\local-asset-dependency-policy.test.ts:125:    assert.match(headerSource, /LocalIcon/)
+src\frontend\components\product\ProductDetailClient.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\product\ProductDetailClient.tsx:183:                <LocalIcon
+src\frontend\components\product\ProductDetailClient.tsx:255:                <LocalIcon name="minus" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:265:                <LocalIcon name="plus" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:279:            <LocalIcon name="shopping-cart" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:288:            <LocalIcon name="zap" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:306:            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:325:            <LocalIcon name="bar-chart-2" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:338:            <LocalIcon name="share" className="h-4 w-4" />
+src\frontend\components\product\ProductDetailClient.tsx:344:            <LocalIcon name="truck" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+src\frontend\components\product\ProductDetailClient.tsx:352:            <LocalIcon name="refresh-ccw" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+src\frontend\components\product\ProductDetailClient.tsx:359:            <LocalIcon name="credit-card" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+src\frontend\components\product\ProductCard.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\product\ProductCard.tsx:96:            <LocalIcon name="star-filled" className="h-3 w-3 star-filled" />
+src\frontend\components\product\ProductCard.tsx:111:            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+src\frontend\components\product\ProductCard.tsx:137:              <LocalIcon name="eye" className="h-8 w-8" />
+src\frontend\components\product\ProductCard.tsx:159:            <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+src\frontend\components\product\ProductCard.tsx:182:            <LocalIcon name="compare" className="h-4 w-4" />
+src\frontend\components\product\ProductCard.tsx:193:              <LocalIcon name="cart" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+src\frontend\components\product\ProductCard.tsx:207:            <LocalIcon
+src\frontend\components\product\MobileSearchFilters.tsx:4:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\product\MobileSearchFilters.tsx:38:        <LocalIcon name="filter" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+src\frontend\components\product\MobileSearchFilters.tsx:68:                <LocalIcon name="close" className="h-4 w-4" />
+src\frontend\components\layout\NewsletterForm.tsx:5:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\layout\NewsletterForm.tsx:75:            {isInline ? <LocalIcon name="arrow-right" className="mx-auto h-4 w-4 sm:hidden" /> : null}
+src\frontend\components\layout\Header.tsx:9:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\layout\Header.tsx:268:          <LocalIcon
+src\frontend\components\layout\Header.tsx:300:              <LocalIcon name="search" className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+src\frontend\components\layout\Header.tsx:350:                <LocalIcon
+src\frontend\components\layout\Header.tsx:394:                                <LocalIcon name={category.icon} className="h-[1.125rem] w-[1.125rem] shrink-0 text-foreground" />
+src\frontend\components\layout\Header.tsx:404:                                <LocalIcon
+src\frontend\components\layout\Header.tsx:425:                          <LocalIcon name={selectedDesktopCategory.icon} className="h-6 w-6" />
+src\frontend\components\layout\Header.tsx:447:                            <LocalIcon
+src\frontend\components\layout\Header.tsx:462:                          <LocalIcon
+src\frontend\components\layout\Header.tsx:505:              <LocalIcon name="search" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:528:                    <LocalIcon name="user" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:550:                          <LocalIcon name="layout-dashboard" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:559:                        <LocalIcon name="user" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:567:                        <LocalIcon name="package" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:575:                        <LocalIcon name="location" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:583:                        <LocalIcon name="heart" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:592:                        <LocalIcon name="log-out" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:606:                <LocalIcon name="user" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:617:              <LocalIcon name="cart" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:652:              <LocalIcon name="close" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:654:              <LocalIcon name="menu" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:689:              <LocalIcon name="search" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:700:              <LocalIcon name="cart" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:724:                <LocalIcon name="user" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:763:                          <LocalIcon name="user" className="h-5 w-5" />
+src\frontend\components\layout\Header.tsx:781:                          <LocalIcon name="layout-dashboard" className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:790:                        <LocalIcon name="user" className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:798:                        <LocalIcon name="package" className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:806:                        <LocalIcon name="heart" className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:815:                          <LocalIcon name="compare" className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:834:                      <LocalIcon name="log-out" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:845:                      <LocalIcon name="user" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:853:                      <LocalIcon name="compare" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:872:                      <LocalIcon name="grid" className="h-4 w-4" />
+src\frontend\components\layout\Header.tsx:879:                  <LocalIcon
+src\frontend\components\layout\Header.tsx:916:                                <LocalIcon
+src\frontend\components\layout\Header.tsx:955:                      <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
+src\frontend\components\layout\Header.tsx:973:                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-foreground" />
+src\frontend\components\layout\Header.tsx:976:                      <LocalIcon name="arrow-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
+src\frontend\components\layout\Footer.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\layout\Footer.tsx:111:                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
+src\frontend\components\layout\Footer.tsx:117:                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+src\frontend\components\layout\Footer.tsx:120:                  <LocalIcon name="location" className="h-3.5 w-3.5 shrink-0 text-primary/70" /> {CONTACT_ADDRESS}
+src\frontend\components\layout\Footer.tsx:133:                    <LocalIcon name={item.icon} className="h-4 w-4" />
+src\frontend\components\layout\Footer.tsx:173:                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+src\frontend\components\admin\CategoryEditorForm.tsx:51:    icon: category?.icon ?? '',
+src\frontend\components\home\ProductGrid.tsx:3:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\home\ProductGrid.tsx:44:            View all <LocalIcon name="chevron-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+src\frontend\components\home\HeroBanner.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\home\HeroBanner.tsx:171:                      <LocalIcon name="chevron-right" className="h-4 w-4" />
+src\frontend\components\home\HeroBanner.tsx:188:                <LocalIcon name="arrow-left" className="h-5 w-5" />
+src\frontend\components\home\HeroBanner.tsx:197:                <LocalIcon name="chevron-right" className="h-5 w-5" />
+src\frontend\components\home\FeaturedCategories.tsx:3:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\home\FeaturedCategories.tsx:42:          <LocalIcon name="arrow-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+src\frontend\components\home\FeaturedCategories.tsx:91:          <LocalIcon name="arrow-right" className="h-3.5 w-3.5" />
+src\frontend\components\home\FeaturedCategories.tsx:135:          <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\frontend\components\content\TrackOrderLookup.tsx:4:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\content\TrackOrderLookup.tsx:20:        <LocalIcon name="package" className="h-8 w-8 text-primary" />
+src\frontend\components\content\TrackOrderLookup.tsx:27:          <LocalIcon name="search" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+src\frontend\components\checkout\CheckoutClient.tsx:11:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\checkout\CheckoutClient.tsx:139:                  {i < step ? <LocalIcon name="check" className="h-4 w-4" /> : i + 1}
+src\frontend\components\checkout\CheckoutClient.tsx:158:                  <LocalIcon name="location" className="h-5 w-5 text-primary" /> Delivery Address
+src\frontend\components\checkout\CheckoutClient.tsx:218:                  <LocalIcon name="credit-card" className="h-5 w-5 text-primary" /> Payment Method
+src\frontend\components\checkout\CheckoutClient.tsx:294:                          <LocalIcon name="check" className="h-4 w-4 flex-shrink-0 text-primary" />
+src\frontend\components\checkout\CheckoutClient.tsx:391:                <LocalIcon name="truck" className="mr-1.5 inline h-4 w-4" />
+src\frontend\components\cart\CartDrawer.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\cart\CartDrawer.tsx:60:            <LocalIcon name="cart" className="h-5 w-5" />
+src\frontend\components\cart\CartDrawer.tsx:75:            <LocalIcon name="close" className="h-5 w-5" />
+src\frontend\components\cart\CartDrawer.tsx:91:                <LocalIcon name="shopping-bag" className="h-8 w-8 text-muted-foreground sm:h-10 sm:w-10" />
+src\frontend\components\cart\CartDrawer.tsx:138:                          <LocalIcon name="minus" className="h-3 w-3" />
+src\frontend\components\cart\CartDrawer.tsx:149:                          <LocalIcon name="plus" className="h-3 w-3" />
+src\frontend\components\cart\CartDrawer.tsx:170:                    <LocalIcon name="trash-2" className="h-4 w-4" />
+src\frontend\components\cart\CartDrawer.tsx:212:                Checkout <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\wishlist\page.tsx:5:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\wishlist\page.tsx:35:        <LocalIcon name="heart" className="h-6 w-6 text-primary" /> My Wishlist
+src\app\(store)\wishlist\page.tsx:41:          <LocalIcon name="heart" className="mx-auto mb-4 h-16 w-16 text-muted-foreground opacity-30" />
+src\app\(store)\compare\page.tsx:8:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\compare\page.tsx:153:            <LocalIcon name="compare" className="h-7 w-7" />
+src\app\(store)\compare\page.tsx:188:                        <LocalIcon name="trash-2" className="h-4 w-4" />
+src\app\(store)\compare\page.tsx:333:                        <LocalIcon name="cart" className="mr-2 h-4 w-4" />
+src\frontend\components\auth\LoginForm.tsx:10:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\frontend\components\auth\LoginForm.tsx:63:            <LocalIcon name="shopping-bag" className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+src\frontend\components\auth\LoginForm.tsx:119:                  <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
+src\app\(store)\auth\register\page.tsx:10:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\auth\register\page.tsx:86:                  <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
+src\app\(store)\category\page.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\category\page.tsx:124:              <LocalIcon name={iconName} className="h-5 w-5 shrink-0 text-foreground/88" />
+src\app\(store)\category\page.tsx:126:              <LocalIcon name="chevron-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+src\app\(store)\category\page.tsx:147:          <LocalIcon name={iconName} className="h-7 w-7" />
+src\app\(store)\category\page.tsx:211:          <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\category\page.tsx:237:        <LocalIcon name="category-view-all" className="h-5 w-5" />
+src\app\(store)\category\page.tsx:246:        <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\category\page.tsx:272:                  <LocalIcon name={iconName} className="h-5 w-5" />
+src\app\(store)\category\page.tsx:280:                <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+src\app\(store)\category\page.tsx:332:        <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\cart\page.tsx:7:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\cart\page.tsx:55:          <LocalIcon name="shopping-bag" className="h-10 w-10 text-muted-foreground sm:h-12 sm:w-12" />
+src\app\(store)\cart\page.tsx:68:        <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
+src\app\(store)\cart\page.tsx:102:                      <LocalIcon name="minus" className="h-3.5 w-3.5" />
+src\app\(store)\cart\page.tsx:113:                      <LocalIcon name="plus" className="h-3.5 w-3.5" />
+src\app\(store)\cart\page.tsx:131:                      <LocalIcon name="trash-2" className="h-4 w-4" />
+src\app\(store)\cart\page.tsx:150:                  <LocalIcon name="trash-2" className="h-4 w-4" />
+src\app\(store)\cart\page.tsx:163:                <LocalIcon name="tag" className="h-4 w-4 text-primary" /> Coupon Code
+src\app\(store)\cart\page.tsx:185:                    <LocalIcon name="check" className="h-3.5 w-3.5" />
+src\app\(store)\cart\page.tsx:217:              Proceed to Checkout <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:8:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:46:            <LocalIcon name="check-circle" className="h-10 w-10 text-green-600" />
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:61:              <LocalIcon name="package" className="h-4 w-4 text-primary" /> Order Items
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:97:                  <LocalIcon name="location" className="h-4 w-4 text-primary" /> Delivery Address
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:113:                <LocalIcon name="credit-card" className="h-4 w-4 text-primary" /> Payment
+src\app\(store)\order\[orderNumber]\confirmation\page.tsx:137:            Track Order <LocalIcon name="arrow-right" className="h-4 w-4" />
+src\app\(store)\help\page.tsx:2:import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+src\app\(store)\help\page.tsx:81:      <LocalIcon name={action.icon} className="h-9 w-9 text-foreground" />
+src\app\(store)\help\page.tsx:88:      <LocalIcon
+src\app\(store)\help\page.tsx:100:        <LocalIcon name={action.icon} className="h-7 w-7" />
+src\app\(store)\help\page.tsx:109:      <LocalIcon name="chevron-right" className="h-5 w-5 shrink-0 text-foreground/70" />
+src\app\(store)\help\page.tsx:148:              <LocalIcon
+src\app\(store)\help\page.tsx:183:            <LocalIcon name="shield" className="h-7 w-7 shrink-0 text-foreground/72" />
