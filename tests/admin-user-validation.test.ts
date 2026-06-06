@@ -2,12 +2,17 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 
 import {
+  ADMIN_MANAGED_ROLES,
   buildAdminUserWhere,
   parseAdminUserListFilters,
   parseAdminUserPayload,
 } from '@/backend/admin/user-editor'
 
 describe('admin user validation', () => {
+  it('documents managed admin user roles', () => {
+    assert.deepEqual([...ADMIN_MANAGED_ROLES], ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'])
+  })
+
   it('normalizes editable user fields', () => {
     const parsed = parseAdminUserPayload({
       name: '  Ayesha Rahman  ',
@@ -22,6 +27,21 @@ describe('admin user validation', () => {
       assert.equal(parsed.data.phone, '+880 1711-222333')
       assert.equal(parsed.data.role, 'ADMIN')
       assert.equal(parsed.data.isActive, true)
+    }
+  })
+
+  it('preserves explicit inactive and super admin updates', () => {
+    const parsed = parseAdminUserPayload({
+      role: 'SUPER_ADMIN',
+      isActive: false,
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.role, 'SUPER_ADMIN')
+      assert.equal(parsed.data.isActive, false)
+      assert.equal(parsed.data.name, null)
+      assert.equal(parsed.data.phone, null)
     }
   })
 
@@ -48,6 +68,12 @@ describe('admin user validation', () => {
       assert.deepEqual(sparse.data, { name: null, phone: null })
     }
     assert.equal(stringBoolean.success, false)
+  })
+
+  it('rejects malformed user update payloads', () => {
+    assert.equal(parseAdminUserPayload(null).success, false)
+    assert.equal(parseAdminUserPayload(['ADMIN']).success, false)
+    assert.equal(parseAdminUserPayload('role=ADMIN').success, false)
   })
 
   it('rejects invalid roles, phone characters, and profile length boundaries', () => {
@@ -92,11 +118,33 @@ describe('admin user validation', () => {
     assert.equal(filters.role, 'ADMIN')
   })
 
+  it('defaults missing list filters to the first page', () => {
+    const filters = parseAdminUserListFilters(new URLSearchParams())
+
+    assert.deepEqual(filters, {
+      page: 1,
+      limit: 25,
+      q: '',
+      role: '',
+    })
+  })
+
   it('builds typed list filters for search and role', () => {
     const where = buildAdminUserWhere({ q: 'ayesha', role: 'ADMIN' })
 
     assert.equal(where.role, 'ADMIN')
     assert.equal(Array.isArray(where.OR), true)
+    assert.deepEqual(where.OR, [
+      { name: { contains: 'ayesha', mode: 'insensitive' } },
+      { email: { contains: 'ayesha', mode: 'insensitive' } },
+      { phone: { contains: 'ayesha', mode: 'insensitive' } },
+    ])
+  })
+
+  it('builds role-only where clauses without adding search branches', () => {
+    assert.deepEqual(buildAdminUserWhere({ q: '', role: 'SUPER_ADMIN' }), {
+      role: 'SUPER_ADMIN',
+    })
   })
 
   it('builds empty where clauses when no search or role is provided', () => {

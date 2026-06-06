@@ -1,0 +1,23 @@
+▶ admin user validation
+  ✔ documents managed admin user roles (1.2458ms)
+  ✔ normalizes editable user fields (1.2841ms)
+  ✔ preserves explicit inactive and super admin updates (0.1966ms)
+  ✔ normalizes blank optional profile fields to null (0.2289ms)
+  ✔ accepts sparse user updates without coercing booleans (0.6226ms)
+  ✔ rejects malformed user update payloads (0.2039ms)
+  ✔ rejects invalid roles, phone characters, and profile length boundaries (0.4476ms)
+  ✔ normalizes list filters and ignores invalid roles (0.2021ms)
+  ✔ defaults malformed list filters to safe pagination values (0.13ms)
+  ✔ defaults missing list filters to the first page (0.1658ms)
+  ✔ builds typed list filters for search and role (0.1813ms)
+  ✔ builds role-only where clauses without adding search branches (0.1049ms)
+  ✔ builds empty where clauses when no search or role is provided (0.0706ms)
+✔ admin user validation (6.2362ms)
+ℹ tests 13
+ℹ suites 1
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 257.2994
