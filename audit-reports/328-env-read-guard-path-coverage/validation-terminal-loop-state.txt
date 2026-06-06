@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/328_ENV_READ_GUARD_PATH_COVERAGE.md
+Latest audit title: Step 328 Env Read Guard Path Coverage
+Latest commit mention: 20abb56 test: cover terminal loop env read guard
+Current git commit: 20abb56 test: cover terminal loop env read guard
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes

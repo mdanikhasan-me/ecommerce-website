@@ -155,7 +155,7 @@ test('Advisor state script reports ready state without reading env files', () =>
 });
 
 test('Advisor safe file reader rejects all private env filename variants', () => {
-  for (const relativePath of ['.env', '.env.local', '.env.production', 'config/.env.staging']) {
+  for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
     assert.throws(
       () => readSafeFile(repoRoot, relativePath),
       /Refusing to read private env file/,

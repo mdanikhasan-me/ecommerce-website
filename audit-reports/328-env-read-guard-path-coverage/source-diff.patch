@@ -1,0 +1,26 @@
+diff --git a/tests/boilabin-advisor-workflow.test.ts b/tests/boilabin-advisor-workflow.test.ts
+index 15efb6c..cb5eec2 100644
+--- a/tests/boilabin-advisor-workflow.test.ts
++++ b/tests/boilabin-advisor-workflow.test.ts
+@@ -155,7 +155,7 @@ test('Advisor state script reports ready state without reading env files', () =>
+ });
+
+ test('Advisor safe file reader rejects all private env filename variants', () => {
+-  for (const relativePath of ['.env', '.env.local', '.env.production', 'config/.env.staging']) {
++  for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
+     assert.throws(
+       () => readSafeFile(repoRoot, relativePath),
+       /Refusing to read private env file/,
+diff --git a/tests/boilabin-terminal-loop-workflow.test.ts b/tests/boilabin-terminal-loop-workflow.test.ts
+index 74920e0..db19e7c 100644
+--- a/tests/boilabin-terminal-loop-workflow.test.ts
++++ b/tests/boilabin-terminal-loop-workflow.test.ts
+@@ -169,7 +169,7 @@ test('terminal-loop state can read the current git commit without relying on rep
+ });
+
+ test('terminal-loop safe file reader rejects all private env filename variants', () => {
+-  for (const relativePath of ['.env', '.env.local', '.env.production', 'config/.env.staging']) {
++  for (const relativePath of ['.env', '.env.local', '.env.production', '.ENV.PRODUCTION', 'config/.env.staging', 'config\\.env.staging']) {
+     assert.throws(
+       () => readSafeFile(repoRoot, relativePath),
+       /Refusing to read private env file/,
