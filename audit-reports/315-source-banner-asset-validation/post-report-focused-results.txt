@@ -1,0 +1,3 @@
+﻿Advisor focused test after Step 315 report: passed, 13 tests, 0 failed.
+Category media focused test after Step 315 report: failed, 3 passed, 1 failed.
+Remaining failure: tests/category-media.test.ts reports public/assets/categories/toys-collectibles.jpg hash mismatch (actual 11993afd8f62, expected 18811d8fecf3). This file was already dirty before Step 315 restore and was not touched.

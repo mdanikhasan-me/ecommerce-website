@@ -1,0 +1,30 @@
+﻿prisma\seed.ts:455:        imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg',
+prisma\seed.ts:464:        imageUrl: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+scripts\audit-public-media-source-of-truth.mjs:97:  if (publicPath.startsWith('/assets/banners/')) {
+scripts\audit-public-media-source-of-truth.mjs:612:    if (reference.includes('/assets/banners/') || reference.includes('images.unsplash.com')) return 'seed banner image'
+tests\admin-media-lifecycle.test.ts:71:      '/assets/banners/home-hero-iphone-15-pro.jpg',
+tests\admin-media-lifecycle.test.ts:125:    assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/uploads/admin/'), null)
+tests\admin-media-lifecycle.test.ts:128:    assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/assets/'), null)
+tests\admin-media-lifecycle.test.ts:141:    const protectedAsset = planAdminMediaLocalDeletion('/assets/banners/home-hero-iphone-15-pro.jpg', [])
+tests\admin-media-lifecycle.test.ts:159:    assert.equal(resolveManagedPublicUploadPath('/assets/banners/banner.webp', '/uploads/admin/'), null)
+tests\admin-media-lifecycle.test.ts:177:      await deleteManagedAdminUpload('/assets/banners/source.webp')
+tests\admin-banner-upload-base64-fix.test.ts:114:    const sourceBanner = classifyAdminMediaPath('/assets/banners/home-hero-galaxy-s24-ultra.jpg')
+tests\admin-banner-upload-base64-fix.test.ts:137:      '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+scripts\audit-storefront-media-sources.mjs:17:  '/assets/banners/home-hero-iphone-15-pro.jpg',
+scripts\audit-storefront-media-sources.mjs:18:  '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+tests\admin-media-reference-guard.test.ts:172:      '/assets/banners/home.webp',
+tests\admin-media-runtime-cleanup.test.ts:240:      '/assets/banners/source.webp',
+tests\admin-media-runtime-cleanup.test.ts:260:      const assetUrl = '/assets/banners/source.webp'
+scripts\local-browser-runtime-check.mjs:428:      !decoded.includes('/assets/banners/');
+scripts\qa-admin-media-upload-delete.mjs:522:  await prisma.banner.update({ where: { id: first.id }, data: { imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg' } })
+scripts\repair-known-broken-image-urls.mjs:80:    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+scripts\repair-storefront-image-sources.mjs:26:    to: '/assets/banners/home-hero-iphone-15-pro.jpg',
+scripts\repair-storefront-image-sources.mjs:31:    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+scripts\repair-storefront-image-sources.mjs:36:    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+scripts\repair-storefront-image-sources.mjs:41:    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+tests\navbar-banner-footer-polish.test.ts:87:    '/assets/banners/home-hero-iphone-15-pro.jpg',
+tests\navbar-banner-footer-polish.test.ts:88:    '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
+tests\media-source-of-truth-audit.test.ts:13:    const banner = classifyPublicMediaPath('/assets/banners/home-hero.jpg')
+tests\media-source-of-truth-audit.test.ts:56:    const fromUrl = '/assets/banners/home-hero-iphone-15-pro.jpg'
+tests\storefront-image-source.test.ts:47:    assert.ok(bannerSeed.includes('/assets/banners/home-hero-iphone-15-pro.jpg'))
+tests\storefront-image-source.test.ts:48:    assert.ok(bannerSeed.includes('/assets/banners/home-hero-galaxy-s24-ultra.jpg'))

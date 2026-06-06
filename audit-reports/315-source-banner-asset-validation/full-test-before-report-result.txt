@@ -1,0 +1,7 @@
+﻿Command: npm test
+Result: failed after restoring source banner asset
+Summary: 544 tests, 542 passed, 2 failed
+Failures:
+1. tests/boilabin-advisor-workflow.test.ts - latest report was still Step 314 at this point, so latest recommended next-step was not detected. Expected to resolve after Step 315 report is created.
+2. tests/category-media.test.ts - public/assets/categories/toys-collectibles.jpg hash mismatch; unrelated working-tree modification present before Step 315 restore.
+Step 315 blocker status: Step 314 source banner asset failures no longer appeared; storefront image source, media remote policy, navbar banner/footer, and UI/UX media evidence tests passed.

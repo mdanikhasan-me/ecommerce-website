@@ -1,0 +1,3 @@
+﻿Command: npm run build
+Result: passed
+Notes: Next.js production build completed successfully; route list still includes /api/admin/banners/upload from Step 314.

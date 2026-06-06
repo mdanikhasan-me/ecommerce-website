@@ -1,0 +1,2 @@
+Path: public/assets/banners/home-hero-iphone-15-pro.jpg
+Length: 52884
