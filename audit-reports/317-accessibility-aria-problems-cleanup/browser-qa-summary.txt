@@ -1,0 +1,18 @@
+﻿Browser QA summary for Step 317
+
+In-app Browser status: unavailable in this session; the browser runtime returned "Browser is not available: iab".
+Fallback used: node scripts/local-browser-runtime-check.mjs --mode dev --port 3117 --cdp-port 9417.
+Fallback browser: Microsoft Edge (msedge.exe), fresh temporary dev server.
+
+Step 317-relevant results:
+- Source scan after fix: zero quoted literal ARIA/role expression values.
+- Source scan after fix: zero direct dynamic TSX state/role attributes for aria-expanded, aria-checked, aria-hidden, aria-pressed, aria-selected, aria-current, aria-invalid, or role.
+- Focused routes including /category/toys-collectibles and /search?q=phone rendered with no broken images, no horizontal overflow, no unnamed buttons, no failed requests, and no server/image failures in the fallback smoke output.
+
+Fallback smoke nonzero classification:
+- Unrelated/pre-existing warnings on /: Next.js 16 future image localPatterns query-string warnings for category image URLs.
+- Unrelated runtime warning on /category/electronics mobile-390: NextAuth ClientFetchError during session fetch.
+- Unrelated/helper behavior issue: mobile search focus and Escape check did not focus/type into the input in this helper path.
+
+No Step 317 ARIA source issue remained after the fix.
+

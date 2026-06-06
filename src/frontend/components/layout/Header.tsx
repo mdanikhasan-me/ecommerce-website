@@ -7,6 +7,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { cn } from '@/backend/utils'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { ariaExpanded, ariaPressed } from '@/frontend/components/ui/aria'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -335,7 +336,7 @@ export function Header() {
             >
               <button
                 type="button"
-                aria-expanded={isCategoriesOpen}
+                {...ariaExpanded(isCategoriesOpen)}
                 aria-haspopup="true"
                 aria-controls="desktop-categories-menu"
                 onClick={openCategoriesDropdown}
@@ -385,7 +386,7 @@ export function Header() {
                                 data-testid={`desktop-category-rail-${category.slug}`}
                                 data-selected={isSelected ? 'true' : 'false'}
                                 data-route={getCategoryHref(category.slug)}
-                                aria-pressed={isSelected}
+                                {...ariaPressed(isSelected)}
                                 className="flex min-w-0 flex-1 items-center gap-2.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                                 onFocus={() => selectDesktopCategory(category.slug)}
                                 onClick={() => selectDesktopCategory(category.slug)}
@@ -492,7 +493,7 @@ export function Header() {
               ref={searchButtonRef}
               type="button"
               data-search-trigger="true"
-              aria-expanded={isSearchOpen}
+              {...ariaExpanded(isSearchOpen)}
               aria-label="Open search"
               title="Open search"
               onClick={() => {
@@ -508,7 +509,7 @@ export function Header() {
               <div ref={accountRootRef} className="relative">
                 <button
                   type="button"
-                  aria-expanded={isAccountOpen}
+                  {...ariaExpanded(isAccountOpen)}
                   aria-haspopup="menu"
                   aria-label="Open account menu"
                   title="Open account menu"
@@ -674,7 +675,7 @@ export function Header() {
               type="button"
               data-search-trigger="true"
               data-testid="mobile-search-button"
-              aria-expanded={isSearchOpen}
+              {...ariaExpanded(isSearchOpen)}
               aria-label="Search products"
               title="Search products"
               onClick={() => {

@@ -48,9 +48,8 @@ describe('storefront ProductCard and filter UI contracts', () => {
     assert.match(source, /<legend className="mb-2 text-sm font-semibold">Price Range \(Tk\)<\/legend>/)
     assert.match(source, /<legend className="mb-2 text-sm font-semibold">Minimum Rating<\/legend>/)
     assert.match(source, /<legend className="mb-2 text-sm font-semibold">Availability<\/legend>/)
-    assert.match(source, /role="radiogroup" aria-label="Minimum rating"/)
-    assert.match(source, /role="radio"/)
-    assert.match(source, /aria-checked=\{selected\}/)
+    assert.match(source, /role="group" aria-label="Minimum rating"/)
+    assert.match(source, /ariaPressed\(selected\)/)
     assert.match(source, /aria-label=\{selected \? `Clear minimum rating \$\{rating\} stars` : `Minimum rating \$\{rating\} stars`\}/)
 
     assert.ok((source.match(/sp\.delete\('page'\)/g) ?? []).length >= 2)
@@ -69,7 +68,7 @@ describe('storefront ProductCard and filter UI contracts', () => {
     assert.match(sortSource, /url\.searchParams\.delete\('page'\)/)
     assert.match(sortSource, /window\.location\.href = url\.toString\(\)/)
 
-    assert.match(mobileSource, /aria-expanded=\{open\}/)
+    assert.match(mobileSource, /ariaExpanded\(open\)/)
     assert.match(mobileSource, /aria-haspopup="dialog"/)
     assert.match(mobileSource, /aria-controls=\{panelId\}/)
     assert.match(mobileSource, /role="dialog"/)

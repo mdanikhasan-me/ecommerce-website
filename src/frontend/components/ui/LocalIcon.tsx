@@ -23,13 +23,26 @@ export function LocalIcon({
   title,
   decorative = true,
 }: LocalIconProps) {
+  const iconStyle = { '--local-icon-url': `url(${STOREFRONT_ICON_ASSETS[name]})` } as LocalIconStyle
+
+  if (decorative) {
+    return (
+      <span
+        aria-hidden="true"
+        title={title}
+        className={cn('local-icon inline-block h-4 w-4 shrink-0', className)}
+        style={iconStyle}
+      />
+    )
+  }
+
   return (
     <span
-      aria-hidden={decorative ? true : undefined}
-      role={decorative ? undefined : 'img'}
+      role="img"
+      aria-label={title ?? name.replace(/-/g, ' ')}
       title={title}
       className={cn('local-icon inline-block h-4 w-4 shrink-0', className)}
-      style={{ '--local-icon-url': `url(${STOREFRONT_ICON_ASSETS[name]})` } as LocalIconStyle}
+      style={iconStyle}
     />
   )
 }

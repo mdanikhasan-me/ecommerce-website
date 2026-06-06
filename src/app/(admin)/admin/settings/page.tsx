@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Save, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { ariaPressed } from '@/frontend/components/ui/aria'
 
 const SETTINGS_GROUPS = [
   {
@@ -128,7 +129,7 @@ export default function AdminSettingsPage() {
                 <button type="button"
                   id={`setting-${field.key}`}
                   aria-label={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
-                  aria-pressed={values[field.key] === 'true'}
+                  {...ariaPressed(values[field.key] === 'true')}
                   title={`${values[field.key] === 'true' ? 'Disable' : 'Enable'} ${field.label}`}
                   onClick={() =>
                     setValues((v) => ({

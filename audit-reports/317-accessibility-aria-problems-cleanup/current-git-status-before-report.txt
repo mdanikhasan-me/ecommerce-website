@@ -1,0 +1,20 @@
+﻿ M public/assets/icons/ui/categories/beauty-health.svg
+ M public/assets/icons/ui/categories/books-stationery.svg
+ M public/assets/icons/ui/categories/electronics.svg
+ M public/assets/icons/ui/categories/fashion.svg
+ M public/assets/icons/ui/categories/gaming.svg
+ M public/assets/icons/ui/categories/home-appliances.svg
+ M public/assets/icons/ui/categories/sports-fitness.svg
+ M public/assets/icons/ui/categories/toys-collectibles.svg
+ M src/app/(admin)/admin/settings/page.tsx
+ M src/app/(store)/category/page.tsx
+ M src/frontend/components/layout/Header.tsx
+ M src/frontend/components/product/MobileSearchFilters.tsx
+ M src/frontend/components/product/SearchFiltersPanel.tsx
+ M src/frontend/components/ui/LocalIcon.tsx
+ M tests/storefront-product-card-filter-ui.test.ts
+?? audit-reports/317-accessibility-aria-problems-cleanup/
+?? public/uploads/admin/banners/hero/
+?? src/frontend/components/ui/aria.ts
+?? tests/accessibility-aria-problems.test.ts
+

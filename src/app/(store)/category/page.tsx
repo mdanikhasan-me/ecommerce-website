@@ -5,6 +5,7 @@ import { generatePageMetadata } from '@/backend/seo'
 import { db } from '@/backend/database'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { ariaCurrentPage } from '@/frontend/components/ui/aria'
 import { getSubcategoryMediaPath } from '@/shared/category-media'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -114,7 +115,7 @@ function CategoryRail({
             <Link
               key={category.id}
               href={`/category?department=${category.slug}`}
-              aria-current={isSelected ? 'page' : undefined}
+              {...ariaCurrentPage(isSelected)}
               className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                 isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 hover:bg-secondary/45'
               }`}

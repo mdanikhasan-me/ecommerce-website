@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
+import { ariaExpanded } from '@/frontend/components/ui/aria'
 
 type MobileSearchFiltersProps = {
   categories: { name: string; slug: string }[]
@@ -28,7 +29,7 @@ export function MobileSearchFilters({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-expanded={open}
+        {...ariaExpanded(open)}
         aria-haspopup="dialog"
         aria-controls={panelId}
         aria-label={`Open ${label.toLowerCase()} filters`}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { ariaPressed } from '@/frontend/components/ui/aria'
 import { cn } from '@/backend/utils'
 
 interface Props {
@@ -171,7 +172,7 @@ export function SearchFiltersPanel({
 
       <fieldset>
         <legend className="mb-2 text-sm font-semibold">Minimum Rating</legend>
-        <div className="space-y-1.5" role="radiogroup" aria-label="Minimum rating">
+        <div className="space-y-1.5" role="group" aria-label="Minimum rating">
           {[4, 3, 2].map((rating) => {
             const selected = searchParams.rating === String(rating)
 
@@ -179,8 +180,7 @@ export function SearchFiltersPanel({
             <button
               key={rating}
               type="button"
-              role="radio"
-              aria-checked={selected}
+              {...ariaPressed(selected)}
               aria-label={selected ? `Clear minimum rating ${rating} stars` : `Minimum rating ${rating} stars`}
               onClick={() => applyFilter('rating', selected ? undefined : String(rating))}
               className="group flex w-full cursor-pointer items-center gap-2 text-left"
