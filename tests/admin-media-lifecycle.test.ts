@@ -116,16 +116,32 @@ describe('admin media upload deletion lifecycle guardrails', () => {
 
   it('resolves managed upload candidates inside public uploads only', () => {
     const filePath = resolveManagedMediaFilePath('/uploads/admin/banners/banner.webp', '/uploads/admin/')
+    const subcategoryPath = resolveManagedMediaFilePath(
+      '/assets/categories/subcategories/mobile-phones.webp',
+      '/assets/categories/subcategories/',
+    )
 
     assert.equal(
       filePath,
       path.resolve(process.cwd(), 'public', 'uploads', 'admin', 'banners', 'banner.webp'),
+    )
+    assert.equal(
+      subcategoryPath,
+      path.resolve(process.cwd(), 'public', 'assets', 'categories', 'subcategories', 'mobile-phones.webp'),
     )
     assert.equal(resolveManagedMediaFilePath('/uploads/admin/../assets/banner.webp', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/uploads/admin/', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/uploads/admin/banners/banner.webp?download=1', '/uploads/admin/'), null)
     assert.equal(resolveManagedMediaFilePath('/assets/banners/banner.webp', '/assets/'), null)
+    assert.equal(resolveManagedMediaFilePath('/assets/categories/subcategories/', '/assets/categories/subcategories/'), null)
+    assert.equal(
+      resolveManagedMediaFilePath(
+        '/assets/categories/subcategories/mobile-phones.webp?download=1',
+        '/assets/categories/subcategories/',
+      ),
+      null,
+    )
   })
 
   it('plans deletion only when callers provide no remaining active references', () => {

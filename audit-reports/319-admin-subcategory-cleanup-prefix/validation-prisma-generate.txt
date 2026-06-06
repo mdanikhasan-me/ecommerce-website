@@ -1,0 +1,19 @@
+
+> boilabin@1.0.0 db:prisma:local:generate
+> node scripts/run-prisma-local.mjs generate
+
+Prisma local env guardrail: .env is loaded first, then .env.local overrides it when present.
+Database URL safety check: no database connection attempted.
+DATABASE_URL: local
+SHADOW_DATABASE_URL: local
+Shadow database separate: yes
+Local migration ready: yes
+Prisma local env guardrail: URL-shape readiness does not prove PostgreSQL is running.
+Running Prisma with local env guardrail: prisma generate
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: 
+EPERM: operation not permitted, rename 'P:\Projects\E-commers\boilabin-marketplace\node_modules\.prisma\client\query_engine-windows.dll.node.tmp24980' -> 'P:\Projects\E-commers\boilabin-marketplace\node_modules\.prisma\client\query_engine-windows.dll.node'
+System.Management.Automation.RemoteException
+System.Management.Automation.RemoteException
+EXIT_CODE=1

@@ -1,0 +1,108 @@
+? admin media upload deletion lifecycle guardrails
+  ? allows only known managed local upload roots as local deletion candidates (6.2076ms)
+  ? does not allow managed upload root directories as local deletion candidates (0.1787ms)
+  ? protects committed source-code assets from admin local deletion (0.1268ms)
+  ? does not treat remote URLs or inline upload payloads as local deletion candidates (0.1289ms)
+  ? refuses path traversal and unknown local paths (0.1954ms)
+  ? refuses query strings and fragments on managed upload paths (0.1238ms)
+  ? resolves managed upload candidates inside public uploads only (0.1943ms)
+  ? plans deletion only when callers provide no remaining active references (0.3917ms)
+  ? routes admin cleanup helper path resolution through the classifier (0.1745ms)
+  ? deletes only temp managed admin and product fixtures (15.9014ms)
+  ? refuses temp managed root, traversal, query, fragment, remote, and data cleanup inputs (5.2037ms)
+  ? keeps admin and product cleanup roots isolated from each other (4.885ms)
+? admin media upload deletion lifecycle guardrails (36.2652ms)
+? admin media runtime cleanup reference guard
+  ? deletes unreferenced admin-managed temp fixtures only after a complete reference check (18.0515ms)
+  ? deletes unreferenced subcategory managed asset fixtures with the classified managed prefix (4.2677ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.947Z',
+  severity: 'warn',
+  errorCode: 'admin_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Reference check failed; physical deletion must be skipped.'
+  }
+}
+  ? skips admin-managed deletion for active, historical, and failed reference checks (7.7947ms)
+  ? deletes unreferenced product-managed temp fixtures only after a complete reference check (3.8526ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.959Z',
+  severity: 'warn',
+  errorCode: 'product_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Reference check failed; physical deletion must be skipped.'
+  }
+}
+  ? skips product-managed deletion for active, historical, and failed reference checks (6.7062ms)
+  ? keeps admin and product cleanup scopes isolated from each other (4.8443ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.969Z',
+  severity: 'warn',
+  errorCode: 'admin_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Reference check was incomplete; physical deletion must be skipped.'
+  }
+}
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.970Z',
+  severity: 'warn',
+  errorCode: 'product_media_reference_check_incomplete',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Reference check was incomplete; physical deletion must be skipped.'
+  }
+}
+  ? preserves admin and product temp fixtures when reference checks are incomplete (5.4868ms)
+  ? refuses protected, unsafe, and unknown cleanup paths before reference lookup (0.3644ms)
+  ? preserves real temp source-asset fixtures and skips reference lookup for protected roots (4.2852ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.980Z',
+  severity: 'warn',
+  errorCode: 'admin_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.980Z',
+  severity: 'warn',
+  errorCode: 'product_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_product',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+  ? returns false and preserves temp fixtures when physical deletion fails (6.104ms)
+  ? keeps replaced-image cleanup exported helpers reference-safe (6.2505ms)
+Security event {
+  type: 'admin_upload_cleanup_failed',
+  timestamp: '2026-06-06T20:11:58.993Z',
+  severity: 'warn',
+  errorCode: 'admin_media_file_delete_failed',
+  metadata: {
+    feature: 'admin_media',
+    reason: 'Physical cleanup failed after reference-safe planning.'
+  }
+}
+  ? keeps batch cleanup helpers and cleanup failures non-fatal (5.3646ms)
+  ? keeps route-facing response contracts unchanged while cleanup helpers stay non-throwing (1.0736ms)
+? admin media runtime cleanup reference guard (75.9704ms)
+? tests 25
+? suites 2
+? pass 25
+? fail 0
+? cancelled 0
+? skipped 0
+? todo 0
+? duration_ms 697.8755
+EXIT_CODE=0

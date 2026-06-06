@@ -1,0 +1,5 @@
+
+> boilabin@1.0.0 typecheck
+> tsc --noEmit -p tsconfig.typecheck.json
+
+EXIT_CODE=0

@@ -219,7 +219,11 @@ async function resolveReferenceSafeAdminDeletion(
       return null
     }
 
-    return resolveManagedMediaFilePath(classification.normalizedPath, '/uploads/admin/', options.publicRoot)
+    return resolveManagedMediaFilePath(
+      classification.normalizedPath,
+      classification.managedPrefix,
+      options.publicRoot,
+    )
   } catch {
     logAdminUploadCleanupSkipped({
       errorCode: 'admin_media_cleanup_plan_failed',

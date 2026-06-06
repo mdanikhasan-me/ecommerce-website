@@ -101,6 +101,20 @@ describe('admin media runtime cleanup reference guard', () => {
     })
   })
 
+  it('deletes unreferenced subcategory managed asset fixtures with the classified managed prefix', async () => {
+    await withTempPublicRoot(async (publicRoot) => {
+      const url = '/assets/categories/subcategories/mobile-phones.webp'
+      const filePath = await writeFixture(publicRoot, url)
+      const source = referenceSource()
+
+      const deleted = await deleteManagedAdminUpload(url, { referenceSource: source, publicRoot })
+
+      assert.equal(deleted, true)
+      assert.equal(source.calls, 1)
+      assert.equal(await exists(filePath), false)
+    })
+  })
+
   it('skips admin-managed deletion for active, historical, and failed reference checks', async () => {
     await withTempPublicRoot(async (publicRoot) => {
       const activeUrl = '/uploads/admin/banners/active.webp'
