@@ -1,0 +1,112 @@
+{
+  "step": 311,
+  "kind": "postcheck",
+  "generatedAt": "2026-06-06T14:33:23.340Z",
+  "dbSafety": {
+    "databaseUrl": "local",
+    "shadowDatabaseUrl": "local",
+    "shadowDatabaseSeparate": true,
+    "localMigrationReady": true
+  },
+  "guardrails": {
+    "dbMutationPerformed": true,
+    "dbRowsUpdated": 1,
+    "mediaFilesChanged": false,
+    "uploadOrphanFilesChanged": false,
+    "categorySvgFilesChanged": false
+  },
+  "requestedRepair": {
+    "productSlug": "iphone-15-pro-128gb",
+    "fromUrl": "/assets/banners/home-hero-iphone-15-pro.jpg",
+    "toUrl": "/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg"
+  },
+  "updatedRow": {
+    "id": "cmpxdfphp001o5jm03s6qzfm7",
+    "productId": "cmpxdfphp001n5jm0h8q80qgv",
+    "before": {
+      "id": "cmpxdfphp001o5jm03s6qzfm7",
+      "productId": "cmpxdfphp001n5jm0h8q80qgv",
+      "url": "/assets/banners/home-hero-iphone-15-pro.jpg",
+      "alt": null,
+      "isPrimary": true,
+      "sortOrder": 0,
+      "product": {
+        "slug": "iphone-15-pro-128gb",
+        "isActive": true
+      }
+    },
+    "after": {
+      "id": "cmpxdfphp001o5jm03s6qzfm7",
+      "productId": "cmpxdfphp001n5jm0h8q80qgv",
+      "url": "/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg",
+      "alt": null,
+      "isPrimary": true,
+      "sortOrder": 0,
+      "product": {
+        "slug": "iphone-15-pro-128gb",
+        "isActive": true
+      }
+    },
+    "preservedFields": {
+      "alt": null,
+      "isPrimary": true,
+      "sortOrder": 0,
+      "productId": "cmpxdfphp001n5jm0h8q80qgv"
+    }
+  },
+  "product": {
+    "id": "cmpxdfphp001n5jm0h8q80qgv",
+    "slug": "iphone-15-pro-128gb",
+    "name": "iPhone 15 Pro 128GB",
+    "isActive": true,
+    "imageCount": 1,
+    "images": [
+      {
+        "id": "cmpxdfphp001o5jm03s6qzfm7",
+        "productId": "cmpxdfphp001n5jm0h8q80qgv",
+        "url": "/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg",
+        "alt": null,
+        "isPrimary": true,
+        "sortOrder": 0
+      }
+    ]
+  },
+  "remainingRowsUsingFromForProduct": {
+    "count": 0,
+    "rows": []
+  },
+  "rowsUsingTargetForProduct": {
+    "count": 1,
+    "rows": [
+      {
+        "id": "cmpxdfphp001o5jm03s6qzfm7",
+        "productId": "cmpxdfphp001n5jm0h8q80qgv",
+        "url": "/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg",
+        "alt": null,
+        "isPrimary": true,
+        "sortOrder": 0,
+        "product": {
+          "slug": "iphone-15-pro-128gb",
+          "isActive": true
+        }
+      }
+    ]
+  },
+  "allRowsUsingFromUrlAfterRepair": {
+    "count": 0,
+    "rows": []
+  },
+  "targetLocalProductImage": {
+    "publicUrlPath": "/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg",
+    "relativeFilesystemPath": "public/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg",
+    "exists": true
+  },
+  "bannerAsset": {
+    "publicUrlPath": "/assets/banners/home-hero-iphone-15-pro.jpg",
+    "relativeFilesystemPath": "public/assets/banners/home-hero-iphone-15-pro.jpg",
+    "exists": true,
+    "untouchedByThisStep": true
+  },
+  "passed": true,
+  "stopReasons": []
+}
