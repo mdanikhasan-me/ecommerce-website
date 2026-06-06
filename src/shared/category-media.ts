@@ -29,7 +29,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   'toys-collectibles': {
     path: '/assets/categories/toys-collectibles.jpg',
-    version: '11993afd8f62',
+    version: '18811d8fecf3',
   },
   'baby-kids': {
     path: '/assets/categories/gaming.jpg',

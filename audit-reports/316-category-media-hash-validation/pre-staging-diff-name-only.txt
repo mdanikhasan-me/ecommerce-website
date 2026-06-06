@@ -1,0 +1,11 @@
+﻿public/assets/categories/toys-collectibles.jpg
+public/assets/icons/ui/categories/beauty-health.svg
+public/assets/icons/ui/categories/books-stationery.svg
+public/assets/icons/ui/categories/electronics.svg
+public/assets/icons/ui/categories/fashion.svg
+public/assets/icons/ui/categories/gaming.svg
+public/assets/icons/ui/categories/home-appliances.svg
+public/assets/icons/ui/categories/sports-fitness.svg
+public/assets/icons/ui/categories/toys-collectibles.svg
+src/shared/category-media.ts
+

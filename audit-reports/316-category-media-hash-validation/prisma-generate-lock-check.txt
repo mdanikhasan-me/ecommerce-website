@@ -1,0 +1,28 @@
+﻿Node processes:
+
+ProcessId CommandLine                                                                                                  
+--------- -----------                                                                                                  
+     9528 "C:\Users\anikh\AppData\Local\OpenAI\Codex\bin\5b9024f90663758b\node.exe" --experimental-vm-modules C:\Use...
+    15240 "C:\Program Files\Adobe\Adobe Creative Cloud Experience\libs\node.exe" "C:\Program Files\Adobe\Adobe Creat...
+    28032 "C:\Program Files\nodejs\node.exe" C:\Users\anikh\AppData\Roaming\npm/node_modules/npm/bin/npm-cli.js run ...
+    29140 "node"   "P:\Projects\E-commers\boilabin-marketplace\node_modules\.bin\\..\next\dist\bin\next" start -p 3108 
+    17316 "C:\Program Files\nodejs\node.exe" C:\Users\anikh\AppData\Roaming\npm/node_modules/npm/bin/npm-cli.js run dev
+    28264 "node"   "P:\Projects\E-commers\boilabin-marketplace\node_modules\.bin\\..\next\dist\bin\next" dev           
+     5144 "C:\Program Files\nodejs\node.exe" P:\Projects\E-commers\boilabin-marketplace\node_modules\next\dist\serve...
+    37116 "C:\Program Files\nodejs\node.exe" C:\Users\anikh\AppData\Roaming\npm/node_modules/npm/bin/npm-cli.js run ...
+    17672 "C:\Program Files\nodejs\node.exe" C:\Users\anikh\AppData\Roaming\npm/node_modules/npm/bin/npm-cli.js run ...
+    18304 "node"   "P:\Projects\E-commers\boilabin-marketplace\node_modules\.bin\\..\typescript\bin\tsc" --noEmit -p...
+    27380 "node"   "P:\Projects\E-commers\boilabin-marketplace\node_modules\.bin\\..\next\dist\bin\next" lint          
+
+
+
+Listening ports 3000/3108:
+
+LocalAddress LocalPort OwningProcess
+------------ --------- -------------
+::                3108         29140
+::                3000          5144
+
+
+
+

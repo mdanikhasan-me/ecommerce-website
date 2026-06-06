@@ -1,0 +1,46 @@
+﻿
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:147:| `npm run typecheck` | Passed. |
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:148:| `npm run lint` | Passed; Next lint deprecation 
+notice only. |
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:149:| `npm test` before this report existed | Failed 2 
+unrelated/non-final issues: latest report was still Step 314 for Advisor readiness, and 
+`public/assets/categories/toys-collectibles.jpg` has a pre-existing hash mismatch. The Step 315 banner-asset blocker 
+no longer appeared. |
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:150:| `npx tsx --test 
+tests/boilabin-advisor-workflow.test.ts` after this report existed | Passed: 13 tests, 0 failed. |
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:151:| `npx tsx --test tests/category-media.test.ts` | 
+Failed only the known `toys-collectibles.jpg` hash mismatch. |
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:152:| `npm test` after this report existed | Failed 1 
+unrelated issue: `tests/category-media.test.ts` reports `public/assets/categories/toys-collectibles.jpg` hash 
+mismatch. 543 passed, 1 failed. The Step 315 source-banner blocker remains resolved. |
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:153:| `npm run build` | Passed. |
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:154:
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:174:
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:175:```txt
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:176:toys-collectibles version should match image hash
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:177:actual:   11993afd8f62
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:178:expected: 18811d8fecf3
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:179:```
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:180:
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:182:
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:183:```txt
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:184:public/assets/categories/toys-collectibles.jpg
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:185:```
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:186:
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:231:## Remaining Risks
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:232:
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:233:- Full `npm test` is still expected to fail until 
+the unrelated modified `public/assets/categories/toys-collectibles.jpg` hash mismatch is resolved.
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:234:- An untracked `public/uploads/admin/banners/hero/` 
+directory exists and was not touched or staged.
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:235:- Pre-existing category SVG edits remain unstaged.
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:238:## Recommended Next Step
+  audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:239:
+> audit-reports\315_SOURCE_BANNER_ASSET_VALIDATION_BLOCKER.md:240:Run Step 316 as a narrow category media validation 
+blocker resolution: inspect the pre-existing modified `public/assets/categories/toys-collectibles.jpg`, decide whether 
+to restore it from git or approve a deliberate category media/version update, and do not touch Step 314 banner upload 
+code, source banner assets, category SVG edits, upload/orphan directories, DB rows, Prisma schema/migrations, payment, 
+tracking, seller, env, package, navbar, Help, footer, homepage hero, or `/category` UI work.
+
+
+

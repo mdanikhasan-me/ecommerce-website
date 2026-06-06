@@ -1,0 +1,5 @@
+﻿Prisma generate status: skipped.
+Reason: known Windows Prisma/Next engine lock risk remains because active Node/Next processes are still running and listening on local app ports.
+Observed listeners: port 3000 owner PID 5144; port 3108 owner PID 29140.
+No processes were killed.
+
