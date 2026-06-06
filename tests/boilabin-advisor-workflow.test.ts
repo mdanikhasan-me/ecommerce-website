@@ -7,6 +7,7 @@ import { test } from 'node:test';
 import {
   ADVISOR_ACTIVATION_PHRASE,
   createBoilabinAdvisorState,
+  extractLatestCommit,
   extractSectionSummary,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
@@ -234,6 +235,17 @@ test('Advisor safe file reader rejects all private env filename variants', () =>
 
 test('Advisor state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
+});
+
+test('Advisor latest commit extraction supports fenced and inline report formats', () => {
+  assert.equal(
+    extractLatestCommit(['Latest commit before this step:', '', '```text', 'abc1234 fix thing', '```'].join('\n')),
+    'abc1234 fix thing',
+  );
+  assert.equal(
+    extractLatestCommit('Commit hash: `deadbee test thing`'),
+    'deadbee test thing',
+  );
 });
 
 test('Advisor section summaries stop cleanly instead of cutting mid-line', () => {

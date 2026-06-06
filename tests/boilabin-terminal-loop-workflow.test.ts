@@ -8,6 +8,7 @@ import {
   TERMINAL_BATCH_LOOP_ACTIVATION_PHRASE,
   TERMINAL_LOOP_ACTIVATION_PHRASE,
   createTerminalLoopState,
+  extractLatestCommit,
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatTerminalLoopState,
@@ -234,6 +235,17 @@ test('terminal-loop audit report listing sorts numeric step prefixes numerically
 
 test('terminal-loop state can read the current git commit without relying on report text', () => {
   assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
+});
+
+test('terminal-loop latest commit extraction supports fenced and inline report formats', () => {
+  assert.equal(
+    extractLatestCommit(['Latest commit before this step:', '', '```text', 'abc1234 fix thing', '```'].join('\n')),
+    'abc1234 fix thing',
+  );
+  assert.equal(
+    extractLatestCommit('Commit hash: `deadbee test thing`'),
+    'deadbee test thing',
+  );
 });
 
 test('terminal-loop safe file reader rejects all private env filename variants', () => {
