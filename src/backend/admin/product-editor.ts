@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
@@ -178,6 +179,8 @@ const productPayloadSchema = z
     }
   })
 
+const MANAGED_PRODUCT_UPLOAD_PREFIX = '/uploads/products/' as const
+
 export function parseAdminProductPayload(input: unknown) {
   const parsed = productPayloadSchema.safeParse(input)
 
@@ -301,9 +304,29 @@ async function persistImage(
   })
 }
 
-function isManagedUpload(url: string) {
+export function isManagedProductMediaPath(url: string | null | undefined) {
   const classification = classifyAdminMediaPath(url)
-  return classification.managedPrefix === '/uploads/products/' && classification.canDeleteLocalFile
+  return classification.managedPrefix === MANAGED_PRODUCT_UPLOAD_PREFIX &&
+    classification.canDeleteLocalFile &&
+    Boolean(classification.normalizedPath && path.posix.extname(classification.normalizedPath))
+}
+
+export function resolvePublicProductMediaPath(
+  url: string | null | undefined,
+  publicRoot?: string,
+) {
+  const classification = classifyAdminMediaPath(url)
+  if (
+    !classification.canDeleteLocalFile ||
+    !classification.normalizedPath ||
+    classification.managedPrefix !== MANAGED_PRODUCT_UPLOAD_PREFIX
+  ) {
+    return null
+  }
+
+  if (!path.posix.extname(classification.normalizedPath)) return null
+
+  return resolveManagedMediaFilePath(classification.normalizedPath, MANAGED_PRODUCT_UPLOAD_PREFIX, publicRoot)
 }
 
 export type ProductMediaCleanupOptions = {
@@ -333,11 +356,15 @@ function logProductUploadCleanupSkipped(input: {
 
 async function resolveReferenceSafeProductDeletion(url: string, options: ProductMediaCleanupOptions) {
   try {
+    if (!isManagedProductMediaPath(url)) {
+      return null
+    }
+
     const classification = classifyAdminMediaPath(url)
     if (
       !classification.canDeleteLocalFile ||
       !classification.normalizedPath ||
-      classification.managedPrefix !== '/uploads/products/'
+      classification.managedPrefix !== MANAGED_PRODUCT_UPLOAD_PREFIX
     ) {
       return null
     }
@@ -358,7 +385,7 @@ async function resolveReferenceSafeProductDeletion(url: string, options: Product
       return null
     }
 
-    return resolveManagedMediaFilePath(classification.normalizedPath, '/uploads/products/', options.publicRoot)
+    return resolvePublicProductMediaPath(classification.normalizedPath, options.publicRoot)
   } catch {
     logProductUploadCleanupSkipped({
       errorCode: 'product_media_cleanup_plan_failed',
@@ -368,12 +395,39 @@ async function resolveReferenceSafeProductDeletion(url: string, options: Product
   }
 }
 
+export async function removeEmptyManagedProductFolderIfSafe(
+  url: string | null | undefined,
+  options: Pick<ProductMediaCleanupOptions, 'publicRoot'> = {},
+) {
+  const filePath = resolvePublicProductMediaPath(url, options.publicRoot)
+  if (!filePath) return false
+
+  const publicRoot = path.resolve(options.publicRoot ?? path.resolve(process.cwd(), 'public'))
+  const uploadRoot = path.resolve(publicRoot, MANAGED_PRODUCT_UPLOAD_PREFIX.replace(/^\/+|\/+$/g, ''))
+  const folder = path.dirname(filePath)
+
+  if (folder === uploadRoot || !folder.startsWith(`${uploadRoot}${path.sep}`)) {
+    return false
+  }
+
+  try {
+    const entries = await fs.readdir(folder)
+    if (entries.length > 0) return false
+
+    await fs.rmdir(folder)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function deleteManagedUpload(url: string, options: ProductMediaCleanupOptions = {}) {
   const filePath = await resolveReferenceSafeProductDeletion(url, options)
   if (!filePath) return false
 
   try {
     await fs.rm(filePath, { force: true })
+    await removeEmptyManagedProductFolderIfSafe(url, options)
     return true
   } catch {
     logProductUploadCleanupSkipped({
@@ -385,7 +439,7 @@ export async function deleteManagedUpload(url: string, options: ProductMediaClea
 }
 
 export async function cleanupManagedUploads(urls: string[], options: ProductMediaCleanupOptions = {}) {
-  return Promise.all(urls.filter(isManagedUpload).map((url) => deleteManagedUpload(url, options)))
+  return Promise.all(urls.filter(isManagedProductMediaPath).map((url) => deleteManagedUpload(url, options)))
 }
 
 export async function normalizeProductImages(
@@ -419,7 +473,7 @@ export async function deleteRemovedProductImages(
   nextUrls: string[],
   options: ProductMediaCleanupOptions = {},
 ) {
-  const removedUrls = existingUrls.filter((url) => isManagedUpload(url) && !nextUrls.includes(url))
+  const removedUrls = existingUrls.filter((url) => isManagedProductMediaPath(url) && !nextUrls.includes(url))
   return Promise.all(removedUrls.map((url) => deleteManagedUpload(url, options)))
 }
 
