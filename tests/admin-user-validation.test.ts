@@ -39,12 +39,27 @@ describe('admin user validation', () => {
     }
   })
 
-  it('rejects invalid roles and phone characters', () => {
+  it('accepts sparse user updates without coercing booleans', () => {
+    const sparse = parseAdminUserPayload({})
+    const stringBoolean = parseAdminUserPayload({ isActive: 'true' })
+
+    assert.equal(sparse.success, true)
+    if (sparse.success) {
+      assert.deepEqual(sparse.data, { name: null, phone: null })
+    }
+    assert.equal(stringBoolean.success, false)
+  })
+
+  it('rejects invalid roles, phone characters, and profile length boundaries', () => {
     const invalidRole = parseAdminUserPayload({ role: 'SELLER' })
     const invalidPhone = parseAdminUserPayload({ phone: 'call-me-now' })
+    const longName = parseAdminUserPayload({ name: 'A'.repeat(121) })
+    const longPhone = parseAdminUserPayload({ phone: '+'.repeat(21) })
 
     assert.equal(invalidRole.success, false)
     assert.equal(invalidPhone.success, false)
+    assert.equal(longName.success, false)
+    assert.equal(longPhone.success, false)
   })
 
   it('normalizes list filters and ignores invalid roles', () => {
@@ -62,10 +77,29 @@ describe('admin user validation', () => {
     assert.equal(filters.role, '')
   })
 
+  it('defaults malformed list filters to safe pagination values', () => {
+    const params = new URLSearchParams({
+      page: 'not-a-number',
+      limit: '-5',
+      q: '   ',
+      role: ' ADMIN ',
+    })
+    const filters = parseAdminUserListFilters(params)
+
+    assert.equal(filters.page, 1)
+    assert.equal(filters.limit, 1)
+    assert.equal(filters.q, '')
+    assert.equal(filters.role, 'ADMIN')
+  })
+
   it('builds typed list filters for search and role', () => {
     const where = buildAdminUserWhere({ q: 'ayesha', role: 'ADMIN' })
 
     assert.equal(where.role, 'ADMIN')
     assert.equal(Array.isArray(where.OR), true)
+  })
+
+  it('builds empty where clauses when no search or role is provided', () => {
+    assert.deepEqual(buildAdminUserWhere({ q: '', role: '' }), {})
   })
 })

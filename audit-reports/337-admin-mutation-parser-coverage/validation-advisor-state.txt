@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/337_ADMIN_MUTATION_PARSER_COVERAGE.md
+Latest audit title: Step 337 Admin Mutation Parser Coverage
+Latest report commit reference: 9e5eb81 test: cover admin no-db validation
+Current git commit: 9e5eb81 test: cover admin no-db validation
+Validation summary: Focused and standard validation passed: - `git diff --check -- tests/order-update-validation.test.ts tests/inventory-validation.test.ts tests/coupon-validation.test.ts tests/notification-validation.test.ts tests/admin-user-validation.test.ts audit-reports/337_ADMIN_MUTATION_PARSER_COVERAGE.md audit-reports/337_NEXT_PROMPT_DRAFT.md audit-reports/337-admin-mutation-parser-coverage` passed. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another bounded non-media prelaunch closure task and push the completed commit to GitHub.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok

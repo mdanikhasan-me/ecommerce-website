@@ -21,6 +21,20 @@ describe('admin inventory validation', () => {
     }
   })
 
+  it('trims variant ids before duplicate detection', () => {
+    const parsed = parseAdminInventoryPayload({
+      stockQuantity: 12,
+      lowStockThreshold: 3,
+      note: 'stock count',
+      variants: [
+        { id: ' variant_1 ', stockQuantity: 4 },
+        { id: 'variant_1', stockQuantity: 5 },
+      ],
+    })
+
+    assert.equal(parsed.success, false)
+  })
+
   it('defaults variants to an empty list', () => {
     const parsed = parseAdminInventoryPayload({
       stockQuantity: 12,
@@ -48,23 +62,47 @@ describe('admin inventory validation', () => {
     assert.equal(parsed.success, false)
   })
 
-  it('rejects negative stock quantities', () => {
-    const parsed = parseAdminInventoryPayload({
+  it('rejects invalid stock quantity boundaries', () => {
+    const negativeStock = parseAdminInventoryPayload({
       stockQuantity: -1,
       lowStockThreshold: 3,
       note: 'stock count',
     })
+    const highStock = parseAdminInventoryPayload({
+      stockQuantity: 1_000_001,
+      lowStockThreshold: 3,
+      note: 'stock count',
+    })
+    const fractionalStock = parseAdminInventoryPayload({
+      stockQuantity: 12.5,
+      lowStockThreshold: 3,
+      note: 'stock count',
+    })
 
-    assert.equal(parsed.success, false)
+    assert.equal(negativeStock.success, false)
+    assert.equal(highStock.success, false)
+    assert.equal(fractionalStock.success, false)
   })
 
-  it('rejects missing adjustment notes', () => {
-    const parsed = parseAdminInventoryPayload({
+  it('rejects missing, short, and long adjustment notes', () => {
+    const missingNote = parseAdminInventoryPayload({
       stockQuantity: 12,
       lowStockThreshold: 3,
       note: '  ',
     })
+    const shortNote = parseAdminInventoryPayload({
+      stockQuantity: 12,
+      lowStockThreshold: 3,
+      note: 'ok',
+    })
+    const longNote = parseAdminInventoryPayload({
+      stockQuantity: 12,
+      lowStockThreshold: 3,
+      note: 'x'.repeat(501),
+    })
 
-    assert.equal(parsed.success, false)
+    assert.equal(missingNote.success, false)
+    assert.equal(shortNote.success, false)
+    assert.equal(longNote.success, false)
   })
 })
