@@ -145,9 +145,11 @@ test('Advisor state script reports ready state without reading env files', () =>
   assert.equal(state.missingFiles.length, 0);
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
+  assert.doesNotMatch(state.latestReport?.relativePath ?? '', /NEXT_PROMPT_DRAFT/i);
   assert.match(state.currentGitCommit ?? '', /^[0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Boilabin Advisor state/);
   assert.match(formatted, /Advisor activation phrase: Run Boilabin Advisor mode\./);
+  assert.doesNotMatch(formatted, /Latest audit report: .*NEXT_PROMPT_DRAFT/i);
   assert.match(formatted, /Current git commit: [0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Latest recommended next-step found: yes/);
   assert.match(formatted, /Advisor is ready: yes/);
