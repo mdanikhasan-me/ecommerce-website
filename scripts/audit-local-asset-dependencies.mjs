@@ -236,6 +236,7 @@ function localSourceAssetExists(reference, root) {
   const value = String(reference ?? '').trim().split(/[?#]/, 1)[0]
   if (value.endsWith('/')) return true
   if (value.includes('${')) return true
+  if (value.includes('*')) return true
 
   const resolved = resolveLocalSourceAssetPath(reference, root)
   return Boolean(resolved && existsSync(resolved))

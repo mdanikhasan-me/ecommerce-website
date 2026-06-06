@@ -1,0 +1,14 @@
+ next.config.js                                     |  4 +++
+ .../assets/icons/ui/categories/beauty-health.svg   |  8 +-----
+ .../icons/ui/categories/books-stationery.svg       |  8 ++----
+ public/assets/icons/ui/categories/electronics.svg  |  9 ++----
+ public/assets/icons/ui/categories/fashion.svg      |  7 ++---
+ public/assets/icons/ui/categories/gaming.svg       |  9 ++----
+ .../assets/icons/ui/categories/home-appliances.svg |  8 ++----
+ .../assets/icons/ui/categories/sports-fitness.svg  | 11 ++------
+ .../icons/ui/categories/toys-collectibles.svg      |  8 ++----
+ scripts/audit-local-asset-dependencies.mjs         |  1 +
+ scripts/local-browser-runtime-check.mjs            | 23 +++++++++++++--
+ tests/local-asset-dependency-policy.test.ts        | 18 ++++++++++++
+ tests/runtime-stability.test.ts                    | 33 ++++++++++++++++++++++
+ 13 files changed, 97 insertions(+), 50 deletions(-)

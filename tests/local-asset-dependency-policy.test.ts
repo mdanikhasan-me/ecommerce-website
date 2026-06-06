@@ -163,6 +163,24 @@ describe('local asset dependency policy', () => {
     }
   })
 
+  it('does not report Next image localPatterns globs as missing literal assets', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'boilabin-local-asset-glob-'))
+
+    try {
+      await fs.writeFile(
+        path.join(root, 'next.config.js'),
+        "module.exports = { images: { localPatterns: [{ pathname: '/assets/**' }] } }\n",
+      )
+
+      const audit = await collectLocalAssetDependencyAudit({ cwd: root })
+
+      assert.equal(audit.missingLocalSourceAssetReferences, 0)
+      assert.equal(audit.missingLocalSourceAssetReferenceFiles.length, 0)
+    } finally {
+      await fs.rm(root, { recursive: true, force: true })
+    }
+  })
+
   it('generates app-owned placeholder images without remote hosts', () => {
     const placeholder = getImagePlaceholder(320, 240, 'Missing image')
 

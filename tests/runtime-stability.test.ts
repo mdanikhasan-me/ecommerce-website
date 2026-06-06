@@ -28,8 +28,15 @@ import {
 const require = createRequire(import.meta.url)
 const nextConfig = require('../next.config.js') as {
   images?: {
+    localPatterns?: Array<{
+      pathname?: string
+      search?: string
+    }>
     qualities?: number[]
   }
+}
+const nextLocalPatternMatcher = require('next/dist/shared/lib/match-local-pattern') as {
+  hasLocalMatch(localPatterns: Array<{ pathname?: string; search?: string }> | undefined, urlPathAndQuery: string): boolean
 }
 
 describe('post-Flash runtime stability config', () => {
@@ -41,6 +48,21 @@ describe('post-Flash runtime stability config', () => {
 
   it('allows the image qualities used by active storefront components', () => {
     assert.deepEqual(nextConfig.images?.qualities, [75, 82, 84, 90, 92])
+  })
+
+  it('allows versioned public assets and admin uploads through Next local image patterns', () => {
+    const localPatterns = nextConfig.images?.localPatterns
+
+    assert.ok(localPatterns?.some((pattern) => pattern.pathname === '/assets/**' && pattern.search === undefined))
+    assert.ok(localPatterns?.some((pattern) => pattern.pathname === '/uploads/**' && pattern.search === undefined))
+    assert.equal(
+      nextLocalPatternMatcher.hasLocalMatch(localPatterns, '/assets/categories/toys-collectibles.jpg?v=step318'),
+      true,
+    )
+    assert.equal(
+      nextLocalPatternMatcher.hasLocalMatch(localPatterns, '/uploads/admin/banners/hero/example.jpg'),
+      true,
+    )
   })
 
   it('keeps split hero images from advertising hidden variants as full viewport', () => {
@@ -156,6 +178,17 @@ describe('local browser runtime check helper', () => {
     assert.match(source, /getBoundingClientRect\(\)/)
     assert.match(source, /style\.display !== 'none'/)
     assert.match(source, /visible && image\.complete && image\.naturalWidth === 0/)
+  })
+
+  it('opens the mobile search control before checking mobile search input focus', () => {
+    const source = readFileSync(join(process.cwd(), 'scripts/local-browser-runtime-check.mjs'), 'utf8')
+    const searchButtonIndex = source.indexOf('button[data-testid="mobile-search-button"], button[aria-label="Search products"]')
+    const searchInputIndex = source.indexOf('[data-search-root="true"] input[type="search"]')
+
+    assert.ok(searchButtonIndex > -1)
+    assert.ok(searchInputIndex > searchButtonIndex)
+    assert.match(source, /AUTH_URL: localSmokeOrigin/)
+    assert.match(source, /NEXTAUTH_URL: localSmokeOrigin/)
   })
 })
 

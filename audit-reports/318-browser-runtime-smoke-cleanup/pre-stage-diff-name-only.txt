@@ -1,0 +1,13 @@
+next.config.js
+public/assets/icons/ui/categories/beauty-health.svg
+public/assets/icons/ui/categories/books-stationery.svg
+public/assets/icons/ui/categories/electronics.svg
+public/assets/icons/ui/categories/fashion.svg
+public/assets/icons/ui/categories/gaming.svg
+public/assets/icons/ui/categories/home-appliances.svg
+public/assets/icons/ui/categories/sports-fitness.svg
+public/assets/icons/ui/categories/toys-collectibles.svg
+scripts/audit-local-asset-dependencies.mjs
+scripts/local-browser-runtime-check.mjs
+tests/local-asset-dependency-policy.test.ts
+tests/runtime-stability.test.ts

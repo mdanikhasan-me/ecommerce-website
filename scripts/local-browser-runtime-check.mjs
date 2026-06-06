@@ -187,10 +187,13 @@ async function waitForHttp(url, timeoutMs) {
 
 async function startNextServer({ mode, host, port, startupTimeoutMs }) {
   const command = createNextSmokeCommand({ mode, host, port })
+  const localSmokeOrigin = `http://${host}:${port}`
   const child = spawn(command.command, command.args, {
     cwd: process.cwd(),
     env: {
       ...process.env,
+      AUTH_URL: localSmokeOrigin,
+      NEXTAUTH_URL: localSmokeOrigin,
       NEXT_TELEMETRY_DISABLED: '1',
       PORT: String(port),
     },
@@ -574,7 +577,17 @@ async function runAccessibilityChecks({ connection, sessionId, baseUrl, requestT
   await setViewport(connection, sessionId, BROWSER_RUNTIME_VIEWPORTS[0])
   await navigateAndWait(connection, sessionId, new URL('/', baseUrl).href, requestTimeoutMs)
   await wait(800)
-  await clickFirstVisibleSelector(connection, sessionId, 'input[type="search"]')
+  const mobileSearchButtonClicked = await clickFirstVisibleSelector(
+    connection,
+    sessionId,
+    'button[data-testid="mobile-search-button"], button[aria-label="Search products"]',
+  )
+  await wait(350)
+  const mobileSearchInputClicked = await clickFirstVisibleSelector(
+    connection,
+    sessionId,
+    '[data-search-root="true"] input[type="search"]',
+  )
   await insertText(connection, sessionId, 'phone')
   await wait(900)
   const searchOpen = await evaluate(connection, sessionId, `(() => {
@@ -598,8 +611,12 @@ async function runAccessibilityChecks({ connection, sessionId, baseUrl, requestT
   })()`)
   checks.push({
     label: 'mobile search focus and Escape',
-    ok: searchOpen.focused && searchOpen.query.includes('phone') && searchClosed.suggestionLinks === 0,
-    details: { searchOpen, searchClosed },
+    ok: mobileSearchButtonClicked &&
+      mobileSearchInputClicked &&
+      searchOpen.focused &&
+      searchOpen.query.includes('phone') &&
+      searchClosed.suggestionLinks === 0,
+    details: { mobileSearchButtonClicked, mobileSearchInputClicked, searchOpen, searchClosed },
   })
 
   const menuButtonClicked = await clickFirstVisibleSelector(connection, sessionId, 'button[aria-label="Open menu"]')
