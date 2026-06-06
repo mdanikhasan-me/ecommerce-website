@@ -46,6 +46,14 @@ function fieldSensitivity(type: AdminReportMetadataKey, name: string) {
   return field.sensitivity
 }
 
+const knownSensitivityLabels = new Set([
+  'non-sensitive-operational',
+  'customer-pii',
+  'business-sensitive',
+  'payment-order-sensitive',
+  'unknown-needs-policy',
+])
+
 describe('admin report date range parsing', () => {
   it('uses explicit dates and normalizes the end date to end-of-day', () => {
     const range = parseAdminReportRange('2026-01-05T10:15:00', '2026-01-15T12:30:00')
@@ -58,6 +66,22 @@ describe('admin report date range parsing', () => {
     assert.equal(range.to.getFullYear(), 2026)
     assert.equal(range.to.getMonth(), 0)
     assert.equal(range.to.getDate(), 15)
+    assert.equal(range.to.getHours(), 23)
+    assert.equal(range.to.getMinutes(), 59)
+    assert.equal(range.to.getSeconds(), 59)
+    assert.equal(range.to.getMilliseconds(), 999)
+  })
+
+  it('treats empty and null dates as missing date filters', () => {
+    const before = Date.now()
+    const range = parseAdminReportRange('', null)
+    const after = Date.now()
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000
+
+    assert.ok(range.from.getTime() >= before - thirtyDaysMs - 1000)
+    assert.ok(range.from.getTime() <= after - thirtyDaysMs + 1000)
+    assert.ok(range.to.getTime() >= before)
+    assert.ok(range.to.getTime() <= after + 24 * 60 * 60 * 1000)
     assert.equal(range.to.getHours(), 23)
     assert.equal(range.to.getMinutes(), 59)
     assert.equal(range.to.getSeconds(), 59)
@@ -124,6 +148,12 @@ describe('admin report CSV escaping', () => {
     assert.equal(escapeCsvValue('Line one\nLine two'), '"Line one\nLine two"')
     assert.equal(escapeCsvValue('Line one\rLine two'), '"Line one\rLine two"')
   })
+
+  it('preserves safe surrounding whitespace unless formula protection is needed', () => {
+    assert.equal(escapeCsvValue('  Boilabin  '), '  Boilabin  ')
+    assert.equal(escapeCsvValue('  -10'), "'  -10")
+    assert.equal(escapeCsvValue('  @handle, Dhaka'), `"'  @handle, Dhaka"`)
+  })
 })
 
 describe('admin report export sensitivity metadata', () => {
@@ -133,6 +163,23 @@ describe('admin report export sensitivity metadata', () => {
       'orders',
       'products',
     ])
+  })
+
+  it('keeps every export field labeled with a known sensitivity category', () => {
+    for (const metadata of Object.values(ADMIN_REPORT_EXPORT_METADATA)) {
+      assert.equal(metadata.type.trim(), metadata.type)
+      assert.ok(metadata.label.trim())
+      assert.ok(metadata.reportSensitivityLabel.trim())
+      assert.ok(metadata.permissionLabel.trim())
+      assert.ok(metadata.warningLabel.trim())
+      assert.ok(metadata.fields.length > 0)
+
+      for (const field of metadata.fields) {
+        assert.equal(field.name.trim(), field.name)
+        assert.ok(field.label.trim())
+        assert.ok(knownSensitivityLabels.has(field.sensitivity))
+      }
+    }
   })
 
   it('preserves the orders CSV field contract and sensitivity categories', () => {

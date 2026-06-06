@@ -17,4 +17,11 @@ describe('admin review moderation validation', () => {
 
     assert.equal(parsed.success, false)
   })
+
+  it('does not coerce malformed moderation payloads', () => {
+    assert.equal(parseAdminReviewModerationPayload({}).success, false)
+    assert.equal(parseAdminReviewModerationPayload(null).success, false)
+    assert.equal(parseAdminReviewModerationPayload({ status: ' approved ' }).success, false)
+    assert.equal(parseAdminReviewModerationPayload({ status: ['APPROVED'] }).success, false)
+  })
 })

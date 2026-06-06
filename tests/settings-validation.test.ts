@@ -25,6 +25,31 @@ describe('admin settings validation', () => {
     }
   })
 
+  it('accepts blank optional contact fields while preserving setting groups', () => {
+    const parsed = parseAdminSettingsPayload({
+      settings: {
+        site_email: '   ',
+        site_tagline: '',
+        site_address: '  Dhaka, Bangladesh  ',
+      },
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.deepEqual(parsed.data, [
+        { key: 'site_email', value: '', group: 'general' },
+        { key: 'site_tagline', value: '', group: 'general' },
+        { key: 'site_address', value: 'Dhaka, Bangladesh', group: 'general' },
+      ])
+    }
+  })
+
+  it('rejects malformed settings payloads before reading setting keys', () => {
+    assert.equal(parseAdminSettingsPayload(null).success, false)
+    assert.equal(parseAdminSettingsPayload({}).success, false)
+    assert.equal(parseAdminSettingsPayload({ settings: null }).success, false)
+  })
+
   it('rejects unsupported settings', () => {
     const parsed = parseAdminSettingsPayload({
       settings: {
@@ -43,13 +68,25 @@ describe('admin settings validation', () => {
     assert.equal(invalidPhone.success, false)
   })
 
-  it('rejects invalid low stock thresholds', () => {
-    const parsed = parseAdminSettingsPayload({
+  it('rejects invalid low stock thresholds and length boundaries', () => {
+    const negativeStock = parseAdminSettingsPayload({
       settings: {
         low_stock_alert: -1,
       },
     })
+    const highStock = parseAdminSettingsPayload({
+      settings: {
+        low_stock_alert: 100_001,
+      },
+    })
+    const longSiteName = parseAdminSettingsPayload({
+      settings: {
+        site_name: 'B'.repeat(121),
+      },
+    })
 
-    assert.equal(parsed.success, false)
+    assert.equal(negativeStock.success, false)
+    assert.equal(highStock.success, false)
+    assert.equal(longSiteName.success, false)
   })
 })

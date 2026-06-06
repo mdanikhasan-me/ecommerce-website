@@ -1,0 +1,73 @@
+▶ admin report date range parsing
+  ✔ uses explicit dates and normalizes the end date to end-of-day (7.3262ms)
+  ✔ treats empty and null dates as missing date filters (0.3299ms)
+  ✔ falls back safely for missing dates (0.1816ms)
+  ✔ falls back safely for invalid dates (0.171ms)
+  ✔ preserves reversed ranges for route compatibility (0.1572ms)
+✔ admin report date range parsing (9.2421ms)
+▶ admin report CSV escaping
+  ✔ quotes commas and double quotes (0.3863ms)
+  ✔ escapes spreadsheet formula prefixes (0.1722ms)
+  ✔ handles empty and non-string values without widening the CSV contract (0.1868ms)
+  ✔ quotes line breaks that could split CSV rows (0.1971ms)
+  ✔ preserves safe surrounding whitespace unless formula protection is needed (0.1908ms)
+✔ admin report CSV escaping (1.4874ms)
+▶ admin report export sensitivity metadata
+  ✔ covers the current report export types (1.0399ms)
+  ✔ keeps every export field labeled with a known sensitivity category (0.1956ms)
+  ✔ preserves the orders CSV field contract and sensitivity categories (0.3523ms)
+  ✔ preserves the products CSV field contract and business sensitivity categories (0.1816ms)
+  ✔ preserves the customers CSV field contract and highest PII risk labels (0.2197ms)
+  ✔ provides UI-ready warning labels for every report export (0.3154ms)
+  ✔ wires export confirmation through existing metadata without changing export hrefs (0.385ms)
+  ✔ keeps the export confirmation client-side and cancelable without route calls (0.3731ms)
+  ✔ keeps confirmation copy metadata-driven without assuming CSV payload contents (0.2734ms)
+  ✔ keeps the confirmation guard as navigation-only UI, not route enforcement (0.2633ms)
+  ✔ documents CSV handling guidance without changing export behavior (0.4351ms)
+✔ admin report export sensitivity metadata (4.4314ms)
+▶ admin export audit event helper
+  ✔ builds a sanitized no-DB event from static export metadata (2.055ms)
+  ✔ omits invalid report types and unsupported actor details (0.3378ms)
+  ✔ accepts only the current report export type enum (0.1364ms)
+  ✔ derives sensitivity flags for every report type from export metadata (0.1922ms)
+  ✔ keeps route data pathname-only and never accepts raw query input (0.1457ms)
+  ✔ bounds result, error code, status code, and actor role values (0.1835ms)
+  ✔ builds a security-log event without payment-named metadata keys (0.4209ms)
+✔ admin export audit event helper (3.747ms)
+▶ admin report export route audit logging source contract
+  ✔ imports only the approved sanitized audit helper and security logger (0.5044ms)
+  ✔ isolates audit logging as fail-open source behavior (0.3259ms)
+  ✔ keeps invalid export type response unchanged while logging a bounded blocked event (0.2592ms)
+  ✔ logs successful exports only after CSV construction and without inspecting CSV contents (0.5129ms)
+  ✔ keeps catch-path client response behavior while logging only bounded failure data (0.5402ms)
+  ✔ does not pass raw request, query, date, header, actor, or CSV values into audit logging (0.3991ms)
+✔ admin report export route audit logging source contract (2.7935ms)
+▶ admin return validation
+  ✔ normalizes refund amounts and notes (2.5975ms)
+  ✔ normalizes blank optional values to null (0.3249ms)
+  ✔ allows omitted optional return fields to normalize safely (0.2616ms)
+  ✔ rejects invalid statuses and refund amounts (0.6742ms)
+  ✔ ignores invalid status filters (0.1381ms)
+  ✔ maps return statuses to order statuses (0.1401ms)
+✔ admin return validation (5.1459ms)
+▶ admin review moderation validation
+  ✔ accepts moderation statuses (1.1801ms)
+  ✔ rejects unsupported review statuses (0.6394ms)
+  ✔ does not coerce malformed moderation payloads (0.2813ms)
+✔ admin review moderation validation (2.927ms)
+▶ admin settings validation
+  ✔ normalizes allowed settings (2.8627ms)
+  ✔ accepts blank optional contact fields while preserving setting groups (0.3597ms)
+  ✔ rejects malformed settings payloads before reading setting keys (0.5205ms)
+  ✔ rejects unsupported settings (0.1516ms)
+  ✔ rejects invalid email and phone settings (0.524ms)
+  ✔ rejects invalid low stock thresholds and length boundaries (0.4644ms)
+✔ admin settings validation (5.9217ms)
+ℹ tests 49
+ℹ suites 8
+ℹ pass 49
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.3846
