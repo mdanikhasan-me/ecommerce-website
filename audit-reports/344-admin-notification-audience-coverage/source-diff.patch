@@ -1,0 +1,116 @@
+diff --git a/tests/notification-validation.test.ts b/tests/notification-validation.test.ts
+index 9ec56a5..58de596 100644
+--- a/tests/notification-validation.test.ts
++++ b/tests/notification-validation.test.ts
+@@ -2,12 +2,25 @@ import assert from 'node:assert/strict'
+ import { describe, it } from 'node:test'
+
+ import {
++  ADMIN_NOTIFICATION_RECIPIENT_TYPES,
++  ADMIN_NOTIFICATION_TYPES,
+   parseAdminNotificationPayload,
+   parseAdminNotificationReadPayload,
+   resolveNotificationAudienceWhere,
+ } from '@/backend/admin/notification-editor'
+
+ describe('admin notification validation', () => {
++  it('documents supported notification types and recipient audiences', () => {
++    assert.deepEqual([...ADMIN_NOTIFICATION_RECIPIENT_TYPES], ['ALL', 'CUSTOMERS', 'USER'])
++    assert.deepEqual([...ADMIN_NOTIFICATION_TYPES].sort(), [
++      'ORDER',
++      'PROMOTION',
++      'REVIEW',
++      'SELLER',
++      'SYSTEM',
++    ])
++  })
++
+   it('normalizes notification payloads', () => {
+     const parsed = parseAdminNotificationPayload({
+       recipientType: 'ALL',
+@@ -46,6 +59,20 @@ describe('admin notification validation', () => {
+     }
+   })
+
++  it('allows trimmed absolute http links', () => {
++    const parsed = parseAdminNotificationPayload({
++      recipientType: 'ALL',
++      title: 'External update',
++      message: 'Read the external policy page.',
++      link: ' https://example.com/policy ',
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.link, 'https://example.com/policy')
++    }
++  })
++
+   it('trims direct notification user ids', () => {
+     const parsed = parseAdminNotificationPayload({
+       recipientType: 'USER',
+@@ -70,6 +97,17 @@ describe('admin notification validation', () => {
+     assert.equal(parsed.success, false)
+   })
+
++  it('rejects blank direct notification user ids', () => {
++    const parsed = parseAdminNotificationPayload({
++      recipientType: 'USER',
++      userId: '  ',
++      title: 'Hello',
++      message: 'A direct note',
++    })
++
++    assert.equal(parsed.success, false)
++  })
++
+   it('rejects invalid links, notification types, and recipient types', () => {
+     const invalidLink = parseAdminNotificationPayload({
+       recipientType: 'ALL',
+@@ -88,10 +126,17 @@ describe('admin notification validation', () => {
+       title: 'Hello',
+       message: 'World',
+     })
++    const longLink = parseAdminNotificationPayload({
++      recipientType: 'ALL',
++      title: 'Hello',
++      message: 'World',
++      link: `/${'x'.repeat(500)}`,
++    })
+
+     assert.equal(invalidLink.success, false)
+     assert.equal(invalidType.success, false)
+     assert.equal(invalidRecipient.success, false)
++    assert.equal(longLink.success, false)
+   })
+
+   it('rejects blank and overlong notification copy', () => {
+@@ -110,19 +155,29 @@ describe('admin notification validation', () => {
+       title: 'Hello',
+       message: 'x'.repeat(1001),
+     })
++    const blankMessage = parseAdminNotificationPayload({
++      recipientType: 'ALL',
++      title: 'Hello',
++      message: '  ',
++    })
+
+     assert.equal(blankTitle.success, false)
+     assert.equal(longTitle.success, false)
+     assert.equal(longMessage.success, false)
++    assert.equal(blankMessage.success, false)
+   })
+
+   it('validates read toggles', () => {
+     const valid = parseAdminNotificationReadPayload({ isRead: true })
++    const validFalse = parseAdminNotificationReadPayload({ isRead: false })
+     const invalid = parseAdminNotificationReadPayload({ isRead: 'true' })
++    const nullish = parseAdminNotificationReadPayload({ isRead: null })
+     const missing = parseAdminNotificationReadPayload({})
+
+     assert.equal(valid.success, true)
++    assert.equal(validFalse.success, true)
+     assert.equal(invalid.success, false)
++    assert.equal(nullish.success, false)
+     assert.equal(missing.success, false)
+   })
