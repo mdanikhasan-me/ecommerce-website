@@ -1,0 +1,20 @@
+▶ commerce utilities
+  ✔ formats BDT prices without fractional noise (15.4456ms)
+  ✔ formats non-BDT prices through Intl currency formatting (0.5671ms)
+  ✔ calculates sale discounts only when the sale price is lower (0.144ms)
+  ✔ applies free shipping once the threshold is met (0.1312ms)
+  ✔ caps percentage coupons at maxDiscount (0.1389ms)
+  ✔ never lets fixed coupons discount more than subtotal (0.1289ms)
+  ✔ generates order numbers with the expected public shape (0.3787ms)
+  ✔ formats dates with the existing short English date contract (3.3751ms)
+  ✔ maps ratings to customer-facing labels at threshold boundaries (0.162ms)
+  ✔ maps stock quantities to customer-facing states (0.7323ms)
+✔ commerce utilities (22.2894ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 371.7392
