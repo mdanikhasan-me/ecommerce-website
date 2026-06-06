@@ -1,0 +1,14 @@
+﻿Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/321_MEDIA_APPROVAL_DECISION_PENDING.md
+Latest audit title: Step 321 Media Approval Decision Pending
+Latest report commit reference: c28c735 docs: document remaining media approval gate
+Validation summary: Docs/evidence and focused static media/UI guardrails passed: - `git diff --check -- audit-reports/321_MEDIA_APPROVAL_DECISION_PENDING.md audit-reports/321_NEXT_PROMPT_DRAFT.md audit-reports/321-media-approval-decision-pending` passed. - `node scripts/boilabin-terminal-loop-state.mjs` passed and detected latest audit report `audit-reports/321_MEDIA_APPROVAL_DECISION_PENDING.md`. - `node scripts/boilabin-advisor-state.mjs` passed and detected latest audit report `audit-reports/321_MEDIA_APPROVAL_DECISION_PENDING.md`. - `npx tsx --test tests/local-icon-assets.test.ts tests/navbar-categories-dropd
+Latest recommended next-step found: yes
+Recommended next step: The user should explicitly approve one media path: ```text Keep the category SVG edits. Restore the category SVG edits. Keep the admin hero upload as managed upload media. Remove the admin hero upload as orphan media.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok
