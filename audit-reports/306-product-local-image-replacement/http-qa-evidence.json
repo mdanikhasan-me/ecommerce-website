@@ -1,0 +1,34 @@
+﻿{
+    "step":  306,
+    "generatedAt":  "2026-06-06T09:08:59.6033948Z",
+    "localServer":  "http://localhost:3000",
+    "publicApiProductCardProbe":  {
+                                      "path":  "/api/products?q=sony",
+                                      "statusCode":  200,
+                                      "productSlug":  "sony-wh-1000xm5",
+                                      "found":  true,
+                                      "imageUrl":  "/assets/products/catalog/electronics/audio/sony-wh-1000xm5/main.avif",
+                                      "usesLocalCatalogImage":  true
+                                  },
+    "publicProductDetailProbe":  {
+                                     "path":  "/products/sony-wh-1000xm5",
+                                     "statusCode":  200,
+                                     "containsLocalPath":  true,
+                                     "containsUnsplashString":  true,
+                                     "unsplashStringReason":  "The product page includes the global layout preconnect/dns-prefetch for images.unsplash.com; public API product image data uses the local catalog path."
+                                 },
+    "localAssetProbe":  {
+                            "path":  "/assets/products/catalog/electronics/audio/sony-wh-1000xm5/main.avif",
+                            "statusCode":  200,
+                            "contentType":  "image/avif",
+                            "contentLength":  79214,
+                            "localAssetLoaded":  true
+                        },
+    "adminProbe":  {
+                       "path":  "/admin/products",
+                       "statusCode":  307,
+                       "location":  "/auth/login?callbackUrl=%2Fadmin%2Fproducts",
+                       "authBlockedOrRedirected":  true
+                   },
+    "browserSession":  "No authenticated in-app browser tool was exposed in this turn; direct local HTTP probes were used."
+}

@@ -1,0 +1,17 @@
+{
+  "step": 306,
+  "generatedAt": "2026-06-06T09:06:51.248Z",
+  "dbSafety": {
+    "databaseUrl": "local",
+    "shadowDatabaseUrl": "local",
+    "shadowDatabaseSeparate": true,
+    "localMigrationReady": true
+  },
+  "dbMutationPerformedByThisEvidence": false,
+  "boseSlug": "bose-quietcomfort-45-headphones",
+  "boseProductPresent": false,
+  "boseProduct": null,
+  "boseCatalogAsset": "/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif",
+  "boseCatalogAssetExists": true,
+  "conclusion": "Bose catalog asset exists, but no Bose product row is present in the current local DB, so no Bose DB row was updated in Step 306."
+}

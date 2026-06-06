@@ -1,0 +1,154 @@
+{
+  "step": 306,
+  "generatedAt": "2026-06-06T09:05:41.658Z",
+  "script": "scripts/replace-remote-product-images-with-local-catalog.ts",
+  "planPath": "audit-reports/306-product-local-image-replacement/product-image-localization-plan.json",
+  "dbSafety": {
+    "databaseUrl": "local",
+    "shadowDatabaseUrl": "local",
+    "shadowDatabaseSeparate": true,
+    "localMigrationReady": true
+  },
+  "dbMutationPerformed": true,
+  "attemptedReplacementCount": 12,
+  "updatedRowCount": 12,
+  "skippedRows": [],
+  "beforeAfter": [
+    {
+      "productName": "Apple AirPods Pro (2nd Generation)",
+      "sku": "APL-AIRPODS-PRO2",
+      "slug": "apple-airpods-pro-2nd-gen",
+      "imageId": "cmpxdfpkx003w5jm0ycd9qww1",
+      "beforeUrl": "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/audio/apple-airpods-pro-2nd-gen/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Apple Watch Series 9 41mm",
+      "sku": "APL-WATCH-S9-41",
+      "slug": "apple-watch-series-9-41mm",
+      "imageId": "cmpxdfpiv002k5jm09sjv5gay",
+      "beforeUrl": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/wearables/apple-watch-series-9-41mm/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Dell XPS 15 9520 Core i7 OLED",
+      "sku": "DELL-XPS15-9520",
+      "slug": "dell-xps-15-9520-i7-oled",
+      "imageId": "cmpxdfpil002e5jm0yq6jzfkz",
+      "beforeUrl": "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/laptops/dell-xps-15-9520-i7-oled/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Nike Air Max 270 Running Shoes",
+      "sku": "NIKE-AIR-MAX-270",
+      "slug": "nike-air-max-270-running-shoes",
+      "imageId": "cmpxdfpji002z5jm0tzo9wpnw",
+      "beforeUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/sports-fitness/general/nike-air-max-270-running-shoes/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Samsung 55\" Neo QLED 4K Smart TV QN90C",
+      "sku": "SAM-55QN90C-TV",
+      "slug": "samsung-55-neo-qled-qn90c",
+      "imageId": "cmpxdfpke003k5jm0o75qkm7z",
+      "beforeUrl": "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/home-appliances/general/samsung-55-neo-qled-qn90c/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Samsung Galaxy Watch 6 Classic 44mm",
+      "sku": "SAM-GALAXYW6-44",
+      "slug": "samsung-galaxy-watch-6-classic-44mm",
+      "imageId": "cmpxdfpj0002n5jm0phajgesx",
+      "beforeUrl": "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/wearables/samsung-galaxy-watch-6-classic-44mm/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Sony Alpha a7 IV Mirrorless Camera Body",
+      "sku": "SONY-A7IV-BODY",
+      "slug": "sony-alpha-a7-iv-mirrorless-body",
+      "imageId": "cmpxdfpkj003n5jm0q7tcxsaw",
+      "beforeUrl": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/general/sony-alpha-a7-iv-mirrorless-body/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Sony PlayStation 5 Slim Console",
+      "sku": "SONY-PS5-SLIM",
+      "slug": "sony-playstation-5-slim",
+      "imageId": "cmpxdfpj9002t5jm0p2ybgtzu",
+      "beforeUrl": "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/gaming/general/sony-playstation-5-slim/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Sony WH-1000XM5 Wireless Headphones",
+      "sku": "SONY-WH1000XM5",
+      "slug": "sony-wh-1000xm5",
+      "imageId": "cmpxdfpif002b5jm0asnh6o2h",
+      "beforeUrl": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/audio/sony-wh-1000xm5/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Xiaomi Buds 4 Pro",
+      "sku": "XIA-BUDS4-PRO",
+      "slug": "xiaomi-buds-4-pro",
+      "imageId": "cmpxdfpi800245jm0h7tmnwbh",
+      "beforeUrl": "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/audio/xiaomi-buds-4-pro/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Xiaomi Mi Smart Band 8",
+      "sku": "XIA-MI-BAND8",
+      "slug": "xiaomi-mi-smart-band-8",
+      "imageId": "cmpxdfpko003q5jm0z52wnvhw",
+      "beforeUrl": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/wearables/xiaomi-mi-smart-band-8/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    },
+    {
+      "productName": "Xiaomi Pad 6 128GB WiFi",
+      "sku": "XIA-PAD6-128",
+      "slug": "xiaomi-pad-6-128gb-wifi",
+      "imageId": "cmpxdfpjd002w5jm0hhd2736u",
+      "beforeUrl": "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=800&auto=format",
+      "afterUrl": "/assets/products/catalog/electronics/general/xiaomi-pad-6-128gb-wifi/main.avif",
+      "altPreserved": null,
+      "isPrimaryPreserved": true,
+      "sortOrderPreserved": 0
+    }
+  ],
+  "remainingRemoteProductImageCount": 0,
+  "boseBeforeAfter": null,
+  "fullDbUrlPrinted": false,
+  "privateEnvPrinted": false
+}
