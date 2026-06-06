@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/338_CUSTOMER_INPUT_VALIDATION_COVERAGE.md
+Latest audit title: Step 338 Customer Input Validation Coverage
+Latest report commit reference: b562d65 test: cover admin mutation parsers
+Current git commit: b562d65 test: cover admin mutation parsers
+Validation summary: Focused and standard validation passed: - `git diff --check -- tests/address-validation.test.ts tests/profile-validation.test.ts tests/review-validation.test.ts tests/buyer-order-return-validation.test.ts audit-reports/338_CUSTOMER_INPUT_VALIDATION_COVERAGE.md audit-reports/338_NEXT_PROMPT_DRAFT.md audit-reports/338-customer-input-validation-coverage` passed. - `npx tsx --test tests/address-validation.test.ts tests/profile-validation.test.ts tests/review-validation.test.ts tests/buyer-order-return-validation.test.ts` passed: 29 tests, 0 failures. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another bounded non-media prelaunch closure task and push the completed commit to GitHub.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok

@@ -1,0 +1,250 @@
+diff --git a/tests/address-validation.test.ts b/tests/address-validation.test.ts
+index 10c1bc5..95eb058 100644
+--- a/tests/address-validation.test.ts
++++ b/tests/address-validation.test.ts
+@@ -44,13 +44,42 @@ describe('address validation', () => {
+     }
+   })
+
+-  it('rejects invalid phone numbers', () => {
+-    const parsed = parseAddressPayload({
++  it('rejects invalid phone numbers and non-boolean defaults', () => {
++    const invalidPhone = parseAddressPayload({
+       ...validAddress,
+       phone: '01712 ABC',
+     })
++    const stringDefault = parseAddressPayload({
++      ...validAddress,
++      isDefault: 'true',
++    })
++
++    assert.equal(invalidPhone.success, false)
++    assert.equal(stringDefault.success, false)
++  })
++
++  it('rejects missing required address fields and length boundaries', () => {
++    const missingName = parseAddressPayload({
++      ...validAddress,
++      fullName: '  ',
++    })
++    const longAddress = parseAddressPayload({
++      ...validAddress,
++      addressLine1: 'A'.repeat(201),
++    })
++    const longOptionalLine = parseAddressPayload({
++      ...validAddress,
++      addressLine2: 'B'.repeat(201),
++    })
++    const longPostalCode = parseAddressPayload({
++      ...validAddress,
++      postalCode: '1'.repeat(21),
++    })
+
+-    assert.equal(parsed.success, false)
++    assert.equal(missingName.success, false)
++    assert.equal(longAddress.success, false)
++    assert.equal(longOptionalLine.success, false)
++    assert.equal(longPostalCode.success, false)
+   })
+
+   it('defaults isDefault to false', () => {
+diff --git a/tests/buyer-order-return-validation.test.ts b/tests/buyer-order-return-validation.test.ts
+index 0ac10b4..41023fd 100644
+--- a/tests/buyer-order-return-validation.test.ts
++++ b/tests/buyer-order-return-validation.test.ts
+@@ -3,6 +3,7 @@ import { describe, it } from 'node:test'
+
+ import {
+   MAX_ORDER_ITEMS,
++  MAX_ORDER_NOTES_LENGTH,
+   MAX_ORDER_ITEM_QUANTITY,
+   parseBuyerOrderPayload,
+   parseBuyerReturnRequestPayload,
+@@ -80,6 +81,36 @@ describe('buyer order payload validation', () => {
+     assert.deepEqual(badCoupon, { success: false, error: 'Invalid coupon code' })
+   })
+
++  it('normalizes optional checkout fields without requiring database access', () => {
++    const parsed = parseBuyerOrderPayload(validOrderPayload({
++      items: [{ productId: ' prod-1 ', variantId: '', quantity: '3', imageUrl: ' https://example.test/product.jpg ' }],
++      notes: '',
++      couponCode: '',
++      address: {
++        fullName: ' Test Buyer ',
++        phone: '01712345678',
++        addressLine1: 'House 12',
++        addressLine2: '',
++        city: 'Dhaka',
++        district: 'Dhaka',
++        division: 'Dhaka',
++        postalCode: '  ',
++      },
++    }), availablePaymentMethods)
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.items[0].productId, 'prod-1')
++      assert.equal(parsed.data.items[0].variantId, null)
++      assert.equal(parsed.data.items[0].quantity, 3)
++      assert.equal(parsed.data.items[0].imageUrl, 'https://example.test/product.jpg')
++      assert.equal(parsed.data.notes, undefined)
++      assert.equal(parsed.data.couponCode, null)
++      assert.equal(parsed.data.address.addressLine2, null)
++      assert.equal(parsed.data.address.postalCode, null)
++    }
++  })
++
+   it('rejects invalid, non-finite, fractional, and oversized item quantities', () => {
+     for (const quantity of [0, -1, '0', '1.5', 1.5, Number.POSITIVE_INFINITY, Number.NaN, MAX_ORDER_ITEM_QUANTITY + 1]) {
+       const parsed = parseBuyerOrderPayload(validOrderPayload({
+@@ -107,6 +138,30 @@ describe('buyer order payload validation', () => {
+     }
+   })
+
++  it('strips protocol-relative and backslash client image URLs', () => {
++    for (const imageUrl of ['//cdn.example.test/product.jpg', '/assets\\product.jpg']) {
++      const parsed = parseBuyerOrderPayload(validOrderPayload({
++        items: [{ productId: 'prod-1', quantity: 1, imageUrl }],
++      }), availablePaymentMethods)
++
++      assert.equal(parsed.success, true)
++      if (parsed.success) {
++        assert.equal(parsed.data.items[0].imageUrl, null)
++      }
++    }
++  })
++
++  it('truncates optional checkout notes instead of rejecting them', () => {
++    const parsed = parseBuyerOrderPayload(validOrderPayload({
++      notes: 'x'.repeat(MAX_ORDER_NOTES_LENGTH + 10),
++    }), availablePaymentMethods)
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.notes?.length, MAX_ORDER_NOTES_LENGTH)
++    }
++  })
++
+   it('rejects incomplete or oversized delivery address fields', () => {
+     const missingAddress = parseBuyerOrderPayload(validOrderPayload({ address: { fullName: 'Test Buyer' } }), availablePaymentMethods)
+     const oversizedPhone = parseBuyerOrderPayload(validOrderPayload({
+@@ -141,9 +196,27 @@ describe('buyer return request validation', () => {
+     }
+   })
+
++  it('normalizes blank and omitted return request descriptions to null', () => {
++    const blankDescription = parseBuyerReturnRequestPayload({
++      orderId: 'order_123',
++      reason: 'Wrong item',
++      description: '',
++    })
++    const omittedDescription = parseBuyerReturnRequestPayload({
++      orderId: 'order_123',
++      reason: 'Wrong item',
++    })
++
++    assert.equal(blankDescription.success, true)
++    if (blankDescription.success) assert.equal(blankDescription.data.description, null)
++    assert.equal(omittedDescription.success, true)
++    if (omittedDescription.success) assert.equal(omittedDescription.data.description, null)
++  })
++
+   it('rejects unsafe order ids and out-of-bounds return text', () => {
+     const badOrderId = parseBuyerReturnRequestPayload({ orderId: '../../bad', reason: 'Wrong item' })
+     const shortReason = parseBuyerReturnRequestPayload({ orderId: 'order_123', reason: 'No' })
++    const longReason = parseBuyerReturnRequestPayload({ orderId: 'order_123', reason: 'x'.repeat(121) })
+     const longDescription = parseBuyerReturnRequestPayload({
+       orderId: 'order_123',
+       reason: 'Wrong item',
+@@ -153,6 +226,7 @@ describe('buyer return request validation', () => {
+     assert.equal(badOrderId.success, false)
+     if (!badOrderId.success) assert.equal(badOrderId.error, 'Invalid return request')
+     assert.equal(shortReason.success, false)
++    assert.equal(longReason.success, false)
+     assert.equal(longDescription.success, false)
+   })
+ })
+diff --git a/tests/profile-validation.test.ts b/tests/profile-validation.test.ts
+index 97dda84..c596cf0 100644
+--- a/tests/profile-validation.test.ts
++++ b/tests/profile-validation.test.ts
+@@ -23,12 +23,29 @@ describe('profile validation', () => {
+     }
+   })
+
++  it('normalizes omitted phone values to null', () => {
++    const parsed = parseProfilePayload({ name: 'Arif Rahman' })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.phone, null)
++    }
++  })
++
+   it('rejects missing names', () => {
+     const parsed = parseProfilePayload({ name: '   ' })
+
+     assert.equal(parsed.success, false)
+   })
+
++  it('rejects name and phone length boundaries', () => {
++    const longName = parseProfilePayload({ name: 'A'.repeat(121), phone: '01712345678' })
++    const longPhone = parseProfilePayload({ name: 'Arif Rahman', phone: '0'.repeat(21) })
++
++    assert.equal(longName.success, false)
++    assert.equal(longPhone.success, false)
++  })
++
+   it('rejects non-phone characters', () => {
+     const parsed = parseProfilePayload({ name: 'Arif Rahman', phone: 'abc123' })
+
+diff --git a/tests/review-validation.test.ts b/tests/review-validation.test.ts
+index 1494bc2..1244cc9 100644
+--- a/tests/review-validation.test.ts
++++ b/tests/review-validation.test.ts
+@@ -35,15 +35,41 @@ describe('review validation', () => {
+     }
+   })
+
+-  it('rejects ratings outside the 1 to 5 range', () => {
++  it('accepts underscore and dash product ids after trimming', () => {
++    const parsed = parseReviewPayload({
++      productId: ' product_1-variant ',
++      rating: '4',
++      body: 'This review has enough useful detail to pass validation.',
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.productId, 'product_1-variant')
++      assert.equal(parsed.data.rating, 4)
++      assert.equal(parsed.data.title, null)
++    }
++  })
++
++  it('rejects ratings outside the 1 to 5 range or non-integer values', () => {
+     assert.equal(parseReviewPayload({ productId: 'p1', rating: 0, body: 'This body is long enough to pass.' }).success, false)
+     assert.equal(parseReviewPayload({ productId: 'p1', rating: 6, body: 'This body is long enough to pass.' }).success, false)
++    assert.equal(parseReviewPayload({ productId: 'p1', rating: 4.5, body: 'This body is long enough to pass.' }).success, false)
++    assert.equal(parseReviewPayload({ productId: 'p1', rating: '4.5', body: 'This body is long enough to pass.' }).success, false)
+   })
+
+-  it('rejects short review bodies', () => {
+-    const parsed = parseReviewPayload({ productId: 'p1', rating: 5, body: 'Too short' })
++  it('rejects short and oversized review text', () => {
++    const shortBody = parseReviewPayload({ productId: 'p1', rating: 5, body: 'Too short' })
++    const longBody = parseReviewPayload({ productId: 'p1', rating: 5, body: 'x'.repeat(4001) })
++    const longTitle = parseReviewPayload({
++      productId: 'p1',
++      rating: 5,
++      title: 'x'.repeat(121),
++      body: 'This review has enough useful detail to pass validation.',
++    })
+
+-    assert.equal(parsed.success, false)
++    assert.equal(shortBody.success, false)
++    assert.equal(longBody.success, false)
++    assert.equal(longTitle.success, false)
+   })
+
+   it('rejects unsafe product ids before review database work', () => {

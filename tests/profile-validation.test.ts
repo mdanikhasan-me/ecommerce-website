@@ -23,10 +23,27 @@ describe('profile validation', () => {
     }
   })
 
+  it('normalizes omitted phone values to null', () => {
+    const parsed = parseProfilePayload({ name: 'Arif Rahman' })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.phone, null)
+    }
+  })
+
   it('rejects missing names', () => {
     const parsed = parseProfilePayload({ name: '   ' })
 
     assert.equal(parsed.success, false)
+  })
+
+  it('rejects name and phone length boundaries', () => {
+    const longName = parseProfilePayload({ name: 'A'.repeat(121), phone: '01712345678' })
+    const longPhone = parseProfilePayload({ name: 'Arif Rahman', phone: '0'.repeat(21) })
+
+    assert.equal(longName.success, false)
+    assert.equal(longPhone.success, false)
   })
 
   it('rejects non-phone characters', () => {

@@ -1,0 +1,47 @@
+▶ address validation
+  ✔ trims valid address fields (1.9704ms)
+  ✔ normalizes blank optional fields to null (0.3382ms)
+  ✔ rejects invalid phone numbers and non-boolean defaults (0.809ms)
+  ✔ rejects missing required address fields and length boundaries (0.4994ms)
+  ✔ defaults isDefault to false (0.2334ms)
+✔ address validation (4.8965ms)
+▶ buyer order payload validation
+  ✔ normalizes a valid checkout payload before database lookups (1.198ms)
+  ✔ rejects unavailable payment methods and empty carts with existing error messages (0.6895ms)
+  ✔ rejects unsafe product ids, variant ids, and coupon codes before database lookups (0.2497ms)
+  ✔ normalizes optional checkout fields without requiring database access (0.2178ms)
+  ✔ rejects invalid, non-finite, fractional, and oversized item quantities (0.3675ms)
+  ✔ caps item count and strips unsafe client image URLs (0.2701ms)
+  ✔ strips protocol-relative and backslash client image URLs (0.1751ms)
+  ✔ truncates optional checkout notes instead of rejecting them (0.1536ms)
+  ✔ rejects incomplete or oversized delivery address fields (0.1679ms)
+✔ buyer order payload validation (4.6492ms)
+▶ buyer return request validation
+  ✔ normalizes valid return request payloads before database lookups (1.3985ms)
+  ✔ normalizes blank and omitted return request descriptions to null (0.3343ms)
+  ✔ rejects unsafe order ids and out-of-bounds return text (1.3632ms)
+✔ buyer return request validation (3.3039ms)
+▶ profile validation
+  ✔ trims names and phone numbers (1.8092ms)
+  ✔ normalizes blank phone values to null (0.2497ms)
+  ✔ normalizes omitted phone values to null (0.1818ms)
+  ✔ rejects missing names (0.4242ms)
+  ✔ rejects name and phone length boundaries (0.3456ms)
+  ✔ rejects non-phone characters (0.176ms)
+✔ profile validation (4.2347ms)
+▶ review validation
+  ✔ coerces valid rating and trims text fields (8.3483ms)
+  ✔ normalizes blank titles to null (0.3215ms)
+  ✔ accepts underscore and dash product ids after trimming (0.2379ms)
+  ✔ rejects ratings outside the 1 to 5 range or non-integer values (0.7131ms)
+  ✔ rejects short and oversized review text (0.3072ms)
+  ✔ rejects unsafe product ids before review database work (0.3794ms)
+✔ review validation (11.4281ms)
+ℹ tests 29
+ℹ suites 5
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 302.1519

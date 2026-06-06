@@ -35,15 +35,41 @@ describe('review validation', () => {
     }
   })
 
-  it('rejects ratings outside the 1 to 5 range', () => {
-    assert.equal(parseReviewPayload({ productId: 'p1', rating: 0, body: 'This body is long enough to pass.' }).success, false)
-    assert.equal(parseReviewPayload({ productId: 'p1', rating: 6, body: 'This body is long enough to pass.' }).success, false)
+  it('accepts underscore and dash product ids after trimming', () => {
+    const parsed = parseReviewPayload({
+      productId: ' product_1-variant ',
+      rating: '4',
+      body: 'This review has enough useful detail to pass validation.',
+    })
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.productId, 'product_1-variant')
+      assert.equal(parsed.data.rating, 4)
+      assert.equal(parsed.data.title, null)
+    }
   })
 
-  it('rejects short review bodies', () => {
-    const parsed = parseReviewPayload({ productId: 'p1', rating: 5, body: 'Too short' })
+  it('rejects ratings outside the 1 to 5 range or non-integer values', () => {
+    assert.equal(parseReviewPayload({ productId: 'p1', rating: 0, body: 'This body is long enough to pass.' }).success, false)
+    assert.equal(parseReviewPayload({ productId: 'p1', rating: 6, body: 'This body is long enough to pass.' }).success, false)
+    assert.equal(parseReviewPayload({ productId: 'p1', rating: 4.5, body: 'This body is long enough to pass.' }).success, false)
+    assert.equal(parseReviewPayload({ productId: 'p1', rating: '4.5', body: 'This body is long enough to pass.' }).success, false)
+  })
 
-    assert.equal(parsed.success, false)
+  it('rejects short and oversized review text', () => {
+    const shortBody = parseReviewPayload({ productId: 'p1', rating: 5, body: 'Too short' })
+    const longBody = parseReviewPayload({ productId: 'p1', rating: 5, body: 'x'.repeat(4001) })
+    const longTitle = parseReviewPayload({
+      productId: 'p1',
+      rating: 5,
+      title: 'x'.repeat(121),
+      body: 'This review has enough useful detail to pass validation.',
+    })
+
+    assert.equal(shortBody.success, false)
+    assert.equal(longBody.success, false)
+    assert.equal(longTitle.success, false)
   })
 
   it('rejects unsafe product ids before review database work', () => {

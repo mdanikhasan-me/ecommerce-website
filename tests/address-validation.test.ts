@@ -44,13 +44,42 @@ describe('address validation', () => {
     }
   })
 
-  it('rejects invalid phone numbers', () => {
-    const parsed = parseAddressPayload({
+  it('rejects invalid phone numbers and non-boolean defaults', () => {
+    const invalidPhone = parseAddressPayload({
       ...validAddress,
       phone: '01712 ABC',
     })
+    const stringDefault = parseAddressPayload({
+      ...validAddress,
+      isDefault: 'true',
+    })
 
-    assert.equal(parsed.success, false)
+    assert.equal(invalidPhone.success, false)
+    assert.equal(stringDefault.success, false)
+  })
+
+  it('rejects missing required address fields and length boundaries', () => {
+    const missingName = parseAddressPayload({
+      ...validAddress,
+      fullName: '  ',
+    })
+    const longAddress = parseAddressPayload({
+      ...validAddress,
+      addressLine1: 'A'.repeat(201),
+    })
+    const longOptionalLine = parseAddressPayload({
+      ...validAddress,
+      addressLine2: 'B'.repeat(201),
+    })
+    const longPostalCode = parseAddressPayload({
+      ...validAddress,
+      postalCode: '1'.repeat(21),
+    })
+
+    assert.equal(missingName.success, false)
+    assert.equal(longAddress.success, false)
+    assert.equal(longOptionalLine.success, false)
+    assert.equal(longPostalCode.success, false)
   })
 
   it('defaults isDefault to false', () => {

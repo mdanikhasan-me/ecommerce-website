@@ -3,6 +3,7 @@ import { describe, it } from 'node:test'
 
 import {
   MAX_ORDER_ITEMS,
+  MAX_ORDER_NOTES_LENGTH,
   MAX_ORDER_ITEM_QUANTITY,
   parseBuyerOrderPayload,
   parseBuyerReturnRequestPayload,
@@ -80,6 +81,36 @@ describe('buyer order payload validation', () => {
     assert.deepEqual(badCoupon, { success: false, error: 'Invalid coupon code' })
   })
 
+  it('normalizes optional checkout fields without requiring database access', () => {
+    const parsed = parseBuyerOrderPayload(validOrderPayload({
+      items: [{ productId: ' prod-1 ', variantId: '', quantity: '3', imageUrl: ' https://example.test/product.jpg ' }],
+      notes: '',
+      couponCode: '',
+      address: {
+        fullName: ' Test Buyer ',
+        phone: '01712345678',
+        addressLine1: 'House 12',
+        addressLine2: '',
+        city: 'Dhaka',
+        district: 'Dhaka',
+        division: 'Dhaka',
+        postalCode: '  ',
+      },
+    }), availablePaymentMethods)
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.items[0].productId, 'prod-1')
+      assert.equal(parsed.data.items[0].variantId, null)
+      assert.equal(parsed.data.items[0].quantity, 3)
+      assert.equal(parsed.data.items[0].imageUrl, 'https://example.test/product.jpg')
+      assert.equal(parsed.data.notes, undefined)
+      assert.equal(parsed.data.couponCode, null)
+      assert.equal(parsed.data.address.addressLine2, null)
+      assert.equal(parsed.data.address.postalCode, null)
+    }
+  })
+
   it('rejects invalid, non-finite, fractional, and oversized item quantities', () => {
     for (const quantity of [0, -1, '0', '1.5', 1.5, Number.POSITIVE_INFINITY, Number.NaN, MAX_ORDER_ITEM_QUANTITY + 1]) {
       const parsed = parseBuyerOrderPayload(validOrderPayload({
@@ -104,6 +135,30 @@ describe('buyer order payload validation', () => {
     assert.equal(unsafeImage.success, true)
     if (unsafeImage.success) {
       assert.equal(unsafeImage.data.items[0].imageUrl, null)
+    }
+  })
+
+  it('strips protocol-relative and backslash client image URLs', () => {
+    for (const imageUrl of ['//cdn.example.test/product.jpg', '/assets\\product.jpg']) {
+      const parsed = parseBuyerOrderPayload(validOrderPayload({
+        items: [{ productId: 'prod-1', quantity: 1, imageUrl }],
+      }), availablePaymentMethods)
+
+      assert.equal(parsed.success, true)
+      if (parsed.success) {
+        assert.equal(parsed.data.items[0].imageUrl, null)
+      }
+    }
+  })
+
+  it('truncates optional checkout notes instead of rejecting them', () => {
+    const parsed = parseBuyerOrderPayload(validOrderPayload({
+      notes: 'x'.repeat(MAX_ORDER_NOTES_LENGTH + 10),
+    }), availablePaymentMethods)
+
+    assert.equal(parsed.success, true)
+    if (parsed.success) {
+      assert.equal(parsed.data.notes?.length, MAX_ORDER_NOTES_LENGTH)
     }
   })
 
@@ -141,9 +196,27 @@ describe('buyer return request validation', () => {
     }
   })
 
+  it('normalizes blank and omitted return request descriptions to null', () => {
+    const blankDescription = parseBuyerReturnRequestPayload({
+      orderId: 'order_123',
+      reason: 'Wrong item',
+      description: '',
+    })
+    const omittedDescription = parseBuyerReturnRequestPayload({
+      orderId: 'order_123',
+      reason: 'Wrong item',
+    })
+
+    assert.equal(blankDescription.success, true)
+    if (blankDescription.success) assert.equal(blankDescription.data.description, null)
+    assert.equal(omittedDescription.success, true)
+    if (omittedDescription.success) assert.equal(omittedDescription.data.description, null)
+  })
+
   it('rejects unsafe order ids and out-of-bounds return text', () => {
     const badOrderId = parseBuyerReturnRequestPayload({ orderId: '../../bad', reason: 'Wrong item' })
     const shortReason = parseBuyerReturnRequestPayload({ orderId: 'order_123', reason: 'No' })
+    const longReason = parseBuyerReturnRequestPayload({ orderId: 'order_123', reason: 'x'.repeat(121) })
     const longDescription = parseBuyerReturnRequestPayload({
       orderId: 'order_123',
       reason: 'Wrong item',
@@ -153,6 +226,7 @@ describe('buyer return request validation', () => {
     assert.equal(badOrderId.success, false)
     if (!badOrderId.success) assert.equal(badOrderId.error, 'Invalid return request')
     assert.equal(shortReason.success, false)
+    assert.equal(longReason.success, false)
     assert.equal(longDescription.success, false)
   })
 })
