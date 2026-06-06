@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -132,6 +133,20 @@ export function extractLatestCommit(content) {
   return null;
 }
 
+export function readCurrentGitCommit(cwd = DEFAULT_CWD) {
+  try {
+    const output = execFileSync('git', ['log', '-1', '--oneline'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+
+    return output || null;
+  } catch {
+    return null;
+  }
+}
+
 export function findSuspiciousSecrets(files) {
   const findings = [];
   for (const file of files) {
@@ -179,6 +194,7 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
   const latestReport = reports.at(-1) ?? null;
   const latestReportContent = latestReport ? readSafeFile(cwd, latestReport.relativePath) : '';
   const latestCommitMention = latestReportContent ? extractLatestCommit(latestReportContent) : null;
+  const currentGitCommit = readCurrentGitCommit(cwd);
 
   const scannedFiles = [
     ...readableFiles,
@@ -207,6 +223,7 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
     missingFiles,
     latestReport,
     latestCommitMention,
+    currentGitCommit,
     terminalLoopDocsExist: existsSync(path.resolve(cwd, 'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md')),
     activationFound,
     batchActivationFound,
@@ -243,6 +260,7 @@ export function formatTerminalLoopState(state) {
   }
   lines.push(`Latest audit report: ${state.latestReport?.relativePath ?? 'not detected'}`);
   lines.push(`Latest commit mention: ${state.latestCommitMention ?? 'not detected'}`);
+  lines.push(`Current git commit: ${state.currentGitCommit ?? 'not detected'}`);
   lines.push(`Terminal-loop docs exist: ${state.terminalLoopDocsExist ? 'yes' : 'no'}`);
   lines.push(`Activation phrase found: ${state.activationFound ? 'yes' : 'no'}`);
   lines.push(`Batch activation phrase found: ${state.batchActivationFound ? 'yes' : 'no'}`);

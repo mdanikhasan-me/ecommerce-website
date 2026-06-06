@@ -1,0 +1,14 @@
+﻿git.exe : warning: in the working copy of 'scripts/boilabin-advisor-state.mjs', LF will be replaced by CRLF the next
+time Git touches it
+At line:2 char:8
++ $out = & git diff --check -- scripts/boilabin-advisor-state.mjs scrip ...
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: in the... Git touches it:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+warning: in the working copy of 'scripts/boilabin-terminal-loop-state.mjs', LF will be replaced by CRLF the next time
+Git touches it
+warning: in the working copy of 'tests/boilabin-advisor-workflow.test.ts', LF will be replaced by CRLF the next time
+Git touches it
+warning: in the working copy of 'tests/boilabin-terminal-loop-workflow.test.ts', LF will be replaced by CRLF the next
+time Git touches it

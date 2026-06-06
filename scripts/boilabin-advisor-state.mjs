@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -155,6 +156,20 @@ export function extractLatestCommit(content) {
   return null;
 }
 
+export function readCurrentGitCommit(cwd = DEFAULT_CWD) {
+  try {
+    const output = execFileSync('git', ['log', '-1', '--oneline'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+
+    return output || null;
+  } catch {
+    return null;
+  }
+}
+
 export function extractSectionSummary(content, heading) {
   const lines = content.split(/\r?\n/);
   const headingPattern = new RegExp(`^##\\s+${escapeRegExp(heading)}\\s*$`, 'i');
@@ -249,12 +264,14 @@ export function createBoilabinAdvisorState({ cwd = DEFAULT_CWD } = {}) {
   const latestReport = parseLatestAuditReport(cwd);
   const secretFindings = findSuspiciousSecrets(advisorFiles);
   const broadStagingFindings = findRecommendedBroadStaging(advisorFiles);
+  const currentGitCommit = readCurrentGitCommit(cwd);
 
   return {
     cwd,
     fileStatuses,
     missingFiles,
     latestReport,
+    currentGitCommit,
     missingCoreDecisions,
     secretFindings,
     broadStagingFindings,
@@ -276,6 +293,7 @@ export function formatBoilabinAdvisorState(state) {
     lines.push(`Latest audit report: ${state.latestReport.relativePath}`);
     lines.push(`Latest audit title: ${state.latestReport.title ?? 'unknown'}`);
     lines.push(`Latest report commit reference: ${state.latestReport.latestCommit ?? 'not detected'}`);
+    lines.push(`Current git commit: ${state.currentGitCommit ?? 'not detected'}`);
     lines.push(`Validation summary: ${state.latestReport.validationSummary ?? 'not detected'}`);
     lines.push(`Latest recommended next-step found: ${state.latestReport.recommendedNextStep ? 'yes' : 'no'}`);
     lines.push(`Recommended next step: ${state.latestReport.recommendedNextStep ?? 'not detected'}`);

@@ -1,0 +1,15 @@
+﻿Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/322_CURRENT_GIT_COMMIT_STATE_HELPER.md
+Latest audit title: Step 322 Current Git Commit State Helper
+Latest report commit reference: 39fc364 docs: record pending media approval decision
+Current git commit: 39fc364 docs: record pending media approval decision
+Validation summary: Focused and full validation passed: - `git diff --check -- scripts/boilabin-advisor-state.mjs scripts/boilabin-terminal-loop-state.mjs tests/boilabin-advisor-workflow.test.ts tests/boilabin-terminal-loop-workflow.test.ts audit-reports/322_CURRENT_GIT_COMMIT_STATE_HELPER.md audit-reports/322_NEXT_PROMPT_DRAFT.md audit-reports/322-current-git-commit-state-helper` passed. - `npx tsx --test tests/boilabin-advisor-workflow.test.ts tests/boilabin-terminal-loop-workflow.test.ts` passed: 28 tests, 0 failures. - `node scripts/boilabin-advisor-state.mjs` passed and now prints both `Latest report commit
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another explicitly non-media prelaunch closure task.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok

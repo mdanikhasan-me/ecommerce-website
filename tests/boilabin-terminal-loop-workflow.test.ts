@@ -10,6 +10,7 @@ import {
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatTerminalLoopState,
+  readCurrentGitCommit,
 } from '../scripts/boilabin-terminal-loop-state.mjs';
 
 const repoRoot = process.cwd();
@@ -153,9 +154,15 @@ test('terminal-loop state script reports ready state', () => {
   assert.equal(state.batchNoAutoFuturePromptFound, true);
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
+  assert.match(state.currentGitCommit ?? '', /^[0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Boilabin Terminal Loop state/);
   assert.match(formatted, /Terminal Loop is ready: yes/);
+  assert.match(formatted, /Current git commit: [0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Batch loop cap found: yes/);
+});
+
+test('terminal-loop state can read the current git commit without relying on report text', () => {
+  assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
 });
 
 test('terminal-loop scanner flags unsafe broad staging recommendations', () => {

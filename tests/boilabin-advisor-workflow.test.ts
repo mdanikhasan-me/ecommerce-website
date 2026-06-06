@@ -9,6 +9,7 @@ import {
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatBoilabinAdvisorState,
+  readCurrentGitCommit,
 } from '../scripts/boilabin-advisor-state.mjs';
 
 const repoRoot = process.cwd();
@@ -142,11 +143,17 @@ test('Advisor state script reports ready state without reading env files', () =>
   assert.equal(state.missingFiles.length, 0);
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
+  assert.match(state.currentGitCommit ?? '', /^[0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Boilabin Advisor state/);
   assert.match(formatted, /Advisor activation phrase: Run Boilabin Advisor mode\./);
+  assert.match(formatted, /Current git commit: [0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Latest recommended next-step found: yes/);
   assert.match(formatted, /Advisor is ready: yes/);
   assert.match(formatted, /Overall status: ok/);
+});
+
+test('Advisor state can read the current git commit without relying on report text', () => {
+  assert.match(readCurrentGitCommit(repoRoot) ?? '', /^[0-9a-f]{7,40}\s+.+/);
 });
 
 test('Advisor secret scanner flags obvious risky values in Advisor docs only', () => {
