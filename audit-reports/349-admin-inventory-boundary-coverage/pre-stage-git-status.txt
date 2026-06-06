@@ -1,0 +1,13 @@
+ M public/assets/icons/ui/categories/beauty-health.svg
+ M public/assets/icons/ui/categories/books-stationery.svg
+ M public/assets/icons/ui/categories/electronics.svg
+ M public/assets/icons/ui/categories/fashion.svg
+ M public/assets/icons/ui/categories/gaming.svg
+ M public/assets/icons/ui/categories/home-appliances.svg
+ M public/assets/icons/ui/categories/sports-fitness.svg
+ M public/assets/icons/ui/categories/toys-collectibles.svg
+ M tests/inventory-validation.test.ts
+?? audit-reports/349-admin-inventory-boundary-coverage/
+?? audit-reports/349_ADMIN_INVENTORY_BOUNDARY_COVERAGE.md
+?? audit-reports/349_NEXT_PROMPT_DRAFT.md
+?? public/uploads/admin/banners/hero/

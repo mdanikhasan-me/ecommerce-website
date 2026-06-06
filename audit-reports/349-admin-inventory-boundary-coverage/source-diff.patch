@@ -1,0 +1,110 @@
+diff --git a/tests/inventory-validation.test.ts b/tests/inventory-validation.test.ts
+index 3917334..ff71b44 100644
+--- a/tests/inventory-validation.test.ts
++++ b/tests/inventory-validation.test.ts
+@@ -4,6 +4,12 @@ import { describe, it } from 'node:test'
+ import { parseAdminInventoryPayload } from '@/backend/admin/inventory-editor'
+
+ describe('admin inventory validation', () => {
++  const validPayload = {
++    stockQuantity: 12,
++    lowStockThreshold: 3,
++    note: 'stock count',
++  }
++
+   it('normalizes numeric strings and trims notes', () => {
+     const parsed = parseAdminInventoryPayload({
+       stockQuantity: '12',
+@@ -48,6 +54,23 @@ describe('admin inventory validation', () => {
+     }
+   })
+
++  it('accepts zero stock, maximum thresholds, and exact note limits', () => {
++    const parsed = parseAdminInventoryPayload({
++      stockQuantity: 0,
++      lowStockThreshold: '1000000',
++      note: 'x'.repeat(500),
++      variants: [{ id: ' variant_max ', stockQuantity: '1000000' }],
++    })
++
++    assert.equal(parsed.success, true)
++    if (parsed.success) {
++      assert.equal(parsed.data.stockQuantity, 0)
++      assert.equal(parsed.data.lowStockThreshold, 1_000_000)
++      assert.equal(parsed.data.note.length, 500)
++      assert.deepEqual(parsed.data.variants, [{ id: 'variant_max', stockQuantity: 1_000_000 }])
++    }
++  })
++
+   it('rejects duplicate variant updates', () => {
+     const parsed = parseAdminInventoryPayload({
+       stockQuantity: 12,
+@@ -84,6 +107,68 @@ describe('admin inventory validation', () => {
+     assert.equal(fractionalStock.success, false)
+   })
+
++  it('rejects invalid low stock threshold boundaries', () => {
++    const negativeThreshold = parseAdminInventoryPayload({
++      ...validPayload,
++      lowStockThreshold: -1,
++    })
++    const highThreshold = parseAdminInventoryPayload({
++      ...validPayload,
++      lowStockThreshold: 1_000_001,
++    })
++    const fractionalThreshold = parseAdminInventoryPayload({
++      ...validPayload,
++      lowStockThreshold: 3.5,
++    })
++
++    assert.equal(negativeThreshold.success, false)
++    assert.equal(highThreshold.success, false)
++    assert.equal(fractionalThreshold.success, false)
++  })
++
++  it('rejects blank variant ids and invalid variant stock boundaries', () => {
++    const blankVariantId = parseAdminInventoryPayload({
++      ...validPayload,
++      variants: [{ id: '   ', stockQuantity: 4 }],
++    })
++    const negativeVariantStock = parseAdminInventoryPayload({
++      ...validPayload,
++      variants: [{ id: 'variant_1', stockQuantity: -1 }],
++    })
++    const highVariantStock = parseAdminInventoryPayload({
++      ...validPayload,
++      variants: [{ id: 'variant_1', stockQuantity: 1_000_001 }],
++    })
++    const fractionalVariantStock = parseAdminInventoryPayload({
++      ...validPayload,
++      variants: [{ id: 'variant_1', stockQuantity: 4.5 }],
++    })
++
++    assert.equal(blankVariantId.success, false)
++    assert.equal(negativeVariantStock.success, false)
++    assert.equal(highVariantStock.success, false)
++    assert.equal(fractionalVariantStock.success, false)
++  })
++
++  it('rejects malformed inventory payloads', () => {
++    const malformedPayloads: unknown[] = [
++      null,
++      [],
++      'inventory update',
++      {},
++      { lowStockThreshold: 3, note: 'stock count' },
++      { stockQuantity: 12, note: 'stock count' },
++      { stockQuantity: 12, lowStockThreshold: 3 },
++      { ...validPayload, variants: null },
++    ]
++
++    for (const payload of malformedPayloads) {
++      const parsed = parseAdminInventoryPayload(payload)
++
++      assert.equal(parsed.success, false)
++    }
++  })
++
+   it('rejects missing, short, and long adjustment notes', () => {
+     const missingNote = parseAdminInventoryPayload({
+       stockQuantity: 12,

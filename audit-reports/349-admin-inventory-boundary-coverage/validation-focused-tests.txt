@@ -1,0 +1,20 @@
+▶ admin inventory validation
+  ✔ normalizes numeric strings and trims notes (2.4604ms)
+  ✔ trims variant ids before duplicate detection (0.4678ms)
+  ✔ defaults variants to an empty list (0.1869ms)
+  ✔ accepts zero stock, maximum thresholds, and exact note limits (0.2006ms)
+  ✔ rejects duplicate variant updates (0.1713ms)
+  ✔ rejects invalid stock quantity boundaries (0.5525ms)
+  ✔ rejects invalid low stock threshold boundaries (0.3079ms)
+  ✔ rejects blank variant ids and invalid variant stock boundaries (0.3631ms)
+  ✔ rejects malformed inventory payloads (0.3448ms)
+  ✔ rejects missing, short, and long adjustment notes (0.8806ms)
+✔ admin inventory validation (6.9975ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 218.7164
