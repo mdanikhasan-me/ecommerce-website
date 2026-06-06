@@ -10,16 +10,31 @@ import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore, useCompareStore } from '@/frontend/stores'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
+type NavSubcategory = {
+  name: string
+  slug: string
+  icon: StorefrontIconName
+}
+
+type NavCategory = {
+  name: string
+  slug: string
+  icon: StorefrontIconName
+  sub: NavSubcategory[]
+}
+
+const DEFAULT_DESKTOP_CATEGORY_SLUG = 'electronics'
+
 const NAV_CATEGORIES = [
   {
     name: 'Electronics',
     slug: 'electronics',
     icon: 'category-electronics',
     sub: [
-      { name: 'Mobile Phones', slug: 'mobile-phones' },
-      { name: 'Laptops', slug: 'laptops' },
-      { name: 'Audio', slug: 'audio' },
-      { name: 'Wearables', slug: 'wearables' },
+      { name: 'Mobile Phones', slug: 'mobile-phones', icon: 'phone' },
+      { name: 'Laptops', slug: 'laptops', icon: 'laptop' },
+      { name: 'Audio', slug: 'audio', icon: 'headphones' },
+      { name: 'Wearables', slug: 'wearables', icon: 'watch' },
     ],
   },
   {
@@ -27,27 +42,41 @@ const NAV_CATEGORIES = [
     slug: 'fashion',
     icon: 'category-fashion',
     sub: [
-      { name: "Men's Fashion", slug: 'mens-fashion' },
-      { name: "Women's Fashion", slug: 'womens-fashion' },
+      { name: "Men's Fashion", slug: 'mens-fashion', icon: 'user' },
+      { name: "Women's Fashion", slug: 'womens-fashion', icon: 'shopping-bag' },
     ],
   },
   {
     name: 'Home & Appliances',
     slug: 'home-appliances',
     icon: 'category-home-appliances',
-    sub: [{ name: 'Kitchen', slug: 'kitchen' }],
+    sub: [{ name: 'Kitchen', slug: 'kitchen', icon: 'package' }],
   },
   { name: 'Beauty & Health', slug: 'beauty-health', icon: 'category-beauty-health', sub: [] },
   { name: 'Sports & Fitness', slug: 'sports-fitness', icon: 'category-sports-fitness', sub: [] },
   { name: 'Books & Stationery', slug: 'books-stationery', icon: 'category-books-stationery', sub: [] },
   { name: 'Gaming', slug: 'gaming', icon: 'category-gaming', sub: [] },
-  { name: 'Toys & Collectibles', slug: 'toys-collectibles', icon: 'category-toys-collectibles', sub: [] },
-] satisfies Array<{
-  name: string
-  slug: string
-  icon: StorefrontIconName
-  sub: Array<{ name: string; slug: string }>
-}>
+  {
+    name: 'Toys & Collectibles',
+    slug: 'toys-collectibles',
+    icon: 'category-toys-collectibles',
+    sub: [
+      { name: 'Hot Wheels', slug: 'hot-wheels', icon: 'zap' },
+      { name: 'LEGO Sets', slug: 'lego-sets', icon: 'grid' },
+      { name: 'Diecast Models', slug: 'diecast-models', icon: 'package' },
+      { name: 'Action Figures', slug: 'action-figures', icon: 'user' },
+      { name: 'Collectible Cards', slug: 'collectible-cards', icon: 'tag' },
+    ],
+  },
+] satisfies NavCategory[]
+
+function getCategoryHref(slug: string) {
+  return `/category/${slug}`
+}
+
+function getViewAllCategoryLabel(category: Pick<NavCategory, 'name'>) {
+  return `View all ${category.name.toLowerCase()}`
+}
 
 const DESKTOP_NAV_LINKS = [
   { label: 'New Arrivals', href: '/new-arrivals' },
@@ -87,6 +116,7 @@ export function Header() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
+  const [selectedDesktopCategorySlug, setSelectedDesktopCategorySlug] = useState(DEFAULT_DESKTOP_CATEGORY_SLUG)
   const [isAccountOpen, setIsAccountOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null)
@@ -103,6 +133,10 @@ export function Header() {
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
   const cartCount = mounted ? getItemCount() : 0
   const compareCount = mounted ? compareItems.length : 0
+  const selectedDesktopCategory =
+    NAV_CATEGORIES.find((category) => category.slug === selectedDesktopCategorySlug) ??
+    NAV_CATEGORIES.find((category) => category.slug === DEFAULT_DESKTOP_CATEGORY_SLUG) ??
+    NAV_CATEGORIES[0]
 
   useEffect(() => {
     setMounted(true)
@@ -201,6 +235,11 @@ export function Header() {
 
   const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`)
 
+  const openCategoriesDropdown = () => {
+    setSelectedDesktopCategorySlug(DEFAULT_DESKTOP_CATEGORY_SLUG)
+    setIsCategoriesOpen(true)
+  }
+
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false)
     setExpandedMobileCategory(null)
@@ -284,18 +323,29 @@ export function Header() {
             <div
               ref={categoriesRootRef}
               className="relative"
-              onMouseEnter={() => setIsCategoriesOpen(true)}
+              onMouseEnter={openCategoriesDropdown}
               onMouseLeave={() => setIsCategoriesOpen(false)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setIsCategoriesOpen(false)
+                }
+              }}
             >
               <button
                 type="button"
                 aria-expanded={isCategoriesOpen}
-                aria-haspopup="menu"
+                aria-haspopup="true"
                 aria-controls="desktop-categories-menu"
-                onClick={() => setIsCategoriesOpen((open) => !open)}
-                onFocus={() => setIsCategoriesOpen(true)}
+                onClick={() => {
+                  if (isCategoriesOpen) {
+                    setIsCategoriesOpen(false)
+                  } else {
+                    openCategoriesDropdown()
+                  }
+                }}
+                onFocus={openCategoriesDropdown}
                 className={cn(
-                  'flex items-center gap-1.5 transition-colors hover:text-foreground',
+                  'flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
                   pathname?.startsWith('/category') ? 'text-foreground' : 'text-foreground/72'
                 )}
               >
@@ -309,54 +359,108 @@ export function Header() {
               {isCategoriesOpen ? (
                 <div
                   id="desktop-categories-menu"
-                  role="menu"
-                  className="absolute left-1/2 top-full z-50 mt-6 w-[42rem] -translate-x-1/2 rounded-lg border border-black/10 bg-[#fff] p-3 shadow-[0_24px_56px_rgba(20,18,16,0.16)]"
+                  data-testid="desktop-categories-menu"
+                  role="region"
+                  aria-label="Categories menu"
+                  className="absolute left-1/2 top-full z-50 mt-5 w-[min(70rem,calc(100vw-3rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-black/10 bg-[#fffdfa] shadow-[0_28px_72px_rgba(20,18,16,0.18)]"
                 >
-                  <div className="grid grid-cols-2 gap-2">
-                    {NAV_CATEGORIES.map((category) => (
-                      <div key={category.slug} className="rounded-lg border border-black/8 p-3">
+                  <div className="grid min-h-[25rem] grid-cols-[17.5rem_minmax(0,1fr)]">
+                    <nav
+                      aria-label="Category departments"
+                      data-testid="desktop-categories-rail"
+                      className="border-r border-black/10 bg-[#fffaf5] p-5"
+                    >
+                      <div className="space-y-1.5">
+                        {NAV_CATEGORIES.map((category) => {
+                          const isSelected = category.slug === selectedDesktopCategory.slug
+
+                          return (
+                            <Link
+                              key={category.slug}
+                              href={getCategoryHref(category.slug)}
+                              data-testid={`desktop-category-rail-${category.slug}`}
+                              data-selected={isSelected ? 'true' : 'false'}
+                              aria-current={isSelected ? 'true' : undefined}
+                              className={cn(
+                                'group flex min-h-[3.85rem] items-center gap-4 rounded-lg px-4 py-3 text-left text-[15px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+                                isSelected
+                                  ? 'bg-secondary/80 text-foreground shadow-[0_10px_24px_rgba(20,18,16,0.06)]'
+                                  : 'text-foreground/78 hover:bg-secondary/45 hover:text-foreground'
+                              )}
+                              onMouseEnter={() => setSelectedDesktopCategorySlug(category.slug)}
+                              onFocus={() => setSelectedDesktopCategorySlug(category.slug)}
+                              onClick={() => setIsCategoriesOpen(false)}
+                            >
+                              <LocalIcon name={category.icon} className="h-6 w-6 shrink-0 text-foreground" />
+                              <span className="min-w-0 flex-1 whitespace-nowrap">{category.name}</span>
+                              <LocalIcon
+                                name="chevron-right"
+                                className={cn(
+                                  'h-3.5 w-3.5 shrink-0 text-foreground/35 transition-transform group-hover:translate-x-0.5',
+                                  isSelected && 'text-foreground/65'
+                                )}
+                              />
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </nav>
+
+                    <section
+                      aria-labelledby={`desktop-category-panel-heading-${selectedDesktopCategory.slug}`}
+                      data-testid="desktop-category-selected-panel"
+                      className="bg-[#fffdfa] px-12 py-11"
+                    >
+                      <div className="flex items-center gap-6">
+                        <span className="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-secondary/70 text-foreground">
+                          <LocalIcon name={selectedDesktopCategory.icon} className="h-8 w-8" />
+                        </span>
+                        <h2
+                          id={`desktop-category-panel-heading-${selectedDesktopCategory.slug}`}
+                          className="font-display text-[1.45rem] font-semibold leading-tight text-foreground"
+                        >
+                          {selectedDesktopCategory.name}
+                        </h2>
+                      </div>
+
+                      <div
+                        data-testid="desktop-subcategory-tiles"
+                        className="mt-14 grid grid-cols-5 gap-5"
+                      >
+                        {selectedDesktopCategory.sub.map((sub) => (
+                          <Link
+                            key={sub.slug}
+                            href={getCategoryHref(sub.slug)}
+                            data-testid={`desktop-subcategory-tile-${sub.slug}`}
+                            className="group flex min-h-[10rem] flex-col items-center justify-center gap-5 rounded-lg border border-black/10 bg-[#fff] px-4 py-6 text-center text-foreground transition-colors hover:border-black/20 hover:bg-secondary/35 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                            onClick={() => setIsCategoriesOpen(false)}
+                          >
+                            <LocalIcon
+                              name={sub.icon}
+                              className="h-11 w-11 text-foreground transition-transform group-hover:scale-[1.04]"
+                            />
+                            <span className="text-sm font-semibold leading-5">{sub.name}</span>
+                          </Link>
+                        ))}
                         <Link
-                          href={`/category/${category.slug}`}
-                          role="menuitem"
-                          className="flex items-center justify-between gap-3 rounded-md p-2 transition-colors hover:bg-secondary"
+                          href={getCategoryHref(selectedDesktopCategory.slug)}
+                          data-testid={`desktop-subcategory-tile-view-all-${selectedDesktopCategory.slug}`}
+                          data-tile-kind="view-all"
+                          aria-label={getViewAllCategoryLabel(selectedDesktopCategory)}
+                          className="group flex min-h-[10rem] flex-col items-center justify-center gap-5 rounded-lg border border-black/10 bg-[#fff] px-4 py-6 text-center text-foreground transition-colors hover:border-black/20 hover:bg-secondary/35 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                           onClick={() => setIsCategoriesOpen(false)}
                         >
-                          <span className="flex min-w-0 items-center gap-3">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-                              <LocalIcon name={category.icon} className="h-5 w-5" />
-                            </span>
-                            <span className="truncate text-sm font-semibold">{category.name}</span>
+                          <LocalIcon
+                            name="grid"
+                            className="h-11 w-11 text-foreground transition-transform group-hover:scale-[1.04]"
+                          />
+                          <span className="text-sm font-semibold leading-5">
+                            {getViewAllCategoryLabel(selectedDesktopCategory)}
                           </span>
-                          <LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-muted-foreground" />
                         </Link>
-
-                        {category.sub.length > 0 ? (
-                          <div className="mt-2 grid grid-cols-2 gap-1 pl-14">
-                            {category.sub.map((sub) => (
-                              <Link
-                                key={sub.slug}
-                                href={`/category/${sub.slug}`}
-                                role="menuitem"
-                                className="rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                                onClick={() => setIsCategoriesOpen(false)}
-                              >
-                                {sub.name}
-                              </Link>
-                            ))}
-                          </div>
-                        ) : null}
                       </div>
-                    ))}
+                    </section>
                   </div>
-                  <Link
-                    href="/category"
-                    role="menuitem"
-                    className="mt-2 flex items-center justify-between rounded-lg border border-black/8 bg-secondary/55 px-4 py-3 text-sm font-semibold transition-colors hover:bg-secondary"
-                    onClick={() => setIsCategoriesOpen(false)}
-                  >
-                    View all categories
-                    <LocalIcon name="arrow-right" className="h-4 w-4" />
-                  </Link>
                 </div>
               ) : null}
             </div>
