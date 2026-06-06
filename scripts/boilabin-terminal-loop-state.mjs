@@ -133,6 +133,11 @@ export function extractLatestCommit(content) {
   return null;
 }
 
+export function extractTitle(content) {
+  const match = content.match(/^#\s+(.+)$/m);
+  return match ? match[1].trim() : null;
+}
+
 export function readCurrentGitCommit(cwd = DEFAULT_CWD) {
   try {
     const output = execFileSync('git', ['log', '-1', '--oneline'], {
@@ -193,6 +198,7 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
   const reports = listAuditReports(cwd);
   const latestReport = reports.at(-1) ?? null;
   const latestReportContent = latestReport ? readSafeFile(cwd, latestReport.relativePath) : '';
+  const latestReportTitle = latestReportContent ? extractTitle(latestReportContent) : null;
   const latestCommitMention = latestReportContent ? extractLatestCommit(latestReportContent) : null;
   const currentGitCommit = readCurrentGitCommit(cwd);
 
@@ -222,6 +228,7 @@ export function createTerminalLoopState({ cwd = DEFAULT_CWD } = {}) {
     requiredStatuses,
     missingFiles,
     latestReport,
+    latestReportTitle,
     latestCommitMention,
     currentGitCommit,
     terminalLoopDocsExist: existsSync(path.resolve(cwd, 'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md')),
@@ -259,6 +266,7 @@ export function formatTerminalLoopState(state) {
     lines.push(`Missing files: ${state.missingFiles.join(', ')}`);
   }
   lines.push(`Latest audit report: ${state.latestReport?.relativePath ?? 'not detected'}`);
+  lines.push(`Latest audit title: ${state.latestReportTitle ?? 'not detected'}`);
   lines.push(`Latest commit mention: ${state.latestCommitMention ?? 'not detected'}`);
   lines.push(`Current git commit: ${state.currentGitCommit ?? 'not detected'}`);
   lines.push(`Terminal-loop docs exist: ${state.terminalLoopDocsExist ? 'yes' : 'no'}`);

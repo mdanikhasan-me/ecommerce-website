@@ -154,9 +154,11 @@ test('terminal-loop state script reports ready state', () => {
   assert.equal(state.batchNoAutoFuturePromptFound, true);
   assert.equal(state.secretFindings.length, 0);
   assert.equal(state.broadStagingFindings.length, 0);
+  assert.match(state.latestReportTitle ?? '', /^Step \d+ .+/);
   assert.match(state.currentGitCommit ?? '', /^[0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Boilabin Terminal Loop state/);
   assert.match(formatted, /Terminal Loop is ready: yes/);
+  assert.match(formatted, /Latest audit title: Step \d+ .+/);
   assert.match(formatted, /Current git commit: [0-9a-f]{7,40}\s+.+/);
   assert.match(formatted, /Batch loop cap found: yes/);
 });

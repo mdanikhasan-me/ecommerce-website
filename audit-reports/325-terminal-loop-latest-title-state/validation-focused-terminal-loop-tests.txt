@@ -1,0 +1,22 @@
+✔ terminal-loop workflow files exist (1.1361ms)
+✔ terminal-loop activation phrase is documented across workflow surfaces (0.7284ms)
+✔ terminal-loop doc defines the bounded 10-step terminal-first workflow (0.483ms)
+✔ terminal batch loop mode is documented as optional and capped (0.6994ms)
+✔ terminal batch loop mode rejects autonomous automation language (1.2365ms)
+✔ terminal-loop docs preserve stop and approval boundaries (0.495ms)
+✔ terminal-loop docs preserve exact-file staging rules (0.2758ms)
+✔ terminal-loop docs preserve protected Boilabin decisions (0.4661ms)
+✔ terminal-loop state script avoids removed promotion literals that active script scans reject (0.2755ms)
+✔ terminal-loop state script reports ready state (38.0049ms)
+✔ terminal-loop state can read the current git commit without relying on report text (30.1992ms)
+✔ terminal-loop scanner flags unsafe broad staging recommendations (0.6787ms)
+✔ terminal-loop scanner flags obvious secret-like strings (0.1276ms)
+✔ terminal-loop files do not contain obvious secret-looking values (1.4198ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 284.3029
