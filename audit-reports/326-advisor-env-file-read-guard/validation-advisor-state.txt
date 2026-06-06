@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/326_ADVISOR_ENV_FILE_READ_GUARD.md
+Latest audit title: Step 326 Advisor Env File Read Guard
+Latest report commit reference: feb9eb1 fix: show terminal loop latest report title
+Current git commit: feb9eb1 fix: show terminal loop latest report title
+Validation summary: Focused and standard helper validation passed: - `git diff --check -- scripts/boilabin-advisor-state.mjs tests/boilabin-advisor-workflow.test.ts audit-reports/326_ADVISOR_ENV_FILE_READ_GUARD.md audit-reports/326_NEXT_PROMPT_DRAFT.md audit-reports/326-advisor-env-file-read-guard` passed. - `npx tsx --test tests/boilabin-advisor-workflow.test.ts` passed: 18 tests, 0 failures. - `npx tsx --test tests/boilabin-advisor-workflow.test.ts tests/boilabin-terminal-loop-workflow.test.ts` passed: 32 tests, 0 failures. - `node scripts/boilabin-advisor-state.mjs` passed. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another explicitly non-media prelaunch closure task.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok

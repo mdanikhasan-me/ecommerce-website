@@ -1,0 +1,26 @@
+✔ Step 123 Advisor files exist (1.1413ms)
+✔ Advisor skill frontmatter uses only name and description (1.6102ms)
+✔ Advisor skill includes required workflow sections (0.2784ms)
+✔ Advisor skill preserves major Boilabin decisions (0.4404ms)
+✔ Advisor workflow doc describes human approval and realistic automation limits (0.3346ms)
+✔ Advisor quickstart documents activation and approval boundaries (0.4885ms)
+✔ Advisor quickstart includes required user-facing sections (0.2433ms)
+✔ Advisor state script avoids removed promotion literals that existing script scans reject (0.2638ms)
+✔ Advisor state script reports ready state without reading env files (42.6984ms)
+✔ Advisor safe file reader rejects all private env filename variants (0.543ms)
+✔ Advisor state can read the current git commit without relying on report text (35.4778ms)
+✔ Advisor section summaries stop cleanly instead of cutting mid-line (0.2269ms)
+✔ Advisor section summaries truncate single overlong lines at word boundaries (0.204ms)
+✔ Advisor section summaries signal omitted lines after the line cap (0.1446ms)
+✔ Advisor secret scanner flags obvious risky values in Advisor docs only (0.1312ms)
+✔ Advisor broad staging scanner ignores warnings but flags recommendations (0.1597ms)
+✔ Advisor files do not contain obvious secret-looking values (1.5965ms)
+✔ Step 124 next prompt draft exists and is a single guarded prompt (0.29ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 302.5831

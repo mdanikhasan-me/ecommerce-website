@@ -26,7 +26,7 @@ const OPTIONAL_CONTEXT_FILES = [
   'docs/development/CODEX_SINGLE_CHAT_MULTI_AGENT_WORKFLOW.md',
 ];
 
-const forbiddenEnvFilePattern = /(^|[\\/])\.env(\.local)?$/;
+const forbiddenEnvFilePattern = /(^|[\\/])\.env(\..*)?$/i;
 const removedWordA = ['Fla', 'sh'].join('');
 const removedWordB = ['De', 'als'].join('');
 const removedWordC = ['Sa', 'les'].join('');

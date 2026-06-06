@@ -10,6 +10,7 @@ import {
   findRecommendedBroadStaging,
   findSuspiciousSecrets,
   formatBoilabinAdvisorState,
+  readSafeFile,
   readCurrentGitCommit,
 } from '../scripts/boilabin-advisor-state.mjs';
 
@@ -151,6 +152,16 @@ test('Advisor state script reports ready state without reading env files', () =>
   assert.match(formatted, /Latest recommended next-step found: yes/);
   assert.match(formatted, /Advisor is ready: yes/);
   assert.match(formatted, /Overall status: ok/);
+});
+
+test('Advisor safe file reader rejects all private env filename variants', () => {
+  for (const relativePath of ['.env', '.env.local', '.env.production', 'config/.env.staging']) {
+    assert.throws(
+      () => readSafeFile(repoRoot, relativePath),
+      /Refusing to read private env file/,
+      `${relativePath} should be refused before any file read`,
+    );
+  }
 });
 
 test('Advisor state can read the current git commit without relying on report text', () => {

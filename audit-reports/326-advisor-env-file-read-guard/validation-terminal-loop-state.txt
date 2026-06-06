@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/326_ADVISOR_ENV_FILE_READ_GUARD.md
+Latest audit title: Step 326 Advisor Env File Read Guard
+Latest commit mention: feb9eb1 fix: show terminal loop latest report title
+Current git commit: feb9eb1 fix: show terminal loop latest report title
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes
