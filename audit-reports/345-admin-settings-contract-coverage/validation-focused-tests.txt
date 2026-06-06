@@ -1,0 +1,18 @@
+▶ admin settings validation
+  ✔ documents the supported settings and groups (1.3293ms)
+  ✔ normalizes allowed settings (1.8916ms)
+  ✔ accepts blank optional contact fields while preserving setting groups (0.2522ms)
+  ✔ accepts zero low-stock thresholds and normalizes numeric strings (0.1874ms)
+  ✔ rejects malformed settings payloads before reading setting keys (0.5078ms)
+  ✔ rejects unsupported settings (0.1979ms)
+  ✔ rejects invalid email and phone settings (0.6084ms)
+  ✔ rejects invalid low stock thresholds and length boundaries (0.5642ms)
+✔ admin settings validation (6.809ms)
+ℹ tests 8
+ℹ suites 1
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 227.7793
