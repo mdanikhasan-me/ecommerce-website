@@ -1,0 +1,76 @@
+diff --git a/src/app/api/orders/route.ts b/src/app/api/orders/route.ts
+index 2fc96f5..3a0c8ce 100644
+--- a/src/app/api/orders/route.ts
++++ b/src/app/api/orders/route.ts
+@@ -10,6 +10,7 @@ import { protectMutationRequest } from '@/backend/security/request-guard'
+ import { logSecurityEvent } from '@/backend/security/security-log'
+ import { parseBuyerOrderPayload } from '@/backend/orders/buyer-validation'
+ import { createBuyerOrder, type BuyerOrderDb } from '@/backend/orders/buyer-order-create'
++import { ORDER_LIST_PAGE_SIZE, parseOrderListPage } from '@/backend/orders/buyer-order-list'
+
+ const AVAILABLE_PAYMENT_METHODS = new Set(
+   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
+@@ -25,8 +26,8 @@ export async function GET(req: NextRequest) {
+
+   const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
+   const sp = req.nextUrl.searchParams
+-  const page = Math.max(1, parseInt(sp.get('page') ?? '1'))
+-  const limit = 20
++  const page = parseOrderListPage(sp.get('page'))
++  const limit = ORDER_LIST_PAGE_SIZE
+   const skip = (page - 1) * limit
+
+   const where: Prisma.OrderWhereInput = isAdmin ? {} : { userId: session.user.id }
+diff --git a/src/backend/orders/buyer-order-list.ts b/src/backend/orders/buyer-order-list.ts
+new file mode 100644
+index 0000000..0930651
+--- /dev/null
++++ b/src/backend/orders/buyer-order-list.ts
+@@ -0,0 +1,14 @@
++export const DEFAULT_ORDER_LIST_PAGE = 1
++export const MAX_ORDER_LIST_PAGE = 1000
++export const ORDER_LIST_PAGE_SIZE = 20
++
++const PLAIN_INTEGER_PATTERN = /^\d+$/
++
++export function parseOrderListPage(value: string | null | undefined): number {
++  const normalized = value?.trim()
++  if (!normalized || !PLAIN_INTEGER_PATTERN.test(normalized)) return DEFAULT_ORDER_LIST_PAGE
++
++  const parsed = Number(normalized)
++  if (!Number.isSafeInteger(parsed) || parsed < DEFAULT_ORDER_LIST_PAGE) return DEFAULT_ORDER_LIST_PAGE
++  return Math.min(parsed, MAX_ORDER_LIST_PAGE)
++}
+diff --git a/tests/buyer-order-list-query.test.ts b/tests/buyer-order-list-query.test.ts
+new file mode 100644
+index 0000000..40323bc
+--- /dev/null
++++ b/tests/buyer-order-list-query.test.ts
+@@ -0,0 +1,27 @@
++import assert from 'node:assert/strict'
++import { describe, it } from 'node:test'
++
++import {
++  DEFAULT_ORDER_LIST_PAGE,
++  MAX_ORDER_LIST_PAGE,
++  parseOrderListPage,
++} from '@/backend/orders/buyer-order-list'
++
++describe('buyer order list query parsing', () => {
++  it('accepts whole positive page numbers for order history queries', () => {
++    assert.equal(parseOrderListPage('1'), 1)
++    assert.equal(parseOrderListPage(' 12 '), 12)
++    assert.equal(parseOrderListPage(String(MAX_ORDER_LIST_PAGE)), MAX_ORDER_LIST_PAGE)
++  })
++
++  it('defaults malformed, partial, non-positive, and unsafe page values', () => {
++    for (const value of [null, undefined, '', '0', '-1', '1.5', '2abc', '0x10', '1e3', 'Infinity', 'NaN']) {
++      assert.equal(parseOrderListPage(value), DEFAULT_ORDER_LIST_PAGE)
++    }
++  })
++
++  it('caps very large order history pages before skip calculation', () => {
++    assert.equal(parseOrderListPage(String(MAX_ORDER_LIST_PAGE + 1)), MAX_ORDER_LIST_PAGE)
++    assert.equal(parseOrderListPage('999999999999999999999'), DEFAULT_ORDER_LIST_PAGE)
++  })
++})

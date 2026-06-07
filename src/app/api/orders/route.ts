@@ -10,6 +10,7 @@ import { protectMutationRequest } from '@/backend/security/request-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { parseBuyerOrderPayload } from '@/backend/orders/buyer-validation'
 import { createBuyerOrder, type BuyerOrderDb } from '@/backend/orders/buyer-order-create'
+import { ORDER_LIST_PAGE_SIZE, parseOrderListPage } from '@/backend/orders/buyer-order-list'
 
 const AVAILABLE_PAYMENT_METHODS = new Set(
   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
@@ -25,8 +26,8 @@ export async function GET(req: NextRequest) {
 
   const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
   const sp = req.nextUrl.searchParams
-  const page = Math.max(1, parseInt(sp.get('page') ?? '1'))
-  const limit = 20
+  const page = parseOrderListPage(sp.get('page'))
+  const limit = ORDER_LIST_PAGE_SIZE
   const skip = (page - 1) * limit
 
   const where: Prisma.OrderWhereInput = isAdmin ? {} : { userId: session.user.id }
