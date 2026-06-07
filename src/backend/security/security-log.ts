@@ -57,6 +57,14 @@ function redactSensitiveText(value: string) {
     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer [redacted]')
 }
 
+function hasUrlUserinfo(url: URL) {
+  return Boolean(url.username || url.password)
+}
+
+function isOriginField(key: string) {
+  return ORIGIN_FIELD_PATTERN.test(key.replace(/([a-z0-9])([A-Z])/g, '$1-$2'))
+}
+
 export function sanitizeStringForLog(value: unknown, maxLength = MAX_SECURITY_LOG_STRING_LENGTH) {
   if (typeof value !== 'string') return undefined
 
@@ -80,6 +88,7 @@ export function sanitizeUrlForLog(value: unknown) {
   try {
     const url = new URL(trimmed)
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return '[unsupported-url]'
+    if (hasUrlUserinfo(url)) return '[invalid-url]'
 
     return capString(`${url.origin}${url.pathname}`)
   } catch {
@@ -111,6 +120,7 @@ export function sanitizeOriginForLog(value: unknown) {
   try {
     const url = new URL(value.trim())
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return undefined
+    if (hasUrlUserinfo(url)) return undefined
 
     return url.origin.toLowerCase()
   } catch {
@@ -164,7 +174,7 @@ function sanitizeErrorCode(value: unknown) {
 function sanitizePrimitiveMetadataValue(key: string, value: unknown) {
   if (FORBIDDEN_FIELD_PATTERN.test(key)) return undefined
   if (EMAIL_FIELD_PATTERN.test(key)) return maskEmailForLog(value)
-  if (ORIGIN_FIELD_PATTERN.test(key)) return sanitizeOriginForLog(value)
+  if (isOriginField(key)) return sanitizeOriginForLog(value)
   if (URL_FIELD_PATTERN.test(key)) return sanitizeUrlForLog(value)
   if (PATH_FIELD_PATTERN.test(key)) return sanitizePathnameForLog(value)
 

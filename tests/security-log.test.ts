@@ -5,6 +5,7 @@ import {
   MAX_SECURITY_LOG_STRING_LENGTH,
   logSecurityEvent,
   maskEmailForLog,
+  sanitizeOriginForLog,
   sanitizeSecurityEvent,
   sanitizeStringForLog,
   sanitizeUrlForLog,
@@ -20,9 +21,30 @@ test('sanitizeUrlForLog strips query strings and fragments', () => {
 
 test('sanitizeUrlForLog handles unsupported and invalid URLs safely', () => {
   assert.equal(sanitizeUrlForLog('javascript:alert(1)'), '[unsupported-url]')
+  assert.equal(sanitizeUrlForLog('https://user:pass@boilabin.com/account'), '[invalid-url]')
   assert.equal(sanitizeUrlForLog('not a url with spaces'), '[invalid-url]')
   assert.equal(sanitizeUrlForLog('inline'), 'inline')
   assert.equal(sanitizeUrlForLog('data:text/plain,SECRET'), 'data:')
+})
+
+test('security log sanitizers reject URL userinfo credentials', () => {
+  const event = sanitizeSecurityEvent({
+    type: 'mutation_request_blocked',
+    timestamp: '2026-06-02T00:00:00.000Z',
+    origin: 'https://user:pass@evil.example.test/path',
+    metadata: {
+      documentUri: 'https://user:pass@boilabin.com/account?token=SECRET',
+      sourceOrigin: 'https://admin:secret@evil.example.test',
+    },
+  })
+
+  assert.equal(sanitizeOriginForLog('https://user:pass@evil.example.test/path'), undefined)
+  assert.equal(event.origin, undefined)
+  assert.deepEqual(event.metadata, {
+    documentUri: '[invalid-url]',
+  })
+  assert(!JSON.stringify(event).includes('user:pass'))
+  assert(!JSON.stringify(event).includes('admin:secret'))
 })
 
 test('sanitizeStringForLog caps strings and redacts obvious secret patterns', () => {

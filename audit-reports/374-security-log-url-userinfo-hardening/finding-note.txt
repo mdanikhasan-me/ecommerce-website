@@ -1,0 +1,2 @@
+Read-only finding: security log URL and origin sanitizers stripped query strings and fragments, but HTTP(S) URLs containing username/password userinfo were still parsed and canonicalized as clean origins or origin+path values. That could make credential-bearing hostile URL inputs look like ordinary sanitized URLs in security event output.
+Resolution: reject URL username/password userinfo in security log URL/origin sanitizers before returning sanitized URL or origin fields.

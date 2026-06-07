@@ -1,0 +1,88 @@
+diff --git a/src/backend/security/security-log.ts b/src/backend/security/security-log.ts
+index e0632d6..66fdefa 100644
+--- a/src/backend/security/security-log.ts
++++ b/src/backend/security/security-log.ts
+@@ -57,6 +57,14 @@ function redactSensitiveText(value: string) {
+     .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer [redacted]')
+ }
+
++function hasUrlUserinfo(url: URL) {
++  return Boolean(url.username || url.password)
++}
++
++function isOriginField(key: string) {
++  return ORIGIN_FIELD_PATTERN.test(key.replace(/([a-z0-9])([A-Z])/g, '$1-$2'))
++}
++
+ export function sanitizeStringForLog(value: unknown, maxLength = MAX_SECURITY_LOG_STRING_LENGTH) {
+   if (typeof value !== 'string') return undefined
+
+@@ -80,6 +88,7 @@ export function sanitizeUrlForLog(value: unknown) {
+   try {
+     const url = new URL(trimmed)
+     if (url.protocol !== 'http:' && url.protocol !== 'https:') return '[unsupported-url]'
++    if (hasUrlUserinfo(url)) return '[invalid-url]'
+
+     return capString(`${url.origin}${url.pathname}`)
+   } catch {
+@@ -111,6 +120,7 @@ export function sanitizeOriginForLog(value: unknown) {
+   try {
+     const url = new URL(value.trim())
+     if (url.protocol !== 'http:' && url.protocol !== 'https:') return undefined
++    if (hasUrlUserinfo(url)) return undefined
+
+     return url.origin.toLowerCase()
+   } catch {
+@@ -164,7 +174,7 @@ function sanitizeErrorCode(value: unknown) {
+ function sanitizePrimitiveMetadataValue(key: string, value: unknown) {
+   if (FORBIDDEN_FIELD_PATTERN.test(key)) return undefined
+   if (EMAIL_FIELD_PATTERN.test(key)) return maskEmailForLog(value)
+-  if (ORIGIN_FIELD_PATTERN.test(key)) return sanitizeOriginForLog(value)
++  if (isOriginField(key)) return sanitizeOriginForLog(value)
+   if (URL_FIELD_PATTERN.test(key)) return sanitizeUrlForLog(value)
+   if (PATH_FIELD_PATTERN.test(key)) return sanitizePathnameForLog(value)
+
+diff --git a/tests/security-log.test.ts b/tests/security-log.test.ts
+index 760ffbe..8c1f165 100644
+--- a/tests/security-log.test.ts
++++ b/tests/security-log.test.ts
+@@ -5,6 +5,7 @@ import {
+   MAX_SECURITY_LOG_STRING_LENGTH,
+   logSecurityEvent,
+   maskEmailForLog,
++  sanitizeOriginForLog,
+   sanitizeSecurityEvent,
+   sanitizeStringForLog,
+   sanitizeUrlForLog,
+@@ -20,11 +21,32 @@ test('sanitizeUrlForLog strips query strings and fragments', () => {
+
+ test('sanitizeUrlForLog handles unsupported and invalid URLs safely', () => {
+   assert.equal(sanitizeUrlForLog('javascript:alert(1)'), '[unsupported-url]')
++  assert.equal(sanitizeUrlForLog('https://user:pass@boilabin.com/account'), '[invalid-url]')
+   assert.equal(sanitizeUrlForLog('not a url with spaces'), '[invalid-url]')
+   assert.equal(sanitizeUrlForLog('inline'), 'inline')
+   assert.equal(sanitizeUrlForLog('data:text/plain,SECRET'), 'data:')
+ })
+
++test('security log sanitizers reject URL userinfo credentials', () => {
++  const event = sanitizeSecurityEvent({
++    type: 'mutation_request_blocked',
++    timestamp: '2026-06-02T00:00:00.000Z',
++    origin: 'https://user:pass@evil.example.test/path',
++    metadata: {
++      documentUri: 'https://user:pass@boilabin.com/account?token=SECRET',
++      sourceOrigin: 'https://admin:secret@evil.example.test',
++    },
++  })
++
++  assert.equal(sanitizeOriginForLog('https://user:pass@evil.example.test/path'), undefined)
++  assert.equal(event.origin, undefined)
++  assert.deepEqual(event.metadata, {
++    documentUri: '[invalid-url]',
++  })
++  assert(!JSON.stringify(event).includes('user:pass'))
++  assert(!JSON.stringify(event).includes('admin:secret'))
++})
++
+ test('sanitizeStringForLog caps strings and redacts obvious secret patterns', () => {
+   const long = 'a'.repeat(MAX_SECURITY_LOG_STRING_LENGTH + 40)
