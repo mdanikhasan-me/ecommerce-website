@@ -1,0 +1,23 @@
+▶ admin return validation
+  ✔ documents supported return statuses (1.6612ms)
+  ✔ normalizes refund amounts and notes (1.3851ms)
+  ✔ accepts every return status with omitted optional values (0.5357ms)
+  ✔ accepts zero refund amounts and exact note length boundaries (0.2036ms)
+  ✔ normalizes blank optional values to null (0.1738ms)
+  ✔ allows omitted optional return fields to normalize safely (0.1805ms)
+  ✔ rejects invalid statuses and refund amounts (0.7941ms)
+  ✔ rejects non-decimal and non-finite refund amounts before admin mutation work (0.3624ms)
+  ✔ rejects malformed return payloads without coercing statuses (0.3454ms)
+  ✔ ignores invalid status filters (0.1979ms)
+  ✔ accepts every exact return status as a status filter (0.1097ms)
+  ✔ maps return statuses to order statuses (0.1662ms)
+  ✔ preserves non-return-requested order statuses when returns are rejected (0.1154ms)
+✔ admin return validation (7.4331ms)
+ℹ tests 13
+ℹ suites 1
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1295.864

@@ -1,15 +1,24 @@
 import { OrderStatus, ReturnStatus } from '@prisma/client'
 import { z } from 'zod'
 
+const PLAIN_REFUND_AMOUNT_PATTERN = /^\d+(?:\.\d+)?$/
+
+const refundAmountSchema = z.unknown().transform((value, ctx) => {
+  const parsed = parseRefundAmount(value)
+  if (!parsed.success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Refund amount is invalid',
+    })
+    return z.NEVER
+  }
+
+  return parsed.value
+})
+
 const returnPayloadSchema = z.object({
   status: z.nativeEnum(ReturnStatus, { message: 'Invalid return status' }),
-  refundAmount: z.preprocess(
-    (value) => {
-      if (value === '' || value === null || value === undefined) return null
-      return value
-    },
-    z.union([z.null(), z.coerce.number().min(0, 'Refund amount is invalid')]),
-  ),
+  refundAmount: refundAmountSchema,
   notes: z
     .string()
     .trim()
@@ -20,6 +29,26 @@ const returnPayloadSchema = z.object({
 })
 
 export type AdminReturnPayload = z.infer<typeof returnPayloadSchema>
+
+function parseRefundAmount(value: unknown): { success: true; value: number | null } | { success: false } {
+  if (value === null || value === undefined) return { success: true, value: null }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim()
+    if (!normalized) return { success: true, value: null }
+    if (!PLAIN_REFUND_AMOUNT_PATTERN.test(normalized)) return { success: false }
+
+    const parsed = Number(normalized)
+    if (!Number.isFinite(parsed)) return { success: false }
+    return { success: true, value: parsed }
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+    return { success: true, value }
+  }
+
+  return { success: false }
+}
 
 export function parseAdminReturnPayload(input: unknown) {
   const parsed = returnPayloadSchema.safeParse(input)

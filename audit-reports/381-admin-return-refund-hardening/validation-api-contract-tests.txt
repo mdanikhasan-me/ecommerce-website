@@ -1,0 +1,36 @@
+✔ mutation guard returns a stable forbidden JSON response (360.8493ms)
+✔ mutation guard returns missing-source JSON response when production requires a source signal (1.2125ms)
+✔ rate limiter returns contract error JSON and rate-limit headers (1.3104ms)
+✔ rate limiter treats unsafe forwarded identifiers as unknown but keeps the response contract (0.8675ms)
+✔ CSP report endpoint returns disabled-by-default JSON contract (0.901ms)
+✔ CSP report endpoint returns unsupported content-type contract when enabled (0.6658ms)
+✔ CSP report endpoint returns invalid JSON contract when enabled (1.2954ms)
+✔ CSP report endpoint returns invalid report contract when enabled (0.8441ms)
+✔ contact API validation returns error JSON before database writes (0.6743ms)
+✔ contact API invalid email and subject branches return validation JSON before database writes (0.9751ms)
+✔ newsletter API validation returns error JSON before database writes (0.4819ms)
+✔ newsletter API malformed JSON returns validation JSON before database writes (0.4617ms)
+✔ register API validation returns error JSON before database lookup (1.8059ms)
+✔ register API missing name and short password return validation JSON before database lookup (1.054ms)
+✔ coupon validation missing-code branch returns error JSON before database lookup (0.6641ms)
+✔ coupon validation invalid amount returns coupon error JSON before database lookup (0.405ms)
+✔ coupon validation malformed productIds are ignored before database lookup when code is missing (0.3688ms)
+✔ reviews GET missing productId returns validation JSON before database lookup (0.3845ms)
+✔ reviews GET invalid productId returns validation JSON before database lookup (0.2619ms)
+✔ search suggestions short sanitized query returns empty suggestions before database lookup (0.4365ms)
+✔ product view invalid id returns not found before database lookup (0.5014ms)
+✔ reviews POST blocked-origin branch returns before auth or database access (0.5296ms)
+✔ contact, newsletter, and register blocked-origin branches return before database access (1.0866ms)
+✔ product view blocked-origin branch returns before auth or database access (0.402ms)
+✔ order creation blocked-origin branch returns before auth or database access (0.6179ms)
+✔ product view rate limit returns the shared 429 contract before product lookup (4.9318ms)
+✔ return request blocked-origin branch returns before auth or database access (0.4786ms)
+✔ return request rate limit returns the shared 429 contract before authenticated work (0.8948ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3249.4857

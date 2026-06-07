@@ -105,6 +105,12 @@ describe('admin return validation', () => {
     assert.equal(longNotes.success, false)
   })
 
+  it('rejects non-decimal and non-finite refund amounts before admin mutation work', () => {
+    for (const refundAmount of ['0x10', '1e3', '-1', 'Infinity', 'NaN', Number.POSITIVE_INFINITY, Number.NaN]) {
+      assert.equal(parseAdminReturnPayload({ status: 'APPROVED', refundAmount }).success, false)
+    }
+  })
+
   it('rejects malformed return payloads without coercing statuses', () => {
     assert.equal(parseAdminReturnPayload(null).success, false)
     assert.equal(parseAdminReturnPayload(['APPROVED']).success, false)
