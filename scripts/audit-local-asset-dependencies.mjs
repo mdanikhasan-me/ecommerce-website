@@ -287,21 +287,31 @@ async function statIfPresent(filePath) {
   }
 }
 
-async function collectPublicInventory(root) {
-  const inventory = {}
+function createPublicInventorySummary() {
+  return {
+    exists: false,
+    fileCount: 0,
+    totalBytes: 0,
+    extensionCounts: {},
+  }
+}
 
-  for (const relativeRoot of ['public/assets', 'public/images', 'public/uploads']) {
+async function collectPublicInventory(root) {
+  const inventory = {
+    assets: createPublicInventorySummary(),
+    images: createPublicInventorySummary(),
+    uploads: createPublicInventorySummary(),
+  }
+  const roots = [
+    { relativeRoot: 'public/assets', summary: inventory.assets },
+    { relativeRoot: 'public/images', summary: inventory.images },
+    { relativeRoot: 'public/uploads', summary: inventory.uploads },
+  ]
+
+  for (const { relativeRoot, summary } of roots) {
     const absoluteRoot = path.join(root, relativeRoot)
-    const label = relativeRoot.replace(/^public\//, '')
-    const summary = {
-      exists: false,
-      fileCount: 0,
-      totalBytes: 0,
-      extensionCounts: {},
-    }
 
     if (!existsSync(absoluteRoot)) {
-      inventory[label] = summary
       continue
     }
 
@@ -315,8 +325,6 @@ async function collectPublicInventory(root) {
       summary.totalBytes += stats.size
       summary.extensionCounts[extension] = (summary.extensionCounts[extension] ?? 0) + 1
     }
-
-    inventory[label] = summary
   }
 
   return inventory

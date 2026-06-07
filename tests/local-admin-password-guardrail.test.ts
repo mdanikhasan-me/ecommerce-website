@@ -27,6 +27,10 @@ function withTempEnvFiles(files: Record<string, string>, callback: (cwd: string)
   }
 }
 
+function testEnv(values: Record<string, string> = {}) {
+  return values as NodeJS.ProcessEnv
+}
+
 function createMockDb(admins: Array<{
   id: string
   email: string
@@ -61,7 +65,7 @@ test('local admin password plan refuses a remote-looking app DB URL', () => {
       `${LOCAL_ADMIN_PASSWORD_ENV}="ValidLocal!234"`,
     ].join('\n'),
   }, (cwd) => {
-    const plan = createLocalAdminPasswordPlan({ cwd, baseEnv: {} })
+    const plan = createLocalAdminPasswordPlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.databaseUrl, 'remote-looking')
     assert.equal(plan.canRun, false)
@@ -76,7 +80,7 @@ test('local admin password plan refuses same app and shadow DB', () => {
       `${LOCAL_ADMIN_PASSWORD_ENV}="ValidLocal!234"`,
     ].join('\n'),
   }, (cwd) => {
-    const plan = createLocalAdminPasswordPlan({ cwd, baseEnv: {} })
+    const plan = createLocalAdminPasswordPlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.shadowDatabaseSeparate, false)
     assert.equal(plan.canRun, false)
@@ -100,12 +104,12 @@ test('local admin password runner refuses missing password without touching DB',
     const stderr: string[] = []
     const status = await runLocalAdminPasswordCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: () => undefined,
       stderr: (message: string) => stderr.push(message),
       prismaFactory: () => {
         factoryCalls += 1
-        return createMockDb([])
+        return createMockDb([]) as any
       },
     })
 
@@ -167,10 +171,10 @@ test('local admin password CLI output omits password and hash values', async () 
     ])
     const status = await runLocalAdminPasswordCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: (message: string) => stdout.push(message),
       stderr: () => undefined,
-      prismaFactory: () => db,
+      prismaFactory: () => db as any,
       hashPassword: async () => 'next-hash',
     })
     const serialized = stdout.join('\n')

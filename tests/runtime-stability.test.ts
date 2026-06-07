@@ -39,6 +39,10 @@ const nextLocalPatternMatcher = require('next/dist/shared/lib/match-local-patter
   hasLocalMatch(localPatterns: Array<{ pathname?: string; search?: string }> | undefined, urlPathAndQuery: string): boolean
 }
 
+function testEnv(values: Record<string, string> = {}) {
+  return values as NodeJS.ProcessEnv
+}
+
 describe('post-Flash runtime stability config', () => {
   it('loads Tailwind config without CommonJS require', () => {
     assert.ok(tailwindConfig)
@@ -250,7 +254,7 @@ describe('known broken seeded image URLs', () => {
       )
 
       const plan = createKnownBrokenImageRepairPlan({
-        baseEnv: {},
+        baseEnv: testEnv(),
         cwd,
       })
 

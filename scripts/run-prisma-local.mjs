@@ -29,6 +29,9 @@ export function resolvePrismaArgs(argv) {
   throw new Error('Unsupported Prisma local command. Allowed commands: validate, generate, migrate dev, migrate deploy.')
 }
 
+/**
+ * @param {{ argv?: string[], cwd?: string, baseEnv?: Record<string, string | undefined> }} [options]
+ */
 export function createPrismaLocalPlan({
   argv,
   cwd = process.cwd(),

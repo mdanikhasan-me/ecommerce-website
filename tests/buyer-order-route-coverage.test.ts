@@ -30,8 +30,11 @@ function parseValidOrder(overrides: Record<string, unknown> = {}) {
     ...overrides,
   }, availablePaymentMethods)
 
+  if (!parsed.success) {
+    assert.fail(parsed.error)
+  }
+
   assert.equal(parsed.success, true)
-  if (!parsed.success) throw new Error(parsed.error)
   return parsed.data
 }
 

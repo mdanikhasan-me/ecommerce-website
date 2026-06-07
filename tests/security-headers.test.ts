@@ -44,19 +44,19 @@ describe('security headers config', () => {
     const previousNodeEnv = process.env.NODE_ENV
 
     try {
-      process.env.NODE_ENV = 'development'
+      Reflect.set(process.env, 'NODE_ENV', 'development')
       assert.equal((await getRootSecurityHeaders()).has('Strict-Transport-Security'), false)
 
-      process.env.NODE_ENV = 'production'
+      Reflect.set(process.env, 'NODE_ENV', 'production')
       assert.equal(
         (await getRootSecurityHeaders()).get('Strict-Transport-Security'),
         'max-age=31536000; includeSubDomains; preload',
       )
     } finally {
       if (previousNodeEnv === undefined) {
-        delete process.env.NODE_ENV
+        Reflect.deleteProperty(process.env, 'NODE_ENV')
       } else {
-        process.env.NODE_ENV = previousNodeEnv
+        Reflect.set(process.env, 'NODE_ENV', previousNodeEnv)
       }
     }
   })

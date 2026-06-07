@@ -29,6 +29,10 @@ function withTempEnvFiles(files: Record<string, string>, callback: (cwd: string)
   }
 }
 
+function testEnv(values: Record<string, string> = {}) {
+  return values as NodeJS.ProcessEnv
+}
+
 function createMockDb(existingUser: null | {
   id: string
   email: string
@@ -84,7 +88,7 @@ test('local buyer fixture plan refuses a remote-looking app DB URL', () => {
       `${LOCAL_BUYER_PASSWORD_ENV}="ValidLocal!234"`,
     ].join('\n'),
   }, (cwd) => {
-    const plan = createLocalBuyerFixturePlan({ cwd, baseEnv: {} })
+    const plan = createLocalBuyerFixturePlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.databaseUrl, 'remote-looking')
     assert.equal(plan.canRun, false)
@@ -99,7 +103,7 @@ test('local buyer fixture plan refuses same app and shadow DB', () => {
       `${LOCAL_BUYER_PASSWORD_ENV}="ValidLocal!234"`,
     ].join('\n'),
   }, (cwd) => {
-    const plan = createLocalBuyerFixturePlan({ cwd, baseEnv: {} })
+    const plan = createLocalBuyerFixturePlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.shadowDatabaseSeparate, false)
     assert.equal(plan.canRun, false)
@@ -125,12 +129,12 @@ test('local buyer fixture CLI refuses missing password without touching DB', asy
     const stderr: string[] = []
     const status = await runLocalBuyerFixtureCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: () => undefined,
       stderr: (message: string) => stderr.push(message),
       prismaFactory: () => {
         factoryCalls += 1
-        return createMockDb(null)
+        return createMockDb(null) as any
       },
     })
 
@@ -195,10 +199,10 @@ test('local buyer fixture CLI output omits password, hash, full email, and DB UR
     const db = createMockDb(null)
     const status = await runLocalBuyerFixtureCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: (message: string) => stdout.push(message),
       stderr: () => undefined,
-      prismaFactory: () => db,
+      prismaFactory: () => db as any,
       hashPassword: async () => 'next-hash',
     })
     const serialized = stdout.join('\n')

@@ -95,7 +95,20 @@ export function createKnownBrokenImageRepairPlan({
   }
 }
 
+/**
+ * @param {{
+ *   prisma?: {
+ *     productImage: { updateMany(args: { where: Record<string, string>, data: Record<string, string> }): Promise<{ count: number }> },
+ *     banner: { updateMany(args: { where: Record<string, string>, data: Record<string, string> }): Promise<{ count: number }> },
+ *   },
+ *   replacements?: Array<{ label: string, model: string, field: string, from: string, to: string }>,
+ * }} [options]
+ */
 export async function repairKnownBrokenImageUrls({ prisma, replacements = KNOWN_BROKEN_IMAGE_REPLACEMENTS } = {}) {
+  if (!prisma) {
+    throw new Error('Prisma client is required to repair known broken image URLs.')
+  }
+
   const results = []
 
   for (const replacement of replacements) {

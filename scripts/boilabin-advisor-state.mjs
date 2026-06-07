@@ -89,31 +89,36 @@ export function listAuditReports(cwd = DEFAULT_CWD) {
     return [];
   }
 
-  return readdirSync(auditDir, { withFileTypes: true })
-    .filter((entry) => entry.isFile())
-    .map((entry) => entry.name)
-    .map((name) => {
-      const match = name.match(/^(\d+)_(.+)\.md$/);
-      if (!match) {
-        return null;
-      }
-      return {
-        step: Number(match[1]),
-        name,
-        isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(name),
-        relativePath: `audit-reports/${name}`,
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      if (a.step !== b.step) {
-        return a.step - b.step;
-      }
-      if (a.isPromptDraft !== b.isPromptDraft) {
-        return a.isPromptDraft ? -1 : 1;
-      }
-      return a.name.localeCompare(b.name);
+  const reports = [];
+
+  for (const entry of readdirSync(auditDir, { withFileTypes: true })) {
+    if (!entry.isFile()) {
+      continue;
+    }
+
+    const name = entry.name;
+    const match = name.match(/^(\d+)_(.+)\.md$/);
+    if (!match) {
+      continue;
+    }
+
+    reports.push({
+      step: Number(match[1]),
+      name,
+      isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(name),
+      relativePath: `audit-reports/${name}`,
     });
+  }
+
+  return reports.sort((a, b) => {
+    if (a.step !== b.step) {
+      return a.step - b.step;
+    }
+    if (a.isPromptDraft !== b.isPromptDraft) {
+      return a.isPromptDraft ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export function parseLatestAuditReport(cwd = DEFAULT_CWD) {

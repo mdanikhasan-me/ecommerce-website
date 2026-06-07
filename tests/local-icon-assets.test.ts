@@ -5,6 +5,7 @@ import { describe, it } from 'node:test'
 
 import {
   SOCIAL_ICON_ASSETS,
+  STOREFRONT_ICON_ASSETS,
   UI_ICON_ASSETS,
 } from '@/shared/storefront-icons'
 
@@ -43,6 +44,10 @@ function publicAssetExists(publicPath: string) {
   return existsSync(path.join(process.cwd(), 'public', publicPath.replace(/^\/+/, '')))
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 describe('local physical storefront icon assets', () => {
   it('keeps required UI and social icon files source-controlled under public assets', () => {
     for (const iconName of REQUIRED_UI_ICONS) {
@@ -74,5 +79,28 @@ describe('local physical storefront icon assets', () => {
     assert.doesNotMatch(footer, /PAYMENT_ASSETS\.CASH_ON_DELIVERY/)
     assert.doesNotMatch(footer, /PAYMENT_ASSETS\.STRIPE/)
     assert.doesNotMatch(assetSource, /\/assets\/payments\/stripe\.svg/)
+  })
+
+  it('keeps LocalIcon URL masks in CSS instead of inline styles', () => {
+    const localIcon = readFileSync('src/frontend/components/ui/LocalIcon.tsx', 'utf8')
+    const globals = readFileSync('src/app/globals.css', 'utf8')
+
+    assert.doesNotMatch(localIcon, /\sstyle=\{/)
+    assert.doesNotMatch(localIcon, /CSSProperties/)
+    assert.doesNotMatch(globals, /--local-icon-url/)
+    assert.match(localIcon, /local-icon--\$\{name\}/)
+
+    for (const [iconName, publicPath] of Object.entries(STOREFRONT_ICON_ASSETS)) {
+      assert.match(
+        globals,
+        new RegExp(`\\.local-icon--${escapeRegExp(iconName)}\\s*\\{`),
+        `${iconName} should have a CSS mask class`,
+      )
+      assert.match(
+        globals,
+        new RegExp(`url\\('${escapeRegExp(publicPath)}'\\)`),
+        `${iconName} should map to ${publicPath}`,
+      )
+    }
   })
 })

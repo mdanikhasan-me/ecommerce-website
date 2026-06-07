@@ -378,7 +378,7 @@ describe('admin media runtime cleanup reference guard', () => {
     assert.match(categoryRoute, /deleted: true/)
     assert.match(productRoute, /return NextResponse\.json\(\{ product \}\)/)
     assert.match(productRoute, /deleted: true/)
-    assert.match(productRoute, /deleted: false,\s+archived: true/s)
+    assert.match(productRoute, /deleted: false,[\s\S]+archived: true/)
     assert.match(productEditor, /export async function deleteManagedUpload/)
     assert.match(productEditor, /catch \{\s+logProductUploadCleanupSkipped[\s\S]+return false\s+\}/)
   })

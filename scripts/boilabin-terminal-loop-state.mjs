@@ -89,30 +89,35 @@ export function listAuditReports(cwd = DEFAULT_CWD) {
     return [];
   }
 
-  return readdirSync(auditDir, { withFileTypes: true })
-    .filter((entry) => entry.isFile())
-    .map((entry) => {
-      const match = entry.name.match(/^(\d+)_(.+)\.md$/);
-      if (!match) {
-        return null;
-      }
-      return {
-        step: Number(match[1]),
-        name: entry.name,
-        isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(entry.name),
-        relativePath: `audit-reports/${entry.name}`,
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      if (a.step !== b.step) {
-        return a.step - b.step;
-      }
-      if (a.isPromptDraft !== b.isPromptDraft) {
-        return a.isPromptDraft ? -1 : 1;
-      }
-      return a.name.localeCompare(b.name);
+  const reports = [];
+
+  for (const entry of readdirSync(auditDir, { withFileTypes: true })) {
+    if (!entry.isFile()) {
+      continue;
+    }
+
+    const match = entry.name.match(/^(\d+)_(.+)\.md$/);
+    if (!match) {
+      continue;
+    }
+
+    reports.push({
+      step: Number(match[1]),
+      name: entry.name,
+      isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(entry.name),
+      relativePath: `audit-reports/${entry.name}`,
     });
+  }
+
+  return reports.sort((a, b) => {
+    if (a.step !== b.step) {
+      return a.step - b.step;
+    }
+    if (a.isPromptDraft !== b.isPromptDraft) {
+      return a.isPromptDraft ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export function extractLatestCommit(content) {

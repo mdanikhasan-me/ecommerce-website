@@ -1,10 +1,5 @@
-import type { CSSProperties } from 'react'
-
 import { cn } from '@/backend/utils'
-import {
-  STOREFRONT_ICON_ASSETS,
-  StorefrontIconName,
-} from '@/shared/storefront-icons'
+import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 type LocalIconProps = {
   name: StorefrontIconName
@@ -13,8 +8,8 @@ type LocalIconProps = {
   decorative?: boolean
 }
 
-type LocalIconStyle = CSSProperties & {
-  '--local-icon-url': string
+function localIconMaskClass(name: StorefrontIconName) {
+  return `local-icon--${name}`
 }
 
 export function LocalIcon({
@@ -23,15 +18,14 @@ export function LocalIcon({
   title,
   decorative = true,
 }: LocalIconProps) {
-  const iconStyle = { '--local-icon-url': `url(${STOREFRONT_ICON_ASSETS[name]})` } as LocalIconStyle
+  const maskClassName = localIconMaskClass(name)
 
   if (decorative) {
     return (
       <span
         aria-hidden="true"
         title={title}
-        className={cn('local-icon inline-block h-4 w-4 shrink-0', className)}
-        style={iconStyle}
+        className={cn('local-icon inline-block h-4 w-4 shrink-0', maskClassName, className)}
       />
     )
   }
@@ -41,8 +35,7 @@ export function LocalIcon({
       role="img"
       aria-label={title ?? name.replace(/-/g, ' ')}
       title={title}
-      className={cn('local-icon inline-block h-4 w-4 shrink-0', className)}
-      style={iconStyle}
+      className={cn('local-icon inline-block h-4 w-4 shrink-0', maskClassName, className)}
     />
   )
 }

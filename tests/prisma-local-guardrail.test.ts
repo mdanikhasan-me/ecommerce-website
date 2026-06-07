@@ -19,6 +19,10 @@ import {
   sanitizeSeedOutput,
 } from '../scripts/run-prisma-seed-local.mjs'
 
+function testEnv(values: Record<string, string> = {}) {
+  return values as NodeJS.ProcessEnv
+}
+
 function withTempEnvFiles(files: Record<string, string>, callback: (cwd: string) => void) {
   const cwd = mkdtempSync(join(tmpdir(), 'boilabin-prisma-local-'))
 
@@ -44,7 +48,7 @@ test('DB URL safety loads .env first and .env.local as the local override', () =
       'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
     ].join('\n'),
   }, (cwd) => {
-    const env = loadEnv({ cwd, baseEnv: {} })
+    const env = loadEnv({ cwd, baseEnv: testEnv() })
     const safety = evaluateDatabaseSafety(env)
 
     assert.equal(safety.databaseUrl, 'local')
@@ -86,7 +90,7 @@ test('Prisma local plan refuses unsafe remote-looking DB URL classification', ()
       'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
     ].join('\n'),
   }, (cwd) => {
-    const plan = createPrismaLocalPlan({ argv: ['validate'], cwd, baseEnv: {} })
+    const plan = createPrismaLocalPlan({ argv: ['validate'], cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.databaseUrl, 'remote-looking')
     assert.equal(plan.canRun, false)
@@ -108,13 +112,13 @@ test('Prisma local runner passes merged local env values to the spawned Prisma c
     const status = runPrismaLocalCli({
       argv: ['validate'],
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: () => undefined,
       stderr: () => undefined,
-      spawn: (command: string, args: string[], options: { env: Record<string, string> }) => {
+      spawn: ((command: string, args: string[], options: { env: Record<string, string> }) => {
         spawned.push({ command, args, env: options.env })
         return { status: 0 }
-      },
+      }) as any,
     })
 
     assert.equal(status, 0)
@@ -136,7 +140,7 @@ test('Prisma seed local plan uses .env.local to override a remote-looking .env',
       'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
     ].join('\n'),
   }, (cwd) => {
-    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: {} })
+    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.databaseUrl, 'local')
     assert.equal(plan.safety.shadowDatabaseUrl, 'local')
@@ -152,7 +156,7 @@ test('Prisma seed local plan refuses a remote-looking app database URL', () => {
       'SHADOW_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/boilabin_shadow"',
     ].join('\n'),
   }, (cwd) => {
-    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: {} })
+    const plan = createPrismaSeedLocalPlan({ cwd, baseEnv: testEnv() })
 
     assert.equal(plan.safety.databaseUrl, 'remote-looking')
     assert.equal(plan.canRun, false)
@@ -167,13 +171,13 @@ test('Prisma seed local runner refuses missing shadow DB and does not spawn seed
     const stderr: string[] = []
     const status = runPrismaSeedLocalCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: () => undefined,
       stderr: (message: string) => stderr.push(message),
-      spawn: () => {
+      spawn: (() => {
         spawnCount += 1
         return { status: 0 }
-      },
+      }) as any,
     })
 
     assert.equal(status, 1)
@@ -192,13 +196,13 @@ test('Prisma seed local runner refuses same app and shadow database', () => {
     let spawnCount = 0
     const status = runPrismaSeedLocalCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: () => undefined,
       stderr: () => undefined,
-      spawn: () => {
+      spawn: (() => {
         spawnCount += 1
         return { status: 0 }
-      },
+      }) as any,
     })
 
     assert.equal(status, 1)
@@ -216,10 +220,10 @@ test('Prisma seed local runner redacts seed credential and URL output', () => {
     const stdout: string[] = []
     const status = runPrismaSeedLocalCli({
       cwd,
-      baseEnv: {},
+      baseEnv: testEnv(),
       stdout: (message: string) => stdout.push(message),
       stderr: () => undefined,
-      spawn: () => ({
+      spawn: (() => ({
         status: 0,
         stdout: [
           'DATABASE_URL=postgresql://user:pass@example.test/db',
@@ -230,7 +234,7 @@ test('Prisma seed local runner redacts seed credential and URL output', () => {
           'Seed completed',
         ].join('\n'),
         stderr: '',
-      }),
+      })) as any,
     })
 
     const serialized = stdout.join('\n')

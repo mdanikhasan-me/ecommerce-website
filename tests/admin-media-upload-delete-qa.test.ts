@@ -9,6 +9,10 @@ import {
   sanitizeAdminMediaQaEvidence,
 } from '../scripts/qa-admin-media-upload-delete.mjs'
 
+function testEnv(values: Record<string, string> = {}) {
+  return values as NodeJS.ProcessEnv
+}
+
 describe('guarded admin media upload-delete QA harness', () => {
   it('stops before helper imports or DB mutation when local DB URL safety fails', async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), 'boilabin-admin-media-qa-unsafe-'))
@@ -16,10 +20,10 @@ describe('guarded admin media upload-delete QA harness', () => {
     try {
       const evidence = await runAdminMediaUploadDeleteQa({
         cwd: root,
-        baseEnv: {
+        baseEnv: testEnv({
           DATABASE_URL: 'postgresql://user:secret@example.com:5432/prod',
           SHADOW_DATABASE_URL: '',
-        },
+        }),
       })
 
       assert.equal(evidence.stopped, true)

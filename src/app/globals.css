@@ -237,14 +237,327 @@
 
   .local-icon {
     background-color: currentColor;
-    -webkit-mask-image: var(--local-icon-url);
-    mask-image: var(--local-icon-url);
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center;
     mask-position: center;
     -webkit-mask-size: contain;
     mask-size: contain;
+  }
+
+  .local-icon--arrow-left {
+    -webkit-mask-image: url('/assets/icons/ui/arrow-left.svg');
+    mask-image: url('/assets/icons/ui/arrow-left.svg');
+  }
+
+  .local-icon--arrow-right {
+    -webkit-mask-image: url('/assets/icons/ui/arrow-right.svg');
+    mask-image: url('/assets/icons/ui/arrow-right.svg');
+  }
+
+  .local-icon--bar-chart-2 {
+    -webkit-mask-image: url('/assets/icons/ui/bar-chart-2.svg');
+    mask-image: url('/assets/icons/ui/bar-chart-2.svg');
+  }
+
+  .local-icon--cart {
+    -webkit-mask-image: url('/assets/icons/ui/cart.svg');
+    mask-image: url('/assets/icons/ui/cart.svg');
+  }
+
+  .local-icon--check {
+    -webkit-mask-image: url('/assets/icons/ui/check.svg');
+    mask-image: url('/assets/icons/ui/check.svg');
+  }
+
+  .local-icon--check-circle {
+    -webkit-mask-image: url('/assets/icons/ui/check-circle.svg');
+    mask-image: url('/assets/icons/ui/check-circle.svg');
+  }
+
+  .local-icon--chevron-down {
+    -webkit-mask-image: url('/assets/icons/ui/chevron-down.svg');
+    mask-image: url('/assets/icons/ui/chevron-down.svg');
+  }
+
+  .local-icon--chevron-right {
+    -webkit-mask-image: url('/assets/icons/ui/chevron-right.svg');
+    mask-image: url('/assets/icons/ui/chevron-right.svg');
+  }
+
+  .local-icon--chevron-up {
+    -webkit-mask-image: url('/assets/icons/ui/chevron-up.svg');
+    mask-image: url('/assets/icons/ui/chevron-up.svg');
+  }
+
+  .local-icon--close {
+    -webkit-mask-image: url('/assets/icons/ui/close.svg');
+    mask-image: url('/assets/icons/ui/close.svg');
+  }
+
+  .local-icon--compare {
+    -webkit-mask-image: url('/assets/icons/ui/compare.svg');
+    mask-image: url('/assets/icons/ui/compare.svg');
+  }
+
+  .local-icon--credit-card {
+    -webkit-mask-image: url('/assets/icons/ui/credit-card.svg');
+    mask-image: url('/assets/icons/ui/credit-card.svg');
+  }
+
+  .local-icon--eye {
+    -webkit-mask-image: url('/assets/icons/ui/eye.svg');
+    mask-image: url('/assets/icons/ui/eye.svg');
+  }
+
+  .local-icon--eye-off {
+    -webkit-mask-image: url('/assets/icons/ui/eye-off.svg');
+    mask-image: url('/assets/icons/ui/eye-off.svg');
+  }
+
+  .local-icon--filter {
+    -webkit-mask-image: url('/assets/icons/ui/filter.svg');
+    mask-image: url('/assets/icons/ui/filter.svg');
+  }
+
+  .local-icon--grid {
+    -webkit-mask-image: url('/assets/icons/ui/grid.svg');
+    mask-image: url('/assets/icons/ui/grid.svg');
+  }
+
+  .local-icon--grid-3x3 {
+    -webkit-mask-image: url('/assets/icons/ui/grid-3x3.svg');
+    mask-image: url('/assets/icons/ui/grid-3x3.svg');
+  }
+
+  .local-icon--heart {
+    -webkit-mask-image: url('/assets/icons/ui/heart.svg');
+    mask-image: url('/assets/icons/ui/heart.svg');
+  }
+
+  .local-icon--heart-filled {
+    -webkit-mask-image: url('/assets/icons/ui/heart-filled.svg');
+    mask-image: url('/assets/icons/ui/heart-filled.svg');
+  }
+
+  .local-icon--help-circle {
+    -webkit-mask-image: url('/assets/icons/ui/help-circle.svg');
+    mask-image: url('/assets/icons/ui/help-circle.svg');
+  }
+
+  .local-icon--layout-dashboard {
+    -webkit-mask-image: url('/assets/icons/ui/layout-dashboard.svg');
+    mask-image: url('/assets/icons/ui/layout-dashboard.svg');
+  }
+
+  .local-icon--life-buoy {
+    -webkit-mask-image: url('/assets/icons/ui/life-buoy.svg');
+    mask-image: url('/assets/icons/ui/life-buoy.svg');
+  }
+
+  .local-icon--log-out {
+    -webkit-mask-image: url('/assets/icons/ui/log-out.svg');
+    mask-image: url('/assets/icons/ui/log-out.svg');
+  }
+
+  .local-icon--location {
+    -webkit-mask-image: url('/assets/icons/ui/location.svg');
+    mask-image: url('/assets/icons/ui/location.svg');
+  }
+
+  .local-icon--mail {
+    -webkit-mask-image: url('/assets/icons/ui/mail.svg');
+    mask-image: url('/assets/icons/ui/mail.svg');
+  }
+
+  .local-icon--menu {
+    -webkit-mask-image: url('/assets/icons/ui/menu.svg');
+    mask-image: url('/assets/icons/ui/menu.svg');
+  }
+
+  .local-icon--minus {
+    -webkit-mask-image: url('/assets/icons/ui/minus.svg');
+    mask-image: url('/assets/icons/ui/minus.svg');
+  }
+
+  .local-icon--package {
+    -webkit-mask-image: url('/assets/icons/ui/package.svg');
+    mask-image: url('/assets/icons/ui/package.svg');
+  }
+
+  .local-icon--phone {
+    -webkit-mask-image: url('/assets/icons/ui/phone.svg');
+    mask-image: url('/assets/icons/ui/phone.svg');
+  }
+
+  .local-icon--plus {
+    -webkit-mask-image: url('/assets/icons/ui/plus.svg');
+    mask-image: url('/assets/icons/ui/plus.svg');
+  }
+
+  .local-icon--refresh-ccw {
+    -webkit-mask-image: url('/assets/icons/ui/refresh-ccw.svg');
+    mask-image: url('/assets/icons/ui/refresh-ccw.svg');
+  }
+
+  .local-icon--search {
+    -webkit-mask-image: url('/assets/icons/ui/search.svg');
+    mask-image: url('/assets/icons/ui/search.svg');
+  }
+
+  .local-icon--share {
+    -webkit-mask-image: url('/assets/icons/ui/share.svg');
+    mask-image: url('/assets/icons/ui/share.svg');
+  }
+
+  .local-icon--shield {
+    -webkit-mask-image: url('/assets/icons/ui/shield.svg');
+    mask-image: url('/assets/icons/ui/shield.svg');
+  }
+
+  .local-icon--shopping-bag {
+    -webkit-mask-image: url('/assets/icons/ui/shopping-bag.svg');
+    mask-image: url('/assets/icons/ui/shopping-bag.svg');
+  }
+
+  .local-icon--shopping-cart {
+    -webkit-mask-image: url('/assets/icons/ui/shopping-cart.svg');
+    mask-image: url('/assets/icons/ui/shopping-cart.svg');
+  }
+
+  .local-icon--sliders-horizontal {
+    -webkit-mask-image: url('/assets/icons/ui/sliders-horizontal.svg');
+    mask-image: url('/assets/icons/ui/sliders-horizontal.svg');
+  }
+
+  .local-icon--sparkles {
+    -webkit-mask-image: url('/assets/icons/ui/sparkles.svg');
+    mask-image: url('/assets/icons/ui/sparkles.svg');
+  }
+
+  .local-icon--star {
+    -webkit-mask-image: url('/assets/icons/ui/star.svg');
+    mask-image: url('/assets/icons/ui/star.svg');
+  }
+
+  .local-icon--star-filled {
+    -webkit-mask-image: url('/assets/icons/ui/star-filled.svg');
+    mask-image: url('/assets/icons/ui/star-filled.svg');
+  }
+
+  .local-icon--tag {
+    -webkit-mask-image: url('/assets/icons/ui/tag.svg');
+    mask-image: url('/assets/icons/ui/tag.svg');
+  }
+
+  .local-icon--trash-2 {
+    -webkit-mask-image: url('/assets/icons/ui/trash-2.svg');
+    mask-image: url('/assets/icons/ui/trash-2.svg');
+  }
+
+  .local-icon--truck {
+    -webkit-mask-image: url('/assets/icons/ui/truck.svg');
+    mask-image: url('/assets/icons/ui/truck.svg');
+  }
+
+  .local-icon--user {
+    -webkit-mask-image: url('/assets/icons/ui/user.svg');
+    mask-image: url('/assets/icons/ui/user.svg');
+  }
+
+  .local-icon--x {
+    -webkit-mask-image: url('/assets/icons/ui/x.svg');
+    mask-image: url('/assets/icons/ui/x.svg');
+  }
+
+  .local-icon--zap {
+    -webkit-mask-image: url('/assets/icons/ui/zap.svg');
+    mask-image: url('/assets/icons/ui/zap.svg');
+  }
+
+  .local-icon--subcategory-mobile-phone {
+    -webkit-mask-image: url('/assets/icons/ui/subcategories/mobile-phone.svg');
+    mask-image: url('/assets/icons/ui/subcategories/mobile-phone.svg');
+  }
+
+  .local-icon--subcategory-laptop {
+    -webkit-mask-image: url('/assets/icons/ui/subcategories/laptop.svg');
+    mask-image: url('/assets/icons/ui/subcategories/laptop.svg');
+  }
+
+  .local-icon--subcategory-headphones {
+    -webkit-mask-image: url('/assets/icons/ui/subcategories/headphones.svg');
+    mask-image: url('/assets/icons/ui/subcategories/headphones.svg');
+  }
+
+  .local-icon--subcategory-watch {
+    -webkit-mask-image: url('/assets/icons/ui/subcategories/watch.svg');
+    mask-image: url('/assets/icons/ui/subcategories/watch.svg');
+  }
+
+  .local-icon--subcategory-grid {
+    -webkit-mask-image: url('/assets/icons/ui/subcategories/grid.svg');
+    mask-image: url('/assets/icons/ui/subcategories/grid.svg');
+  }
+
+  .local-icon--category-electronics {
+    -webkit-mask-image: url('/assets/icons/ui/categories/electronics.svg');
+    mask-image: url('/assets/icons/ui/categories/electronics.svg');
+  }
+
+  .local-icon--category-fashion {
+    -webkit-mask-image: url('/assets/icons/ui/categories/fashion.svg');
+    mask-image: url('/assets/icons/ui/categories/fashion.svg');
+  }
+
+  .local-icon--category-home-appliances {
+    -webkit-mask-image: url('/assets/icons/ui/categories/home-appliances.svg');
+    mask-image: url('/assets/icons/ui/categories/home-appliances.svg');
+  }
+
+  .local-icon--category-beauty-health {
+    -webkit-mask-image: url('/assets/icons/ui/categories/beauty-health.svg');
+    mask-image: url('/assets/icons/ui/categories/beauty-health.svg');
+  }
+
+  .local-icon--category-sports-fitness {
+    -webkit-mask-image: url('/assets/icons/ui/categories/sports-fitness.svg');
+    mask-image: url('/assets/icons/ui/categories/sports-fitness.svg');
+  }
+
+  .local-icon--category-books-stationery {
+    -webkit-mask-image: url('/assets/icons/ui/categories/books-stationery.svg');
+    mask-image: url('/assets/icons/ui/categories/books-stationery.svg');
+  }
+
+  .local-icon--category-gaming {
+    -webkit-mask-image: url('/assets/icons/ui/categories/gaming.svg');
+    mask-image: url('/assets/icons/ui/categories/gaming.svg');
+  }
+
+  .local-icon--category-toys-collectibles {
+    -webkit-mask-image: url('/assets/icons/ui/categories/toys-collectibles.svg');
+    mask-image: url('/assets/icons/ui/categories/toys-collectibles.svg');
+  }
+
+  .local-icon--category-view-all {
+    -webkit-mask-image: url('/assets/icons/ui/categories/view-all.svg');
+    mask-image: url('/assets/icons/ui/categories/view-all.svg');
+  }
+
+  .local-icon--facebook {
+    -webkit-mask-image: url('/assets/icons/social/facebook.svg');
+    mask-image: url('/assets/icons/social/facebook.svg');
+  }
+
+  .local-icon--instagram {
+    -webkit-mask-image: url('/assets/icons/social/instagram.svg');
+    mask-image: url('/assets/icons/social/instagram.svg');
+  }
+
+  .local-icon--youtube {
+    -webkit-mask-image: url('/assets/icons/social/youtube.svg');
+    mask-image: url('/assets/icons/social/youtube.svg');
   }
 
   .footer-heading {

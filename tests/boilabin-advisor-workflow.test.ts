@@ -24,6 +24,14 @@ function readRepoFile(relativePath: string) {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
+function assertPresent<T>(value: T | null | undefined, message: string): T {
+  if (value === null || value === undefined) {
+    assert.fail(message);
+  }
+
+  return value;
+}
+
 const advisorFiles = [
   '.codex/agents/boilabin-advisor.toml',
   '.agents/skills/boilabin-advisor/SKILL.md',
@@ -290,7 +298,10 @@ test('Advisor section summaries truncate single overlong lines at word boundarie
     '',
     'Continue with ' + 'bounded-workflow '.repeat(80),
   ].join('\n');
-  const summary = extractSectionSummary(content, 'Recommended Next Step');
+  const summary = assertPresent(
+    extractSectionSummary(content, 'Recommended Next Step'),
+    'Recommended Next Step summary should be found',
+  );
 
   assert.ok(summary.length <= 603);
   assert.match(summary, /\.\.\.$/);
