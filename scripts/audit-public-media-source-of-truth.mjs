@@ -157,7 +157,11 @@ export function classifyPublicMediaPath(publicPath) {
     }
   }
 
-  if (publicPath.startsWith('/uploads/admin/') || publicPath.startsWith('/uploads/products/')) {
+  if (
+    publicPath.startsWith('/uploads/categories/') ||
+    publicPath.startsWith('/uploads/admin/') ||
+    publicPath.startsWith('/uploads/products/')
+  ) {
     return {
       folderOwnerGuess: 'managed upload',
       ownershipClass: 'managed upload',

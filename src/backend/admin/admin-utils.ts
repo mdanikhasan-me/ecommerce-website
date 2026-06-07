@@ -94,7 +94,8 @@ export function isManagedAdminUpload(url: string) {
   const classification = classifyAdminMediaPath(url)
   return (
     classification.canDeleteLocalFile &&
-    (classification.managedPrefix === '/uploads/admin/' ||
+    (classification.managedPrefix === '/uploads/categories/' ||
+      classification.managedPrefix === '/uploads/admin/' ||
       classification.managedPrefix === MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX)
   )
 }
@@ -158,7 +159,9 @@ export async function persistAdminUpload(url: string | null | undefined, options
     publicPathPrefix: uploadPath.publicPathPrefix,
     profile,
     filenameStrategy:
-      typeof options !== 'string' && options.categoryKind === 'subcategory' ? 'stable' : 'unique',
+      typeof options !== 'string' && (options.categoryKind === 'subcategory' || options.purpose === 'categories')
+        ? 'stable'
+        : 'unique',
   })
 }
 
@@ -197,6 +200,7 @@ async function resolveReferenceSafeAdminDeletion(
     if (
       !classification.canDeleteLocalFile ||
       !classification.normalizedPath ||
+      classification.managedPrefix !== '/uploads/categories/' &&
       classification.managedPrefix !== '/uploads/admin/' &&
       classification.managedPrefix !== MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX
     ) {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { existsSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -56,12 +56,34 @@ describe('category media mapping', () => {
   })
 
   it('lets clean saved category images override local fallback defaults', () => {
-    const savedImage = '/uploads/admin/categories/electronics/electronics-test.webp'
+    const savedImage = '/uploads/categories/step-382-category-media-test.webp'
+    const savedFile = join(process.cwd(), 'public', savedImage.replace(/^\//, ''))
+    mkdirSync(join(process.cwd(), 'public', 'uploads', 'categories'), { recursive: true })
+    writeFileSync(savedFile, 'managed-category-image-proof')
 
-    assert.equal(getCategoryMediaBasePath({ slug: 'electronics', image: savedImage }), savedImage)
-    assert.equal(getCategoryMediaPath({ slug: 'electronics', image: savedImage }), savedImage)
+    try {
+      const expectedVersion = publicAssetHashPrefix(savedImage)
+
+      assert.equal(getCategoryMediaBasePath({ slug: 'electronics', image: savedImage }), savedImage)
+      assert.equal(getCategoryMediaPath({ slug: 'electronics', image: savedImage }), `${savedImage}?v=${expectedVersion}`)
+      assert.equal(
+        getCategoryMediaPath({ slug: 'electronics', image: 'data:image/png;base64,AAAA' }),
+        `${CATEGORY_PHOTO_ASSETS.electronics.path}?v=${CATEGORY_PHOTO_ASSETS.electronics.version}`,
+      )
+    } finally {
+      rmSync(savedFile, { force: true })
+    }
+  })
+
+  it('does not let old random admin category uploads override parent category fallbacks', () => {
+    const legacyRandomImage = '/uploads/admin/categories/electronics/electronics-random.webp'
+
     assert.equal(
-      getCategoryMediaPath({ slug: 'electronics', image: 'data:image/png;base64,AAAA' }),
+      getCategoryMediaBasePath({ slug: 'electronics', image: legacyRandomImage }),
+      CATEGORY_PHOTO_ASSETS.electronics.path,
+    )
+    assert.equal(
+      getCategoryMediaPath({ slug: 'electronics', image: legacyRandomImage }),
       `${CATEGORY_PHOTO_ASSETS.electronics.path}?v=${CATEGORY_PHOTO_ASSETS.electronics.version}`,
     )
   })

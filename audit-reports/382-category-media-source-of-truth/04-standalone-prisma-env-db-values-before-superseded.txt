@@ -1,0 +1,20 @@
+﻿{"id":"cmnw0j96u000k4ebt9v8n7uqf","name":"Mobile Phones","slug":"mobile-phones","status":"subcategory","image":null}
+{"id":"cmnw0j9hz000m4ebt3bammu9g","name":"Laptops","slug":"laptops","status":"subcategory","image":null}
+{"id":"cmnw0j9rv000o4ebt5zvgiytv","name":"Audio","slug":"audio","status":"subcategory","image":null}
+{"id":"cmnw0ja1a000q4ebtvhwhnphm","name":"Wearables","slug":"wearables","status":"subcategory","image":null}
+{"id":"cmnw0jajk000t4ebtjqwzamug","name":"Men's Fashion","slug":"mens-fashion","status":"subcategory","image":null}
+{"id":"cmnw0jaug000v4ebt4o245m58","name":"Women's Fashion","slug":"womens-fashion","status":"subcategory","image":null}
+{"id":"cmnw0jbco000y4ebt0q5cofqq","name":"Kitchen","slug":"kitchen","status":"subcategory","image":null}
+{"id":"cmpxbwkzr00141gexnzbwtkhk","name":"Hot Wheels","slug":"hot-wheels","status":"subcategory","image":null}
+{"id":"cmpxbwlfm00161gexdp557o4c","name":"LEGO Sets","slug":"lego-sets","status":"subcategory","image":null}
+{"id":"cmpxbwlsu00181gexgapfd1nb","name":"Diecast Models","slug":"diecast-models","status":"subcategory","image":null}
+{"id":"cmpxbwm61001a1gex2vw4majs","name":"Action Figures","slug":"action-figures","status":"subcategory","image":null}
+{"id":"cmpxbwmj9001c1gex6o2lx5c9","name":"Collectible Cards","slug":"collectible-cards","status":"subcategory","image":null}
+{"id":"cmnw0j8s5000i4ebtm8c61504","name":"Electronics","slug":"electronics","status":"parent/main-category","image":"/images/categories/electronics.jpg"}
+{"id":"cmnw0jaai000r4ebtfbabqabo","name":"Fashion","slug":"fashion","status":"parent/main-category","image":"/images/categories/fashion.jpg"}
+{"id":"cmnw0jb3h000w4ebttcd495u7","name":"Home & Appliances","slug":"home-appliances","status":"parent/main-category","image":"/images/categories/home.jpg"}
+{"id":"cmnw0jblq000z4ebt8v769dld","name":"Beauty & Health","slug":"beauty-health","status":"parent/main-category","image":"/images/categories/beauty.jpg"}
+{"id":"cmnw0jbut00104ebt8emb5g2v","name":"Sports & Fitness","slug":"sports-fitness","status":"parent/main-category","image":"/images/categories/sports.jpg"}
+{"id":"cmnw0jc3y00114ebtc7g4rx0p","name":"Books & Stationery","slug":"books-stationery","status":"parent/main-category","image":"/images/categories/books.jpg"}
+{"id":"cmnw0jcd400124ebtbbds7w0e","name":"Gaming","slug":"gaming","status":"parent/main-category","image":"/images/categories/gaming.jpg"}
+{"id":"cmpxbwkjk00121gexscyz56wu","name":"Toys & Collectibles","slug":"toys-collectibles","status":"parent/main-category","image":"/assets/categories/gaming.jpg"}

@@ -52,7 +52,7 @@ export async function persistAdminCategoryImageFile(
     baseName: uploadPath.baseName,
     publicPathPrefix: uploadPath.publicPathPrefix,
     profile: 'categories',
-    filenameStrategy: 'unique',
+    filenameStrategy: 'stable',
   })
 
   if (!publicUrl || isCategoryImageDataUrl(publicUrl)) {

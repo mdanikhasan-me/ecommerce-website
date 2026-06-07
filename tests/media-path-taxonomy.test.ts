@@ -6,7 +6,7 @@ import { describe, it } from 'node:test'
 
 import sharp from 'sharp'
 
-import { persistAdminUpload } from '@/backend/admin/admin-utils'
+import { deleteManagedAdminUpload, persistAdminUpload } from '@/backend/admin/admin-utils'
 import { classifyAdminMediaPath } from '@/backend/admin/media-lifecycle'
 import {
   buildCatalogProductAssetPath,
@@ -111,7 +111,7 @@ describe('media path taxonomy', () => {
     )
     assert.equal(
       buildManagedCategoryUploadPath({ categorySlug: 'Beauty & Health', mediaId: 'image' }).examplePublicPath,
-      '/uploads/admin/categories/beauty-health/image.webp',
+      '/uploads/categories/beauty-health.webp',
     )
     assert.deepEqual(
       buildManagedSubcategoryUploadPath({ subcategorySlug: 'Mobile Phones' }),
@@ -124,7 +124,7 @@ describe('media path taxonomy', () => {
     )
   })
 
-  it('persists new product, banner, and category uploads under nested managed roots', async () => {
+  it('persists product and banner uploads under nested roots while parent categories use a stable slug file', async () => {
     const dataUrl = await makePngDataUrl()
     const createdUrls: string[] = []
 
@@ -162,7 +162,7 @@ describe('media path taxonomy', () => {
         mediaId: 'image',
       })
       createdUrls.push(categoryUrl ?? '')
-      assert.match(categoryUrl ?? '', /^\/uploads\/admin\/categories\/mobile-phones\/image-.+\.webp$/)
+      assert.equal(categoryUrl, '/uploads/categories/mobile-phones.webp')
 
       const subcategoryUrl = await persistAdminUpload(dataUrl, {
         purpose: 'categories',
@@ -185,9 +185,10 @@ describe('media path taxonomy', () => {
       const oldUrl = '/uploads/products/old-product.webp'
       const nestedUrl = '/uploads/products/electronics/mobile-phones/product-1/image.webp'
       const sourceUrl = '/assets/products/catalog/electronics/mobile-phones/product-1/main.webp'
+      const categoryUrl = '/uploads/categories/electronics.webp'
       const subcategoryUrl = '/assets/categories/subcategories/mobile-phones.webp'
 
-      for (const url of [oldUrl, nestedUrl, sourceUrl, subcategoryUrl]) {
+      for (const url of [oldUrl, nestedUrl, sourceUrl, categoryUrl, subcategoryUrl]) {
         const target = path.join(publicRoot, url.replace(/^\/+/, ''))
         await fs.mkdir(path.dirname(target), { recursive: true })
         await fs.writeFile(target, 'fixture')
@@ -195,6 +196,7 @@ describe('media path taxonomy', () => {
 
       assert.equal(classifyAdminMediaPath(oldUrl).canDeleteLocalFile, true)
       assert.equal(classifyAdminMediaPath(nestedUrl).canDeleteLocalFile, true)
+      assert.equal(classifyAdminMediaPath(categoryUrl).canDeleteLocalFile, true)
       assert.equal(classifyAdminMediaPath(sourceUrl).canDeleteLocalFile, false)
       assert.equal(classifyAdminMediaPath(subcategoryUrl).canDeleteLocalFile, true)
       assert.equal(classifyAdminMediaPath('/assets/categories/electronics.jpg').canDeleteLocalFile, false)
@@ -203,6 +205,7 @@ describe('media path taxonomy', () => {
 
       assert.equal(await deleteManagedUpload(oldUrl, { referenceSource: referenceSource(), publicRoot }), true)
       assert.equal(await deleteManagedUpload(nestedUrl, { referenceSource: referenceSource(), publicRoot }), true)
+      assert.equal(await deleteManagedAdminUpload(categoryUrl, { referenceSource: referenceSource(), publicRoot }), true)
       assert.equal(await deleteManagedUpload(sourceUrl, { referenceSource: referenceSource(), publicRoot }), false)
     } finally {
       await fs.rm(root, { recursive: true, force: true })

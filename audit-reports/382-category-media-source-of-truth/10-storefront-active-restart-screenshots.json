@@ -1,0 +1,23 @@
+﻿{
+    "homeHtmlContainsManagedPath":  false,
+    "screenshots":  [
+                        {
+                            "name":  "home-active-electronics-1250x900.png",
+                            "url":  "http://localhost:3000/?step382restart=20260607223902",
+                            "bytes":  712524,
+                            "exists":  true
+                        },
+                        {
+                            "name":  "category-active-electronics-1250x900.png",
+                            "url":  "http://localhost:3000/category?department=electronics\u0026step382restart=20260607223902",
+                            "bytes":  166806,
+                            "exists":  true
+                        },
+                        {
+                            "name":  "admin-electronics-auth-required-1250x900.png",
+                            "url":  "http://localhost:3000/admin/categories/cmnw0j8s5000i4ebtm8c61504?step382restart=20260607223902",
+                            "bytes":  55501,
+                            "exists":  true
+                        }
+                    ]
+}

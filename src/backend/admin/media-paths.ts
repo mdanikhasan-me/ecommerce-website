@@ -103,15 +103,14 @@ export function buildManagedCategoryUploadPath(input: {
   extension?: string | null
 }): ManagedUploadPathPlan {
   const category = sanitizeMediaPathSegment(input.categorySlug, 'category')
-  const media = sanitizeMediaPathSegment(input.mediaId, DEFAULT_MEDIA_SEGMENT)
   const extension = normalizeMediaExtension(input.extension)
-  const publicPathPrefix = `/uploads/admin/categories/${category}`
+  const publicPathPrefix = '/uploads/categories'
 
   return {
-    directorySegments: ['uploads', 'admin', 'categories', category],
+    directorySegments: ['uploads', 'categories'],
     publicPathPrefix,
-    baseName: media,
-    examplePublicPath: `${publicPathPrefix}/${media}.${extension}`,
+    baseName: category,
+    examplePublicPath: `${publicPathPrefix}/${category}.${extension}`,
   }
 }
 

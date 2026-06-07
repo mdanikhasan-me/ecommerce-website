@@ -15,7 +15,7 @@ const QA_PREFIX = '__qa_media_step285'
 const UPLOAD_ROOTS = {
   product: '/uploads/products/',
   banner: '/uploads/admin/banners/',
-  category: '/uploads/admin/categories/',
+  category: '/uploads/categories/',
 }
 
 function createBaseEvidence() {
@@ -556,10 +556,8 @@ async function runCategoryFlow({
   evidence.tempRecordTypesTested.push('category')
   evidence.category.created = true
   evidence.category.uploadedToExpectedRoot = isExpectedRoot(firstUrl, UPLOAD_ROOTS.category)
-  evidence.category.uploadedToNestedTaxonomyRoot = isExpectedRoot(
-    firstUrl,
-    `${UPLOAD_ROOTS.category}${sanitizeExpectedMediaPathSegment(categorySlug, 'category')}/`,
-  )
+  evidence.category.uploadedToNestedTaxonomyRoot =
+    firstUrl === `${UPLOAD_ROOTS.category}${sanitizeExpectedMediaPathSegment(categorySlug, 'category')}.webp`
   evidence.category.physicalFileAppeared = await fileExistsForUrl(firstUrl)
 
   const activeDelete = await helpers.adminUtils.deleteManagedAdminUpload(firstUrl, { referenceSource })
@@ -579,7 +577,10 @@ async function runCategoryFlow({
     { referenceSource },
   )
   evidence.category.replaced = true
-  evidence.category.replacementDeletedOldFile = replacementResults[0] === true && !(await fileExistsForUrl(firstUrl))
+  evidence.category.replacementDeletedOldFile =
+    firstUrl === secondUrl
+      ? replacementResults.length === 0 && await fileExistsForUrl(secondUrl)
+      : replacementResults[0] === true && !(await fileExistsForUrl(firstUrl))
   evidence.category.replacementKeptNewFile = await fileExistsForUrl(secondUrl)
 
   await prisma.category.delete({ where: { id: category.id } })

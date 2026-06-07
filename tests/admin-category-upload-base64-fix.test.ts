@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { describe, it } from 'node:test'
@@ -52,46 +53,60 @@ async function fileExists(filePath: string) {
 }
 
 async function removeStepCategoryUploadDirectory() {
-  const root = path.resolve(process.cwd(), 'public', 'uploads', 'admin', 'categories')
-  const target = path.resolve(root, 'step-336-category-upload')
+  const target = path.resolve(
+    process.cwd(),
+    'public',
+    'uploads',
+    'categories',
+    'step-336-category-upload.webp',
+  )
+  const root = path.resolve(process.cwd(), 'public', 'uploads', 'categories')
   assert.ok(target.startsWith(`${root}${path.sep}`))
-  await fs.rm(target, { recursive: true, force: true })
+  await fs.rm(target, { force: true })
+}
+
+async function fileHash(filePath: string) {
+  return createHash('sha256').update(await fs.readFile(filePath)).digest('hex')
 }
 
 describe('admin category upload base64 fix', () => {
-  it('persists uploaded category files as clean managed URLs with slug-based filenames', async () => {
+  it('persists parent category files as one clean stable slug URL', async () => {
     const png = await makePngBuffer()
-    const createdUrls: string[] = []
+    const firstUpload = makeUploadFile(png)
+    const secondPng = await sharp({
+      create: {
+        width: 24,
+        height: 16,
+        channels: 4,
+        background: '#253041',
+      },
+    })
+      .png()
+      .toBuffer()
+    const secondUpload = makeUploadFile(secondPng)
 
     try {
-      const firstUrl = await persistAdminCategoryImageFile(makeUploadFile(png), {
+      const firstUrl = await persistAdminCategoryImageFile(firstUpload, {
         ownerSlugOrId: 'Step 336 Category Upload',
       })
-      createdUrls.push(firstUrl)
+      const firstFile = path.join(process.cwd(), 'public', firstUrl.replace(/^\/+/, ''))
+      const firstHash = await fileHash(firstFile)
 
-      const secondUrl = await persistAdminCategoryImageFile(makeUploadFile(png), {
+      const secondUrl = await persistAdminCategoryImageFile(secondUpload, {
         ownerSlugOrId: 'Step 336 Category Upload',
       })
-      createdUrls.push(secondUrl)
+      const secondFile = path.join(process.cwd(), 'public', secondUrl.replace(/^\/+/, ''))
+      const secondHash = await fileHash(secondFile)
 
-      assert.match(
-        firstUrl,
-        /^\/uploads\/admin\/categories\/step-336-category-upload\/step-336-category-upload-.+\.webp$/,
-      )
-      assert.match(
-        secondUrl,
-        /^\/uploads\/admin\/categories\/step-336-category-upload\/step-336-category-upload-.+\.webp$/,
-      )
-      assert.notEqual(firstUrl, secondUrl)
+      assert.equal(firstUrl, '/uploads/categories/step-336-category-upload.webp')
+      assert.equal(secondUrl, firstUrl)
+      assert.notEqual(firstHash, secondHash)
+      assert.doesNotMatch(firstUrl, /-[a-z0-9]{6,}-[a-f0-9]{8}\.webp$/)
+      assert.doesNotMatch(firstUrl, /^\/uploads\/admin\/categories\//)
 
-      for (const url of createdUrls) {
-        assert.doesNotMatch(url, /^data:image\//)
-        assert.equal(classifyAdminMediaPath(url).canDeleteLocalFile, true)
-        assert.equal(
-          await fileExists(path.join(process.cwd(), 'public', url.replace(/^\/+/, ''))),
-          true,
-        )
-      }
+      assert.doesNotMatch(firstUrl, /^data:image\//)
+      assert.equal(classifyAdminMediaPath(firstUrl).canDeleteLocalFile, true)
+      assert.equal(await fileExists(secondFile), true)
     } finally {
       await removeStepCategoryUploadDirectory()
     }
@@ -108,17 +123,18 @@ describe('admin category upload base64 fix', () => {
     assert.equal(parsed.error, CATEGORY_IMAGE_DATA_URL_ERROR)
   })
 
-  it('keeps category upload planning inside the managed admin upload root', () => {
+  it('keeps category upload planning inside the clean managed category upload root', () => {
     const plan = buildManagedCategoryUploadPath({
       categorySlug: '../Electronics',
       mediaId: '../image',
     })
 
-    assert.equal(plan.publicPathPrefix, '/uploads/admin/categories/category')
-    assert.equal(plan.examplePublicPath, '/uploads/admin/categories/category/media.webp')
-    assert.deepEqual(plan.directorySegments, ['uploads', 'admin', 'categories', 'category'])
+    assert.equal(plan.publicPathPrefix, '/uploads/categories')
+    assert.equal(plan.examplePublicPath, '/uploads/categories/category.webp')
+    assert.deepEqual(plan.directorySegments, ['uploads', 'categories'])
     assert.doesNotMatch(plan.examplePublicPath, /\.\.|\\/)
     assert.equal(classifyAdminMediaPath('/assets/categories/electronics.jpg').canDeleteLocalFile, false)
+    assert.equal(classifyAdminMediaPath('/uploads/categories/electronics.webp').canDeleteLocalFile, true)
     assert.equal(
       classifyAdminMediaPath('/uploads/admin/categories/electronics/electronics-test.webp').canDeleteLocalFile,
       true,
@@ -126,10 +142,11 @@ describe('admin category upload base64 fix', () => {
   })
 
   it('wires the category form to managed upload instead of storing file reader data URLs', async () => {
-    const [formSource, imageFieldSource, routeSource, updateRouteSource] = await Promise.all([
+    const [formSource, imageFieldSource, routeSource, createRouteSource, updateRouteSource] = await Promise.all([
       fs.readFile(path.join(process.cwd(), 'src/frontend/components/admin/CategoryEditorForm.tsx'), 'utf8'),
       fs.readFile(path.join(process.cwd(), 'src/frontend/components/admin/AdminImageField.tsx'), 'utf8'),
       fs.readFile(path.join(process.cwd(), 'src/app/api/admin/categories/upload/route.ts'), 'utf8'),
+      fs.readFile(path.join(process.cwd(), 'src/app/api/admin/categories/route.ts'), 'utf8'),
       fs.readFile(path.join(process.cwd(), 'src/app/api/admin/categories/[id]/route.ts'), 'utf8'),
     ])
 
@@ -144,6 +161,10 @@ describe('admin category upload base64 fix', () => {
     assert.match(routeSource, /persistAdminCategoryImageFile/)
     assert.doesNotMatch(routeSource, /assets[\\/]categories[\\/]subcategories/)
     assert.match(updateRouteSource, /deleteReplacedAdminUploads\(\[existingCategory\.image\], \[image\]\)/)
-    assert.match(updateRouteSource, /url\.startsWith\('\/uploads\/admin\/'\)/)
+    assert.match(updateRouteSource, /isManagedAdminUpload\(url\)/)
+    assert.match(createRouteSource, /revalidatePath\('\/'\)/)
+    assert.match(createRouteSource, /revalidatePath\('\/category'\)/)
+    assert.match(updateRouteSource, /revalidatePath\('\/'\)/)
+    assert.match(updateRouteSource, /revalidatePath\('\/category'\)/)
   })
 })

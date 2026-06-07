@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import {
   cleanupManagedAdminUploads,
   deleteManagedAdminUpload,
   deleteReplacedAdminUploads,
   ensureUniqueSlug,
+  isManagedAdminUpload,
   persistAdminUpload,
   requireAdminSession,
 } from '@/backend/admin/admin-utils'
@@ -15,6 +17,27 @@ import { logSecurityEvent } from '@/backend/security/security-log'
 
 interface RouteContext {
   params: Promise<{ id: string }>
+}
+
+function revalidateCategorySurfaces(input: {
+  slugs?: Array<string | null | undefined>
+  adminCategoryIds?: Array<string | null | undefined>
+}) {
+  revalidatePath('/')
+  revalidatePath('/category')
+  revalidatePath('/admin/categories')
+
+  for (const slug of input.slugs ?? []) {
+    if (slug) {
+      revalidatePath(`/category/${slug}`)
+    }
+  }
+
+  for (const id of input.adminCategoryIds ?? []) {
+    if (id) {
+      revalidatePath(`/admin/categories/${id}`)
+    }
+  }
 }
 
 export async function PUT(req: NextRequest, { params }: RouteContext) {
@@ -49,7 +72,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       categoryKind: payload.parentId ? 'subcategory' : 'category',
     })
     const newUploads = [image].filter(
-      (url): url is string => Boolean(url && url !== existingCategory.image && url.startsWith('/uploads/admin/')),
+      (url): url is string => Boolean(url && url !== existingCategory.image && isManagedAdminUpload(url)),
     )
 
     try {
@@ -82,6 +105,11 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
           },
         })
       }
+
+      revalidateCategorySurfaces({
+        slugs: [existingCategory.slug, category.slug],
+        adminCategoryIds: [existingCategory.id],
+      })
 
       return NextResponse.json({ category })
     } catch (error) {
@@ -120,11 +148,21 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
         data: { isActive: false },
       })
 
+      revalidateCategorySurfaces({
+        slugs: [existingCategory.slug],
+        adminCategoryIds: [existingCategory.id],
+      })
+
       return NextResponse.json({ success: true, deleted: false, archived: true })
     }
 
     await db.category.delete({ where: { id: existingCategory.id } })
     await deleteManagedAdminUpload(existingCategory.image)
+
+    revalidateCategorySurfaces({
+      slugs: [existingCategory.slug],
+      adminCategoryIds: [existingCategory.id],
+    })
 
     return NextResponse.json({ success: true, deleted: true })
   } catch (error: unknown) {

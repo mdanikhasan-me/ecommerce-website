@@ -5,9 +5,11 @@ export const PROTECTED_SOURCE_ASSET_PREFIXES = [
   '/images/',
 ] as const
 
+export const MANAGED_PARENT_CATEGORY_UPLOAD_PREFIX = '/uploads/categories/' as const
 export const MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX = '/assets/categories/subcategories/' as const
 
 export const MANAGED_LOCAL_UPLOAD_PREFIXES = [
+  MANAGED_PARENT_CATEGORY_UPLOAD_PREFIX,
   MANAGED_SUBCATEGORY_ASSET_UPLOAD_PREFIX,
   '/uploads/admin/',
   '/uploads/products/',
@@ -18,7 +20,7 @@ export const MANAGED_MEDIA_STORAGE_POLICY = {
   protectedSourceAssetRoots: PROTECTED_SOURCE_ASSET_PREFIXES,
   currentProductUploadPattern: '/uploads/products/<category>/<subcategory>/<product>/<media>-<timestamp>-<random>.<ext>',
   currentAdminBannerUploadPattern: '/uploads/admin/banners/<banner>/<media>-<timestamp>-<random>.<ext>',
-  currentAdminCategoryUploadPattern: '/uploads/admin/categories/<category>/<media>-<timestamp>-<random>.<ext>',
+  currentAdminCategoryUploadPattern: '/uploads/categories/<category>.webp',
   currentAdminSubcategoryImageUploadPattern: '/assets/categories/subcategories/<subcategory>.webp',
   recommendedProductStorageKeyPattern: 'products/<product-id>/media/<media-id>/<variant>.<ext>',
   recommendedAdminStorageKeyPattern: 'admin/<purpose>/<record-id>/media/<media-id>/<variant>.<ext>',

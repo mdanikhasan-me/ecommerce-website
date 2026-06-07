@@ -24,13 +24,16 @@ describe('public media source-of-truth audit guardrails', () => {
   it('classifies managed upload roots separately from source assets', () => {
     const productUpload = classifyPublicMediaPath('/uploads/products/electronics/audio/sony/image.webp')
     const bannerUpload = classifyPublicMediaPath('/uploads/admin/banners/home/desktop.webp')
-    const categoryUpload = classifyPublicMediaPath('/uploads/admin/categories/audio/image.webp')
+    const categoryUpload = classifyPublicMediaPath('/uploads/categories/electronics.webp')
+    const legacyCategoryUpload = classifyPublicMediaPath('/uploads/admin/categories/audio/image.webp')
     const subcategoryAssetUpload = classifyPublicMediaPath('/assets/categories/subcategories/audio.webp')
 
     assert.equal(productUpload.folderOwnerGuess, 'managed upload')
     assert.equal(productUpload.safeToDelete, 'only if unreferenced')
     assert.equal(bannerUpload.folderOwnerGuess, 'managed upload')
     assert.equal(categoryUpload.folderOwnerGuess, 'managed upload')
+    assert.equal(categoryUpload.safeToDelete, 'only if unreferenced')
+    assert.equal(legacyCategoryUpload.folderOwnerGuess, 'managed upload')
     assert.equal(subcategoryAssetUpload.ownershipClass, 'approved category media folder')
     assert.equal(subcategoryAssetUpload.safeToDelete, 'only if unreferenced')
   })

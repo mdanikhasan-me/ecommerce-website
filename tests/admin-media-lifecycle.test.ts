@@ -45,9 +45,13 @@ async function withTempProject(callback: (root: string) => Promise<void>) {
 
 describe('admin media upload deletion lifecycle guardrails', () => {
   it('allows only known managed local upload roots as local deletion candidates', () => {
+    const category = classifyAdminMediaPath('/uploads/categories/electronics.webp')
     const banner = classifyAdminMediaPath('/uploads/admin/banners/banner.webp')
     const product = classifyAdminMediaPath('/uploads/products/product.webp')
 
+    assert.equal(category.bucket, 'admin-managed-upload')
+    assert.equal(category.canDeleteLocalFile, true)
+    assert.equal(category.managedPrefix, '/uploads/categories/')
     assert.equal(banner.bucket, 'admin-managed-upload')
     assert.equal(banner.canDeleteLocalFile, true)
     assert.equal(banner.managedPrefix, '/uploads/admin/')
@@ -57,7 +61,7 @@ describe('admin media upload deletion lifecycle guardrails', () => {
   })
 
   it('does not allow managed upload root directories as local deletion candidates', () => {
-    for (const rootPath of ['/uploads/admin/', '/uploads/products/']) {
+    for (const rootPath of ['/uploads/categories/', '/uploads/admin/', '/uploads/products/']) {
       const classified = classifyAdminMediaPath(rootPath)
 
       assert.equal(classified.bucket, 'admin-managed-upload')
@@ -104,6 +108,7 @@ describe('admin media upload deletion lifecycle guardrails', () => {
 
   it('refuses query strings and fragments on managed upload paths', () => {
     for (const decoratedPath of [
+      '/uploads/categories/electronics.webp?v=abc123',
       '/uploads/admin/banners/banner.webp?download=1',
       '/uploads/products/product.webp#preview',
     ]) {
@@ -115,12 +120,17 @@ describe('admin media upload deletion lifecycle guardrails', () => {
   })
 
   it('resolves managed upload candidates inside public uploads only', () => {
+    const categoryPath = resolveManagedMediaFilePath('/uploads/categories/electronics.webp', '/uploads/categories/')
     const filePath = resolveManagedMediaFilePath('/uploads/admin/banners/banner.webp', '/uploads/admin/')
     const subcategoryPath = resolveManagedMediaFilePath(
       '/assets/categories/subcategories/mobile-phones.webp',
       '/assets/categories/subcategories/',
     )
 
+    assert.equal(
+      categoryPath,
+      path.resolve(process.cwd(), 'public', 'uploads', 'categories', 'electronics.webp'),
+    )
     assert.equal(
       filePath,
       path.resolve(process.cwd(), 'public', 'uploads', 'admin', 'banners', 'banner.webp'),

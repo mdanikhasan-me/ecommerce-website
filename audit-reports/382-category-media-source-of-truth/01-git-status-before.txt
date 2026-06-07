@@ -1,0 +1,27 @@
+﻿COMMAND: git status --short
+ M public/assets/icons/ui/categories/beauty-health.svg
+ M public/assets/icons/ui/categories/books-stationery.svg
+ M public/assets/icons/ui/categories/electronics.svg
+ M public/assets/icons/ui/categories/fashion.svg
+ M public/assets/icons/ui/categories/gaming.svg
+ M public/assets/icons/ui/categories/home-appliances.svg
+ M public/assets/icons/ui/categories/sports-fitness.svg
+ M public/assets/icons/ui/categories/toys-collectibles.svg
+?? public/uploads/admin/banners/hero/
+?? public/uploads/admin/categories/
+
+COMMAND: git branch --show-current
+main
+
+COMMAND: git log -8 --oneline
+977f3f4 fix: compact missing subcategory media cards
+e265238 fix: stabilize category media uploads and grids
+11e3ba0 fix: preserve local icon masks
+06d173e fix: clear remaining editor problems
+58a6082 fix: clear editor diagnostics
+970376a fix: harden admin return refund parsing
+f2c587a fix: harden admin user list filters
+c4ace3c fix: harden SEO faceted page parsing
+
+COMMAND: git rev-parse HEAD
+977f3f40d5da6cb705595e25aa5336cea2556d41

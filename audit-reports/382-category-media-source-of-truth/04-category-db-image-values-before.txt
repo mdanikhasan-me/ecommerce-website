@@ -1,0 +1,23 @@
+# App DB category image values (Next loadEnvConfig)
+# Regenerated after discovering standalone Prisma and Next dev used different env loading priority.
+# No DB URL or secret values are printed.
+{"id":"cmpxdfpf1000j5jm0mioowq7j","name":"Mobile Phones","slug":"mobile-phones","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpf5000l5jm0wrz9j4v4","name":"Laptops","slug":"laptops","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpf8000n5jm0pqybxxc5","name":"Audio","slug":"audio","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpfc000p5jm0d2usbg2b","name":"Wearables","slug":"wearables","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpfi000s5jm0aqy50520","name":"Men's Fashion","slug":"mens-fashion","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpfm000u5jm0ukz1j0sm","name":"Women's Fashion","slug":"womens-fashion","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpfs000x5jm0jlepoept","name":"Kitchen","slug":"kitchen","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpgc00145jm02zqny40y","name":"Hot Wheels","slug":"hot-wheels","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpgf00165jm0vqqf58o5","name":"LEGO Sets","slug":"lego-sets","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpgj00185jm0glbhdiwz","name":"Diecast Models","slug":"diecast-models","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpgm001a5jm0rm5nvbz5","name":"Action Figures","slug":"action-figures","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpgq001c5jm0xahsq5ri","name":"Collectible Cards","slug":"collectible-cards","status":"subcategory","isActive":true,"image":null}
+{"id":"cmpxdfpev000h5jm0f1qaipzx","name":"Electronics","slug":"electronics","status":"parent/main-category","isActive":true,"image":"/assets/categories/electronics.jpg"}
+{"id":"cmpxdfpff000q5jm0bh3fjl1z","name":"Fashion","slug":"fashion","status":"parent/main-category","isActive":true,"image":"/assets/categories/fashion.jpg"}
+{"id":"cmpxdfpfp000v5jm0zb04ac5a","name":"Home & Appliances","slug":"home-appliances","status":"parent/main-category","isActive":true,"image":"/assets/categories/home-appliances.jpg"}
+{"id":"cmpxdfpfw000y5jm0s8pmjl1a","name":"Beauty & Health","slug":"beauty-health","status":"parent/main-category","isActive":true,"image":"/assets/categories/beauty-health.jpg"}
+{"id":"cmpxdfpfz000z5jm00r3woyp6","name":"Sports & Fitness","slug":"sports-fitness","status":"parent/main-category","isActive":true,"image":"/assets/categories/sports-fitness.jpg"}
+{"id":"cmpxdfpg200105jm0nyvfztd9","name":"Books & Stationery","slug":"books-stationery","status":"parent/main-category","isActive":true,"image":"/assets/categories/books-stationery.jpg"}
+{"id":"cmpxdfpg500115jm0mtybi7jz","name":"Gaming","slug":"gaming","status":"parent/main-category","isActive":true,"image":"/assets/categories/gaming.jpg"}
+{"id":"cmpxdfpg900125jm0nu7z3nqu","name":"Toys & Collectibles","slug":"toys-collectibles","status":"parent/main-category","isActive":true,"image":"/assets/categories/toys-collectibles.jpg"}

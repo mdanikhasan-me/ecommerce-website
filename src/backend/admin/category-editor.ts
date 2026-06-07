@@ -19,6 +19,10 @@ const optionalTrimmedString = (max: number) =>
     .nullable()
     .transform((value) => value || null)
 
+function stripCategoryImageVersion(value: string | null | undefined) {
+  return value?.replace(/\?v=[a-f0-9]{8,64}$/i, '') ?? value
+}
+
 const optionalCategoryImageString = z
   .string()
   .trim()
@@ -43,7 +47,7 @@ const optionalCategoryImageString = z
       })
     }
   })
-  .transform((value) => value || null)
+  .transform((value) => stripCategoryImageVersion(value) || null)
 
 const categoryPayloadSchema = z.object({
   name: z.string().trim().min(1, 'Category name is required').max(120, 'Category name is too long'),

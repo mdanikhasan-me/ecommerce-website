@@ -1,0 +1,216 @@
+{
+  "startedAt": "2026-06-07T16:33:01.395Z",
+  "policy": "B",
+  "stablePublicPath": "/uploads/categories/electronics.webp",
+  "originalDb": {
+    "id": "cmnw0j8s5000i4ebtm8c61504",
+    "name": "Electronics",
+    "slug": "electronics",
+    "parentId": null,
+    "image": "/images/categories/electronics.jpg"
+  },
+  "stableFileBefore": null,
+  "fallbackElectronicsAssetBefore": {
+    "path": "public/assets/categories/electronics.jpg",
+    "bytes": 73367,
+    "sha256": "75b478cf761d743fcd63e56e17f91c867c94caa063eaa215f8b74fdc117e2ab8",
+    "mtime": "2026-06-04T19:40:18.518Z"
+  },
+  "legacyFilesBefore": [
+    {
+      "publicPath": "/uploads/admin/categories/electronics/electronics-mq3xabpq-26c7400d.webp",
+      "path": "public/uploads/admin/categories/electronics/electronics-mq3xabpq-26c7400d.webp",
+      "bytes": 154790,
+      "sha256": "01613a38d9b617427cfe1fb856caaef01fd4d98e67308ab23c722abca76c90c5",
+      "mtime": "2026-06-07T15:14:18.450Z"
+    }
+  ],
+  "legacyReferencesBefore": [],
+  "uploads": [
+    {
+      "step": "first-write",
+      "returnedUrl": "/uploads/categories/electronics.webp",
+      "cleanPathOnly": true,
+      "containsDataUrl": false,
+      "containsLegacyAdminCategoryRoot": false,
+      "containsRandomSuffix": false,
+      "file": {
+        "path": "public/uploads/categories/electronics.webp",
+        "bytes": 17242,
+        "sha256": "b8427094a2c5cc4fd4e6754a41df2a80be54bd9ce6cae23debaac6eb98e957e3",
+        "mtime": "2026-06-07T16:33:02.391Z"
+      }
+    },
+    {
+      "step": "second-replacement",
+      "returnedUrl": "/uploads/categories/electronics.webp",
+      "sameUrlAsFirst": true,
+      "cleanPathOnly": true,
+      "containsDataUrl": false,
+      "containsLegacyAdminCategoryRoot": false,
+      "containsRandomSuffix": false,
+      "file": {
+        "path": "public/uploads/categories/electronics.webp",
+        "bytes": 18464,
+        "sha256": "af0f17339239214bcdc2ad7ea4f8b56f8e43e9dd30cb4c3e6385bfddb9c21845",
+        "mtime": "2026-06-07T16:33:02.728Z"
+      },
+      "checksumChangedFromFirst": true
+    }
+  ],
+  "activeDbDuringProof": {
+    "id": "cmnw0j8s5000i4ebtm8c61504",
+    "name": "Electronics",
+    "slug": "electronics",
+    "parentId": null,
+    "image": "/uploads/categories/electronics.webp"
+  },
+  "resolverDuringProof": "/uploads/categories/electronics.webp?v=af0f17339239",
+  "cleanup": [
+    {
+      "publicPath": "/uploads/admin/categories/electronics/electronics-mq3xabpq-26c7400d.webp",
+      "beforeExists": true,
+      "deleted": true,
+      "afterExists": false
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "home-active-electronics-1250x900.png",
+      "url": "http://localhost:3000/?step382=1780849986374",
+      "width": 1250,
+      "height": 900,
+      "status": "captured",
+      "exitCode": 0,
+      "bytes": 715856,
+      "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/home-active-electronics-1250x900.png",
+      "stderrTail": [
+        "[5484:7352:0607/223307.542:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+        "715856 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\home-active-electronics-1250x900.png"
+      ]
+    },
+    {
+      "name": "category-active-electronics-1250x900.png",
+      "url": "http://localhost:3000/category?department=electronics&step382=1780849986374",
+      "width": 1250,
+      "height": 900,
+      "status": "captured",
+      "exitCode": 0,
+      "bytes": 159014,
+      "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/category-active-electronics-1250x900.png",
+      "stderrTail": [
+        "[27156:22844:0607/223309.576:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+        "[27156:22844:0607/223310.125:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+        "159014 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\category-active-electronics-1250x900.png"
+      ]
+    },
+    {
+      "name": "admin-electronics-auth-required-1250x900.png",
+      "url": "http://localhost:3000/admin/categories/cmnw0j8s5000i4ebtm8c61504?step382=1780849986374",
+      "width": 1250,
+      "height": 900,
+      "status": "captured",
+      "exitCode": 0,
+      "bytes": 54249,
+      "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/admin-electronics-auth-required-1250x900.png",
+      "stderrTail": [
+        "[38860:26884:0607/223311.998:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+        "54249 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\admin-electronics-auth-required-1250x900.png"
+      ]
+    }
+  ],
+  "restored": {
+    "at": "2026-06-07T16:33:12.498Z",
+    "db": {
+      "id": "cmnw0j8s5000i4ebtm8c61504",
+      "name": "Electronics",
+      "slug": "electronics",
+      "parentId": null,
+      "image": "/images/categories/electronics.jpg"
+    },
+    "stableFileAfterRestore": null,
+    "legacyFilesAfterRestore": []
+  },
+  "error": null,
+  "finishedAt": "2026-06-07T16:33:12.581Z",
+  "storefrontRecaptureAfterDevRestart": {
+    "startedAt": "2026-06-07T16:36:25.803Z",
+    "dbBefore": {
+      "id": "cmnw0j8s5000i4ebtm8c61504",
+      "name": "Electronics",
+      "slug": "electronics",
+      "parentId": null,
+      "image": "/images/categories/electronics.jpg"
+    },
+    "upload": {
+      "returnedUrl": "/uploads/categories/electronics.webp",
+      "cleanPathOnly": true,
+      "file": {
+        "path": "public/uploads/categories/electronics.webp",
+        "bytes": 18020,
+        "sha256": "79aedcb619a4e7f4906a4c1214599ab844bd06f9dc4b42a176b05d4a03d9d4f4",
+        "mtime": "2026-06-07T16:36:25.834Z"
+      }
+    },
+    "resolver": "/uploads/categories/electronics.webp?v=79aedcb619a4",
+    "homeHtmlContainsManagedPath": false,
+    "screenshots": [
+      {
+        "name": "home-active-electronics-1250x900.png",
+        "url": "http://localhost:3000/?step382recapture=1780850186484",
+        "width": 1250,
+        "height": 900,
+        "status": "captured",
+        "exitCode": 0,
+        "bytes": 714659,
+        "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/home-active-electronics-1250x900.png",
+        "stderrTail": [
+          "[2600:22476:0607/223629.073:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+          "714659 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\home-active-electronics-1250x900.png",
+          "[2600:6648:0607/223629.465:ERROR:chrome\\browser\\edge_windows_user_activity\\windows_user_activity_register.cc:717] hr failed: Invalid window handle. (0x80070578)"
+        ]
+      },
+      {
+        "name": "category-active-electronics-1250x900.png",
+        "url": "http://localhost:3000/category?department=electronics&step382recapture=1780850186484",
+        "width": 1250,
+        "height": 900,
+        "status": "captured",
+        "exitCode": 0,
+        "bytes": 166806,
+        "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/category-active-electronics-1250x900.png",
+        "stderrTail": [
+          "[30888:39240:0607/223630.915:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+          "[30888:39240:0607/223631.796:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+          "166806 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\category-active-electronics-1250x900.png"
+        ]
+      },
+      {
+        "name": "admin-electronics-auth-required-1250x900.png",
+        "url": "http://localhost:3000/admin/categories/cmnw0j8s5000i4ebtm8c61504?step382recapture=1780850186484",
+        "width": 1250,
+        "height": 900,
+        "status": "captured",
+        "exitCode": 0,
+        "bytes": 55501,
+        "path": "audit-reports/382-category-media-source-of-truth/screenshots-after/admin-electronics-auth-required-1250x900.png",
+        "stderrTail": [
+          "[10692:32668:0607/223633.623:ERROR:chrome\\browser\\task_manager\\providers\\fallback_task_provider.cc:126] Every renderer should have at least one task provided by a primary task provider. If a \"Renderer\" fallback task is shown, it is a bug. If you have repro steps, please file a new bug and tag it as a dependency of crbug.com/40528867.",
+          "55501 bytes written to file P:\\Projects\\E-commers\\boilabin-marketplace\\audit-reports\\382-category-media-source-of-truth\\screenshots-after\\admin-electronics-auth-required-1250x900.png"
+        ]
+      }
+    ],
+    "restored": {
+      "at": "2026-06-07T16:36:34.648Z",
+      "db": {
+        "id": "cmnw0j8s5000i4ebtm8c61504",
+        "name": "Electronics",
+        "slug": "electronics",
+        "parentId": null,
+        "image": "/images/categories/electronics.jpg"
+      },
+      "stableFileAfterRestore": null
+    },
+    "finishedAt": "2026-06-07T16:36:34.805Z"
+  }
+}

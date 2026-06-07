@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import {
   cleanupManagedAdminUploads,
@@ -9,6 +10,19 @@ import {
 import { assertValidCategoryParent, parseAdminCategoryPayload } from '@/backend/admin/category-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+
+function revalidateCategorySurfaces(categoryId?: string | null, slug?: string | null) {
+  revalidatePath('/')
+  revalidatePath('/category')
+  revalidatePath('/admin/categories')
+
+  if (slug) {
+    revalidatePath(`/category/${slug}`)
+  }
+  if (categoryId) {
+    revalidatePath(`/admin/categories/${categoryId}`)
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,6 +57,8 @@ export async function POST(req: NextRequest) {
           parentId: payload.parentId,
         },
       })
+
+      revalidateCategorySurfaces(category.id, category.slug)
 
       return NextResponse.json({ category }, { status: 201 })
     } catch (error) {
