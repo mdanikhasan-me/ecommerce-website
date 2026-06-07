@@ -90,6 +90,17 @@ describe('local physical storefront icon assets', () => {
     assert.doesNotMatch(globals, /--local-icon-url/)
     assert.match(localIcon, /local-icon--\$\{name\}/)
 
+    const localIconBlockStart = globals.indexOf('\n.local-icon {')
+    const localIconBlockEnd = globals.indexOf('.local-icon--youtube')
+    const reopenedComponentLayer = globals.indexOf('@layer components {', localIconBlockEnd)
+
+    assert.ok(localIconBlockStart > -1, 'LocalIcon mask CSS should be outside Tailwind layers')
+    assert.ok(localIconBlockEnd > localIconBlockStart, 'LocalIcon mask CSS should include all icon mask classes')
+    assert.ok(
+      reopenedComponentLayer > localIconBlockEnd,
+      'Tailwind component layer should reopen only after LocalIcon masks so dynamic mask classes are not pruned',
+    )
+
     for (const [iconName, publicPath] of Object.entries(STOREFRONT_ICON_ASSETS)) {
       assert.match(
         globals,
