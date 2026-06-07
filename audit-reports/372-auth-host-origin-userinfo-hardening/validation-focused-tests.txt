@@ -1,0 +1,21 @@
+▶ auth host configuration
+  ✔ trusts local auth origins during local production verification (0.8508ms)
+  ✔ honors an explicit AUTH_TRUST_HOST override (0.1112ms)
+  ✔ normalizes AUTH_TRUST_HOST boolean values before evaluating host trust (0.0983ms)
+  ✔ trusts recognized managed production host signals without a blind custom-host fallback (0.1361ms)
+  ✔ does not silently trust unknown custom production hosts (0.1406ms)
+  ✔ uses NEXT_PUBLIC_SITE_URL as a local production verification fallback (0.1455ms)
+  ✔ ignores unsupported auth origin protocols when evaluating host trust (0.6821ms)
+  ✔ ignores auth origins containing URL userinfo credentials (0.1666ms)
+  ✔ trims canonical auth origins before comparing configured hosts (0.1334ms)
+  ✔ warns about missing or inconsistent canonical origins (0.2022ms)
+  ✔ does not warn for managed hosting trust when a canonical origin exists (0.1216ms)
+✔ auth host configuration (4.39ms)
+ℹ tests 11
+ℹ suites 1
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 335.1254

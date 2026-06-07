@@ -121,6 +121,36 @@ describe('auth host configuration', () => {
     )
   })
 
+  it('ignores auth origins containing URL userinfo credentials', () => {
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        NEXTAUTH_URL: 'https://user:pass@localhost:3000',
+      }),
+      false,
+    )
+    assert.deepEqual(
+      getAuthHostConfigurationWarnings({
+        NODE_ENV: 'production',
+        AUTH_URL: 'https://user:pass@shop.example.com',
+        NEXTAUTH_URL: 'https://admin:secret@shop.example.com',
+      }),
+      [
+        'Set AUTH_URL or NEXTAUTH_URL to the canonical app origin.',
+        'Set AUTH_TRUST_HOST=true for trusted reverse proxies or managed hosting.',
+      ],
+    )
+    assert.deepEqual(
+      getAuthHostConfigurationWarnings({
+        NODE_ENV: 'production',
+        AUTH_URL: 'https://user:pass@shop.example.com',
+        NEXTAUTH_URL: 'https://shop.example.com',
+        AUTH_TRUST_HOST: 'true',
+      }),
+      [],
+    )
+  })
+
   it('trims canonical auth origins before comparing configured hosts', () => {
     assert.deepEqual(
       getAuthHostConfigurationWarnings({

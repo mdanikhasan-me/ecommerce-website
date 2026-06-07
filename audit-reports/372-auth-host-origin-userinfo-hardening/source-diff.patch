@@ -1,0 +1,53 @@
+diff --git a/src/backend/auth/host.ts b/src/backend/auth/host.ts
+index ef5db32..5c5f9d6 100644
+--- a/src/backend/auth/host.ts
++++ b/src/backend/auth/host.ts
+@@ -19,6 +19,7 @@ function parseOrigin(value: string | undefined): string | null {
+   try {
+     const url = new URL(trimmed)
+     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
++    if (url.username || url.password) return null
+     return url.origin
+   } catch {
+     return null
+diff --git a/tests/auth-host.test.ts b/tests/auth-host.test.ts
+index 610c001..a8ed9ee 100644
+--- a/tests/auth-host.test.ts
++++ b/tests/auth-host.test.ts
+@@ -121,6 +121,36 @@ describe('auth host configuration', () => {
+     )
+   })
+
++  it('ignores auth origins containing URL userinfo credentials', () => {
++    assert.equal(
++      shouldTrustAuthHost({
++        NODE_ENV: 'production',
++        NEXTAUTH_URL: 'https://user:pass@localhost:3000',
++      }),
++      false,
++    )
++    assert.deepEqual(
++      getAuthHostConfigurationWarnings({
++        NODE_ENV: 'production',
++        AUTH_URL: 'https://user:pass@shop.example.com',
++        NEXTAUTH_URL: 'https://admin:secret@shop.example.com',
++      }),
++      [
++        'Set AUTH_URL or NEXTAUTH_URL to the canonical app origin.',
++        'Set AUTH_TRUST_HOST=true for trusted reverse proxies or managed hosting.',
++      ],
++    )
++    assert.deepEqual(
++      getAuthHostConfigurationWarnings({
++        NODE_ENV: 'production',
++        AUTH_URL: 'https://user:pass@shop.example.com',
++        NEXTAUTH_URL: 'https://shop.example.com',
++        AUTH_TRUST_HOST: 'true',
++      }),
++      [],
++    )
++  })
++
+   it('trims canonical auth origins before comparing configured hosts', () => {
+     assert.deepEqual(
+       getAuthHostConfigurationWarnings({

@@ -19,6 +19,7 @@ function parseOrigin(value: string | undefined): string | null {
   try {
     const url = new URL(trimmed)
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
+    if (url.username || url.password) return null
     return url.origin
   } catch {
     return null
