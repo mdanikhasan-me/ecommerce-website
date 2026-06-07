@@ -1,0 +1,2 @@
+Read-only finding: category SEO faceted URL detection used Number(page) for the public page query. That could mark non-decimal or unsafe values such as 0x10, 1e3, 1.5, or an unsafe-large page as faceted even though storefront query parsing would treat those page values as invalid/default.
+Resolution: require a trimmed whole decimal safe integer above page 1 before the SEO helper treats page as faceted.

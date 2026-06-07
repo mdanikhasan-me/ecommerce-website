@@ -46,19 +46,24 @@ const FACETED_CATEGORY_KEYS = [
   'rating',
   'inStock',
 ]
+const PLAIN_PAGE_PATTERN = /^\d+$/
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value
 }
 
+function isFacetedPage(value: string | undefined) {
+  const normalized = value?.trim()
+  if (!normalized || !PLAIN_PAGE_PATTERN.test(normalized)) return false
+
+  const parsed = Number(normalized)
+  return Number.isSafeInteger(parsed) && parsed > 1
+}
+
 export function hasFacetedCategoryParams(params: FacetedParams) {
   if (FACETED_CATEGORY_KEYS.some((key) => Boolean(firstParam(params[key])))) return true
 
-  const page = firstParam(params.page)
-  if (!page) return false
-
-  const parsed = Number(page)
-  return Number.isFinite(parsed) && parsed > 1
+  return isFacetedPage(firstParam(params.page))
 }
 
 export function isSearchIndexable() {

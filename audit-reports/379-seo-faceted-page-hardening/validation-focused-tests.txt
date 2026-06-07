@@ -1,0 +1,25 @@
+▶ technical SEO policy
+  ✔ normalizes canonical site URLs and avoids localhost in production (6.6373ms)
+  ✔ converts relative media paths to absolute URLs (0.278ms)
+  ✔ rejects credential-bearing SEO URLs before canonicalizing them (0.1726ms)
+  ✔ detects faceted category URLs that should not be indexed (0.2743ms)
+  ✔ keeps malformed category page params aligned with storefront parsing (0.1654ms)
+  ✔ keeps base category pages indexable and marks faceted category pages noindex (0.6038ms)
+  ✔ marks search pages noindex with a stable canonical URL (0.2983ms)
+  ✔ generates absolute product metadata and Product JSON-LD URLs (15.6196ms)
+  ✔ keeps Product Offer schema useful without unsupported merchant claims (0.3428ms)
+  ✔ keeps metadata fallbacks factual and canonical without hard-blocked hype (0.551ms)
+  ✔ keeps Organization, WebSite, OnlineStore, and FAQ JSON-LD factual (0.5338ms)
+  ✔ generates absolute breadcrumb and item-list JSON-LD URLs (0.3415ms)
+  ✔ escapes JSON-LD script-breaking characters before rendering (0.1969ms)
+  ✔ excludes utility and private routes from static sitemap entries (0.4176ms)
+  ✔ disallows private routes but allows search and faceted URLs to expose noindex (0.2513ms)
+✔ technical SEO policy (28.004ms)
+ℹ tests 15
+ℹ suites 1
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 428.1668

@@ -68,9 +68,16 @@ describe('technical SEO policy', () => {
   it('detects faceted category URLs that should not be indexed', () => {
     assert.equal(hasFacetedCategoryParams({}), false)
     assert.equal(hasFacetedCategoryParams({ page: '1' }), false)
+    assert.equal(hasFacetedCategoryParams({ page: ' 2 ' }), true)
     assert.equal(hasFacetedCategoryParams({ page: '2' }), true)
     assert.equal(hasFacetedCategoryParams({ sort: 'popular' }), true)
     assert.equal(hasFacetedCategoryParams({ minPrice: '1000' }), true)
+  })
+
+  it('keeps malformed category page params aligned with storefront parsing', () => {
+    for (const page of ['0', '-1', '1.5', '2abc', '0x10', '1e3', 'Infinity', 'NaN', '999999999999999999999']) {
+      assert.equal(hasFacetedCategoryParams({ page }), false)
+    }
   })
 
   it('keeps base category pages indexable and marks faceted category pages noindex', () => {

@@ -1,0 +1,57 @@
+diff --git a/src/backend/seo/robots.ts b/src/backend/seo/robots.ts
+index 9e5e904..43c56a2 100644
+--- a/src/backend/seo/robots.ts
++++ b/src/backend/seo/robots.ts
+@@ -46,19 +46,24 @@ const FACETED_CATEGORY_KEYS = [
+   'rating',
+   'inStock',
+ ]
++const PLAIN_PAGE_PATTERN = /^\d+$/
+
+ function firstParam(value: string | string[] | undefined) {
+   return Array.isArray(value) ? value[0] : value
+ }
+
++function isFacetedPage(value: string | undefined) {
++  const normalized = value?.trim()
++  if (!normalized || !PLAIN_PAGE_PATTERN.test(normalized)) return false
++
++  const parsed = Number(normalized)
++  return Number.isSafeInteger(parsed) && parsed > 1
++}
++
+ export function hasFacetedCategoryParams(params: FacetedParams) {
+   if (FACETED_CATEGORY_KEYS.some((key) => Boolean(firstParam(params[key])))) return true
+
+-  const page = firstParam(params.page)
+-  if (!page) return false
+-
+-  const parsed = Number(page)
+-  return Number.isFinite(parsed) && parsed > 1
++  return isFacetedPage(firstParam(params.page))
+ }
+
+ export function isSearchIndexable() {
+diff --git a/tests/seo-policy.test.ts b/tests/seo-policy.test.ts
+index 66dea95..ba66c9a 100644
+--- a/tests/seo-policy.test.ts
++++ b/tests/seo-policy.test.ts
+@@ -68,11 +68,18 @@ describe('technical SEO policy', () => {
+   it('detects faceted category URLs that should not be indexed', () => {
+     assert.equal(hasFacetedCategoryParams({}), false)
+     assert.equal(hasFacetedCategoryParams({ page: '1' }), false)
++    assert.equal(hasFacetedCategoryParams({ page: ' 2 ' }), true)
+     assert.equal(hasFacetedCategoryParams({ page: '2' }), true)
+     assert.equal(hasFacetedCategoryParams({ sort: 'popular' }), true)
+     assert.equal(hasFacetedCategoryParams({ minPrice: '1000' }), true)
+   })
+
++  it('keeps malformed category page params aligned with storefront parsing', () => {
++    for (const page of ['0', '-1', '1.5', '2abc', '0x10', '1e3', 'Infinity', 'NaN', '999999999999999999999']) {
++      assert.equal(hasFacetedCategoryParams({ page }), false)
++    }
++  })
++
+   it('keeps base category pages indexable and marks faceted category pages noindex', () => {
+     const base = generateCategoryMetadata({ name: 'Electronics', slug: 'electronics', productCount: 18 })
+     const filtered = generateCategoryMetadata({
