@@ -66,12 +66,25 @@ describe('route-aware CSP helper', () => {
       ['/robots.txt', 'metadata'],
       ['/sitemap.xml', 'metadata'],
       ['/_next/static/chunks/app.js', null],
+      ['/_next/image', null],
       ['/assets/payments/visa.svg', null],
       ['/uploads/admin/product/test.webp', null],
     ]
 
     for (const [pathname, expected] of cases) {
       assert.equal(classifyCspRoute(pathname), expected, pathname)
+    }
+  })
+
+  it('uses path segment boundaries for framework static routes', () => {
+    const publicPrefixLookalikes = [
+      '/_next/staticish/chunks/app.js',
+      '/_next/image-proxy',
+      '/_next/images/product.webp',
+    ]
+
+    for (const pathname of publicPrefixLookalikes) {
+      assert.equal(classifyCspRoute(pathname), 'public', pathname)
     }
   })
 

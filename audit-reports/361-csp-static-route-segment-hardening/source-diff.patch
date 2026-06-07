@@ -1,0 +1,64 @@
+diff --git a/src/backend/security/csp.ts b/src/backend/security/csp.ts
+index dedb861..b95e9f9 100644
+--- a/src/backend/security/csp.ts
++++ b/src/backend/security/csp.ts
+@@ -27,9 +27,12 @@ const LOCAL_CONNECT_SOURCES = [
+   'http://127.0.0.1:3100',
+ ] as const
+
+-const STATIC_ROUTE_PREFIXES = [
++const STATIC_ROUTE_SEGMENTS = [
+   '/_next/static',
+   '/_next/image',
++] as const
++
++const STATIC_ROUTE_PREFIXES = [
+   '/assets/',
+   '/uploads/',
+ ] as const
+@@ -74,7 +77,13 @@ export function isCspReportCollectionEnabled(env: CspEnv = process.env) {
+ export function classifyCspRoute(pathname: string): CspRouteFamily | null {
+   const path = normalizePathname(pathname)
+
+-  if (STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))) return null
++  if (
++    STATIC_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(path, segment)) ||
++    STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))
++  ) {
++    return null
++  }
++
+   if (METADATA_ROUTES.has(path)) return 'metadata'
+   if (matchesPathSegment(path, '/api')) return 'api'
+   if (matchesPathSegment(path, '/admin')) return 'admin'
+diff --git a/tests/csp.test.ts b/tests/csp.test.ts
+index 8d2b7f3..0723aa0 100644
+--- a/tests/csp.test.ts
++++ b/tests/csp.test.ts
+@@ -66,6 +66,7 @@ describe('route-aware CSP helper', () => {
+       ['/robots.txt', 'metadata'],
+       ['/sitemap.xml', 'metadata'],
+       ['/_next/static/chunks/app.js', null],
++      ['/_next/image', null],
+       ['/assets/payments/visa.svg', null],
+       ['/uploads/admin/product/test.webp', null],
+     ]
+@@ -75,6 +76,18 @@ describe('route-aware CSP helper', () => {
+     }
+   })
+
++  it('uses path segment boundaries for framework static routes', () => {
++    const publicPrefixLookalikes = [
++      '/_next/staticish/chunks/app.js',
++      '/_next/image-proxy',
++      '/_next/images/product.webp',
++    ]
++
++    for (const pathname of publicPrefixLookalikes) {
++      assert.equal(classifyCspRoute(pathname), 'public', pathname)
++    }
++  })
++
+   it('uses path segment boundaries for protected route families', () => {
+     const publicPrefixLookalikes = [
+       '/administrator',

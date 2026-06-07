@@ -27,9 +27,12 @@ const LOCAL_CONNECT_SOURCES = [
   'http://127.0.0.1:3100',
 ] as const
 
-const STATIC_ROUTE_PREFIXES = [
+const STATIC_ROUTE_SEGMENTS = [
   '/_next/static',
   '/_next/image',
+] as const
+
+const STATIC_ROUTE_PREFIXES = [
   '/assets/',
   '/uploads/',
 ] as const
@@ -74,7 +77,13 @@ export function isCspReportCollectionEnabled(env: CspEnv = process.env) {
 export function classifyCspRoute(pathname: string): CspRouteFamily | null {
   const path = normalizePathname(pathname)
 
-  if (STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))) return null
+  if (
+    STATIC_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(path, segment)) ||
+    STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))
+  ) {
+    return null
+  }
+
   if (METADATA_ROUTES.has(path)) return 'metadata'
   if (matchesPathSegment(path, '/api')) return 'api'
   if (matchesPathSegment(path, '/admin')) return 'admin'
