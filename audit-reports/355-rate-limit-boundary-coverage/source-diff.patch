@@ -1,0 +1,106 @@
+diff --git a/tests/rate-limit.test.ts b/tests/rate-limit.test.ts
+new file mode 100644
+index 0000000..bb7dd5e
+--- /dev/null
++++ b/tests/rate-limit.test.ts
+@@ -0,0 +1,100 @@
++import assert from 'node:assert/strict'
++import { describe, it } from 'node:test'
++
++import { NextRequest } from 'next/server'
++
++import { rateLimit } from '@/backend/security/rate-limit'
++
++function uniqueKey(label: string) {
++  return `rate-limit:${label}:${Date.now()}:${Math.random()}`
++}
++
++function createRequest(headers: Record<string, string> = {}) {
++  return new NextRequest('http://localhost:3000/api/test-rate-limit', {
++    method: 'POST',
++    headers,
++  })
++}
++
++async function captureWarnings<T>(callback: () => T | Promise<T>) {
++  const previousWarn = console.warn
++  const warnings: unknown[][] = []
++  console.warn = (...args: unknown[]) => {
++    warnings.push(args)
++  }
++
++  try {
++    const result = await callback()
++    return { result, warnings }
++  } finally {
++    console.warn = previousWarn
++  }
++}
++
++describe('rate limit helper', () => {
++  it('allows the first request and blocks the next request with stable headers', async () => {
++    const options = { key: uniqueKey('contract'), limit: 1, windowMs: 60_000 }
++    const request = () => createRequest({ 'x-forwarded-for': '203.0.113.10' })
++
++    assert.equal(rateLimit(request(), options), null)
++
++    const { result: response, warnings } = await captureWarnings(() => rateLimit(request(), options))
++
++    assert(response)
++    assert.equal(response.status, 429)
++    assert.deepEqual(await response.json(), { error: 'Too many requests. Please try again shortly.' })
++    assert.equal(response.headers.get('X-RateLimit-Limit'), '1')
++    assert.equal(response.headers.get('X-RateLimit-Remaining'), '0')
++    assert.match(response.headers.get('Retry-After') ?? '', /^\d+$/)
++    assert.match(response.headers.get('X-RateLimit-Reset') ?? '', /^\d+$/)
++    assert.equal(warnings.length, 1)
++  })
++
++  it('uses the first forwarded-for identifier before real-ip fallback', async () => {
++    const options = { key: uniqueKey('forwarded-first'), limit: 1, windowMs: 60_000 }
++    const request = (realIp: string) => createRequest({
++      'x-forwarded-for': '203.0.113.20, 198.51.100.20',
++      'x-real-ip': realIp,
++    })
++
++    assert.equal(rateLimit(request('198.51.100.1'), options), null)
++
++    const { result: response } = await captureWarnings(() => rateLimit(request('198.51.100.2'), options))
++
++    assert(response)
++    assert.equal(response.status, 429)
++  })
++
++  it('falls back to x-real-ip when forwarded-for is unsafe', async () => {
++    const options = { key: uniqueKey('real-ip-fallback'), limit: 1, windowMs: 60_000 }
++    const request = () => createRequest({
++      'x-forwarded-for': '203.0.113.30 bad',
++      'x-real-ip': '198.51.100.30',
++    })
++
++    assert.equal(rateLimit(request(), options), null)
++
++    const { result: response } = await captureWarnings(() => rateLimit(request(), options))
++
++    assert(response)
++    assert.equal(response.status, 429)
++  })
++
++  it('keeps separate buckets for separate rate-limit keys', async () => {
++    const ip = '203.0.113.40'
++    const firstKeyOptions = { key: uniqueKey('first-key'), limit: 1, windowMs: 60_000 }
++    const secondKeyOptions = { key: uniqueKey('second-key'), limit: 1, windowMs: 60_000 }
++    const request = () => createRequest({ 'x-forwarded-for': ip })
++
++    assert.equal(rateLimit(request(), firstKeyOptions), null)
++    assert.equal(rateLimit(request(), secondKeyOptions), null)
++
++    const { result: firstResponse } = await captureWarnings(() => rateLimit(request(), firstKeyOptions))
++    const { result: secondResponse } = await captureWarnings(() => rateLimit(request(), secondKeyOptions))
++
++    assert(firstResponse)
++    assert(secondResponse)
++    assert.equal(firstResponse.status, 429)
++    assert.equal(secondResponse.status, 429)
++  })
++})

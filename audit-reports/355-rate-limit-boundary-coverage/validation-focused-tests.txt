@@ -1,0 +1,14 @@
+▶ rate limit helper
+  ✔ allows the first request and blocks the next request with stable headers (7.9238ms)
+  ✔ uses the first forwarded-for identifier before real-ip fallback (0.8765ms)
+  ✔ falls back to x-real-ip when forwarded-for is unsafe (0.7663ms)
+  ✔ keeps separate buckets for separate rate-limit keys (1.1945ms)
+✔ rate limit helper (11.6455ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 292.2649
