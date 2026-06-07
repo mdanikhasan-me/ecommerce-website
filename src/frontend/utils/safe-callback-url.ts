@@ -4,6 +4,13 @@ const BLOCKED_CALLBACK_ROUTE_SEGMENTS = [
   '/api',
   '/auth',
 ] as const
+const BLOCKED_CALLBACK_EXACT_ROUTES = new Set([
+  '/apple-touch-icon.png',
+  '/favicon.ico',
+  '/opengraph-image',
+  '/robots.txt',
+  '/sitemap.xml',
+])
 const BLOCKED_CALLBACK_ROUTE_PREFIXES = [
   '/assets/',
   '/uploads/',
@@ -21,6 +28,7 @@ function normalizeInternalCallbackPath(value: string | null | undefined) {
   try {
     const url = new URL(trimmed, FALLBACK_ORIGIN)
     if (url.origin !== FALLBACK_ORIGIN) return null
+    if (BLOCKED_CALLBACK_EXACT_ROUTES.has(url.pathname)) return null
     if (BLOCKED_CALLBACK_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(url.pathname, segment))) return null
     if (BLOCKED_CALLBACK_ROUTE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return null
     return `${url.pathname}${url.search}${url.hash}` || null

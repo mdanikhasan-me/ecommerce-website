@@ -33,12 +33,27 @@ describe('safe callback URL', () => {
     }
   })
 
+  it('rejects metadata and icon callback targets exactly', () => {
+    for (const callbackUrl of [
+      '/apple-touch-icon.png',
+      '/favicon.ico',
+      '/opengraph-image',
+      '/robots.txt?cache=1',
+      '/sitemap.xml#top',
+    ]) {
+      assert.equal(getSafeCallbackUrl(callbackUrl), '/', callbackUrl)
+    }
+  })
+
   it('does not reject public callback path prefix lookalikes', () => {
     assert.equal(getSafeCallbackUrl('/authentication'), '/authentication')
     assert.equal(getSafeCallbackUrl('/apiary'), '/apiary')
     assert.equal(getSafeCallbackUrl('/_nextish/static'), '/_nextish/static')
     assert.equal(getSafeCallbackUrl('/assetsish/logo.svg'), '/assetsish/logo.svg')
     assert.equal(getSafeCallbackUrl('/uploadsish/product.webp'), '/uploadsish/product.webp')
+    assert.equal(getSafeCallbackUrl('/favicon.icology'), '/favicon.icology')
+    assert.equal(getSafeCallbackUrl('/robots.txt-preview'), '/robots.txt-preview')
+    assert.equal(getSafeCallbackUrl('/sitemap.xml-preview'), '/sitemap.xml-preview')
   })
 
   it('uses the provided fallback for blank or invalid values', () => {

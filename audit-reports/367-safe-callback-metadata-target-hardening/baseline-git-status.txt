@@ -1,0 +1,12 @@
+ M public/assets/icons/ui/categories/beauty-health.svg
+ M public/assets/icons/ui/categories/books-stationery.svg
+ M public/assets/icons/ui/categories/electronics.svg
+ M public/assets/icons/ui/categories/fashion.svg
+ M public/assets/icons/ui/categories/gaming.svg
+ M public/assets/icons/ui/categories/home-appliances.svg
+ M public/assets/icons/ui/categories/sports-fitness.svg
+ M public/assets/icons/ui/categories/toys-collectibles.svg
+ M src/frontend/utils/safe-callback-url.ts
+ M tests/safe-callback-url.test.ts
+?? audit-reports/367-safe-callback-metadata-target-hardening/
+?? public/uploads/admin/banners/hero/

@@ -1,0 +1,58 @@
+diff --git a/src/frontend/utils/safe-callback-url.ts b/src/frontend/utils/safe-callback-url.ts
+index 8e6e771..f8bdd05 100644
+--- a/src/frontend/utils/safe-callback-url.ts
++++ b/src/frontend/utils/safe-callback-url.ts
+@@ -4,6 +4,13 @@ const BLOCKED_CALLBACK_ROUTE_SEGMENTS = [
+   '/api',
+   '/auth',
+ ] as const
++const BLOCKED_CALLBACK_EXACT_ROUTES = new Set([
++  '/apple-touch-icon.png',
++  '/favicon.ico',
++  '/opengraph-image',
++  '/robots.txt',
++  '/sitemap.xml',
++])
+ const BLOCKED_CALLBACK_ROUTE_PREFIXES = [
+   '/assets/',
+   '/uploads/',
+@@ -21,6 +28,7 @@ function normalizeInternalCallbackPath(value: string | null | undefined) {
+   try {
+     const url = new URL(trimmed, FALLBACK_ORIGIN)
+     if (url.origin !== FALLBACK_ORIGIN) return null
++    if (BLOCKED_CALLBACK_EXACT_ROUTES.has(url.pathname)) return null
+     if (BLOCKED_CALLBACK_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(url.pathname, segment))) return null
+     if (BLOCKED_CALLBACK_ROUTE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return null
+     return `${url.pathname}${url.search}${url.hash}` || null
+diff --git a/tests/safe-callback-url.test.ts b/tests/safe-callback-url.test.ts
+index 3e2f013..9272d98 100644
+--- a/tests/safe-callback-url.test.ts
++++ b/tests/safe-callback-url.test.ts
+@@ -33,12 +33,27 @@ describe('safe callback URL', () => {
+     }
+   })
+
++  it('rejects metadata and icon callback targets exactly', () => {
++    for (const callbackUrl of [
++      '/apple-touch-icon.png',
++      '/favicon.ico',
++      '/opengraph-image',
++      '/robots.txt?cache=1',
++      '/sitemap.xml#top',
++    ]) {
++      assert.equal(getSafeCallbackUrl(callbackUrl), '/', callbackUrl)
++    }
++  })
++
+   it('does not reject public callback path prefix lookalikes', () => {
+     assert.equal(getSafeCallbackUrl('/authentication'), '/authentication')
+     assert.equal(getSafeCallbackUrl('/apiary'), '/apiary')
+     assert.equal(getSafeCallbackUrl('/_nextish/static'), '/_nextish/static')
+     assert.equal(getSafeCallbackUrl('/assetsish/logo.svg'), '/assetsish/logo.svg')
+     assert.equal(getSafeCallbackUrl('/uploadsish/product.webp'), '/uploadsish/product.webp')
++    assert.equal(getSafeCallbackUrl('/favicon.icology'), '/favicon.icology')
++    assert.equal(getSafeCallbackUrl('/robots.txt-preview'), '/robots.txt-preview')
++    assert.equal(getSafeCallbackUrl('/sitemap.xml-preview'), '/sitemap.xml-preview')
+   })
+
+   it('uses the provided fallback for blank or invalid values', () => {
