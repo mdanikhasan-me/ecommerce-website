@@ -1,0 +1,2 @@
+Read-only finding: src/middleware.ts used raw startsWith checks for /admin and /account. That could redirect public lookalike paths such as /administrator, /administer/products, and /accounting as if they were private pages.
+Resolution: middleware now uses path-segment boundary matching for /admin and /account, with focused tests covering protected routes and public lookalikes.

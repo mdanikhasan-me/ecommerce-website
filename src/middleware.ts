@@ -18,13 +18,17 @@ function withOptionalCspReportOnly(req: NextRequest, response: NextResponse) {
   return response
 }
 
+function matchesPathSegment(pathname: string, segment: string) {
+  return pathname === segment || pathname.startsWith(`${segment}/`)
+}
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const hasSessionCookie = req.cookies
     .getAll()
     .some((cookie) => SESSION_COOKIE_PREFIXES.some((prefix) => cookie.name.startsWith(prefix)))
 
-  if (pathname.startsWith('/admin')) {
+  if (matchesPathSegment(pathname, '/admin')) {
     if (!hasSessionCookie) {
       return withOptionalCspReportOnly(
         req,
@@ -33,7 +37,7 @@ export default function middleware(req: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/account')) {
+  if (matchesPathSegment(pathname, '/account')) {
     if (!hasSessionCookie) {
       return withOptionalCspReportOnly(
         req,
