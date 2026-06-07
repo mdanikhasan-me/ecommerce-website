@@ -1,0 +1,68 @@
+diff --git a/src/backend/security/csp.ts b/src/backend/security/csp.ts
+index 7de41ea..dedb861 100644
+--- a/src/backend/security/csp.ts
++++ b/src/backend/security/csp.ts
+@@ -45,6 +45,10 @@ function normalizePathname(pathname: string) {
+   return pathname
+ }
+
++function matchesPathSegment(pathname: string, segment: string) {
++  return pathname === segment || pathname.startsWith(`${segment}/`)
++}
++
+ function unique(values: string[]) {
+   return Array.from(new Set(values))
+ }
+@@ -72,10 +76,10 @@ export function classifyCspRoute(pathname: string): CspRouteFamily | null {
+
+   if (STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))) return null
+   if (METADATA_ROUTES.has(path)) return 'metadata'
+-  if (path.startsWith('/api/')) return 'api'
+-  if (path.startsWith('/admin')) return 'admin'
+-  if (path.startsWith('/auth')) return 'auth'
+-  if (path.startsWith('/account')) return 'account'
++  if (matchesPathSegment(path, '/api')) return 'api'
++  if (matchesPathSegment(path, '/admin')) return 'admin'
++  if (matchesPathSegment(path, '/auth')) return 'auth'
++  if (matchesPathSegment(path, '/account')) return 'account'
+   if (path.startsWith('/order/')) return 'account'
+   if (path === '/checkout' || path.startsWith('/checkout/')) return 'checkout'
+   if (path === '/cart' || path.startsWith('/cart/')) return 'checkout'
+diff --git a/tests/csp.test.ts b/tests/csp.test.ts
+index 9711dda..8d2b7f3 100644
+--- a/tests/csp.test.ts
++++ b/tests/csp.test.ts
+@@ -57,9 +57,12 @@ describe('route-aware CSP helper', () => {
+       ['/order/BLB-TEST/confirmation', 'account'],
+       ['/checkout', 'checkout'],
+       ['/cart', 'checkout'],
++      ['/api', 'api'],
+       ['/admin/dashboard', 'admin'],
++      ['/admin', 'admin'],
+       ['/api/products', 'api'],
+       ['/api/admin/products', 'api'],
++      ['/auth', 'auth'],
+       ['/robots.txt', 'metadata'],
+       ['/sitemap.xml', 'metadata'],
+       ['/_next/static/chunks/app.js', null],
+@@ -72,6 +75,21 @@ describe('route-aware CSP helper', () => {
+     }
+   })
+
++  it('uses path segment boundaries for protected route families', () => {
++    const publicPrefixLookalikes = [
++      '/administrator',
++      '/administer/products',
++      '/authentication',
++      '/authentic-products',
++      '/accounting',
++      '/apiary',
++    ]
++
++    for (const pathname of publicPrefixLookalikes) {
++      assert.equal(classifyCspRoute(pathname), 'public', pathname)
++    }
++  })
++
+   it('generates explicit report-only policies for every route family', () => {
+     const families: CspRouteFamily[] = ['public', 'auth', 'account', 'checkout', 'admin', 'api', 'metadata']

@@ -57,9 +57,12 @@ describe('route-aware CSP helper', () => {
       ['/order/BLB-TEST/confirmation', 'account'],
       ['/checkout', 'checkout'],
       ['/cart', 'checkout'],
+      ['/api', 'api'],
       ['/admin/dashboard', 'admin'],
+      ['/admin', 'admin'],
       ['/api/products', 'api'],
       ['/api/admin/products', 'api'],
+      ['/auth', 'auth'],
       ['/robots.txt', 'metadata'],
       ['/sitemap.xml', 'metadata'],
       ['/_next/static/chunks/app.js', null],
@@ -69,6 +72,21 @@ describe('route-aware CSP helper', () => {
 
     for (const [pathname, expected] of cases) {
       assert.equal(classifyCspRoute(pathname), expected, pathname)
+    }
+  })
+
+  it('uses path segment boundaries for protected route families', () => {
+    const publicPrefixLookalikes = [
+      '/administrator',
+      '/administer/products',
+      '/authentication',
+      '/authentic-products',
+      '/accounting',
+      '/apiary',
+    ]
+
+    for (const pathname of publicPrefixLookalikes) {
+      assert.equal(classifyCspRoute(pathname), 'public', pathname)
     }
   })
 

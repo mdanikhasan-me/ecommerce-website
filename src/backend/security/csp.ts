@@ -45,6 +45,10 @@ function normalizePathname(pathname: string) {
   return pathname
 }
 
+function matchesPathSegment(pathname: string, segment: string) {
+  return pathname === segment || pathname.startsWith(`${segment}/`)
+}
+
 function unique(values: string[]) {
   return Array.from(new Set(values))
 }
@@ -72,10 +76,10 @@ export function classifyCspRoute(pathname: string): CspRouteFamily | null {
 
   if (STATIC_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))) return null
   if (METADATA_ROUTES.has(path)) return 'metadata'
-  if (path.startsWith('/api/')) return 'api'
-  if (path.startsWith('/admin')) return 'admin'
-  if (path.startsWith('/auth')) return 'auth'
-  if (path.startsWith('/account')) return 'account'
+  if (matchesPathSegment(path, '/api')) return 'api'
+  if (matchesPathSegment(path, '/admin')) return 'admin'
+  if (matchesPathSegment(path, '/auth')) return 'auth'
+  if (matchesPathSegment(path, '/account')) return 'account'
   if (path.startsWith('/order/')) return 'account'
   if (path === '/checkout' || path.startsWith('/checkout/')) return 'checkout'
   if (path === '/cart' || path.startsWith('/cart/')) return 'checkout'
