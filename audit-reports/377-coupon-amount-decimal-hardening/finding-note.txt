@@ -1,0 +1,2 @@
+Read-only finding: public coupon amount parsing used Number(...) after trimming. That rejected Infinity, NaN, and negative values, but still accepted JavaScript numeric forms such as hex or exponent notation for the public coupon validation amount parameter.
+Resolution: require plain decimal numeric strings for coupon amounts while preserving blank-as-zero, decimal support, and max-value clamping.

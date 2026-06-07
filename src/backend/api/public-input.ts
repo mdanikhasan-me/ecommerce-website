@@ -7,6 +7,7 @@ export const MAX_PUBLIC_SEARCH_WORDS = 10
 
 const SAFE_ID_PATTERN = /^[A-Za-z0-9_-]+$/
 const SAFE_COUPON_CODE_PATTERN = /^[A-Z0-9_-]+$/
+const PLAIN_DECIMAL_PATTERN = /^\d+(?:\.\d+)?$/
 
 export function parsePublicId(value: unknown): string | null {
   if (typeof value !== 'string') return null
@@ -39,6 +40,7 @@ export function parseCouponAmount(value: unknown): number | null {
   if (typeof value !== 'string') return null
   const normalized = value.trim()
   if (!normalized) return 0
+  if (!PLAIN_DECIMAL_PATTERN.test(normalized)) return null
 
   const parsed = Number(normalized)
   if (!Number.isFinite(parsed) || parsed < 0) return null

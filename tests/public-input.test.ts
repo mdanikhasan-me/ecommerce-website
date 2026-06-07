@@ -77,6 +77,8 @@ describe('public API input parsing', () => {
     assert.equal(parseCouponAmount('0'), 0)
     assert.equal(parseCouponAmount('Infinity'), null)
     assert.equal(parseCouponAmount('NaN'), null)
+    assert.equal(parseCouponAmount('0x10'), null)
+    assert.equal(parseCouponAmount('1e3'), null)
   })
 
   it('bounds public search text and words', () => {
