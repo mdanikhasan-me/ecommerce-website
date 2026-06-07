@@ -1,6 +1,7 @@
 import type { Role } from '@prisma/client'
 import type { NextAuthConfig } from 'next-auth'
 import { getAuthHostConfigurationWarnings, shouldTrustAuthHost } from '@/backend/auth/host'
+import { getSafeAuthRedirectUrl } from '@/backend/auth/redirect'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 type UserWithRole = {
@@ -11,6 +12,7 @@ type UserWithRole = {
 
 type AuthCallbacks = NonNullable<NextAuthConfig['callbacks']>
 type JwtCallbackParams = Parameters<NonNullable<AuthCallbacks['jwt']>>[0]
+type RedirectCallbackParams = Parameters<NonNullable<AuthCallbacks['redirect']>>[0]
 type SessionCallbackParams = Parameters<NonNullable<AuthCallbacks['session']>>[0]
 
 const authHostWarnings = getAuthHostConfigurationWarnings()
@@ -36,6 +38,9 @@ export const authConfig = {
     error: '/auth/error',
   },
   callbacks: {
+    async redirect({ url, baseUrl }: RedirectCallbackParams) {
+      return getSafeAuthRedirectUrl(url, baseUrl)
+    },
     async jwt({ token, user }: JwtCallbackParams) {
       if (user) {
         const userWithRole = user as UserWithRole
