@@ -45,6 +45,22 @@ describe('safe callback URL', () => {
     }
   })
 
+  it('rejects encoded blocked callback targets after pathname decoding', () => {
+    for (const callbackUrl of [
+      '/%61uth/login',
+      '/%61pi/orders',
+      '/_%6eext/static/chunks/app.js',
+      '/%61ssets/logo.svg',
+      '/%75ploads/admin/product.webp',
+      '/%72obots.txt',
+      '/%2Fexample.com/phish',
+      '/%5Cexample.com',
+      '/%E0%A4%A',
+    ]) {
+      assert.equal(getSafeCallbackUrl(callbackUrl), '/', callbackUrl)
+    }
+  })
+
   it('does not reject public callback path prefix lookalikes', () => {
     assert.equal(getSafeCallbackUrl('/authentication'), '/authentication')
     assert.equal(getSafeCallbackUrl('/apiary'), '/apiary')
@@ -54,6 +70,14 @@ describe('safe callback URL', () => {
     assert.equal(getSafeCallbackUrl('/favicon.icology'), '/favicon.icology')
     assert.equal(getSafeCallbackUrl('/robots.txt-preview'), '/robots.txt-preview')
     assert.equal(getSafeCallbackUrl('/sitemap.xml-preview'), '/sitemap.xml-preview')
+  })
+
+  it('preserves safe encoded internal page callback paths', () => {
+    assert.equal(
+      getSafeCallbackUrl('/products/test%20product?ref=search#details'),
+      '/products/test%20product?ref=search#details',
+    )
+    assert.equal(getSafeCallbackUrl('/search?q=wireless%20audio'), '/search?q=wireless%20audio')
   })
 
   it('uses the provided fallback for blank or invalid values', () => {

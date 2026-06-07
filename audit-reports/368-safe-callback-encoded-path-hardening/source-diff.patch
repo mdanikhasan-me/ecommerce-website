@@ -1,0 +1,76 @@
+diff --git a/src/frontend/utils/safe-callback-url.ts b/src/frontend/utils/safe-callback-url.ts
+index f8bdd05..7fce706 100644
+--- a/src/frontend/utils/safe-callback-url.ts
++++ b/src/frontend/utils/safe-callback-url.ts
+@@ -20,6 +20,14 @@ function matchesPathSegment(pathname: string, segment: string) {
+   return pathname === segment || pathname.startsWith(`${segment}/`)
+ }
+
++function decodeCallbackPathname(pathname: string) {
++  try {
++    return decodeURIComponent(pathname)
++  } catch {
++    return null
++  }
++}
++
+ function normalizeInternalCallbackPath(value: string | null | undefined) {
+   const trimmed = value?.trim()
+   if (!trimmed) return null
+@@ -28,9 +36,11 @@ function normalizeInternalCallbackPath(value: string | null | undefined) {
+   try {
+     const url = new URL(trimmed, FALLBACK_ORIGIN)
+     if (url.origin !== FALLBACK_ORIGIN) return null
+-    if (BLOCKED_CALLBACK_EXACT_ROUTES.has(url.pathname)) return null
+-    if (BLOCKED_CALLBACK_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(url.pathname, segment))) return null
+-    if (BLOCKED_CALLBACK_ROUTE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return null
++    const decodedPathname = decodeCallbackPathname(url.pathname)
++    if (!decodedPathname || decodedPathname.startsWith('//') || decodedPathname.includes('\\')) return null
++    if (BLOCKED_CALLBACK_EXACT_ROUTES.has(decodedPathname)) return null
++    if (BLOCKED_CALLBACK_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(decodedPathname, segment))) return null
++    if (BLOCKED_CALLBACK_ROUTE_PREFIXES.some((prefix) => decodedPathname.startsWith(prefix))) return null
+     return `${url.pathname}${url.search}${url.hash}` || null
+   } catch {
+     return null
+diff --git a/tests/safe-callback-url.test.ts b/tests/safe-callback-url.test.ts
+index 9272d98..5548c64 100644
+--- a/tests/safe-callback-url.test.ts
++++ b/tests/safe-callback-url.test.ts
+@@ -45,6 +45,22 @@ describe('safe callback URL', () => {
+     }
+   })
+
++  it('rejects encoded blocked callback targets after pathname decoding', () => {
++    for (const callbackUrl of [
++      '/%61uth/login',
++      '/%61pi/orders',
++      '/_%6eext/static/chunks/app.js',
++      '/%61ssets/logo.svg',
++      '/%75ploads/admin/product.webp',
++      '/%72obots.txt',
++      '/%2Fexample.com/phish',
++      '/%5Cexample.com',
++      '/%E0%A4%A',
++    ]) {
++      assert.equal(getSafeCallbackUrl(callbackUrl), '/', callbackUrl)
++    }
++  })
++
+   it('does not reject public callback path prefix lookalikes', () => {
+     assert.equal(getSafeCallbackUrl('/authentication'), '/authentication')
+     assert.equal(getSafeCallbackUrl('/apiary'), '/apiary')
+@@ -56,6 +72,14 @@ describe('safe callback URL', () => {
+     assert.equal(getSafeCallbackUrl('/sitemap.xml-preview'), '/sitemap.xml-preview')
+   })
+
++  it('preserves safe encoded internal page callback paths', () => {
++    assert.equal(
++      getSafeCallbackUrl('/products/test%20product?ref=search#details'),
++      '/products/test%20product?ref=search#details',
++    )
++    assert.equal(getSafeCallbackUrl('/search?q=wireless%20audio'), '/search?q=wireless%20audio')
++  })
++
+   it('uses the provided fallback for blank or invalid values', () => {
+     assert.equal(getSafeCallbackUrl('', '/account'), '/account')
+     assert.equal(getSafeCallbackUrl(null, '/account'), '/account')

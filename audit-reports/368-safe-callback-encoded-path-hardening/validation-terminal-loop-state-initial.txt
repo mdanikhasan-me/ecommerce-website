@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/367_SAFE_CALLBACK_METADATA_TARGET_HARDENING.md
+Latest audit title: Step 367 Safe Callback Metadata Target Hardening
+Latest commit mention: 598b94c fix: harden safe callback route targets
+Current git commit: da4e53b fix: harden safe callback metadata targets
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes
