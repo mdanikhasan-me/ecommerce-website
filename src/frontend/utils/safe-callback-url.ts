@@ -1,4 +1,17 @@
 const FALLBACK_ORIGIN = 'https://boilabin.local'
+const BLOCKED_CALLBACK_ROUTE_SEGMENTS = [
+  '/_next',
+  '/api',
+  '/auth',
+] as const
+const BLOCKED_CALLBACK_ROUTE_PREFIXES = [
+  '/assets/',
+  '/uploads/',
+] as const
+
+function matchesPathSegment(pathname: string, segment: string) {
+  return pathname === segment || pathname.startsWith(`${segment}/`)
+}
 
 function normalizeInternalCallbackPath(value: string | null | undefined) {
   const trimmed = value?.trim()
@@ -8,6 +21,8 @@ function normalizeInternalCallbackPath(value: string | null | undefined) {
   try {
     const url = new URL(trimmed, FALLBACK_ORIGIN)
     if (url.origin !== FALLBACK_ORIGIN) return null
+    if (BLOCKED_CALLBACK_ROUTE_SEGMENTS.some((segment) => matchesPathSegment(url.pathname, segment))) return null
+    if (BLOCKED_CALLBACK_ROUTE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return null
     return `${url.pathname}${url.search}${url.hash}` || null
   } catch {
     return null

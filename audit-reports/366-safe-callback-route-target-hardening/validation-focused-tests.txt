@@ -1,0 +1,16 @@
+▶ safe callback URL
+  ✔ allows internal callback paths (0.8819ms)
+  ✔ rejects external and protocol-relative callback URLs (0.1733ms)
+  ✔ rejects auth, API, framework, and static asset callback targets (0.2215ms)
+  ✔ does not reject public callback path prefix lookalikes (0.1699ms)
+  ✔ uses the provided fallback for blank or invalid values (0.1217ms)
+  ✔ sanitizes fallback values before using them (0.1117ms)
+✔ safe callback URL (2.6212ms)
+ℹ tests 6
+ℹ suites 1
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 201.5643

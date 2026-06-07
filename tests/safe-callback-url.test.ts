@@ -18,6 +18,29 @@ describe('safe callback URL', () => {
     assert.equal(getSafeCallbackUrl('account/orders'), '/')
   })
 
+  it('rejects auth, API, framework, and static asset callback targets', () => {
+    for (const callbackUrl of [
+      '/auth',
+      '/auth/login?callbackUrl=/account',
+      '/auth/register#start',
+      '/api/orders',
+      '/_next/static/chunks/app.js',
+      '/_next/image?url=%2Fassets%2Flogo.svg',
+      '/assets/logo.svg',
+      '/uploads/admin/product.webp',
+    ]) {
+      assert.equal(getSafeCallbackUrl(callbackUrl), '/', callbackUrl)
+    }
+  })
+
+  it('does not reject public callback path prefix lookalikes', () => {
+    assert.equal(getSafeCallbackUrl('/authentication'), '/authentication')
+    assert.equal(getSafeCallbackUrl('/apiary'), '/apiary')
+    assert.equal(getSafeCallbackUrl('/_nextish/static'), '/_nextish/static')
+    assert.equal(getSafeCallbackUrl('/assetsish/logo.svg'), '/assetsish/logo.svg')
+    assert.equal(getSafeCallbackUrl('/uploadsish/product.webp'), '/uploadsish/product.webp')
+  })
+
   it('uses the provided fallback for blank or invalid values', () => {
     assert.equal(getSafeCallbackUrl('', '/account'), '/account')
     assert.equal(getSafeCallbackUrl(null, '/account'), '/account')
