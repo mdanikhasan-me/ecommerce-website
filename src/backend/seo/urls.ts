@@ -1,5 +1,5 @@
 const DEFAULT_SITE_URL = 'https://boilabin.com'
-const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1', '[::1]'])
 
 type SeoUrlEnv = Record<string, string | undefined>
 

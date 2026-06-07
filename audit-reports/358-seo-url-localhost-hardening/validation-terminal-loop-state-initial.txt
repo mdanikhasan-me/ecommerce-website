@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/357_AUTH_HOST_BOUNDARY_HARDENING.md
+Latest audit title: Step 357 Auth Host Boundary Hardening
+Latest commit mention: 5fedd76 fix: harden callback fallback handling
+Current git commit: c7e74aa fix: harden auth host boundaries
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes

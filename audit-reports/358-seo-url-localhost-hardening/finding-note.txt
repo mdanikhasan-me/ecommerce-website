@@ -1,0 +1,2 @@
+Read-only finding: src/backend/seo/urls.ts had the same bracketed IPv6 localhost boundary shape fixed for auth host in Step 357. Node URL parsing can expose IPv6 loopback as [::1], so canonical SEO site URL normalization needed the same local-host guard.
+Resolution: src/backend/seo/urls.ts now treats [::1] as local and falls back to the public default site URL.

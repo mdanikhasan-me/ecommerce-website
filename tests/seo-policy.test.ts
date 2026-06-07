@@ -4,6 +4,7 @@ import { describe, it } from 'node:test'
 import robots from '@/app/robots'
 import { getStaticSitemapEntries } from '@/app/sitemap'
 import {
+  canonicalUrl,
   generateBreadcrumbJsonLd,
   generateCategoryMetadata,
   generateFAQJsonLd,
@@ -28,6 +29,14 @@ describe('technical SEO policy', () => {
       'https://boilabin.com',
     )
     assert.equal(
+      normalizeSiteUrl('http://[::1]:3000/products/test', { NODE_ENV: 'production' }),
+      'https://boilabin.com',
+    )
+    assert.equal(
+      normalizeSiteUrl('ftp://shop.example.com', { NODE_ENV: 'production' }),
+      'https://boilabin.com',
+    )
+    assert.equal(
       normalizeSiteUrl('https://shop.example.com/path', { NODE_ENV: 'production' }),
       'https://shop.example.com',
     )
@@ -36,6 +45,7 @@ describe('technical SEO policy', () => {
   it('converts relative media paths to absolute URLs', () => {
     assert.equal(toAbsoluteUrl('/uploads/product.webp', 'https://boilabin.com'), 'https://boilabin.com/uploads/product.webp')
     assert.equal(toAbsoluteUrl('https://cdn.example.com/image.jpg', 'https://boilabin.com'), 'https://cdn.example.com/image.jpg')
+    assert.equal(canonicalUrl('', 'https://boilabin.com'), 'https://boilabin.com/')
   })
 
   it('detects faceted category URLs that should not be indexed', () => {

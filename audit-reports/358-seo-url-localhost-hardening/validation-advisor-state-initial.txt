@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/357_AUTH_HOST_BOUNDARY_HARDENING.md
+Latest audit title: Step 357 Auth Host Boundary Hardening
+Latest report commit reference: 5fedd76 fix: harden callback fallback handling
+Current git commit: c7e74aa fix: harden auth host boundaries
+Validation summary: Focused and standard validation passed: - `npx tsx --test tests/auth-host.test.ts` passed: 8 tests, 1 suite, 0 failures. - `node scripts/boilabin-advisor-state.mjs` passed. - `node scripts/boilabin-terminal-loop-state.mjs` passed. - `npm run typecheck` passed. - `npm run lint` passed with the existing Next `next lint` deprecation notice. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another bounded non-media prelaunch closure task and push the completed commit to GitHub.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok
