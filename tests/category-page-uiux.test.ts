@@ -42,28 +42,26 @@ describe('category page UI/UX guardrails', () => {
     assert.match(source, /category-view-all/)
   })
 
-  it('renders neutral missing-image surfaces without repeated category icons or public placeholder copy', () => {
-    const surfaceStart = source.indexOf('function EmptyMediaSurface')
-    const surfaceEnd = source.indexOf('function ViewAllCategoryLink')
-    const surfaceSource = source.slice(surfaceStart, surfaceEnd)
-
-    assert.ok(surfaceStart > -1)
-    assert.ok(surfaceEnd > surfaceStart)
-    assert.doesNotMatch(surfaceSource, /LocalIcon|iconName|coming soon|admin upload|placeholder/i)
+  it('renders compact missing-image subcategory cards without blank media frames', () => {
+    assert.match(source, /if \(!imageSrc\)/)
+    assert.match(source, /min-h-\[104px\]/)
+    assert.match(source, /sm:min-h-\[112px\]/)
+    assert.match(source, /min-h-\[86px\]/)
+    assert.match(source, /h-11 w-11/)
+    assert.match(source, /h-10 w-10/)
+    assert.doesNotMatch(source, /function EmptyMediaSurface|data-empty-media-surface/)
     assert.doesNotMatch(source, /data:image|placeholder\.(?:jpg|jpeg|png|webp)|coming soon|admin upload/i)
   })
 
-  it('keeps subcategory cards photo-ready instead of shrinking missing media into tiny buttons', () => {
+  it('keeps real subcategory image cards photo-ready without applying large blank placeholders', () => {
     assert.match(source, /h-\[7\.25rem\]/)
     assert.match(source, /sm:h-\[7\.75rem\]/)
     assert.match(source, /2xl:h-\[8\.25rem\]/)
     assert.match(source, /min-\[1120px\]:grid-cols-3/)
     assert.match(source, /min-\[1380px\]:grid-cols-4/)
     assert.match(source, /object-cover/)
-    assert.match(source, /data-empty-media-surface/)
     assert.match(source, /min-h-\[96px\]/)
     assert.match(source, /w-\[96px\]/)
-    assert.doesNotMatch(source, /aspect-\[16\/10\]|h-12 w-12|w-\[70px\]|min-h-\[78px\]/)
   })
 
   it('adds a capped public All Products section below the category explorer', () => {

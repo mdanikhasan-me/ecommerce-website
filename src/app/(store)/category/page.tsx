@@ -216,6 +216,31 @@ function SubcategoryCard({
   child: SubcategoryItem
 }) {
   const imageSrc = getSubcategoryMediaPath(child)
+  const iconName = getCategoryIconName(category.slug)
+
+  if (!imageSrc) {
+    return (
+      <Link
+        href={`/category/${child.slug}`}
+        className="product-card group flex min-h-[104px] items-center gap-3.5 p-3.5 transition-colors hover:border-primary/20 hover:bg-secondary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-[112px] sm:p-4"
+      >
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
+          <LocalIcon name={iconName} className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
+            {child.name}
+          </span>
+          <span className="mt-1.5 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
+            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
+          </span>
+        </span>
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+          <LocalIcon name="arrow-right" className="h-4 w-4" />
+        </span>
+      </Link>
+    )
+  }
 
   return (
     <Link
@@ -223,18 +248,14 @@ function SubcategoryCard({
       className="product-card group flex h-full flex-col overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <div className="relative h-[7.25rem] overflow-hidden bg-muted sm:h-[7.75rem] 2xl:h-[8.25rem]">
-        {imageSrc ? (
-          <Image
-            src={imageSrc}
-            alt={child.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
-            sizes="(max-width: 1024px) 42vw, (max-width: 1280px) 24vw, 260px"
-            quality={84}
-          />
-        ) : (
-          <EmptyMediaSurface />
-        )}
+        <Image
+          src={imageSrc}
+          alt={child.name}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+          sizes="(max-width: 1024px) 42vw, (max-width: 1280px) 24vw, 260px"
+          quality={84}
+        />
       </div>
       <div className="flex min-h-[96px] flex-1 items-start gap-3 p-3.5 sm:p-4">
         <div className="min-w-0 flex-1">
@@ -250,18 +271,6 @@ function SubcategoryCard({
         </span>
       </div>
     </Link>
-  )
-}
-
-function EmptyMediaSurface() {
-  return (
-    <div
-      aria-hidden="true"
-      data-empty-media-surface="true"
-      className="absolute inset-0 bg-secondary/35"
-    >
-      <span className="absolute inset-3 rounded-[0.9rem] border border-border/65 bg-card/25 shadow-[0_1px_0_rgba(255,255,255,0.72)_inset]" />
-    </div>
   )
 }
 
@@ -340,6 +349,29 @@ function MobileSubcategoryRow({
   child: SubcategoryItem
 }) {
   const imageSrc = getSubcategoryMediaPath(child)
+  const iconName = getCategoryIconName(category.slug)
+
+  if (!imageSrc) {
+    return (
+      <Link
+        href={`/category/${child.slug}`}
+        className="product-card group flex min-h-[86px] items-center gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
+          <LocalIcon name={iconName} className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
+          <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
+            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
+          </span>
+        </span>
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+          <LocalIcon name="arrow-right" className="h-4 w-4" />
+        </span>
+      </Link>
+    )
+  }
 
   return (
     <Link
@@ -347,18 +379,14 @@ function MobileSubcategoryRow({
       className="product-card group flex min-h-[104px] items-stretch gap-3 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <span className="relative block min-h-[104px] w-[96px] shrink-0 overflow-hidden rounded-l-[1.05rem] bg-muted min-[390px]:w-[104px] sm:w-[112px]">
-        {imageSrc ? (
-          <Image
-            src={imageSrc}
-            alt={child.name}
-            fill
-            className="object-cover"
-            sizes="150px"
-            quality={82}
-          />
-        ) : (
-          <EmptyMediaSurface />
-        )}
+        <Image
+          src={imageSrc}
+          alt={child.name}
+          fill
+          className="object-cover"
+          sizes="150px"
+          quality={82}
+        />
       </span>
       <span className="min-w-0 flex-1 self-center py-3 pr-1">
         <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
