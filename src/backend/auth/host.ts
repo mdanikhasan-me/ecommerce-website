@@ -2,7 +2,7 @@ type AuthHostEnv = Record<string, string | undefined>
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes'])
 const FALSE_VALUES = new Set(['0', 'false', 'no'])
-const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1', '[::1]'])
 
 function parseBooleanEnv(value: string | undefined): boolean | null {
   if (!value) return null

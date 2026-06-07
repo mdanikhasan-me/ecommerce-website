@@ -42,6 +42,43 @@ describe('auth host configuration', () => {
     )
   })
 
+  it('normalizes AUTH_TRUST_HOST boolean values before evaluating host trust', () => {
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        AUTH_TRUST_HOST: ' YES ',
+      }),
+      true,
+    )
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        AUTH_TRUST_HOST: ' No ',
+        VERCEL: '1',
+      }),
+      false,
+    )
+  })
+
+  it('trusts recognized managed production host signals without a blind custom-host fallback', () => {
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        NEXTAUTH_URL: 'https://shop.example.com',
+        VERCEL: '1',
+      }),
+      true,
+    )
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        NEXTAUTH_URL: 'https://shop.example.com',
+        NETLIFY: 'true',
+      }),
+      true,
+    )
+  })
+
   it('does not silently trust unknown custom production hosts', () => {
     assert.equal(
       shouldTrustAuthHost({
@@ -49,6 +86,16 @@ describe('auth host configuration', () => {
         NEXTAUTH_URL: 'https://shop.example.com',
       }),
       false,
+    )
+  })
+
+  it('uses NEXT_PUBLIC_SITE_URL as a local production verification fallback', () => {
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        NEXT_PUBLIC_SITE_URL: 'http://[::1]:3000/account',
+      }),
+      true,
     )
   })
 
@@ -74,6 +121,17 @@ describe('auth host configuration', () => {
         'AUTH_URL and NEXTAUTH_URL resolve to different origins.',
         'Set AUTH_TRUST_HOST=true for trusted reverse proxies or managed hosting.',
       ],
+    )
+  })
+
+  it('does not warn for managed hosting trust when a canonical origin exists', () => {
+    assert.deepEqual(
+      getAuthHostConfigurationWarnings({
+        NODE_ENV: 'production',
+        NEXTAUTH_URL: 'https://shop.example.com/auth/callback?next=/account',
+        VERCEL: '1',
+      }),
+      [],
     )
   })
 })
