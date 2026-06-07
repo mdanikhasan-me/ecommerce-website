@@ -1,0 +1,2 @@
+Read-only finding: SEO URL helpers accepted HTTP(S) URLs with username/password userinfo. normalizeSiteUrl could canonicalize https://user:pass@shop.example.com to https://shop.example.com, and toAbsoluteUrl could return credential-bearing absolute or protocol-relative URLs.
+Resolution: reject URL username/password userinfo for canonical site URLs and absolute/protocol-relative SEO URLs, and normalize canonical fallbacks through a safe site URL.

@@ -37,6 +37,10 @@ describe('technical SEO policy', () => {
       'https://boilabin.com',
     )
     assert.equal(
+      normalizeSiteUrl('https://user:pass@shop.example.com/path', { NODE_ENV: 'production' }),
+      'https://boilabin.com',
+    )
+    assert.equal(
       normalizeSiteUrl('https://shop.example.com/path', { NODE_ENV: 'production' }),
       'https://shop.example.com',
     )
@@ -46,6 +50,19 @@ describe('technical SEO policy', () => {
     assert.equal(toAbsoluteUrl('/uploads/product.webp', 'https://boilabin.com'), 'https://boilabin.com/uploads/product.webp')
     assert.equal(toAbsoluteUrl('https://cdn.example.com/image.jpg', 'https://boilabin.com'), 'https://cdn.example.com/image.jpg')
     assert.equal(canonicalUrl('', 'https://boilabin.com'), 'https://boilabin.com/')
+  })
+
+  it('rejects credential-bearing SEO URLs before canonicalizing them', () => {
+    assert.equal(toAbsoluteUrl('https://user:pass@cdn.example.com/image.jpg', 'https://boilabin.com'), undefined)
+    assert.equal(toAbsoluteUrl('//user:pass@cdn.example.com/image.jpg', 'https://boilabin.com'), undefined)
+    assert.equal(
+      toAbsoluteUrl('/uploads/product.webp', 'https://user:pass@shop.example.com'),
+      'https://boilabin.com/uploads/product.webp',
+    )
+    assert.equal(
+      canonicalUrl('/products/test-phone', 'https://user:pass@shop.example.com'),
+      'https://boilabin.com/products/test-phone',
+    )
   })
 
   it('detects faceted category URLs that should not be indexed', () => {

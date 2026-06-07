@@ -7,6 +7,14 @@ function isHttpUrl(url: URL) {
   return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
+function hasUrlUserinfo(url: URL) {
+  return Boolean(url.username || url.password)
+}
+
+function isSafeHttpUrl(url: URL) {
+  return isHttpUrl(url) && !hasUrlUserinfo(url)
+}
+
 function isLocalHostname(hostname: string) {
   return LOCAL_HOSTNAMES.has(hostname)
 }
@@ -16,7 +24,7 @@ export function normalizeSiteUrl(value: string | null | undefined, env: SeoUrlEn
 
   try {
     const url = new URL(candidate)
-    if (!isHttpUrl(url)) return DEFAULT_SITE_URL
+    if (!isSafeHttpUrl(url)) return DEFAULT_SITE_URL
     if (isLocalHostname(url.hostname)) return DEFAULT_SITE_URL
     return url.origin
   } catch {
@@ -32,14 +40,20 @@ export function toAbsoluteUrl(value: string | null | undefined, siteUrl = getSit
   const trimmed = value?.trim()
   if (!trimmed) return undefined
 
-  if (trimmed.startsWith('//')) return `https:${trimmed}`
-
   try {
-    const parsed = new URL(trimmed)
-    return isHttpUrl(parsed) ? parsed.toString() : undefined
+    const parsed = trimmed.startsWith('//')
+      ? new URL(`https:${trimmed}`)
+      : new URL(trimmed)
+
+    return isSafeHttpUrl(parsed) ? parsed.toString() : undefined
   } catch {
     try {
-      return new URL(trimmed.startsWith('/') ? trimmed : `/${trimmed}`, siteUrl).toString()
+      const parsed = new URL(
+        trimmed.startsWith('/') ? trimmed : `/${trimmed}`,
+        normalizeSiteUrl(siteUrl),
+      )
+
+      return isSafeHttpUrl(parsed) ? parsed.toString() : undefined
     } catch {
       return undefined
     }
@@ -47,5 +61,6 @@ export function toAbsoluteUrl(value: string | null | undefined, siteUrl = getSit
 }
 
 export function canonicalUrl(path = '', siteUrl = getSiteUrl()) {
-  return toAbsoluteUrl(path || '/', siteUrl) ?? siteUrl
+  const safeSiteUrl = normalizeSiteUrl(siteUrl)
+  return toAbsoluteUrl(path || '/', safeSiteUrl) ?? safeSiteUrl
 }

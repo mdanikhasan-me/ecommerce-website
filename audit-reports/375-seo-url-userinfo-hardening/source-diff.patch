@@ -1,0 +1,97 @@
+diff --git a/src/backend/seo/urls.ts b/src/backend/seo/urls.ts
+index 5483d05..a0108e1 100644
+--- a/src/backend/seo/urls.ts
++++ b/src/backend/seo/urls.ts
+@@ -7,6 +7,14 @@ function isHttpUrl(url: URL) {
+   return url.protocol === 'http:' || url.protocol === 'https:'
+ }
+
++function hasUrlUserinfo(url: URL) {
++  return Boolean(url.username || url.password)
++}
++
++function isSafeHttpUrl(url: URL) {
++  return isHttpUrl(url) && !hasUrlUserinfo(url)
++}
++
+ function isLocalHostname(hostname: string) {
+   return LOCAL_HOSTNAMES.has(hostname)
+ }
+@@ -16,7 +24,7 @@ export function normalizeSiteUrl(value: string | null | undefined, env: SeoUrlEn
+
+   try {
+     const url = new URL(candidate)
+-    if (!isHttpUrl(url)) return DEFAULT_SITE_URL
++    if (!isSafeHttpUrl(url)) return DEFAULT_SITE_URL
+     if (isLocalHostname(url.hostname)) return DEFAULT_SITE_URL
+     return url.origin
+   } catch {
+@@ -32,14 +40,20 @@ export function toAbsoluteUrl(value: string | null | undefined, siteUrl = getSit
+   const trimmed = value?.trim()
+   if (!trimmed) return undefined
+
+-  if (trimmed.startsWith('//')) return `https:${trimmed}`
+-
+   try {
+-    const parsed = new URL(trimmed)
+-    return isHttpUrl(parsed) ? parsed.toString() : undefined
++    const parsed = trimmed.startsWith('//')
++      ? new URL(`https:${trimmed}`)
++      : new URL(trimmed)
++
++    return isSafeHttpUrl(parsed) ? parsed.toString() : undefined
+   } catch {
+     try {
+-      return new URL(trimmed.startsWith('/') ? trimmed : `/${trimmed}`, siteUrl).toString()
++      const parsed = new URL(
++        trimmed.startsWith('/') ? trimmed : `/${trimmed}`,
++        normalizeSiteUrl(siteUrl),
++      )
++
++      return isSafeHttpUrl(parsed) ? parsed.toString() : undefined
+     } catch {
+       return undefined
+     }
+@@ -47,5 +61,6 @@ export function toAbsoluteUrl(value: string | null | undefined, siteUrl = getSit
+ }
+
+ export function canonicalUrl(path = '', siteUrl = getSiteUrl()) {
+-  return toAbsoluteUrl(path || '/', siteUrl) ?? siteUrl
++  const safeSiteUrl = normalizeSiteUrl(siteUrl)
++  return toAbsoluteUrl(path || '/', safeSiteUrl) ?? safeSiteUrl
+ }
+diff --git a/tests/seo-policy.test.ts b/tests/seo-policy.test.ts
+index 86eb18d..66dea95 100644
+--- a/tests/seo-policy.test.ts
++++ b/tests/seo-policy.test.ts
+@@ -36,6 +36,10 @@ describe('technical SEO policy', () => {
+       normalizeSiteUrl('ftp://shop.example.com', { NODE_ENV: 'production' }),
+       'https://boilabin.com',
+     )
++    assert.equal(
++      normalizeSiteUrl('https://user:pass@shop.example.com/path', { NODE_ENV: 'production' }),
++      'https://boilabin.com',
++    )
+     assert.equal(
+       normalizeSiteUrl('https://shop.example.com/path', { NODE_ENV: 'production' }),
+       'https://shop.example.com',
+@@ -48,6 +52,19 @@ describe('technical SEO policy', () => {
+     assert.equal(canonicalUrl('', 'https://boilabin.com'), 'https://boilabin.com/')
+   })
+
++  it('rejects credential-bearing SEO URLs before canonicalizing them', () => {
++    assert.equal(toAbsoluteUrl('https://user:pass@cdn.example.com/image.jpg', 'https://boilabin.com'), undefined)
++    assert.equal(toAbsoluteUrl('//user:pass@cdn.example.com/image.jpg', 'https://boilabin.com'), undefined)
++    assert.equal(
++      toAbsoluteUrl('/uploads/product.webp', 'https://user:pass@shop.example.com'),
++      'https://boilabin.com/uploads/product.webp',
++    )
++    assert.equal(
++      canonicalUrl('/products/test-phone', 'https://user:pass@shop.example.com'),
++      'https://boilabin.com/products/test-phone',
++    )
++  })
++
+   it('detects faceted category URLs that should not be indexed', () => {
+     assert.equal(hasFacetedCategoryParams({}), false)
+     assert.equal(hasFacetedCategoryParams({ page: '1' }), false)
