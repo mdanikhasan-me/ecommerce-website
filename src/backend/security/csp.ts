@@ -44,8 +44,21 @@ const METADATA_ROUTES = new Set([
 ])
 
 function normalizePathname(pathname: string) {
-  if (!pathname.startsWith('/')) return `/${pathname}`
-  return pathname
+  const trimmed = pathname.trim()
+  if (!trimmed) return '/'
+
+  try {
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)) {
+      return new URL(trimmed).pathname || '/'
+    }
+  } catch {
+    return '/'
+  }
+
+  const [path] = trimmed.split(/[?#]/)
+  const cleanPath = path || '/'
+  if (!cleanPath.startsWith('/')) return `/${cleanPath}`
+  return cleanPath
 }
 
 function matchesPathSegment(pathname: string, segment: string) {

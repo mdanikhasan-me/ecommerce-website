@@ -88,6 +88,21 @@ describe('route-aware CSP helper', () => {
     }
   })
 
+  it('normalizes query strings, hashes, and full URLs before classifying routes', () => {
+    const cases: Array<[string, CspRouteFamily | null]> = [
+      ['/admin?preview=1', 'admin'],
+      ['/account/orders#latest', 'account'],
+      ['https://shop.example.com/checkout?step=payment', 'checkout'],
+      ['https://shop.example.com/_next/static/chunks/app.js?cache=1', null],
+      ['products/test-product?ref=search', 'public'],
+      [' ', 'public'],
+    ]
+
+    for (const [pathname, expected] of cases) {
+      assert.equal(classifyCspRoute(pathname), expected, pathname)
+    }
+  })
+
   it('uses path segment boundaries for protected route families', () => {
     const publicPrefixLookalikes = [
       '/administrator',

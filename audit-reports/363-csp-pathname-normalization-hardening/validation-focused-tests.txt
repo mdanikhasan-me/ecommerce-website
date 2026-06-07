@@ -1,0 +1,25 @@
+▶ route-aware CSP helper
+  ✔ classifies route families without applying CSP to static assets (1.1503ms)
+  ✔ uses path segment boundaries for framework static routes (0.1262ms)
+  ✔ normalizes query strings, hashes, and full URLs before classifying routes (0.1583ms)
+  ✔ uses path segment boundaries for protected route families (0.1145ms)
+  ✔ generates explicit report-only policies for every route family (0.663ms)
+  ✔ keeps current known image hosts in page policies (0.299ms)
+  ✔ does not include payment or tracking domains before those integrations exist (0.1703ms)
+  ✔ keeps API and metadata policies minimal (0.6504ms)
+  ✔ keeps report-only header disabled by default (0.1987ms)
+  ✔ returns a report-only header only when explicitly enabled (0.2745ms)
+  ✔ adds report-uri only when report-only and collection are both enabled (0.1882ms)
+✔ route-aware CSP helper (5.1175ms)
+▶ middleware CSP report-only behavior
+  ✔ does not add CSP headers by default and preserves protected redirects (3.398ms)
+  ✔ adds report-only CSP when enabled without adding enforced CSP (0.5012ms)
+✔ middleware CSP report-only behavior (4.0173ms)
+ℹ tests 13
+ℹ suites 2
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 288.7375
