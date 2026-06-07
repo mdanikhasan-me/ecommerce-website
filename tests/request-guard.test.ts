@@ -107,6 +107,26 @@ describe('mutation request guard', () => {
     assert.equal(result.reason, 'blocked-source')
   })
 
+  it('blocks invalid explicit sources before trusting fetch metadata', () => {
+    const invalidOrigin = isRequestSourceAllowed({
+      method: 'POST',
+      requestOrigin: 'https://boilabin.test',
+      origin: 'javascript:alert(1)',
+      secFetchSite: 'same-origin',
+      requireSourceHeader: true,
+    })
+    const userinfoReferer = isRequestSourceAllowed({
+      method: 'PATCH',
+      requestOrigin: 'https://boilabin.test',
+      referer: 'https://user:pass@boilabin.test/admin',
+      secFetchSite: 'same-origin',
+      requireSourceHeader: true,
+    })
+
+    assert.deepEqual(invalidOrigin, { allowed: false, reason: 'blocked-source' })
+    assert.deepEqual(userinfoReferer, { allowed: false, reason: 'blocked-source' })
+  })
+
   it('allows trusted fetch metadata variants when origin and referer are absent', () => {
     for (const secFetchSite of [' same-origin ', 'SAME-SITE', 'none']) {
       const result = isRequestSourceAllowed({
@@ -142,6 +162,7 @@ describe('mutation request guard', () => {
     assert.equal(normalizeOrigin(' http://localhost:3000/admin '), 'http://localhost:3000')
     assert.equal(normalizeOrigin('javascript:alert(1)'), null)
     assert.equal(normalizeOrigin('ftp://boilabin.test'), null)
+    assert.equal(normalizeOrigin('https://user:pass@boilabin.test'), null)
     assert.equal(normalizeOrigin('not a url'), null)
   })
 })

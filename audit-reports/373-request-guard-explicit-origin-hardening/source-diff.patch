@@ -1,0 +1,77 @@
+diff --git a/src/backend/security/request-guard.ts b/src/backend/security/request-guard.ts
+index 66dbee2..cc20487 100644
+--- a/src/backend/security/request-guard.ts
++++ b/src/backend/security/request-guard.ts
+@@ -25,12 +25,17 @@ export function normalizeOrigin(value: string | null | undefined) {
+   try {
+     const url = new URL(value.trim())
+     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
++    if (url.username || url.password) return null
+     return url.origin.toLowerCase()
+   } catch {
+     return null
+   }
+ }
+
++function hasExplicitValue(value: string | null | undefined) {
++  return Boolean(value?.trim())
++}
++
+ function addOrigin(target: Set<string>, value: string | null | undefined) {
+   const normalized = normalizeOrigin(value)
+   if (normalized) target.add(normalized)
+@@ -94,6 +99,7 @@ export function isRequestSourceAllowed(input: RequestSourceInput): RequestSource
+       ? { allowed: true, reason: 'allowed-origin' }
+       : { allowed: false, reason: 'blocked-source' }
+   }
++  if (hasExplicitValue(input.origin)) return { allowed: false, reason: 'blocked-source' }
+
+   const referer = normalizeOrigin(input.referer)
+   if (referer) {
+@@ -101,6 +107,7 @@ export function isRequestSourceAllowed(input: RequestSourceInput): RequestSource
+       ? { allowed: true, reason: 'allowed-referer' }
+       : { allowed: false, reason: 'blocked-source' }
+   }
++  if (hasExplicitValue(input.referer)) return { allowed: false, reason: 'blocked-source' }
+
+   const secFetchSite = input.secFetchSite?.trim().toLowerCase()
+   if (secFetchSite) {
+diff --git a/tests/request-guard.test.ts b/tests/request-guard.test.ts
+index 19c024c..9e03444 100644
+--- a/tests/request-guard.test.ts
++++ b/tests/request-guard.test.ts
+@@ -107,6 +107,26 @@ describe('mutation request guard', () => {
+     assert.equal(result.reason, 'blocked-source')
+   })
+
++  it('blocks invalid explicit sources before trusting fetch metadata', () => {
++    const invalidOrigin = isRequestSourceAllowed({
++      method: 'POST',
++      requestOrigin: 'https://boilabin.test',
++      origin: 'javascript:alert(1)',
++      secFetchSite: 'same-origin',
++      requireSourceHeader: true,
++    })
++    const userinfoReferer = isRequestSourceAllowed({
++      method: 'PATCH',
++      requestOrigin: 'https://boilabin.test',
++      referer: 'https://user:pass@boilabin.test/admin',
++      secFetchSite: 'same-origin',
++      requireSourceHeader: true,
++    })
++
++    assert.deepEqual(invalidOrigin, { allowed: false, reason: 'blocked-source' })
++    assert.deepEqual(userinfoReferer, { allowed: false, reason: 'blocked-source' })
++  })
++
+   it('allows trusted fetch metadata variants when origin and referer are absent', () => {
+     for (const secFetchSite of [' same-origin ', 'SAME-SITE', 'none']) {
+       const result = isRequestSourceAllowed({
+@@ -142,6 +162,7 @@ describe('mutation request guard', () => {
+     assert.equal(normalizeOrigin(' http://localhost:3000/admin '), 'http://localhost:3000')
+     assert.equal(normalizeOrigin('javascript:alert(1)'), null)
+     assert.equal(normalizeOrigin('ftp://boilabin.test'), null)
++    assert.equal(normalizeOrigin('https://user:pass@boilabin.test'), null)
+     assert.equal(normalizeOrigin('not a url'), null)
+   })
+ })

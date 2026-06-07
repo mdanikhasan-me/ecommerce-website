@@ -25,10 +25,15 @@ export function normalizeOrigin(value: string | null | undefined) {
   try {
     const url = new URL(value.trim())
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
+    if (url.username || url.password) return null
     return url.origin.toLowerCase()
   } catch {
     return null
   }
+}
+
+function hasExplicitValue(value: string | null | undefined) {
+  return Boolean(value?.trim())
 }
 
 function addOrigin(target: Set<string>, value: string | null | undefined) {
@@ -94,6 +99,7 @@ export function isRequestSourceAllowed(input: RequestSourceInput): RequestSource
       ? { allowed: true, reason: 'allowed-origin' }
       : { allowed: false, reason: 'blocked-source' }
   }
+  if (hasExplicitValue(input.origin)) return { allowed: false, reason: 'blocked-source' }
 
   const referer = normalizeOrigin(input.referer)
   if (referer) {
@@ -101,6 +107,7 @@ export function isRequestSourceAllowed(input: RequestSourceInput): RequestSource
       ? { allowed: true, reason: 'allowed-referer' }
       : { allowed: false, reason: 'blocked-source' }
   }
+  if (hasExplicitValue(input.referer)) return { allowed: false, reason: 'blocked-source' }
 
   const secFetchSite = input.secFetchSite?.trim().toLowerCase()
   if (secFetchSite) {
