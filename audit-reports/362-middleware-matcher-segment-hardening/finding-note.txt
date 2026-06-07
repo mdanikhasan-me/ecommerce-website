@@ -1,0 +1,2 @@
+Read-only finding: middleware config.matcher used raw negative lookahead prefixes for _next/static, _next/image, favicon.ico, and apple-touch-icon.png. That could skip middleware for public lookalike paths such as /_next/staticish/chunks/app.js or /favicon.icology.
+Resolution: matcher exclusions now use route-segment boundaries for Next framework static paths and exact matches for icon files, with focused tests evaluating real excluded paths and public lookalikes.

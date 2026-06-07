@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { describe, it } from 'node:test'
 import { NextRequest } from 'next/server'
 
-import middleware from '@/middleware'
+import middleware, { config as middlewareConfig } from '@/middleware'
 
 const repoRoot = process.cwd()
 
@@ -38,6 +38,33 @@ describe('security runtime route boundary guardrails', () => {
 
       assert.equal(response.status, 200, pathname)
       assert.equal(response.headers.get('location'), null, pathname)
+    }
+  })
+
+  it('keeps middleware matcher static exclusions segment-aware', () => {
+    const matcher = middlewareConfig.matcher[0]
+    const matcherRegex = new RegExp(`^${matcher}$`)
+
+    for (const pathname of [
+      '/_next/static/chunks/app.js',
+      '/_next/image',
+      '/assets/logo.svg',
+      '/uploads/admin/product.webp',
+      '/favicon.ico',
+      '/apple-touch-icon.png',
+    ]) {
+      assert.equal(matcherRegex.test(pathname), false, pathname)
+    }
+
+    for (const pathname of [
+      '/_next/staticish/chunks/app.js',
+      '/_next/image-proxy',
+      '/assetsish/logo.svg',
+      '/uploadsish/product.webp',
+      '/favicon.icology',
+      '/apple-touch-icon.png.backup',
+    ]) {
+      assert.equal(matcherRegex.test(pathname), true, pathname)
     }
   })
 

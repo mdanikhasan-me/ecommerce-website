@@ -1,0 +1,59 @@
+diff --git a/src/middleware.ts b/src/middleware.ts
+index 6ab738a..a8281a1 100644
+--- a/src/middleware.ts
++++ b/src/middleware.ts
+@@ -51,6 +51,6 @@ export default function middleware(req: NextRequest) {
+
+ export const config = {
+   matcher: [
+-    '/((?!_next/static|_next/image|assets/|uploads/|favicon.ico|apple-touch-icon.png).*)',
++    '/((?!_next/(?:static|image)(?:/|$)|assets/|uploads/|favicon\\.ico$|apple-touch-icon\\.png$).*)',
+   ],
+ }
+diff --git a/tests/security-runtime-boundary.test.ts b/tests/security-runtime-boundary.test.ts
+index 90a73d3..5fa8378 100644
+--- a/tests/security-runtime-boundary.test.ts
++++ b/tests/security-runtime-boundary.test.ts
+@@ -4,7 +4,7 @@ import { join } from 'node:path'
+ import { describe, it } from 'node:test'
+ import { NextRequest } from 'next/server'
+
+-import middleware from '@/middleware'
++import middleware, { config as middlewareConfig } from '@/middleware'
+
+ const repoRoot = process.cwd()
+
+@@ -41,6 +41,33 @@ describe('security runtime route boundary guardrails', () => {
+     }
+   })
+
++  it('keeps middleware matcher static exclusions segment-aware', () => {
++    const matcher = middlewareConfig.matcher[0]
++    const matcherRegex = new RegExp(`^${matcher}$`)
++
++    for (const pathname of [
++      '/_next/static/chunks/app.js',
++      '/_next/image',
++      '/assets/logo.svg',
++      '/uploads/admin/product.webp',
++      '/favicon.ico',
++      '/apple-touch-icon.png',
++    ]) {
++      assert.equal(matcherRegex.test(pathname), false, pathname)
++    }
++
++    for (const pathname of [
++      '/_next/staticish/chunks/app.js',
++      '/_next/image-proxy',
++      '/assetsish/logo.svg',
++      '/uploadsish/product.webp',
++      '/favicon.icology',
++      '/apple-touch-icon.png.backup',
++    ]) {
++      assert.equal(matcherRegex.test(pathname), true, pathname)
++    }
++  })
++
+   it('keeps checkout and order confirmation private before sensitive order data loads', () => {
+     const checkoutSource = readProjectFile('src/app/(store)/checkout/page.tsx')
+     const confirmationSource = readProjectFile('src/app/(store)/order/[orderNumber]/confirmation/page.tsx')
