@@ -1,0 +1,20 @@
+▶ mutation request guard
+  ✔ allows safe methods without source headers (0.8439ms)
+  ✔ allows same-origin mutation origins (0.2029ms)
+  ✔ allows configured origins and same-origin referers (0.1436ms)
+  ✔ normalizes configured origins and lower-case unsafe methods (0.1777ms)
+  ✔ blocks cross-site mutation sources (0.24ms)
+  ✔ treats explicit origin as authoritative before fetch metadata (0.1816ms)
+  ✔ treats explicit referer as authoritative before fetch metadata (0.1732ms)
+  ✔ allows trusted fetch metadata variants when origin and referer are absent (0.198ms)
+  ✔ requires a source signal when configured to do so (0.7727ms)
+  ✔ normalizes valid origins and rejects invalid values (0.2526ms)
+✔ mutation request guard (4.4467ms)
+ℹ tests 10
+ℹ suites 1
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 285.2155

@@ -48,6 +48,19 @@ describe('mutation request guard', () => {
     assert.equal(referer.reason, 'allowed-referer')
   })
 
+  it('normalizes configured origins and lower-case unsafe methods', () => {
+    const result = isRequestSourceAllowed({
+      method: 'post',
+      requestOrigin: 'https://admin.boilabin.test',
+      origin: 'https://boilabin.test',
+      allowedOrigins: [' HTTPS://Boilabin.test/account?from=admin '],
+      requireSourceHeader: true,
+    })
+
+    assert.equal(result.allowed, true)
+    assert.equal(result.reason, 'allowed-origin')
+  })
+
   it('blocks cross-site mutation sources', () => {
     const origin = isRequestSourceAllowed({
       method: 'POST',
@@ -79,6 +92,33 @@ describe('mutation request guard', () => {
 
     assert.equal(result.allowed, false)
     assert.equal(result.reason, 'blocked-source')
+  })
+
+  it('treats explicit referer as authoritative before fetch metadata', () => {
+    const result = isRequestSourceAllowed({
+      method: 'PATCH',
+      requestOrigin: 'https://boilabin.test',
+      referer: 'https://evil.test/admin',
+      secFetchSite: 'same-origin',
+      requireSourceHeader: true,
+    })
+
+    assert.equal(result.allowed, false)
+    assert.equal(result.reason, 'blocked-source')
+  })
+
+  it('allows trusted fetch metadata variants when origin and referer are absent', () => {
+    for (const secFetchSite of [' same-origin ', 'SAME-SITE', 'none']) {
+      const result = isRequestSourceAllowed({
+        method: 'DELETE',
+        requestOrigin: 'https://boilabin.test',
+        secFetchSite,
+        requireSourceHeader: true,
+      })
+
+      assert.equal(result.allowed, true)
+      assert.equal(result.reason, 'trusted-fetch-site')
+    }
   })
 
   it('requires a source signal when configured to do so', () => {
