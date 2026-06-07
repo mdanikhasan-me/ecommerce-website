@@ -7,6 +7,13 @@ import { AdminImageField } from './AdminImageField'
 import { toSlug } from './form-utils'
 import { getDescendantCategoryIds } from './category-utils'
 
+const CATEGORY_IMAGE_DATA_URL_ERROR =
+  'Category images must be uploaded as files before saving. Base64 image data is not allowed.'
+
+function isCategoryImageDataUrl(value: string | null | undefined) {
+  return value?.trim().toLowerCase().startsWith('data:image/') ?? false
+}
+
 interface CategoryOption {
   id: string
   name: string
@@ -90,10 +97,37 @@ export function CategoryEditorForm({
     parentId: form.parentId || null,
   })
 
+  const getCategoryUploadOwner = () =>
+    form.slug.trim() || toSlug(form.name) || category?.slug || category?.id || 'category'
+
+  const uploadCategoryImage = async (file: File) => {
+    const uploadForm = new FormData()
+    uploadForm.set('file', file)
+    uploadForm.set('owner', getCategoryUploadOwner())
+
+    const response = await fetch('/api/admin/categories/upload', {
+      method: 'POST',
+      body: uploadForm,
+    })
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok || typeof data?.url !== 'string') {
+      throw new Error(data?.error || 'Could not upload category image')
+    }
+
+    return data.url
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-    setIsSaving(true)
     setError('')
+
+    if (isCategoryImageDataUrl(form.image)) {
+      setError(CATEGORY_IMAGE_DATA_URL_ERROR)
+      return
+    }
+
+    setIsSaving(true)
 
     try {
       const response = await fetch(
@@ -208,7 +242,10 @@ export function CategoryEditorForm({
               label="Category image"
               value={form.image}
               onChange={(value) => updateField('image', value)}
-              helperText="Upload a local image or paste an image URL."
+              helperText="Upload a local image. The saved value stays as a managed public path."
+              uploadImage={uploadCategoryImage}
+              rejectDataUrls
+              dataUrlErrorMessage={CATEGORY_IMAGE_DATA_URL_ERROR}
             />
           </section>
         </div>

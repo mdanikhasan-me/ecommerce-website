@@ -1,5 +1,9 @@
 import { z } from 'zod'
 import { db } from '@/backend/database'
+import {
+  CATEGORY_IMAGE_DATA_URL_ERROR,
+  isCategoryImageDataUrl,
+} from '@/backend/admin/category-image-policy'
 
 type CategoryParentLink = {
   id: string
@@ -15,11 +19,37 @@ const optionalTrimmedString = (max: number) =>
     .nullable()
     .transform((value) => value || null)
 
+const optionalCategoryImageString = z
+  .string()
+  .trim()
+  .optional()
+  .nullable()
+  .superRefine((value, context) => {
+    const normalized = value?.trim()
+    if (!normalized) return
+
+    if (isCategoryImageDataUrl(normalized)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: CATEGORY_IMAGE_DATA_URL_ERROR,
+      })
+      return
+    }
+
+    if (normalized.length > 2048) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Category image path is too long',
+      })
+    }
+  })
+  .transform((value) => value || null)
+
 const categoryPayloadSchema = z.object({
   name: z.string().trim().min(1, 'Category name is required').max(120, 'Category name is too long'),
   slug: optionalTrimmedString(140),
   description: optionalTrimmedString(500),
-  image: optionalTrimmedString(500_000),
+  image: optionalCategoryImageString,
   icon: optionalTrimmedString(80),
   isActive: z.boolean().optional().default(true),
   sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),

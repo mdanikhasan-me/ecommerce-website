@@ -43,13 +43,14 @@ function versionCategoryAsset(asset: { path: string; version: string }) {
 }
 
 export function getCategoryMediaBasePath(category: CategoryImageInput) {
+  const savedImage = getSavedCategoryImage(category)
+  if (savedImage) {
+    return savedImage
+  }
+
   const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
   if (localAsset) {
     return localAsset.path
-  }
-
-  if (category.image && !isLegacyBrokenCategoryImage(category.image)) {
-    return category.image
   }
 
   return CATEGORY_PHOTO_ASSETS.electronics.path
@@ -66,6 +67,7 @@ function isLegacyBrokenCategoryImage(src: string) {
   if (!value) return true
 
   return (
+    value.startsWith('data:image/') ||
     value.startsWith('/images/categories/') ||
     value.includes('/images/categories/') ||
     value.endsWith('.svg') ||
@@ -74,14 +76,25 @@ function isLegacyBrokenCategoryImage(src: string) {
   )
 }
 
-export function getCategoryMediaPath(category: CategoryImageInput) {
-  const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
-  if (localAsset) {
-    return versionCategoryAsset(localAsset)
+function getSavedCategoryImage(category: CategoryImageInput) {
+  const image = category.image?.trim()
+  if (!image || isLegacyBrokenCategoryImage(image)) {
+    return null
   }
 
-  if (category.image && !isLegacyBrokenCategoryImage(category.image)) {
-    return category.image
+  return image
+}
+
+export function getCategoryMediaPath(category: CategoryImageInput) {
+  const savedImage = getSavedCategoryImage(category)
+  const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
+
+  if (savedImage) {
+    return localAsset?.path === savedImage ? versionCategoryAsset(localAsset) : savedImage
+  }
+
+  if (localAsset) {
+    return versionCategoryAsset(localAsset)
   }
 
   return versionCategoryAsset(CATEGORY_PHOTO_ASSETS.electronics)

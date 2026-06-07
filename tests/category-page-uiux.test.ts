@@ -54,12 +54,27 @@ describe('category page UI/UX guardrails', () => {
   })
 
   it('keeps subcategory cards photo-ready instead of shrinking missing media into tiny buttons', () => {
-    assert.match(source, /aspect-\[16\/10\]/)
+    assert.match(source, /h-\[7\.25rem\]/)
+    assert.match(source, /sm:h-\[7\.75rem\]/)
+    assert.match(source, /2xl:h-\[8\.25rem\]/)
+    assert.match(source, /min-\[1120px\]:grid-cols-3/)
+    assert.match(source, /min-\[1380px\]:grid-cols-4/)
     assert.match(source, /object-cover/)
     assert.match(source, /data-empty-media-surface/)
-    assert.match(source, /min-h-\[104px\]/)
+    assert.match(source, /min-h-\[96px\]/)
     assert.match(source, /w-\[96px\]/)
-    assert.doesNotMatch(source, /h-12 w-12|w-\[70px\]|min-h-\[78px\]/)
+    assert.doesNotMatch(source, /aspect-\[16\/10\]|h-12 w-12|w-\[70px\]|min-h-\[78px\]/)
+  })
+
+  it('adds a capped public All Products section below the category explorer', () => {
+    assert.match(source, /const ALL_PRODUCTS_LIMIT = 24/)
+    assert.match(source, /getAllProductsPreview/)
+    assert.match(source, /getBuyerVisibleProductWhere\(\)/)
+    assert.match(source, /take: ALL_PRODUCTS_LIMIT/)
+    assert.match(source, /title="All Products"/)
+    assert.match(source, /viewAllHref="\/search"/)
+    assert.match(source, /gridClassName="sm:grid-cols-3 md:grid-cols-4 min-\[1120px\]:grid-cols-5 2xl:grid-cols-6"/)
+    assert.doesNotMatch(source, /take:\s*(?:100|999)/)
   })
 
   it('keeps category page typography within the storefront page scale', () => {

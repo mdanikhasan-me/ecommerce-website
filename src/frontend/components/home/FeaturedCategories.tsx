@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { getCategoryMediaPath } from '@/shared/category-media'
 
 interface Category {
@@ -43,13 +42,13 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
         </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:hidden">
+      <div className="mt-4 grid grid-cols-2 gap-2.5 sm:hidden">
         {visibleCategories.map((category) => (
           <MobileCategoryTile key={category.id} category={category} />
         ))}
       </div>
 
-      <div className="mt-6 hidden justify-center gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(156px,188px))] sm:grid lg:gap-4">
+      <div className="mt-6 hidden grid-cols-3 gap-3.5 sm:grid lg:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-6 2xl:grid-cols-8">
         {visibleCategories.map((category) => (
           <CategoryTile key={category.id} category={category} />
         ))}
@@ -62,51 +61,46 @@ function MobileCategoryTile({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-[1.05] min-h-[118px] min-w-0 overflow-hidden rounded-[18px] border border-black/6 bg-[#f5efe6] shadow-[0_16px_34px_-34px_rgba(15,23,42,0.16)]"
+      className="group flex min-w-0 flex-col overflow-hidden rounded-[1.05rem] border border-border/75 bg-card shadow-[0_14px_30px_rgba(23,18,15,0.055)] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/16 hover:shadow-[0_18px_36px_rgba(23,18,15,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="absolute inset-0">
+      <div className="relative aspect-[1.18] overflow-hidden bg-secondary/55">
         <Image
           src={getCategoryMediaPath(category)}
           alt={category.name}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
           sizes="(max-width: 640px) 46vw, 172px"
           quality={82}
         />
       </div>
 
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.04)_8%,rgba(15,23,42,0.14)_50%,rgba(15,23,42,0.78)_100%)]" />
-
-      <div className="relative z-10 mt-auto flex items-end justify-between gap-2 p-2.5">
-        <div className="max-w-[72%]">
-          <p className="text-[0.86rem] font-semibold leading-4 text-white drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
+      <div className="flex min-h-[4.7rem] items-center justify-between gap-2 border-t border-border/65 bg-card px-3 py-2.5">
+        <div className="min-w-0">
+          <p className="line-clamp-2 text-[0.86rem] font-semibold leading-4 text-foreground">
             {category.name}
           </p>
-          <p className="mt-0.5 text-[0.68rem] font-medium leading-4 text-white/85 drop-shadow-[0_2px_10px_rgba(15,23,42,0.38)]">
+          <p className="mt-0.5 text-[0.68rem] font-medium leading-4 text-muted-foreground">
             {formatProductCount(category.productCount)}
           </p>
         </div>
 
-        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)]">
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform duration-200 group-hover:translate-x-0.5">
           <LocalIcon name="arrow-right" className="h-3.5 w-3.5" />
         </span>
       </div>
-
-      <div className="pointer-events-none absolute inset-0 rounded-[18px] ring-1 ring-black/5" />
     </Link>
   )
 }
 
 function CategoryTile({ category }: { category: Category }) {
-  const config = getCategoryConfig(category.slug)
   const imageSrc = getCategoryMediaPath(category)
 
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative isolate flex aspect-square min-h-[172px] min-w-0 overflow-hidden rounded-[24px] border border-black/6 bg-[#f5efe6] shadow-[0_18px_42px_-38px_rgba(15,23,42,0.16)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_26px_56px_-38px_rgba(15,23,42,0.22)]"
+      className="group flex min-w-0 flex-col overflow-hidden rounded-[1.15rem] border border-border/75 bg-card shadow-[0_16px_34px_rgba(23,18,15,0.055)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/16 hover:shadow-[0_22px_44px_rgba(23,18,15,0.085)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="absolute inset-0">
+      <div className="relative aspect-[1.16] overflow-hidden bg-secondary/55">
         <Image
           src={imageSrc}
           alt={category.name}
@@ -117,26 +111,20 @@ function CategoryTile({ category }: { category: Category }) {
         />
       </div>
 
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_0%,rgba(15,23,42,0.16)_50%,rgba(15,23,42,0.8)_100%)]" />
-
-      <div className={`absolute inset-x-0 top-0 h-24 opacity-60 ${config?.glowClass ?? ''}`} />
-
-      <div className="relative z-10 mt-auto flex items-end justify-between gap-3 p-3.5">
-        <div className="max-w-[72%]">
-          <p className="text-[1.05rem] font-semibold leading-5 text-white drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+      <div className="flex min-h-[5.25rem] items-center justify-between gap-3 border-t border-border/65 bg-card px-3.5 py-3">
+        <div className="min-w-0">
+          <p className="line-clamp-2 text-[0.98rem] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
             {category.name}
           </p>
-          <p className="mt-1 text-[0.78rem] font-medium leading-4 text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.42)]">
+          <p className="mt-1 text-[0.75rem] font-medium leading-4 text-muted-foreground">
             {formatProductCount(category.productCount)}
           </p>
         </div>
 
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(var(--buttermilk))] text-[#161616] shadow-[0_12px_24px_-18px_rgba(15,23,42,0.42)] transition-transform duration-200 group-hover:translate-x-0.5">
+        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform duration-200 group-hover:translate-x-0.5">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>
-
-      <div className="pointer-events-none absolute inset-0 rounded-[24px] ring-1 ring-black/5" />
     </Link>
   )
 }

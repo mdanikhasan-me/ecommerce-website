@@ -121,7 +121,7 @@ export function ProductCard({
   return (
     <div className={cn('product-card group flex h-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[1.05rem] bg-[#eee6db] sm:rounded-t-[1.35rem]">
-        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative block aspect-[4/3] sm:aspect-square">
+        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative block aspect-[4/3]">
           {primaryImage ? (
             <Image
               src={primaryImage}

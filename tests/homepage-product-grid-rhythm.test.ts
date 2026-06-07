@@ -17,9 +17,8 @@ describe('homepage product-grid rhythm contracts', () => {
     assert.match(source, /product-grid-rhythm grid grid-cols-2 gap-x-2\.5 gap-y-3\.5/)
     assert.match(source, /sm:gap-x-3\.5 sm:gap-y-5/)
     assert.match(source, /lg:gap-x-4 lg:gap-y-6/)
-    assert.match(source, /const HOME_PRODUCT_IMAGE_SIZES = '\(max-width: 640px\) 50vw, \(max-width: 768px\) 33vw, 25vw'/)
-    assert.doesNotMatch(source, /xl:grid-cols-5/)
-    assert.doesNotMatch(source, /2xl:grid-cols-6/)
+    assert.match(source, /min-\[1120px\]:grid-cols-5 2xl:grid-cols-6/)
+    assert.match(source, /const HOME_PRODUCT_IMAGE_SIZES = '\(max-width: 640px\) 50vw, \(max-width: 768px\) 33vw, \(max-width: 1120px\) 25vw, \(max-width: 1536px\) 20vw, 16vw'/)
   })
 
   it('keeps homepage product sections on the shared ProductGrid rhythm path', () => {
@@ -31,7 +30,10 @@ describe('homepage product-grid rhythm contracts', () => {
     assert.match(source, /eyebrow="Popular picks"/)
     assert.match(source, /eyebrow="Recently added"/)
     assert.match(source, /container-site py-5 sm:py-7 lg:py-8/)
-    assert.match(source, /container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:pt-8/)
+    assert.match(source, /container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8/)
+    assert.doesNotMatch(source, /PromoSection/)
+    assert.ok(source.indexOf('title="Featured Products"') < source.indexOf('title="Best Sellers"'))
+    assert.ok(source.indexOf('title="Best Sellers"') < source.indexOf('title="New Arrivals"'))
   })
 
   it('keeps product-grid action labels specific without changing product card behavior', () => {

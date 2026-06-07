@@ -55,6 +55,17 @@ describe('category media mapping', () => {
     assert.equal(getCategoryMediaBasePath({ slug: 'toys-collectibles' }), '/assets/categories/toys-collectibles.jpg')
   })
 
+  it('lets clean saved category images override local fallback defaults', () => {
+    const savedImage = '/uploads/admin/categories/electronics/electronics-test.webp'
+
+    assert.equal(getCategoryMediaBasePath({ slug: 'electronics', image: savedImage }), savedImage)
+    assert.equal(getCategoryMediaPath({ slug: 'electronics', image: savedImage }), savedImage)
+    assert.equal(
+      getCategoryMediaPath({ slug: 'electronics', image: 'data:image/png;base64,AAAA' }),
+      `${CATEGORY_PHOTO_ASSETS.electronics.path}?v=${CATEGORY_PHOTO_ASSETS.electronics.version}`,
+    )
+  })
+
   it('keeps the legacy baby-kids slug from pointing at the deleted image', () => {
     const mediaPath = getCategoryMediaPath({ slug: 'baby-kids' })
 

@@ -3,11 +3,14 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { generatePageMetadata } from '@/backend/seo'
 import { db } from '@/backend/database'
+import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
+import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { ariaCurrentPage } from '@/frontend/components/ui/aria'
 import { getSubcategoryMediaPath } from '@/shared/category-media'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
+import { Prisma } from '@prisma/client'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin Categories',
@@ -16,6 +19,8 @@ export const metadata: Metadata = generatePageMetadata(
 )
 
 export const revalidate = 300
+
+const ALL_PRODUCTS_LIMIT = 24
 
 type CategoriesPageProps = {
   searchParams?: Promise<{ department?: string }>
@@ -32,6 +37,25 @@ async function getCategories() {
       },
     },
   })
+}
+
+async function getAllProductsPreview() {
+  const productInclude = {
+    images: { where: { isPrimary: true }, take: 1 },
+    category: { select: { name: true, slug: true } },
+  } satisfies Prisma.ProductInclude
+
+  const [products, total] = await Promise.all([
+    db.product.findMany({
+      where: getBuyerVisibleProductWhere(),
+      orderBy: { soldCount: 'desc' },
+      take: ALL_PRODUCTS_LIMIT,
+      include: productInclude,
+    }),
+    db.product.count({ where: getBuyerVisibleProductWhere() }),
+  ])
+
+  return { products, total }
 }
 
 type CategoryItem = Awaited<ReturnType<typeof getCategories>>[number]
@@ -54,8 +78,9 @@ function getCategoryIconName(slug: string): StorefrontIconName {
 }
 
 export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
-  const [categories, resolvedSearchParams] = await Promise.all([
+  const [categories, allProductsPreview, resolvedSearchParams] = await Promise.all([
     getCategories(),
+    getAllProductsPreview(),
     searchParams ?? Promise.resolve({} as { department?: string }),
   ])
   const selectedCategory =
@@ -78,7 +103,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
 
         {selectedCategory ? (
           <>
-            <div className="hidden gap-6 lg:grid lg:grid-cols-[minmax(240px,300px)_minmax(0,1fr)] xl:gap-8">
+            <div className="hidden gap-5 lg:grid lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] xl:gap-6 2xl:gap-8">
               <CategoryRail categories={categories} selectedSlug={selectedCategory.slug} />
               <CategoryDetailPanel category={selectedCategory} />
             </div>
@@ -86,6 +111,19 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
             <div className="lg:hidden">
               <MobileCategoryAccordion categories={categories} selectedSlug={selectedCategory.slug} />
             </div>
+
+            {allProductsPreview.products.length > 0 && (
+              <section className="mt-8 sm:mt-10 lg:mt-12">
+                <ProductGrid
+                  eyebrow="Catalog"
+                  title="All Products"
+                  subtitle={`Showing ${allProductsPreview.products.length} of ${allProductsPreview.total} public products.`}
+                  products={allProductsPreview.products}
+                  viewAllHref="/search"
+                  gridClassName="sm:grid-cols-3 md:grid-cols-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6"
+                />
+              </section>
+            )}
           </>
         ) : (
           <div className="rounded-[1.25rem] border border-border bg-card px-5 py-12 text-center text-sm text-muted-foreground">
@@ -140,7 +178,7 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
   return (
     <section
       aria-labelledby={`category-panel-${category.slug}`}
-      className="rounded-[1.35rem] border border-border/80 bg-card p-5 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-6"
+      className="rounded-[1.35rem] border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
     >
       <div className="flex items-center gap-4 border-b border-border/70 pb-5">
         <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/75 text-foreground">
@@ -157,7 +195,7 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
       {category.children.length > 0 && (
         <div className="pt-5">
           <h3 className="text-sm font-semibold text-foreground">Shop by subcategory</h3>
-          <div className="mt-3.5 grid gap-3.5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-3.5 grid gap-3.5 sm:grid-cols-2 min-[1120px]:grid-cols-3 min-[1380px]:grid-cols-4">
             {category.children.map((child) => (
               <SubcategoryCard key={child.id} category={category} child={child} />
             ))}
@@ -184,7 +222,7 @@ function SubcategoryCard({
       href={`/category/${child.slug}`}
       className="product-card group flex h-full flex-col overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      <div className="relative h-[7.25rem] overflow-hidden bg-muted sm:h-[7.75rem] 2xl:h-[8.25rem]">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -198,7 +236,7 @@ function SubcategoryCard({
           <EmptyMediaSurface />
         )}
       </div>
-      <div className="flex min-h-[104px] flex-1 items-start gap-3 p-3.5 sm:p-4">
+      <div className="flex min-h-[96px] flex-1 items-start gap-3 p-3.5 sm:p-4">
         <div className="min-w-0 flex-1">
           <h4 className="line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
             {child.name}
@@ -220,9 +258,9 @@ function EmptyMediaSurface() {
     <div
       aria-hidden="true"
       data-empty-media-surface="true"
-      className="absolute inset-0 bg-[linear-gradient(135deg,hsl(var(--muted))_0%,hsl(var(--card))_48%,hsl(var(--secondary))_100%)]"
+      className="absolute inset-0 bg-secondary/35"
     >
-      <span className="absolute inset-3 rounded-[0.9rem] border border-border/65 bg-card/35 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset]" />
+      <span className="absolute inset-3 rounded-[0.9rem] border border-border/65 bg-card/25 shadow-[0_1px_0_rgba(255,255,255,0.72)_inset]" />
     </div>
   )
 }

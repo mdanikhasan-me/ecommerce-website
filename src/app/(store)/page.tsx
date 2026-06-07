@@ -2,7 +2,6 @@ import { db } from '@/backend/database'
 import { HeroBanner } from '@/frontend/components/home/HeroBanner'
 import { FeaturedCategories } from '@/frontend/components/home/FeaturedCategories'
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
-import { PromoSection } from '@/frontend/components/home/PromoSection'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
 import { getVisibleCategoryProductCounts } from '@/backend/catalog/category-product-counts'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
@@ -67,15 +66,6 @@ async function getHomeData() {
       category: { select: { name: true, slug: true } },
     },
   })
-  const newArrivalsPinnedPromise = db.product.findMany({
-    where: getBuyerVisibleProductWhere({ isNew: true, pinnedInNew: true }),
-    take: 8,
-    orderBy: { updatedAt: 'desc' },
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
-  })
   const categories = await categoriesPromise
   const categoryProductCountsPromise = getVisibleCategoryProductCounts(categories)
 
@@ -85,14 +75,12 @@ async function getHomeData() {
     featured,
     bestSellers,
     newArrivals,
-    newArrivalsPinned,
   ] = await Promise.all([
     bannersPromise,
     categoryProductCountsPromise,
     featuredPromise,
     bestSellersPromise,
     newArrivalsPromise,
-    newArrivalsPinnedPromise,
   ])
 
   return {
@@ -104,7 +92,6 @@ async function getHomeData() {
     featured,
     bestSellers,
     newArrivals,
-    newArrivalsPinned,
   }
 }
 
@@ -115,10 +102,7 @@ export default async function HomePage() {
     featured,
     bestSellers,
     newArrivals,
-    newArrivalsPinned,
   } = await getHomeData()
-
-  const newArrivalRotatorProducts = newArrivalsPinned.length > 0 ? newArrivalsPinned : newArrivals
 
   return (
     <div className="min-h-screen">
@@ -147,13 +131,6 @@ export default async function HomePage() {
           </section>
         )}
 
-        <section className="w-full py-4 sm:py-6">
-          <PromoSection
-            newArrivalProducts={newArrivals}
-            newArrivalRotatorProducts={newArrivalRotatorProducts}
-          />
-        </section>
-
         {bestSellers.length > 0 && (
           <section className="container-site py-5 sm:py-7 lg:py-8">
             <ProductGrid
@@ -167,7 +144,7 @@ export default async function HomePage() {
         )}
 
         {newArrivals.length > 0 && (
-          <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:pt-8">
+          <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8">
             <ProductGrid
               eyebrow="Recently added"
               title="New Arrivals"

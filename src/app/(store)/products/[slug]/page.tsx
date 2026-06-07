@@ -132,10 +132,10 @@ function RelatedProductsFallback() {
   return (
     <section className="mt-10 sm:mt-12">
       <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
-            <div className="skeleton aspect-square w-full" />
+            <div className="skeleton aspect-[4/3] w-full" />
             <div className="space-y-3 p-4">
               <div className="skeleton h-3 w-16 rounded" />
               <div className="skeleton h-4 w-5/6 rounded" />
@@ -219,12 +219,12 @@ async function RelatedProductsSection({
   return (
     <section className="mt-10 sm:mt-12">
       <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
         {related.map((relatedProduct) => (
           <ProductCard
             key={relatedProduct.id}
             product={relatedProduct}
-            imageSizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+            imageSizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw"
           />
         ))}
       </div>
