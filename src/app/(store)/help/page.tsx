@@ -58,12 +58,6 @@ const REACH_CARDS: Array<ActionCard & { detail?: string }> = [
     icon: 'phone',
   },
   {
-    title: 'Bangladesh addresses',
-    description: 'View all locations',
-    href: '/contact',
-    icon: 'location',
-  },
-  {
     title: 'Email us',
     description: "We'll reply soon",
     detail: CONTACT_EMAIL,
@@ -132,12 +126,12 @@ export default function HelpPage() {
   return (
     <div className="bg-[#fffdfa] text-foreground">
       <section className="bg-[#050505] text-[#fff]">
-        <div className="container-site flex min-h-[23rem] flex-col items-center justify-center py-14 text-center sm:min-h-[19rem] sm:py-16">
-          <h1 className="text-5xl font-bold leading-none sm:text-6xl">We&rsquo;re here to help</h1>
-          <p className="mt-5 max-w-[36rem] text-xl leading-8 text-white/72 sm:text-2xl sm:leading-9">
+        <div className="container-site flex min-h-[20rem] flex-col items-center justify-center py-12 text-center sm:min-h-[17rem] sm:py-14">
+          <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">We&rsquo;re here to help</h1>
+          <p className="mt-4 max-w-[32rem] text-base leading-7 text-white/72 sm:text-lg sm:leading-8">
             Quick answers, helpful guides,
             <br />
-            and real support&mdash;when you need it.
+            and real support when you need it.
           </p>
 
           <form action="/search" className="mt-9 w-full max-w-[36rem] sm:hidden">
@@ -162,7 +156,7 @@ export default function HelpPage() {
       </section>
 
       <section className="container-site py-10 sm:py-12">
-        <h2 className="text-2xl font-bold leading-8">Quick actions</h2>
+        <h2 className="text-xl font-semibold leading-7">Quick actions</h2>
         <div className="mt-5 flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-5">
           {QUICK_ACTIONS.map((action) => (
             <QuickActionCard key={action.href} action={action} />
@@ -171,8 +165,8 @@ export default function HelpPage() {
 
         <div className="my-10 h-px bg-black/10" />
 
-        <h2 className="text-2xl font-bold leading-8">Reach us</h2>
-        <div className="mt-5 grid gap-3 lg:grid-cols-4">
+        <h2 className="text-xl font-semibold leading-7">Reach us</h2>
+        <div className="mt-5 grid gap-3 lg:grid-cols-3">
           {REACH_CARDS.map((action) => (
             <ReachCard key={`${action.title}-${action.href}`} action={action} />
           ))}

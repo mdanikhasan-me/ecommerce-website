@@ -56,7 +56,7 @@ test('Step 307 help page has the new support layout and no retired help copy', (
   for (const text of [
     'We&rsquo;re here to help',
     'Quick answers, helpful guides,',
-    'and real support&mdash;when you need it.',
+    'and real support when you need it.',
     'Quick actions',
     'Track order',
     'Returns',
@@ -66,7 +66,6 @@ test('Step 307 help page has the new support layout and no retired help copy', (
     'Reach us',
     'Contact form',
     'Call us',
-    'Bangladesh addresses',
     'Email us',
     'Your privacy matters.',
   ]) {
@@ -80,6 +79,8 @@ test('Step 307 help page has the new support layout and no retired help copy', (
     'Choose the next step',
     'Need a direct reply',
     'Send the order number and issue from the contact page',
+    'and real support&mdash;when you need it.',
+    'Bangladesh addresses',
   ]) {
     assert.doesNotMatch(help, new RegExp(retiredText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
