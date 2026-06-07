@@ -13,10 +13,13 @@ function parseBooleanEnv(value: string | undefined): boolean | null {
 }
 
 function parseOrigin(value: string | undefined): string | null {
-  if (!value) return null
+  const trimmed = value?.trim()
+  if (!trimmed) return null
 
   try {
-    return new URL(value).origin
+    const url = new URL(trimmed)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
+    return url.origin
   } catch {
     return null
   }

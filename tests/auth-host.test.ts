@@ -99,6 +99,40 @@ describe('auth host configuration', () => {
     )
   })
 
+  it('ignores unsupported auth origin protocols when evaluating host trust', () => {
+    assert.equal(
+      shouldTrustAuthHost({
+        NODE_ENV: 'production',
+        NEXTAUTH_URL: 'javascript:alert(1)',
+        NEXT_PUBLIC_SITE_URL: 'file:///tmp/boilabin',
+      }),
+      false,
+    )
+    assert.deepEqual(
+      getAuthHostConfigurationWarnings({
+        NODE_ENV: 'production',
+        AUTH_URL: 'data:text/plain,boilabin',
+        NEXTAUTH_URL: 'file:///tmp/boilabin',
+      }),
+      [
+        'Set AUTH_URL or NEXTAUTH_URL to the canonical app origin.',
+        'Set AUTH_TRUST_HOST=true for trusted reverse proxies or managed hosting.',
+      ],
+    )
+  })
+
+  it('trims canonical auth origins before comparing configured hosts', () => {
+    assert.deepEqual(
+      getAuthHostConfigurationWarnings({
+        NODE_ENV: 'production',
+        AUTH_URL: ' https://shop.example.com/auth/callback ',
+        NEXTAUTH_URL: 'https://shop.example.com',
+        AUTH_TRUST_HOST: 'true',
+      }),
+      [],
+    )
+  })
+
   it('warns about missing or inconsistent canonical origins', () => {
     assert.deepEqual(
       getAuthHostConfigurationWarnings({

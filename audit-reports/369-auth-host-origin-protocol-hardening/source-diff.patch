@@ -1,0 +1,65 @@
+diff --git a/src/backend/auth/host.ts b/src/backend/auth/host.ts
+index 7a80fcd..ef5db32 100644
+--- a/src/backend/auth/host.ts
++++ b/src/backend/auth/host.ts
+@@ -13,10 +13,13 @@ function parseBooleanEnv(value: string | undefined): boolean | null {
+ }
+
+ function parseOrigin(value: string | undefined): string | null {
+-  if (!value) return null
++  const trimmed = value?.trim()
++  if (!trimmed) return null
+
+   try {
+-    return new URL(value).origin
++    const url = new URL(trimmed)
++    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
++    return url.origin
+   } catch {
+     return null
+   }
+diff --git a/tests/auth-host.test.ts b/tests/auth-host.test.ts
+index 55b1a91..610c001 100644
+--- a/tests/auth-host.test.ts
++++ b/tests/auth-host.test.ts
+@@ -99,6 +99,40 @@ describe('auth host configuration', () => {
+     )
+   })
+
++  it('ignores unsupported auth origin protocols when evaluating host trust', () => {
++    assert.equal(
++      shouldTrustAuthHost({
++        NODE_ENV: 'production',
++        NEXTAUTH_URL: 'javascript:alert(1)',
++        NEXT_PUBLIC_SITE_URL: 'file:///tmp/boilabin',
++      }),
++      false,
++    )
++    assert.deepEqual(
++      getAuthHostConfigurationWarnings({
++        NODE_ENV: 'production',
++        AUTH_URL: 'data:text/plain,boilabin',
++        NEXTAUTH_URL: 'file:///tmp/boilabin',
++      }),
++      [
++        'Set AUTH_URL or NEXTAUTH_URL to the canonical app origin.',
++        'Set AUTH_TRUST_HOST=true for trusted reverse proxies or managed hosting.',
++      ],
++    )
++  })
++
++  it('trims canonical auth origins before comparing configured hosts', () => {
++    assert.deepEqual(
++      getAuthHostConfigurationWarnings({
++        NODE_ENV: 'production',
++        AUTH_URL: ' https://shop.example.com/auth/callback ',
++        NEXTAUTH_URL: 'https://shop.example.com',
++        AUTH_TRUST_HOST: 'true',
++      }),
++      [],
++    )
++  })
++
+   it('warns about missing or inconsistent canonical origins', () => {
+     assert.deepEqual(
+       getAuthHostConfigurationWarnings({
