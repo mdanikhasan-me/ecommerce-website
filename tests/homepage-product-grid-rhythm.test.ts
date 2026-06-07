@@ -31,9 +31,12 @@ describe('homepage product-grid rhythm contracts', () => {
     assert.match(source, /eyebrow="Recently added"/)
     assert.match(source, /container-site py-5 sm:py-7 lg:py-8/)
     assert.match(source, /container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8/)
+    assert.match(source, /shouldLeadWithBestSellers = featured\.length === 0 && bestSellers\.length > 0/)
+    assert.match(source, /const bestSellersSection = bestSellers\.length > 0 \? \(/)
     assert.doesNotMatch(source, /PromoSection/)
-    assert.ok(source.indexOf('title="Featured Products"') < source.indexOf('title="Best Sellers"'))
-    assert.ok(source.indexOf('title="Best Sellers"') < source.indexOf('title="New Arrivals"'))
+    assert.ok(source.indexOf('title="Featured Products"') < source.indexOf('<FeaturedCategories categories={categories} />'))
+    assert.ok(source.indexOf('<FeaturedCategories categories={categories} />') < source.indexOf('{!shouldLeadWithBestSellers ? bestSellersSection : null}'))
+    assert.ok(source.indexOf('{!shouldLeadWithBestSellers ? bestSellersSection : null}') < source.indexOf('title="New Arrivals"'))
   })
 
   it('keeps product-grid action labels specific without changing product card behavior', () => {

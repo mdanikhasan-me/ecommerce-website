@@ -103,6 +103,19 @@ export default async function HomePage() {
     bestSellers,
     newArrivals,
   } = await getHomeData()
+  const shouldLeadWithBestSellers = featured.length === 0 && bestSellers.length > 0
+
+  const bestSellersSection = bestSellers.length > 0 ? (
+    <section className="container-site py-5 sm:py-7 lg:py-8">
+      <ProductGrid
+        eyebrow="Popular picks"
+        title="Best Sellers"
+        subtitle="Popular listings from the current catalog"
+        products={bestSellers}
+        viewAllHref="/search?sort=popular"
+      />
+    </section>
+  ) : null
 
   return (
     <div className="min-h-screen">
@@ -115,12 +128,8 @@ export default async function HomePage() {
       <HeroBanner banners={banners} />
 
       <div className="storefront-home-stack">
-        <section className="container-site pt-5 sm:pt-8">
-          <FeaturedCategories categories={categories} />
-        </section>
-
         {featured.length > 0 && (
-          <section className="container-site py-5 sm:py-7 lg:py-8">
+          <section className="container-site pt-5 sm:pt-8">
             <ProductGrid
               eyebrow="Featured catalog"
               title="Featured Products"
@@ -131,17 +140,15 @@ export default async function HomePage() {
           </section>
         )}
 
-        {bestSellers.length > 0 && (
+        {shouldLeadWithBestSellers ? bestSellersSection : null}
+
+        {categories.length > 0 && (
           <section className="container-site py-5 sm:py-7 lg:py-8">
-            <ProductGrid
-              eyebrow="Popular picks"
-              title="Best Sellers"
-              subtitle="Popular listings from the current catalog"
-              products={bestSellers}
-              viewAllHref="/search?sort=popular"
-            />
+            <FeaturedCategories categories={categories} />
           </section>
         )}
+
+        {!shouldLeadWithBestSellers ? bestSellersSection : null}
 
         {newArrivals.length > 0 && (
           <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8">

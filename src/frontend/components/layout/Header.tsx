@@ -111,6 +111,38 @@ type Suggestion = {
   href: string
 }
 
+function HeaderAvatar({
+  imageUrl,
+  className = 'h-8 w-8 rounded-full',
+  iconClassName = 'h-5 w-5',
+}: {
+  imageUrl?: string | null
+  className?: string
+  iconClassName?: string
+}) {
+  const normalizedImageUrl = imageUrl?.trim() ?? ''
+  const [hasImageError, setHasImageError] = useState(false)
+
+  useEffect(() => {
+    setHasImageError(false)
+  }, [normalizedImageUrl])
+
+  if (!normalizedImageUrl || hasImageError) {
+    return <LocalIcon name="user" className={iconClassName} />
+  }
+
+  // eslint-disable-next-line @next/next/no-img-element
+  return (
+    <img
+      src={normalizedImageUrl}
+      alt=""
+      className={cn('object-cover', className)}
+      referrerPolicy="no-referrer"
+      onError={() => setHasImageError(true)}
+    />
+  )
+}
+
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -236,9 +268,11 @@ export function Header() {
 
   const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`)
 
-  const openCategoriesDropdown = () => {
-    setSelectedDesktopCategorySlug(DEFAULT_DESKTOP_CATEGORY_SLUG)
-    setIsCategoriesOpen(true)
+  const toggleCategoriesDropdown = () => {
+    setIsCategoriesOpen((open) => !open)
+    setIsSearchOpen(false)
+    setShowSuggestions(false)
+    setIsAccountOpen(false)
   }
 
   const selectDesktopCategory = (slug: string) => {
@@ -325,22 +359,13 @@ export function Header() {
               New Arrivals
             </Link>
 
-            <div
-              ref={categoriesRootRef}
-              className="relative"
-              onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                  setIsCategoriesOpen(false)
-                }
-              }}
-            >
+            <div ref={categoriesRootRef} className="relative">
               <button
                 type="button"
                 {...ariaExpanded(isCategoriesOpen)}
                 aria-haspopup="true"
                 aria-controls="desktop-categories-menu"
-                onClick={openCategoriesDropdown}
-                onFocus={openCategoriesDropdown}
+                onClick={toggleCategoriesDropdown}
                 className={cn(
                   'flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
                   pathname?.startsWith('/category') ? 'text-foreground' : 'text-foreground/72'
@@ -359,13 +384,13 @@ export function Header() {
                   data-testid="desktop-categories-menu"
                   role="region"
                   aria-label="Categories menu"
-                  className="absolute left-1/2 top-full z-50 mt-4 w-[min(60rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-black/10 bg-[#fffdfa] shadow-[0_22px_54px_rgba(20,18,16,0.16)]"
+                  className="absolute left-1/2 top-full z-50 mt-4 h-[25rem] max-h-[calc(100vh-7rem)] w-[min(60rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-black/10 bg-[#fffdfa] shadow-[0_22px_54px_rgba(20,18,16,0.16)]"
                 >
-                  <div className="grid min-h-[18rem] grid-cols-[15.75rem_minmax(0,1fr)]">
+                  <div className="grid h-full min-h-[18rem] grid-cols-[15.75rem_minmax(0,1fr)]">
                     <nav
                       aria-label="Category departments"
                       data-testid="desktop-categories-rail"
-                      className="border-r border-black/10 bg-[#fffaf5] p-3"
+                      className="overflow-y-auto border-r border-black/10 bg-[#fffaf5] p-3"
                     >
                       <div className="space-y-0.5">
                         {NAV_CATEGORIES.map((category) => {
@@ -418,7 +443,7 @@ export function Header() {
                     <section
                       aria-labelledby={`desktop-category-panel-heading-${selectedDesktopCategory.slug}`}
                       data-testid="desktop-category-selected-panel"
-                      className="bg-[#fffdfa] px-8 py-8"
+                      className="min-h-0 overflow-hidden bg-[#fffdfa] px-8 py-8"
                     >
                       <div className="flex items-center gap-4">
                         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-secondary/70 text-foreground">
@@ -434,7 +459,7 @@ export function Header() {
 
                       <div
                         data-testid="desktop-subcategory-tiles"
-                        className="mt-8 grid grid-cols-5 gap-4"
+                        className="mt-8 grid auto-rows-fr grid-cols-5 gap-4"
                       >
                         {selectedDesktopCategory.sub.map((sub) => (
                           <Link
@@ -516,17 +541,7 @@ export function Header() {
                   onClick={() => setIsAccountOpen((open) => !open)}
                   className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
                 >
-                  {session.user.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={session.user.image}
-                      alt=""
-                      className="h-8 w-8 rounded-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <LocalIcon name="user" className="h-5 w-5" />
-                  )}
+                  <HeaderAvatar imageUrl={session.user.image} />
                 </button>
 
                 {isAccountOpen ? (
@@ -712,17 +727,7 @@ export function Header() {
               title={session ? 'My account' : 'Sign in'}
               className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors hover:bg-secondary"
             >
-              {session?.user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={session.user.image}
-                  alt=""
-                  className="h-8 w-8 rounded-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <LocalIcon name="user" className="h-5 w-5" />
-              )}
+              <HeaderAvatar imageUrl={session?.user.image} />
             </Link>
           </div>
         </div>
@@ -751,17 +756,7 @@ export function Header() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary">
-                        {session.user.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={session.user.image}
-                            alt=""
-                            className="h-full w-full object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : (
-                          <LocalIcon name="user" className="h-5 w-5" />
-                        )}
+                        <HeaderAvatar imageUrl={session.user.image} className="h-full w-full rounded-full" />
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-foreground">
