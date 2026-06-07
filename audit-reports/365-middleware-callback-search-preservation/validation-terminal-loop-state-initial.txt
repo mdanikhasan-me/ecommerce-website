@@ -1,0 +1,19 @@
+Boilabin Terminal Loop state
+Activation phrase: Run Boilabin Terminal Loop mode.
+Required terminal-loop files present: yes
+Latest audit report: audit-reports/364_MIDDLEWARE_SESSION_COOKIE_BOUNDARY_HARDENING.md
+Latest audit title: Step 364 Middleware Session Cookie Boundary Hardening
+Latest commit mention: ac4d81d fix: harden csp pathname normalization
+Current git commit: 27bfb09 fix: harden middleware session cookie matching
+Terminal-loop docs exist: yes
+Activation phrase found: yes
+Batch activation phrase found: yes
+10-step stop rule found: yes
+Batch loop cap found: yes
+Batch per-loop validation found: yes
+Batch future-prompt stop found: yes
+Exact staging rule found: yes
+Broad staging recommendations: none
+Obvious secret-looking strings: none
+Protected decisions documented: yes
+Terminal Loop is ready: yes

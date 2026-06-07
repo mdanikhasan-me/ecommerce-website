@@ -1,0 +1,2 @@
+Read-only finding: middleware private-route redirects built login callbackUrl from pathname only. That dropped safe internal search parameters such as /admin/products?status=draft after login, even though the shared login callback sanitizer already accepts internal path query strings and rejects external/protocol-relative values.
+Resolution: middleware now builds the login redirect URL through URLSearchParams from req.nextUrl.pathname plus req.nextUrl.search, preserving internal search params without accepting an external callback origin.

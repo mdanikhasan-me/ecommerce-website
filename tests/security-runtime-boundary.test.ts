@@ -20,7 +20,8 @@ describe('security runtime route boundary guardrails', () => {
     assert.match(source, /matchesPathSegment\(pathname, '\/account'\)/)
     assert.match(source, /authjs\.session-token/)
     assert.match(source, /__Secure-next-auth\.session-token/)
-    assert.match(source, /\/auth\/login\?callbackUrl=\$\{encodeURIComponent\(pathname\)\}/)
+    assert.match(source, /buildLoginRedirectUrl\(req\)/)
+    assert.match(source, /url\.searchParams\.set\('callbackUrl', callbackUrl\)/)
   })
 
   it('redirects private admin and account segments without catching public lookalikes', () => {
@@ -38,6 +39,20 @@ describe('security runtime route boundary guardrails', () => {
 
       assert.equal(response.status, 200, pathname)
       assert.equal(response.headers.get('location'), null, pathname)
+    }
+  })
+
+  it('preserves private route search params in login callback URLs', () => {
+    for (const pathname of [
+      '/admin/products?status=draft&page=2',
+      '/account/orders?filter=returns&sort=recent',
+    ]) {
+      const response = middleware(new NextRequest(`http://localhost:3000${pathname}`))
+      const location = new URL(response.headers.get('location') ?? '')
+
+      assert.equal(response.status, 307, pathname)
+      assert.equal(location.pathname, '/auth/login', pathname)
+      assert.equal(location.searchParams.get('callbackUrl'), pathname, pathname)
     }
   })
 

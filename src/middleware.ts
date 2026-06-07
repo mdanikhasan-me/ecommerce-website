@@ -30,6 +30,13 @@ function isSessionCookieName(cookieName: string) {
   })
 }
 
+function buildLoginRedirectUrl(req: NextRequest) {
+  const callbackUrl = `${req.nextUrl.pathname}${req.nextUrl.search}`
+  const url = new URL('/auth/login', req.url)
+  url.searchParams.set('callbackUrl', callbackUrl)
+  return url
+}
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const hasSessionCookie = req.cookies.getAll().some((cookie) => isSessionCookieName(cookie.name))
@@ -38,7 +45,7 @@ export default function middleware(req: NextRequest) {
     if (!hasSessionCookie) {
       return withOptionalCspReportOnly(
         req,
-        NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)),
+        NextResponse.redirect(buildLoginRedirectUrl(req)),
       )
     }
   }
@@ -47,7 +54,7 @@ export default function middleware(req: NextRequest) {
     if (!hasSessionCookie) {
       return withOptionalCspReportOnly(
         req,
-        NextResponse.redirect(new URL(`/auth/login?callbackUrl=${encodeURIComponent(pathname)}`, req.url)),
+        NextResponse.redirect(buildLoginRedirectUrl(req)),
       )
     }
   }
