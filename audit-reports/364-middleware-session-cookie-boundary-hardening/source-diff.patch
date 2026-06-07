@@ -1,0 +1,67 @@
+diff --git a/src/middleware.ts b/src/middleware.ts
+index a8281a1..23376bf 100644
+--- a/src/middleware.ts
++++ b/src/middleware.ts
+@@ -22,11 +22,17 @@ function matchesPathSegment(pathname: string, segment: string) {
+   return pathname === segment || pathname.startsWith(`${segment}/`)
+ }
+
++function isSessionCookieName(cookieName: string) {
++  return SESSION_COOKIE_PREFIXES.some((prefix) => {
++    if (cookieName === prefix) return true
++    const suffix = cookieName.slice(prefix.length)
++    return /^\.\d+$/.test(suffix)
++  })
++}
++
+ export default function middleware(req: NextRequest) {
+   const { pathname } = req.nextUrl
+-  const hasSessionCookie = req.cookies
+-    .getAll()
+-    .some((cookie) => SESSION_COOKIE_PREFIXES.some((prefix) => cookie.name.startsWith(prefix)))
++  const hasSessionCookie = req.cookies.getAll().some((cookie) => isSessionCookieName(cookie.name))
+
+   if (matchesPathSegment(pathname, '/admin')) {
+     if (!hasSessionCookie) {
+diff --git a/tests/security-runtime-boundary.test.ts b/tests/security-runtime-boundary.test.ts
+index 5fa8378..575d298 100644
+--- a/tests/security-runtime-boundary.test.ts
++++ b/tests/security-runtime-boundary.test.ts
+@@ -41,6 +41,37 @@ describe('security runtime route boundary guardrails', () => {
+     }
+   })
+
++  it('only treats exact or chunked auth session cookie names as session hints', () => {
++    for (const cookieName of [
++      'authjs.session-token-fake',
++      '__Secure-authjs.session-token-old',
++      'next-auth.session-tokenary',
++      '__Secure-next-auth.session-token_backup',
++    ]) {
++      const response = middleware(new NextRequest('http://localhost:3000/admin/products', {
++        headers: { cookie: `${cookieName}=present` },
++      }))
++
++      assert.equal(response.status, 307, cookieName)
++      assert.match(response.headers.get('location') ?? '', /\/auth\/login/, cookieName)
++    }
++
++    for (const cookieName of [
++      'authjs.session-token',
++      'authjs.session-token.0',
++      '__Secure-authjs.session-token.1',
++      'next-auth.session-token',
++      '__Secure-next-auth.session-token.2',
++    ]) {
++      const response = middleware(new NextRequest('http://localhost:3000/admin/products', {
++        headers: { cookie: `${cookieName}=present` },
++      }))
++
++      assert.equal(response.status, 200, cookieName)
++      assert.equal(response.headers.get('location'), null, cookieName)
++    }
++  })
++
+   it('keeps middleware matcher static exclusions segment-aware', () => {
+     const matcher = middlewareConfig.matcher[0]
+     const matcherRegex = new RegExp(`^${matcher}$`)

@@ -41,6 +41,37 @@ describe('security runtime route boundary guardrails', () => {
     }
   })
 
+  it('only treats exact or chunked auth session cookie names as session hints', () => {
+    for (const cookieName of [
+      'authjs.session-token-fake',
+      '__Secure-authjs.session-token-old',
+      'next-auth.session-tokenary',
+      '__Secure-next-auth.session-token_backup',
+    ]) {
+      const response = middleware(new NextRequest('http://localhost:3000/admin/products', {
+        headers: { cookie: `${cookieName}=present` },
+      }))
+
+      assert.equal(response.status, 307, cookieName)
+      assert.match(response.headers.get('location') ?? '', /\/auth\/login/, cookieName)
+    }
+
+    for (const cookieName of [
+      'authjs.session-token',
+      'authjs.session-token.0',
+      '__Secure-authjs.session-token.1',
+      'next-auth.session-token',
+      '__Secure-next-auth.session-token.2',
+    ]) {
+      const response = middleware(new NextRequest('http://localhost:3000/admin/products', {
+        headers: { cookie: `${cookieName}=present` },
+      }))
+
+      assert.equal(response.status, 200, cookieName)
+      assert.equal(response.headers.get('location'), null, cookieName)
+    }
+  })
+
   it('keeps middleware matcher static exclusions segment-aware', () => {
     const matcher = middlewareConfig.matcher[0]
     const matcherRegex = new RegExp(`^${matcher}$`)

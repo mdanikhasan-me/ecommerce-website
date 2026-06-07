@@ -22,11 +22,17 @@ function matchesPathSegment(pathname: string, segment: string) {
   return pathname === segment || pathname.startsWith(`${segment}/`)
 }
 
+function isSessionCookieName(cookieName: string) {
+  return SESSION_COOKIE_PREFIXES.some((prefix) => {
+    if (cookieName === prefix) return true
+    const suffix = cookieName.slice(prefix.length)
+    return /^\.\d+$/.test(suffix)
+  })
+}
+
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const hasSessionCookie = req.cookies
-    .getAll()
-    .some((cookie) => SESSION_COOKIE_PREFIXES.some((prefix) => cookie.name.startsWith(prefix)))
+  const hasSessionCookie = req.cookies.getAll().some((cookie) => isSessionCookieName(cookie.name))
 
   if (matchesPathSegment(pathname, '/admin')) {
     if (!hasSessionCookie) {

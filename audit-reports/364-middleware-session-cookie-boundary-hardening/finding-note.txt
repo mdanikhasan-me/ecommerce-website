@@ -1,0 +1,2 @@
+Read-only finding: middleware used startsWith against known Auth.js/NextAuth session cookie prefixes. That accepted forged prefix lookalike cookie names such as authjs.session-token-fake as a session hint, bypassing the middleware redirect hint for private route segments.
+Resolution: middleware now accepts only the exact known cookie name or numeric Auth.js chunk suffixes such as .0 and .1.
