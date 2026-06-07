@@ -1,0 +1,15 @@
+Boilabin Advisor state
+Advisor activation phrase: Run Boilabin Advisor mode.
+Required files present: yes
+Latest audit report: audit-reports/370_AUTH_REDIRECT_CALLBACK_HARDENING.md
+Latest audit title: Step 370 Auth Redirect Callback Hardening
+Latest report commit reference: af1b8ea fix: harden auth host origin protocols
+Current git commit: f02b9ff fix: harden auth redirect callback
+Validation summary: Focused and standard validation passed: - `npx tsx --test tests/auth-redirect.test.ts` passed: 6 tests, 1 suite, 0 failures. - `node scripts/boilabin-advisor-state.mjs` passed. - `node scripts/boilabin-terminal-loop-state.mjs` passed. - `npm run typecheck` passed. - `npm run lint` passed with the existing Next `next lint` deprecation notice. ...
+Latest recommended next-step found: yes
+Recommended next step: Either approve the pending media path from Step 321, or continue with another bounded non-media prelaunch closure task and push the completed commit to GitHub.
+Core decisions documented: yes
+Obvious secret-looking strings in Advisor docs/config: none
+Broad staging recommendations in Advisor docs/config: none
+Advisor is ready: yes
+Overall status: ok

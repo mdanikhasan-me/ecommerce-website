@@ -26,6 +26,8 @@ describe('auth redirect callback safety', () => {
       'data:text/plain,boilabin',
       '/\\evil.example',
       'not a url',
+      'https://user:pass@shop.example.com/account',
+      'https://user@shop.example.com/account',
     ]) {
       assert.equal(getSafeAuthRedirectUrl(redirectUrl, baseUrl), baseUrl, redirectUrl)
     }
@@ -72,5 +74,6 @@ describe('auth redirect callback safety', () => {
 
   it('falls back to a local path when baseUrl itself is invalid', () => {
     assert.equal(getSafeAuthRedirectUrl('/account', 'javascript:alert(1)'), '/')
+    assert.equal(getSafeAuthRedirectUrl('/account', 'https://user:pass@shop.example.com'), '/')
   })
 })

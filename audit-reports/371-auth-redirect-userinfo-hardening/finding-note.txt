@@ -1,0 +1,2 @@
+Read-only finding: after Step 370, the auth redirect helper enforced same-origin page targets but did not reject URL username/password fields. Same-origin absolute redirect values like https://user:pass@shop.example.com/account could be returned, and a baseUrl containing userinfo could still be parsed to a trusted origin.
+Resolution: the redirect helper now rejects userinfo credentials in both configured base URLs and candidate redirect targets.

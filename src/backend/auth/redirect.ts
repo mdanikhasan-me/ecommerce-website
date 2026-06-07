@@ -26,6 +26,7 @@ function parseHttpUrl(value: string | undefined) {
   try {
     const url = new URL(trimmed)
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
+    if (url.username || url.password) return null
     return url
   } catch {
     return null
@@ -59,6 +60,7 @@ function parseRedirectTarget(value: string, baseOrigin: string) {
       : new URL(trimmed)
 
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
+    if (url.username || url.password) return null
     if (url.origin !== baseOrigin) return null
     if (!isAllowedRedirectPathname(url.pathname)) return null
 
