@@ -3,8 +3,11 @@ import { describe, it } from 'node:test'
 
 import {
   MAX_COUPON_AMOUNT,
+  MAX_COUPON_CODE_LENGTH,
+  MAX_PUBLIC_ID_LENGTH,
   MAX_PUBLIC_PRODUCT_IDS,
   MAX_PUBLIC_SEARCH_QUERY_LENGTH,
+  MAX_PUBLIC_SEARCH_WORDS,
   getPublicSearchWords,
   parseCouponAmount,
   parseCouponCode,
@@ -24,6 +27,16 @@ describe('public API input parsing', () => {
     assert.equal(parsePublicId(null), null)
   })
 
+  it('accepts exact public id limits and rejects boundary overflows', () => {
+    const exactId = 'a'.repeat(MAX_PUBLIC_ID_LENGTH)
+
+    assert.equal(parsePublicId(` ${exactId} `), exactId)
+    assert.equal(parsePublicId('a'.repeat(MAX_PUBLIC_ID_LENGTH + 1)), null)
+    assert.equal(parsePublicId('valid_123-ABC'), 'valid_123-ABC')
+    assert.equal(parsePublicId('bad/segment'), null)
+    assert.equal(parsePublicId('bad.segment'), null)
+  })
+
   it('deduplicates, caps, and sanitizes public id lists', () => {
     const ids = ['prod-1', 'prod-1', '../../bad', ...Array.from({ length: MAX_PUBLIC_PRODUCT_IDS + 5 }, (_, index) => `p${index}`)]
     const parsed = parsePublicIdList(ids.join(','))
@@ -32,6 +45,12 @@ describe('public API input parsing', () => {
     assert.equal(parsed.includes('../../bad'), false)
     assert.equal(parsed.length, MAX_PUBLIC_PRODUCT_IDS)
     assert.deepEqual(parsePublicIdList(['prod-1']), [])
+  })
+
+  it('trims list entries before dedupe and keeps first valid ids', () => {
+    const parsed = parsePublicIdList(' prod-1 ,prod-2,prod-1, bad id ,prod_3,')
+
+    assert.deepEqual(parsed, ['prod-1', 'prod-2', 'prod_3'])
   })
 
   it('normalizes coupon codes and amounts', () => {
@@ -47,6 +66,17 @@ describe('public API input parsing', () => {
     assert.equal(parseCouponAmount('-1'), null)
     assert.equal(parseCouponAmount('not-a-number'), null)
     assert.equal(parseCouponAmount(500), null)
+  })
+
+  it('accepts exact coupon code limits and rejects unsafe coupon amount values', () => {
+    const exactCode = 'x'.repeat(MAX_COUPON_CODE_LENGTH)
+
+    assert.equal(parseCouponCode(` ${exactCode} `), exactCode.toUpperCase())
+    assert.equal(parseCouponCode('x'.repeat(MAX_COUPON_CODE_LENGTH + 1)), null)
+    assert.equal(parseCouponCode('SAVE.500'), null)
+    assert.equal(parseCouponAmount('0'), 0)
+    assert.equal(parseCouponAmount('Infinity'), null)
+    assert.equal(parseCouponAmount('NaN'), null)
   })
 
   it('bounds public search text and words', () => {
@@ -79,5 +109,14 @@ describe('public API input parsing', () => {
       'jj',
       'kk',
     ])
+  })
+
+  it('normalizes public search whitespace and caps unique searchable words', () => {
+    const parsed = parsePublicSearchQuery("  phone\tcase\ncharger  ")
+    const cappedWords = getPublicSearchWords('aa bb cc dd ee ff gg hh ii jj kk ll')
+
+    assert.equal(parsed, 'phone case charger')
+    assert.equal(cappedWords.length, MAX_PUBLIC_SEARCH_WORDS)
+    assert.deepEqual(cappedWords, ['aa', 'bb', 'cc', 'dd', 'ee', 'ff', 'gg', 'hh', 'ii', 'jj'])
   })
 })
