@@ -50,6 +50,12 @@ describe('accessibility ARIA source guardrails', () => {
     assert.deepEqual(matches, [])
   })
 
+  it('keeps source TSX free of inline style props reported by Edge Tools', () => {
+    const matches = findPatternMatches(/\sstyle=\{/g)
+
+    assert.deepEqual(matches, [])
+  })
+
   it('keeps Header disclosure state attributes semantic without direct TSX state expressions', () => {
     const header = read('src/frontend/components/layout/Header.tsx')
 

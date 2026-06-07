@@ -7,82 +7,28 @@ export const contentType = 'image/png'
 export default function OpengraphImage() {
   return new ImageResponse(
     (
-      <div
-        style={{
-          display: 'flex',
-          height: '100%',
-          width: '100%',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: 'linear-gradient(135deg, #2D1B3D 0%, #452486 52%, #1A0F24 100%)',
-          padding: 80,
-          color: '#FAF4E8',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <div
-            style={{
-              display: 'flex',
-              height: 96,
-              width: 96,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 20,
-              background: '#FAF4E8',
-              color: '#452486',
-              fontSize: 70,
-              fontWeight: 900,
-              letterSpacing: '-0.08em',
-            }}
-          >
+      <div tw="flex h-full w-full flex-col justify-between bg-[#1A0F24] p-20 text-[#FAF4E8]">
+        <div tw="flex items-center">
+          <div tw="mr-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-[#FAF4E8] text-7xl font-black text-[#452486]">
             B
           </div>
-          <div style={{ fontSize: 56, fontWeight: 700, letterSpacing: '-0.04em' }}>
+          <div tw="text-6xl font-bold">
             BOILABIN
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div
-            style={{
-              maxWidth: 960,
-              fontSize: 72,
-              fontWeight: 700,
-              lineHeight: 1.08,
-              letterSpacing: '-0.06em',
-            }}
-          >
+        <div tw="flex max-w-[960px] flex-col">
+          <div tw="text-7xl font-bold leading-tight">
             A more considered online shopping experience for Bangladesh.
           </div>
-          <div style={{ marginTop: 8, maxWidth: 900, color: '#D8C7D6', fontSize: 28 }}>
+          <div tw="mt-4 max-w-[900px] text-3xl text-[#D8C7D6]">
             Product listings, category browsing, and cash on delivery information.
           </div>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderTop: '1px solid rgba(250, 244, 232, 0.15)',
-            paddingTop: 24,
-            color: '#B9A6BC',
-            fontSize: 22,
-          }}
-        >
+        <div tw="flex items-center justify-between border-t border-[#FAF4E826] pt-6 text-2xl text-[#B9A6BC]">
           <div>boilabin.com</div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: 999,
-              border: '1px solid rgba(85, 184, 146, 0.35)',
-              background: 'rgba(85, 184, 146, 0.18)',
-              padding: '8px 18px',
-              color: '#55B892',
-              fontWeight: 600,
-            }}
-          >
+          <div tw="flex items-center rounded-full border border-[#55B89259] bg-[#55B8922E] px-5 py-2 font-semibold text-[#55B892]">
             Made in Bangladesh
           </div>
         </div>

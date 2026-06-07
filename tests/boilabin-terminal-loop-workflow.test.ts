@@ -24,6 +24,16 @@ function readRepoFile(relativePath: string) {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
+function reportNames(reports: Array<{ name: string } | null>) {
+  return reports.map((report) => {
+    if (!report) {
+      assert.fail('audit report listing should not include null entries');
+    }
+
+    return report.name;
+  });
+}
+
 const terminalLoopFiles = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   '.agents/skills/boilabin-step-workflow/SKILL.md',
@@ -182,7 +192,7 @@ test('terminal-loop audit report listing keeps same-step prompt drafts before co
     const reports = listAuditReports(tempRoot);
 
     assert.deepEqual(
-      reports.map((report) => report.name),
+      reportNames(reports),
       ['998_OLDER_REPORT.md', '999_NEXT_PROMPT_DRAFT.md', '999_COMPLETED_REPORT.md'],
     );
     assert.equal(reports.at(-1)?.name, '999_COMPLETED_REPORT.md');
@@ -205,7 +215,7 @@ test('terminal-loop audit report listing ignores malformed files and directories
     const reports = listAuditReports(tempRoot);
 
     assert.deepEqual(
-      reports.map((report) => report.name),
+      reportNames(reports),
       ['999_VALID_REPORT.md'],
     );
   } finally {
@@ -226,7 +236,7 @@ test('terminal-loop audit report listing sorts numeric step prefixes numerically
     const reports = listAuditReports(tempRoot);
 
     assert.deepEqual(
-      reports.map((report) => report.name),
+      reportNames(reports),
       ['001_ONE.md', '2_TWO.md', '10_TEN.md'],
     );
   } finally {
