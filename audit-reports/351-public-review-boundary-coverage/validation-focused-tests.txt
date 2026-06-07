@@ -1,0 +1,19 @@
+▶ review validation
+  ✔ coerces valid rating and trims text fields (7.5351ms)
+  ✔ accepts exact public review field boundaries (0.2822ms)
+  ✔ normalizes blank titles to null (0.1833ms)
+  ✔ normalizes null and omitted titles to null (0.2969ms)
+  ✔ accepts underscore and dash product ids after trimming (0.2794ms)
+  ✔ rejects ratings outside the 1 to 5 range or non-integer values (0.6201ms)
+  ✔ rejects short and oversized review text (0.2545ms)
+  ✔ rejects malformed review payloads before review database work (0.7173ms)
+  ✔ rejects unsafe product ids before review database work (0.1985ms)
+✔ review validation (11.4574ms)
+ℹ tests 9
+ℹ suites 1
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 260.9532
