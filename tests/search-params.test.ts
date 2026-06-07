@@ -68,6 +68,19 @@ describe('search parameter parsing', () => {
     assert.deepEqual(parsed.queryParams, { q: 'phone' })
   })
 
+  it('rejects non-decimal numeric filter spellings', () => {
+    const parsed = parseSearchParams({
+      minPrice: '0x10',
+      maxPrice: '1e3',
+      rating: '0x4',
+    })
+
+    assert.equal(parsed.minPrice, null)
+    assert.equal(parsed.maxPrice, null)
+    assert.equal(parsed.rating, null)
+    assert.deepEqual(parsed.queryParams, {})
+  })
+
   it('bounds page and price values before they reach Prisma', () => {
     const parsed = parseSearchParams({
       page: '999999999999',

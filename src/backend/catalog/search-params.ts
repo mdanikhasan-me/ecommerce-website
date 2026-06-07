@@ -57,6 +57,7 @@ export type ParsedProductApiParams = ParsedSearchParams & {
 }
 
 const SEARCH_SORT_SET = new Set<string>(SEARCH_SORT_OPTIONS)
+const PLAIN_DECIMAL_PATTERN = /^\d+(?:\.\d+)?$/
 
 export function firstParam(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0]
@@ -105,6 +106,7 @@ function normalizeLimit(value: string | undefined): number {
 function normalizePrice(value: string | undefined): number | null {
   const normalized = value?.trim()
   if (!normalized) return null
+  if (!PLAIN_DECIMAL_PATTERN.test(normalized)) return null
 
   const parsed = Number(normalized)
   if (!Number.isFinite(parsed) || parsed < 0) return null
@@ -114,6 +116,7 @@ function normalizePrice(value: string | undefined): number | null {
 function normalizeRating(value: string | undefined): number | null {
   const normalized = value?.trim()
   if (!normalized) return null
+  if (!PLAIN_DECIMAL_PATTERN.test(normalized)) return null
 
   const parsed = Number(normalized)
   if (!Number.isFinite(parsed) || parsed < 1 || parsed > 5) return null

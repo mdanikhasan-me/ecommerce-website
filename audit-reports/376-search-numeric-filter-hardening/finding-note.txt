@@ -1,0 +1,2 @@
+Read-only finding: catalog search numeric filters used Number(...) after trimming. That rejected Infinity/NaN, but still accepted JavaScript numeric forms such as hex or exponent notation for minPrice, maxPrice, and rating. Query filters should keep a small plain-decimal surface before values reach Prisma query construction or canonical query params.
+Resolution: require plain decimal numeric strings for price and rating filters while preserving existing decimal support and max-value clamping.
