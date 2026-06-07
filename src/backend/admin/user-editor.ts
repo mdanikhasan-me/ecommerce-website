@@ -2,6 +2,11 @@ import { Prisma, Role } from '@prisma/client'
 import { z } from 'zod'
 
 export const ADMIN_MANAGED_ROLES = [Role.CUSTOMER, Role.ADMIN, Role.SUPER_ADMIN] as const
+export const MAX_ADMIN_USER_LIST_PAGE = 1000
+export const MAX_ADMIN_USER_LIST_LIMIT = 100
+export const DEFAULT_ADMIN_USER_LIST_LIMIT = 25
+
+const PLAIN_NUMBER_PATTERN = /^-?\d+(?:\.\d+)?$/
 
 const optionalTrimmedString = (max: number) =>
   z
@@ -45,8 +50,8 @@ export function parseAdminUserPayload(input: unknown) {
 }
 
 export function parseAdminUserListFilters(searchParams: URLSearchParams) {
-  const rawPage = Number(searchParams.get('page') || '1')
-  const rawLimit = Number(searchParams.get('limit') || '25')
+  const rawPage = parsePlainListNumber(searchParams.get('page'), 1)
+  const rawLimit = parsePlainListNumber(searchParams.get('limit'), DEFAULT_ADMIN_USER_LIST_LIMIT)
   const q = searchParams.get('q')?.trim() || ''
   const role = searchParams.get('role')?.trim() || ''
   const validRole = ADMIN_MANAGED_ROLES.includes(role as (typeof ADMIN_MANAGED_ROLES)[number])
@@ -54,11 +59,19 @@ export function parseAdminUserListFilters(searchParams: URLSearchParams) {
     : ''
 
   return {
-    page: Number.isFinite(rawPage) ? Math.max(1, Math.floor(rawPage)) : 1,
-    limit: Number.isFinite(rawLimit) ? Math.min(100, Math.max(1, Math.floor(rawLimit))) : 25,
+    page: Math.min(MAX_ADMIN_USER_LIST_PAGE, Math.max(1, Math.floor(rawPage))),
+    limit: Math.min(MAX_ADMIN_USER_LIST_LIMIT, Math.max(1, Math.floor(rawLimit))),
     q: q.slice(0, 120),
     role: validRole,
   }
+}
+
+function parsePlainListNumber(value: string | null, fallback: number) {
+  const normalized = value?.trim()
+  if (!normalized || !PLAIN_NUMBER_PATTERN.test(normalized)) return fallback
+
+  const parsed = Number(normalized)
+  return Number.isSafeInteger(Math.floor(parsed)) ? parsed : fallback
 }
 
 export function buildAdminUserWhere(filters: { q: string; role: string }): Prisma.UserWhereInput {

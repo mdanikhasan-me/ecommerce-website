@@ -3,6 +3,9 @@ import { describe, it } from 'node:test'
 
 import {
   ADMIN_MANAGED_ROLES,
+  DEFAULT_ADMIN_USER_LIST_LIMIT,
+  MAX_ADMIN_USER_LIST_LIMIT,
+  MAX_ADMIN_USER_LIST_PAGE,
   buildAdminUserWhere,
   parseAdminUserListFilters,
   parseAdminUserPayload,
@@ -98,7 +101,7 @@ describe('admin user validation', () => {
     const filters = parseAdminUserListFilters(params)
 
     assert.equal(filters.page, 2)
-    assert.equal(filters.limit, 100)
+    assert.equal(filters.limit, MAX_ADMIN_USER_LIST_LIMIT)
     assert.equal(filters.q.length, 120)
     assert.equal(filters.role, '')
   })
@@ -116,6 +119,23 @@ describe('admin user validation', () => {
     assert.equal(filters.limit, 1)
     assert.equal(filters.q, '')
     assert.equal(filters.role, 'ADMIN')
+  })
+
+  it('rejects non-decimal admin user list pagination before skip math', () => {
+    for (const value of ['0x10', '1e3', '2abc', 'Infinity', 'NaN', '999999999999999999999']) {
+      const filters = parseAdminUserListFilters(new URLSearchParams({ page: value, limit: value }))
+
+      assert.equal(filters.page, 1)
+      assert.equal(filters.limit, DEFAULT_ADMIN_USER_LIST_LIMIT)
+    }
+
+    const capped = parseAdminUserListFilters(new URLSearchParams({
+      page: String(MAX_ADMIN_USER_LIST_PAGE + 1),
+      limit: String(MAX_ADMIN_USER_LIST_LIMIT + 1),
+    }))
+
+    assert.equal(capped.page, MAX_ADMIN_USER_LIST_PAGE)
+    assert.equal(capped.limit, MAX_ADMIN_USER_LIST_LIMIT)
   })
 
   it('defaults missing list filters to the first page', () => {

@@ -1,0 +1,2 @@
+Read-only finding: admin user list pagination used Number(...) directly. That preserved useful decimal/floor behavior, but also accepted JavaScript hex and exponent spellings such as 0x10 and 1e3, and did not cap safe page values before skip calculation.
+Resolution: keep existing decimal/floor and negative-clamp behavior, reject non-plain numeric strings, and cap admin user list pages before skip math.
