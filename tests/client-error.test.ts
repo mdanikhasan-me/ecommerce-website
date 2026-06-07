@@ -18,11 +18,32 @@ test('safe validation messages pass through', () => {
   )
 })
 
+test('safe messages are normalized and bounded before returning to clients', () => {
+  const longMessage = 'x'.repeat(220)
+
+  assert.equal(
+    toSafeClientErrorMessage('  Review   body\tis\nrequired  ', 'Invalid request.'),
+    'Review body is required',
+  )
+  assert.equal(toSafeClientErrorMessage(longMessage, 'Invalid request.'), 'x'.repeat(180))
+})
+
 test('unauthorized messages keep the existing status behavior', () => {
   assert.deepEqual(toSafeClientError(new Error('Unauthorized'), 'Could not load users'), {
     message: 'Unauthorized',
     status: 401,
   })
+})
+
+test('fallback messages are normalized and defaulted when unsafe or blank', () => {
+  assert.equal(
+    toSafeClientErrorMessage('Prisma P2025 stack leaked', '  Could   not\tload\nreports  '),
+    'Could not load reports',
+  )
+  assert.equal(
+    toSafeClientErrorMessage('Prisma P2025 stack leaked', '   '),
+    'Request could not be completed.',
+  )
 })
 
 test('Prisma and database internals are replaced with fallback messages', () => {
@@ -54,5 +75,16 @@ test('unknown non-error values use fallback messages', () => {
   assert.deepEqual(toSafeClientError(null, 'Could not load reports'), {
     message: 'Could not load reports',
     status: 400,
+  })
+})
+
+test('safe errors preserve custom default status and unsafe errors keep sanitized status', () => {
+  assert.deepEqual(toSafeClientError(new Error('Invalid coupon amount'), 'Could not validate coupon', 422), {
+    message: 'Invalid coupon amount',
+    status: 422,
+  })
+  assert.deepEqual(toSafeClientError(new Error('DATABASE_URL leaked'), 'Could not validate coupon', 422), {
+    message: 'Could not validate coupon',
+    status: 422,
   })
 })
