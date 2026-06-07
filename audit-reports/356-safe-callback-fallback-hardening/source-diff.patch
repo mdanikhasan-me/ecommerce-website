@@ -1,0 +1,47 @@
+diff --git a/src/frontend/utils/safe-callback-url.ts b/src/frontend/utils/safe-callback-url.ts
+index dd42025..e3f9a37 100644
+--- a/src/frontend/utils/safe-callback-url.ts
++++ b/src/frontend/utils/safe-callback-url.ts
+@@ -1,15 +1,20 @@
+ const FALLBACK_ORIGIN = 'https://boilabin.local'
+
+-export function getSafeCallbackUrl(value: string | null | undefined, fallback = '/') {
++function normalizeInternalCallbackPath(value: string | null | undefined) {
+   const trimmed = value?.trim()
+-  if (!trimmed) return fallback
+-  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) return fallback
++  if (!trimmed) return null
++  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) return null
+
+   try {
+     const url = new URL(trimmed, FALLBACK_ORIGIN)
+-    if (url.origin !== FALLBACK_ORIGIN) return fallback
+-    return `${url.pathname}${url.search}${url.hash}` || fallback
++    if (url.origin !== FALLBACK_ORIGIN) return null
++    return `${url.pathname}${url.search}${url.hash}` || null
+   } catch {
+-    return fallback
++    return null
+   }
+ }
++
++export function getSafeCallbackUrl(value: string | null | undefined, fallback = '/') {
++  const safeFallback = normalizeInternalCallbackPath(fallback) ?? '/'
++  return normalizeInternalCallbackPath(value) ?? safeFallback
++}
+diff --git a/tests/safe-callback-url.test.ts b/tests/safe-callback-url.test.ts
+index bb0df96..fc636f1 100644
+--- a/tests/safe-callback-url.test.ts
++++ b/tests/safe-callback-url.test.ts
+@@ -23,4 +23,11 @@ describe('safe callback URL', () => {
+     assert.equal(getSafeCallbackUrl(null, '/account'), '/account')
+     assert.equal(getSafeCallbackUrl('https://example.com/phish', '/account'), '/account')
+   })
++
++  it('sanitizes fallback values before using them', () => {
++    assert.equal(getSafeCallbackUrl('', ' /account/orders?tab=returns#latest '), '/account/orders?tab=returns#latest')
++    assert.equal(getSafeCallbackUrl(null, 'https://example.com/phish'), '/')
++    assert.equal(getSafeCallbackUrl(undefined, '//example.com/phish'), '/')
++    assert.equal(getSafeCallbackUrl('account/orders', '/\\example.com'), '/')
++  })
+ })

@@ -23,4 +23,11 @@ describe('safe callback URL', () => {
     assert.equal(getSafeCallbackUrl(null, '/account'), '/account')
     assert.equal(getSafeCallbackUrl('https://example.com/phish', '/account'), '/account')
   })
+
+  it('sanitizes fallback values before using them', () => {
+    assert.equal(getSafeCallbackUrl('', ' /account/orders?tab=returns#latest '), '/account/orders?tab=returns#latest')
+    assert.equal(getSafeCallbackUrl(null, 'https://example.com/phish'), '/')
+    assert.equal(getSafeCallbackUrl(undefined, '//example.com/phish'), '/')
+    assert.equal(getSafeCallbackUrl('account/orders', '/\\example.com'), '/')
+  })
 })

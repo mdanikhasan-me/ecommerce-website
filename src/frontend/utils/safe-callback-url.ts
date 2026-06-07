@@ -1,15 +1,20 @@
 const FALLBACK_ORIGIN = 'https://boilabin.local'
 
-export function getSafeCallbackUrl(value: string | null | undefined, fallback = '/') {
+function normalizeInternalCallbackPath(value: string | null | undefined) {
   const trimmed = value?.trim()
-  if (!trimmed) return fallback
-  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) return fallback
+  if (!trimmed) return null
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//') || trimmed.includes('\\')) return null
 
   try {
     const url = new URL(trimmed, FALLBACK_ORIGIN)
-    if (url.origin !== FALLBACK_ORIGIN) return fallback
-    return `${url.pathname}${url.search}${url.hash}` || fallback
+    if (url.origin !== FALLBACK_ORIGIN) return null
+    return `${url.pathname}${url.search}${url.hash}` || null
   } catch {
-    return fallback
+    return null
   }
+}
+
+export function getSafeCallbackUrl(value: string | null | undefined, fallback = '/') {
+  const safeFallback = normalizeInternalCallbackPath(fallback) ?? '/'
+  return normalizeInternalCallbackPath(value) ?? safeFallback
 }
