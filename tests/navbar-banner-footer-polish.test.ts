@@ -67,6 +67,10 @@ test('Step 308 footer is compacted while payment logos remain', () => {
   assert.match(footer, /PAYMENT_ASSETS\.VISA/);
   assert.match(footer, /PAYMENT_ASSETS\.MASTERCARD/);
   assert.match(footer, /FOOTER_PAYMENT_LOGOS\.map/);
+  assert.match(footer, /<div className="container-site">/);
+  assert.match(footer, /className="w-full py-5/);
+  assert.match(footer, /className="w-full border-t border-black\/6 py-3/);
+  assert.doesNotMatch(footer, /max-w-6xl/);
 });
 
 test('Step 308 homepage banner source and multi-banner controls are route-safe', () => {

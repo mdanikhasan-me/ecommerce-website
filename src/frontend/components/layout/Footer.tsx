@@ -92,7 +92,7 @@ export function Footer() {
   return (
     <footer className="border-t border-black/8 bg-[hsl(42_42%_96%)] text-foreground">
       <div className="container-site">
-        <div className="mx-auto max-w-6xl py-5 min-[600px]:py-6 lg:py-8">
+        <div className="w-full py-5 min-[600px]:py-6 lg:py-8">
           <div className="grid gap-5 min-[600px]:gap-6 lg:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] lg:gap-9 xl:gap-11">
             <section aria-label="Boilabin contact" className="max-w-[32rem] lg:max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
@@ -221,7 +221,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-6xl border-t border-black/6 py-3 text-xs text-muted-foreground">
+        <div className="w-full border-t border-black/6 py-3 text-xs text-muted-foreground">
           <div className="flex w-full flex-col items-center justify-between gap-2 min-[700px]:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>

@@ -1,0 +1,418 @@
+[
+  {
+    "label": "1366x768",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-1366x768.png",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1356,
+      "contentLeft": 64,
+      "contentWidth": 1228,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "mainInner": {
+      "left": 64,
+      "width": 1228,
+      "right": 1292,
+      "top": 561
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1356,
+      "contentLeft": 64,
+      "contentWidth": 1228,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "footerMain": {
+      "left": 64,
+      "width": 1228,
+      "right": 1292,
+      "top": 4107
+    },
+    "footerBottom": {
+      "left": 64,
+      "width": 1228,
+      "right": 1292,
+      "top": 4520
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 4106,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "1440x900",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-1440x900.png",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1430,
+      "contentLeft": 64,
+      "contentWidth": 1302,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "mainInner": {
+      "left": 64,
+      "width": 1302,
+      "right": 1366,
+      "top": 586
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1430,
+      "contentLeft": 64,
+      "contentWidth": 1302,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "footerMain": {
+      "left": 64,
+      "width": 1302,
+      "right": 1366,
+      "top": 4227
+    },
+    "footerBottom": {
+      "left": 64,
+      "width": 1302,
+      "right": 1366,
+      "top": 4640
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 4226,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "1520x900",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-1520x900.png",
+    "viewport": {
+      "width": 1520,
+      "height": 900
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1510,
+      "contentLeft": 64,
+      "contentWidth": 1382,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "mainInner": {
+      "left": 64,
+      "width": 1382,
+      "right": 1446,
+      "top": 612
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1510,
+      "contentLeft": 64,
+      "contentWidth": 1382,
+      "paddingLeft": 64,
+      "paddingRight": 64
+    },
+    "footerMain": {
+      "left": 64,
+      "width": 1382,
+      "right": 1446,
+      "top": 4356
+    },
+    "footerBottom": {
+      "left": 64,
+      "width": 1382,
+      "right": 1446,
+      "top": 4769
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 4355,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "1920x1080",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-1920x1080.png",
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1910,
+      "contentLeft": 96,
+      "contentWidth": 1718,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "mainInner": {
+      "left": 96,
+      "width": 1718,
+      "right": 1814,
+      "top": 746
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 1910,
+      "contentLeft": 96,
+      "contentWidth": 1718,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "footerMain": {
+      "left": 96,
+      "width": 1718,
+      "right": 1814,
+      "top": 4269
+    },
+    "footerBottom": {
+      "left": 96,
+      "width": 1718,
+      "right": 1814,
+      "top": 4682
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 4268,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "2560x1440",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-2560x1440.png",
+    "viewport": {
+      "width": 2560,
+      "height": 1440
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 2550,
+      "contentLeft": 96,
+      "contentWidth": 2358,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "mainInner": {
+      "left": 96,
+      "width": 2358,
+      "right": 2454,
+      "top": 959
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 2550,
+      "contentLeft": 96,
+      "contentWidth": 2358,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "footerMain": {
+      "left": 96,
+      "width": 2358,
+      "right": 2454,
+      "top": 5033
+    },
+    "footerBottom": {
+      "left": 96,
+      "width": 2358,
+      "right": 2454,
+      "top": 5446
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 5032,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "3840x2160",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-3840x2160.png",
+    "viewport": {
+      "width": 3840,
+      "height": 2160
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 3830,
+      "contentLeft": 96,
+      "contentWidth": 3638,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "mainInner": {
+      "left": 96,
+      "width": 3638,
+      "right": 3734,
+      "top": 1386
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 3830,
+      "contentLeft": 96,
+      "contentWidth": 3638,
+      "paddingLeft": 96,
+      "paddingRight": 96
+    },
+    "footerMain": {
+      "left": 96,
+      "width": 3638,
+      "right": 3734,
+      "top": 6558
+    },
+    "footerBottom": {
+      "left": 96,
+      "width": 3638,
+      "right": 3734,
+      "top": 6971
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 6557,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "768x1024",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-768x1024.png",
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 758,
+      "contentLeft": 24,
+      "contentWidth": 710,
+      "paddingLeft": 24,
+      "paddingRight": 24
+    },
+    "mainInner": {
+      "left": 24,
+      "width": 710,
+      "right": 734,
+      "top": 456
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 758,
+      "contentLeft": 24,
+      "contentWidth": 710,
+      "paddingLeft": 24,
+      "paddingRight": 24
+    },
+    "footerMain": {
+      "left": 24,
+      "width": 710,
+      "right": 734,
+      "top": 4054
+    },
+    "footerBottom": {
+      "left": 24,
+      "width": 710,
+      "right": 734,
+      "top": 4781
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 4053,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  },
+  {
+    "label": "390x844",
+    "screenshot": "audit-reports/384-footer-container-width-fix/screenshots/homepage-footer-390x844.png",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "mainContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 390,
+      "contentLeft": 16,
+      "contentWidth": 358,
+      "paddingLeft": 16,
+      "paddingRight": 16
+    },
+    "mainInner": {
+      "left": 16,
+      "width": 358,
+      "right": 374,
+      "top": 345
+    },
+    "footerContainerBox": {
+      "borderLeft": 0,
+      "borderWidth": 390,
+      "contentLeft": 16,
+      "contentWidth": 358,
+      "paddingLeft": 16,
+      "paddingRight": 16
+    },
+    "footerMain": {
+      "left": 16,
+      "width": 358,
+      "right": 374,
+      "top": 5623
+    },
+    "footerBottom": {
+      "left": 16,
+      "width": 358,
+      "right": 374,
+      "top": 6218
+    },
+    "contentLeftDelta": 0,
+    "contentWidthDelta": 0,
+    "containerContentLeftDelta": 0,
+    "containerContentWidthDelta": 0,
+    "footerTop": 5622,
+    "horizontalOverflow": false,
+    "paymentLogoVisibleCount": 4,
+    "newsletterOverflowsFooter": false,
+    "footerTextIncludesPaymentHeading": true,
+    "footerTextIncludesNewsletter": true
+  }
+]
