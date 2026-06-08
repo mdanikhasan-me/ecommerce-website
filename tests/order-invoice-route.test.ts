@@ -13,7 +13,10 @@ describe('buyer order invoice route guardrails', () => {
   it('keeps the order details button wired to a protected invoice route', () => {
     const detailSource = readProjectFile('src/app/(store)/account/orders/[id]/page.tsx')
 
-    assert.match(detailSource, /href={`\/account\/orders\/\$\{order\.id\}\/invoice`}/)
+    assert.match(detailSource, /getInvoicePdfDownloadPath\(order\.id\)/)
+    assert.match(detailSource, /buildInvoiceDownloadFilename\(order\.orderNumber\)/)
+    assert.match(detailSource, /href=\{invoicePdfPath\}/)
+    assert.match(detailSource, /download=\{invoicePdfFilename\}/)
     assert.match(detailSource, /Download Invoice/)
   })
 
@@ -22,10 +25,26 @@ describe('buyer order invoice route guardrails', () => {
     const printButtonSource = readProjectFile('src/frontend/components/account/PrintInvoiceButton.tsx')
 
     assert.match(invoiceSource, /if \(!session\?\.user\) redirect\('\/auth\/login'\)/)
-    assert.match(invoiceSource, /where: \{ id, userId: session\.user\.id \}/)
-    assert.match(invoiceSource, /if \(!order\) notFound\(\)/)
-    assert.match(printButtonSource, /Print \/ Save PDF/)
+    assert.match(invoiceSource, /getOwnedOrderInvoiceContext\(\{/)
+    assert.match(invoiceSource, /if \(!invoice\) notFound\(\)/)
+    assert.match(invoiceSource, /Download PDF/)
+    assert.match(printButtonSource, /Print/)
     assert.match(printButtonSource, /window\.print\(\)/)
     assert.doesNotMatch(invoiceSource, /tax invoice|vat invoice|transaction id|tracking number/i)
+  })
+
+  it('keeps the PDF download route authenticated, owner-scoped, and file-backed', () => {
+    const routeSource = readProjectFile('src/app/api/account/orders/[id]/invoice/route.ts')
+
+    assert.match(routeSource, /const session = await auth\(\)/)
+    assert.match(routeSource, /NextResponse\.redirect\(new URL\('\/auth\/login', request\.url\)\)/)
+    assert.match(routeSource, /getOwnedOrderInvoiceContext\(\{/)
+    assert.match(routeSource, /orderId: id/)
+    assert.match(routeSource, /userId/)
+    assert.match(routeSource, /generateOrderInvoicePdf\(context\)/)
+    assert.match(routeSource, /'Content-Type': 'application\/pdf'/)
+    assert.match(routeSource, /'Content-Disposition': `attachment; filename="\$\{filename\}"`/)
+    assert.match(routeSource, /'Cache-Control': 'private, no-store, max-age=0'/)
+    assert.doesNotMatch(routeSource, /trackingNumber|transactionId|vat invoice|tax invoice/i)
   })
 })

@@ -1,46 +1,38 @@
 import { auth } from '@/backend/auth'
-import { db } from '@/backend/database'
+import {
+  buildInvoiceDownloadFilename,
+  formatOrderInvoiceEnumLabel,
+  getInvoicePdfDownloadPath,
+  getOwnedOrderInvoiceContext,
+} from '@/backend/orders/order-invoice'
 import { formatDate, formatPrice } from '@/backend/utils'
 import { PrintInvoiceButton } from '@/frontend/components/account/PrintInvoiceButton'
-import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
-import { ArrowLeft, Printer } from 'lucide-react'
+import { ArrowLeft, Download, Printer } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 
 export const metadata: Metadata = { title: 'Boilabin Order Invoice' }
 
-function formatEnumLabel(value: string) {
-  return value
-    .split('_')
-    .map((part, index) => {
-      const lower = part.toLowerCase()
-      if (index > 0 && ['on', 'of', 'and', 'to', 'for'].includes(lower)) return lower
-      return part.charAt(0) + part.slice(1).toLowerCase()
-    })
-    .join(' ')
-}
-
 export default async function OrderInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user) redirect('/auth/login')
+  const userId = session.user.id
+  if (!userId) redirect('/auth/login')
   const { id } = await params
 
-  const order = await db.order.findFirst({
-    where: { id, userId: session.user.id },
-    include: {
-      items: {
-        orderBy: { id: 'asc' },
-      },
-      address: true,
-      coupon: { select: { code: true, name: true } },
-    },
+  const invoice = await getOwnedOrderInvoiceContext({
+    orderId: id,
+    userId,
+    sessionUserName: session.user.name,
+    sessionUserEmail: session.user.email,
   })
 
-  if (!order) notFound()
+  if (!invoice) notFound()
 
-  const customerName = session.user.name?.trim() || order.address?.fullName || 'Customer'
-  const customerEmail = session.user.email?.trim()
+  const { order, customerName, customerEmail, supportEmail, supportPhone } = invoice
+  const invoicePdfPath = getInvoicePdfDownloadPath(order.id)
+  const invoicePdfFilename = buildInvoiceDownloadFilename(order.orderNumber)
 
   return (
     <main className="container-site py-6 lg:py-10 print:bg-white print:py-0">
@@ -53,7 +45,17 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
             <ArrowLeft className="h-4 w-4" />
             Back to order details
           </Link>
-          <PrintInvoiceButton />
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={invoicePdfPath}
+              download={invoicePdfFilename}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </a>
+            <PrintInvoiceButton />
+          </div>
         </div>
 
         <article className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_42px_rgba(23,18,15,0.045)] sm:p-8 print:rounded-none print:border-0 print:bg-white print:p-0 print:shadow-none">
@@ -62,8 +64,8 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
               <p className="font-display text-3xl font-bold tracking-[-0.04em]">Boilabin</p>
               <p className="mt-2 text-sm text-muted-foreground">Order Invoice</p>
               <div className="mt-5 space-y-1 text-sm text-muted-foreground">
-                <p>{CONTACT_EMAIL}</p>
-                <p>{CONTACT_PHONE}</p>
+                <p>{supportEmail}</p>
+                <p>{supportPhone}</p>
               </div>
             </div>
 
@@ -77,11 +79,11 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted-foreground">Order status</dt>
-                  <dd className="font-medium">{formatEnumLabel(order.status)}</dd>
+                  <dd className="font-medium">{formatOrderInvoiceEnumLabel(order.status)}</dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted-foreground">Payment</dt>
-                  <dd className="font-medium">{formatEnumLabel(order.paymentStatus)}</dd>
+                  <dd className="font-medium">{formatOrderInvoiceEnumLabel(order.paymentStatus)}</dd>
                 </div>
               </dl>
             </div>
@@ -144,7 +146,7 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
 
           <section className="grid gap-6 border-t border-border pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.55fr)]">
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p><span className="font-semibold text-foreground">Payment method:</span> {formatEnumLabel(order.paymentMethod)}</p>
+              <p><span className="font-semibold text-foreground">Payment method:</span> {formatOrderInvoiceEnumLabel(order.paymentMethod)}</p>
               {order.coupon ? (
                 <p><span className="font-semibold text-foreground">Coupon:</span> {order.coupon.code}</p>
               ) : null}
@@ -181,7 +183,7 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
 
           <footer className="mt-8 flex items-center gap-2 border-t border-border pt-5 text-xs text-muted-foreground">
             <Printer className="h-4 w-4" />
-            <p>Use your browser print dialog to save this secure invoice as a PDF.</p>
+            <p>Download the PDF for a saved copy, or print this secure invoice from your browser.</p>
           </footer>
         </article>
       </div>

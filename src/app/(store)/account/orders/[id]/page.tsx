@@ -6,6 +6,7 @@ import {
   isOrderProgressStepCurrent,
   ORDER_PROGRESS_STEPS,
 } from '@/backend/orders/order-progress'
+import { buildInvoiceDownloadFilename, getInvoicePdfDownloadPath } from '@/backend/orders/order-invoice'
 import { cn, formatDate, formatPrice } from '@/backend/utils'
 import { CopyOrderNumberButton } from '@/frontend/components/account/CopyOrderNumberButton'
 import { ReturnRequestButton } from '@/frontend/components/account/ReturnRequestButton'
@@ -125,6 +126,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const orderStatusLabel = formatEnumLabel(order.status)
   const paymentStatusLabel = formatEnumLabel(order.paymentStatus)
   const paymentMethodLabel = formatEnumLabel(order.paymentMethod)
+  const invoicePdfPath = getInvoicePdfDownloadPath(order.id)
+  const invoicePdfFilename = buildInvoiceDownloadFilename(order.orderNumber)
 
   return (
     <main className="container-site py-4 sm:py-7 lg:py-9">
@@ -193,14 +196,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               </div>
             </div>
 
-            <Link
-              href={`/account/orders/${order.id}/invoice`}
-              prefetch={false}
+            <a
+              href={invoicePdfPath}
+              download={invoicePdfFilename}
               className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 lg:w-auto lg:bg-card lg:text-foreground lg:hover:bg-secondary"
             >
               <Download className="h-4 w-4" />
               Download Invoice
-            </Link>
+            </a>
           </div>
         </section>
 
