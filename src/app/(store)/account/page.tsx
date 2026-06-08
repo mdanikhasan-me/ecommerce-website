@@ -1,11 +1,32 @@
 import { auth } from '@/backend/auth'
-import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
-import Link from 'next/link'
-import { Package, MapPin, Heart, Settings, ChevronRight } from 'lucide-react'
 import { formatPrice } from '@/backend/utils'
+import { AccountAvatar } from '@/frontend/components/account/AccountAvatar'
+import {
+  ChevronRight,
+  FileQuestion,
+  Heart,
+  MapPin,
+  MessageCircle,
+  Package,
+  Pencil,
+  Search,
+  Settings,
+  ShoppingBag,
+  User,
+} from 'lucide-react'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export const metadata = { title: 'Boilabin Account' }
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: 'text-amber-500',
+  CONFIRMED: 'text-blue-500',
+  SHIPPED: 'text-purple-500',
+  DELIVERED: 'text-green-600',
+  CANCELLED: 'text-red-500',
+}
 
 export default async function AccountPage() {
   const session = await auth()
@@ -16,7 +37,10 @@ export default async function AccountPage() {
       where: { userId: session.user.id },
       take: 3,
       orderBy: { createdAt: 'desc' },
-      include: { items: { take: 1, select: { productName: true, imageUrl: true } } },
+      include: {
+        items: { take: 1, select: { productName: true, imageUrl: true } },
+        _count: { select: { items: true } },
+      },
     }),
     db.wishlist.findUnique({
       where: { userId: session.user.id },
@@ -24,112 +48,185 @@ export default async function AccountPage() {
     }),
   ])
 
-  const QUICK_LINKS = [
-    { href: '/account/profile', icon: Settings, label: 'Profile', desc: 'Update your personal information' },
+  const displayName = session.user.name?.trim() || 'Customer'
+  const displayEmail = session.user.email?.trim() || 'Signed-in customer'
+
+  const accountLinks = [
+    { href: '/account/profile', icon: User, label: 'Profile', desc: 'Update your personal information' },
     { href: '/account/orders', icon: Package, label: 'My Orders', desc: 'Track and manage your orders' },
+    { href: '/track-order', icon: Search, label: 'Track Order', desc: 'Look up an order by number' },
     { href: '/account/addresses', icon: MapPin, label: 'Addresses', desc: 'Manage delivery addresses' },
     { href: '/wishlist', icon: Heart, label: 'Wishlist', desc: `${wishlistCount?._count.items ?? 0} saved items` },
     { href: '/account/profile', icon: Settings, label: 'Account Settings', desc: 'Edit profile and password' },
   ]
 
-  const STATUS_COLORS: Record<string, string> = {
-    PENDING: 'text-amber-500',
-    CONFIRMED: 'text-blue-500',
-    SHIPPED: 'text-purple-500',
-    DELIVERED: 'text-green-600',
-    CANCELLED: 'text-red-500',
-  }
+  const helpLinks = [
+    { href: '/contact', icon: MessageCircle, label: 'Contact Us' },
+    { href: '/faq', icon: FileQuestion, label: 'FAQs' },
+  ]
 
   return (
-    <div className="container-site py-8">
-      <div className="max-w-4xl">
-        {/* Welcome */}
-        <div className="mb-8 rounded-[1.75rem] border border-black/8 bg-[linear-gradient(135deg,#2d1b3d_0%,#4a2d66_55%,#c8b49e_175%)] p-6 text-white shadow-[0_18px_42px_rgba(23,18,15,0.12)]">
-          <div className="flex items-center gap-3">
-            <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white/12 ring-1 ring-white/18">
-              {session.user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={session.user.image}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <span className="font-display text-2xl font-bold text-white">
-                  {(session.user.name?.[0] ?? 'U').toUpperCase()}
-                </span>
-              )}
-            </span>
-            <span className="rounded-full border border-white/14 bg-white/8 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/82">
-              Account
-            </span>
+    <main className="container-site py-5 sm:py-8 lg:py-10">
+      <section className="rounded-2xl border border-border bg-card px-4 py-4 shadow-[0_16px_42px_rgba(23,18,15,0.045)] sm:p-6 lg:p-8">
+        <div className="flex items-center gap-3 sm:gap-5">
+          <AccountAvatar
+            imageUrl={session.user.image}
+            name={displayName}
+            className="h-16 w-16 sm:h-24 sm:w-24"
+            fallbackClassName="text-2xl sm:text-3xl"
+          />
+
+          <div className="min-w-0 flex-1">
+            <p className="hidden text-sm text-muted-foreground sm:block">Welcome back,</p>
+            <p className="text-sm font-semibold text-foreground sm:hidden">Hi, {displayName}</p>
+            <h1 className="mt-0.5 hidden truncate font-display text-2xl font-bold sm:block lg:text-3xl">
+              {displayName}
+            </h1>
+            <p className="mt-1 truncate text-sm text-muted-foreground sm:text-base">
+              {displayEmail}
+            </p>
           </div>
-          <p className="mt-5 text-sm text-white/72">Welcome back,</p>
-          <h1 className="mt-0.5 font-display text-2xl font-bold">{session.user.name}</h1>
-          <p className="mt-1 text-sm text-white/72">{session.user.email}</p>
-        </div>
 
-        {/* Quick Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {QUICK_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-sm transition-all group"
-            >
-              <link.icon className="h-5 w-5 text-primary mb-3" />
-              <p className="font-semibold text-sm">{link.label}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{link.desc}</p>
-            </Link>
-          ))}
-        </div>
+          <Link
+            href="/account/profile"
+            aria-label="Edit profile"
+            className="hidden h-12 items-center gap-2 rounded-xl border border-border px-5 text-sm font-semibold transition-colors hover:border-primary/40 hover:bg-secondary sm:flex"
+          >
+            <Pencil className="h-4 w-4" />
+            Edit Profile
+          </Link>
 
-        {/* Recent Orders */}
-        <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <Link
+            href="/account/profile"
+            aria-label="Open profile"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-secondary sm:hidden"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Link>
+        </div>
+      </section>
+
+      <div className="mt-4 grid gap-4 sm:mt-6 sm:gap-6 lg:grid-cols-[minmax(17rem,0.9fr)_minmax(0,1.45fr)] min-[1180px]:grid-cols-[minmax(17rem,0.95fr)_minmax(0,2fr)_minmax(15rem,0.85fr)]">
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_42px_rgba(23,18,15,0.035)]">
+          <div className="border-b border-border px-4 py-4 sm:px-5">
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground sm:text-xs">
+              <span className="sm:hidden">Your Account</span>
+              <span className="hidden sm:inline">My Account</span>
+            </h2>
+          </div>
+
+          <nav aria-label="Account navigation" className="divide-y divide-border">
+            {accountLinks.map((item) => (
+              <Link
+                key={`${item.label}-${item.href}`}
+                href={item.href}
+                className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-secondary/70 sm:px-5"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground transition-colors group-hover:bg-background sm:h-11 sm:w-11">
+                  <item.icon className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">
+                    {item.label}
+                  </span>
+                  <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                    {item.desc}
+                  </span>
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </Link>
+            ))}
+          </nav>
+        </section>
+
+        <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_16px_42px_rgba(23,18,15,0.035)]">
+          <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
             <h2 className="font-semibold">Recent Orders</h2>
-            <Link href="/account/orders" className="text-sm text-primary hover:underline flex items-center gap-1">
-              View all <ChevronRight className="h-3.5 w-3.5" />
+            <Link
+              href="/account/orders"
+              className="flex items-center gap-1 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary sm:text-sm"
+            >
+              View all
+              <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
 
           {recentOrders.length === 0 ? (
-            <div className="p-8 text-center">
-              <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground opacity-30" />
-              <p className="font-medium">No orders yet</p>
-              <p className="text-muted-foreground text-sm mt-1">Start shopping to see your orders here.</p>
-              <Link href="/" className="btn-primary mt-4 inline-flex">Shop Now</Link>
+            <div className="flex min-h-[6.5rem] items-center gap-3 px-4 py-5 sm:min-h-[22rem] sm:flex-col sm:justify-center sm:px-8 sm:py-10 sm:text-center lg:min-h-[25rem]">
+              <Package className="h-11 w-11 shrink-0 text-muted-foreground/35 sm:h-14 sm:w-14" />
+              <div className="min-w-0 flex-1 sm:flex-none">
+                <p className="font-semibold">No orders yet</p>
+                <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+                  Start shopping to see your orders here.
+                </p>
+              </div>
+              <Link href="/" className="btn-primary h-9 shrink-0 px-4 text-xs sm:mt-2 sm:h-11 sm:px-6 sm:text-sm">
+                Shop Now
+              </Link>
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {recentOrders.map((order) => (
-                <Link
-                  key={order.id}
-                  href={`/account/orders/${order.id}`}
-                  className="flex items-center gap-4 px-5 py-4 hover:bg-secondary transition-colors"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-mono font-semibold text-sm">{order.orderNumber}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {order.items[0]?.productName}
-                      {/* @ts-ignore */}
-                      {order.items.length > 1 && ` +${order.items.length - 1} more`}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-sm">{formatPrice(order.total)}</p>
-                    <p className={`text-xs font-medium ${STATUS_COLORS[order.status] ?? 'text-muted-foreground'}`}>
-                      {order.status.replace('_', ' ')}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              ))}
+              {recentOrders.map((order) => {
+                const itemCount = order._count.items
+                const firstItemName = order.items[0]?.productName ?? 'Order items'
+
+                return (
+                  <Link
+                    key={order.id}
+                    href={`/account/orders/${order.id}`}
+                    className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-secondary/70 sm:gap-4 sm:px-5"
+                  >
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground">
+                      <ShoppingBag className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-mono text-sm font-semibold">
+                        {order.orderNumber}
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                        {firstItemName}
+                        {itemCount > 1 ? ` +${itemCount - 1} more` : ''}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-sm font-bold">{formatPrice(order.total)}</span>
+                      <span className={`block text-xs font-medium ${STATUS_COLORS[order.status] ?? 'text-muted-foreground'}`}>
+                        {order.status.replace('_', ' ')}
+                      </span>
+                    </span>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  </Link>
+                )
+              })}
             </div>
           )}
-        </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4 shadow-[0_16px_42px_rgba(23,18,15,0.035)] sm:p-5 lg:col-span-2 min-[1180px]:col-span-1">
+          <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground sm:text-xs">
+            Need Help?
+          </h2>
+          <p className="mt-3 max-w-[18rem] text-sm leading-6 text-muted-foreground">
+            We&apos;re here to help with any questions you have.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 min-[1180px]:grid-cols-1">
+            {helpLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex min-h-14 items-center justify-center gap-2 rounded-xl border border-border px-3 py-3 text-sm font-semibold transition-colors hover:border-primary/40 hover:bg-secondary sm:justify-between sm:gap-3 sm:px-4"
+              >
+                <span className="flex min-w-0 items-center gap-2 sm:gap-3">
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </span>
+                <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" />
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   )
 }
