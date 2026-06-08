@@ -5,19 +5,19 @@ import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { db } from '@/backend/database'
 import { authConfig } from '@/backend/auth/config'
+import { getGoogleOAuthCredentials } from '@/backend/auth/google-oauth'
 import type { NextAuthConfig } from 'next-auth'
 
 type AuthEvents = NonNullable<NextAuthConfig['events']>
 type SignInEventParams = Parameters<NonNullable<AuthEvents['signIn']>>[0]
 
+const googleOAuthCredentials = getGoogleOAuthCredentials()
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    ...(googleOAuthCredentials ? [GoogleProvider(googleOAuthCredentials)] : []),
     CredentialsProvider({
       credentials: {
         email: { label: 'Email', type: 'email' },

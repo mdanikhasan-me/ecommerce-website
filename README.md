@@ -141,6 +141,22 @@ Keep `.env.local` pointed at dedicated local databases only. Do not paste produc
 
 Use localhost URLs for local app and auth testing. The future public canonical domain can remain `https://boilabin.com` for SEO metadata, even before hosting is connected.
 
+### Google sign-in setup
+
+To enable Google login locally, create a Google Cloud Console OAuth client of type **Web application** and add the local callback URI that matches your auth origin:
+
+- `http://localhost:3000/api/auth/callback/google`
+- or `http://localhost:<your-dev-port>/api/auth/callback/google` if you run the dev server on another local port
+
+Set these environment keys in `.env.local`:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+
+If either value is missing, blank, or still a local placeholder, the Google sign-in button stays disabled instead of redirecting to an invalid OAuth client.
+
+Restart the dev server after changing auth env values.
+
 ### 3. Check database URL safety
 
 Before any Prisma migration work, confirm the configured database targets are local and that no database connection is attempted by the check:

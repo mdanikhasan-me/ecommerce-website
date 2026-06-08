@@ -1,5 +1,6 @@
 import { LoginForm } from '@/frontend/components/auth/LoginForm'
 import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
+import { isGoogleOAuthConfigured } from '@/backend/auth/google-oauth'
 
 type LoginSearchParams = {
   callbackUrl?: string | string[]
@@ -19,5 +20,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const callbackUrl = getSafeCallbackUrl(firstParam(resolvedSearchParams.callbackUrl))
   const reason = firstParam(resolvedSearchParams.reason)
 
-  return <LoginForm callbackUrl={callbackUrl} reason={reason} />
+  return (
+    <LoginForm
+      callbackUrl={callbackUrl}
+      reason={reason}
+      googleOAuthAvailable={isGoogleOAuthConfigured()}
+    />
+  )
 }
