@@ -138,6 +138,10 @@ function unwrapImportedModule(module) {
 }
 
 async function createTypeScriptModuleImporter() {
+  if (isRunningWithTsx()) {
+    return (specifier) => import(new URL(specifier, import.meta.url).href)
+  }
+
   const { tsImport } = await import('tsx/esm/api')
   return (specifier) => tsImport(specifier, import.meta.url)
 }

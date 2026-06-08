@@ -44,7 +44,10 @@ export const authConfig = {
     async jwt({ token, user }: JwtCallbackParams) {
       if (user) {
         const userWithRole = user as UserWithRole
-        token.id = userWithRole.id ?? user.id
+        const nextUserId = userWithRole.id ?? user.id
+        if (typeof nextUserId === 'string' && nextUserId.trim()) {
+          token.id = nextUserId
+        }
         token.role = userWithRole.role ?? 'CUSTOMER'
         token.picture = userWithRole.image ?? token.picture
       }

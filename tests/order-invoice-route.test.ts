@@ -23,7 +23,9 @@ describe('buyer order invoice route guardrails', () => {
 
     assert.match(invoiceSource, /if \(!session\?\.user\) redirect\('\/auth\/login'\)/)
     assert.match(invoiceSource, /where: \{ id, userId: session\.user\.id \}/)
+    assert.match(invoiceSource, /if \(!order\) notFound\(\)/)
     assert.match(printButtonSource, /Print \/ Save PDF/)
+    assert.match(printButtonSource, /window\.print\(\)/)
     assert.doesNotMatch(invoiceSource, /tax invoice|vat invoice|transaction id|tracking number/i)
   })
 })

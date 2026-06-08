@@ -1,7 +1,7 @@
 import {
   AdminMediaPathClassification,
   classifyAdminMediaPath,
-} from './media-lifecycle'
+} from '@/backend/admin/media-lifecycle'
 
 export type AdminMediaReferenceKind = 'active-record' | 'historical-evidence'
 export type AdminMediaReferenceValueKind = 'scalar' | 'array'
