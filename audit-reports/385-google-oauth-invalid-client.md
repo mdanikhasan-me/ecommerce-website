@@ -171,5 +171,5 @@ Do not paste OAuth secrets into chat or committed files.
 ## Commit And Push
 
 - Commit message: `fix: harden google oauth setup and avatar fallback`
-- Commit hash: pending exact-file commit; final hash is reported in the Codex final response because embedding a commit's own final hash in the committed report would change that hash.
-- Push result: pending final `git push origin main`; final push result is reported in the Codex final response.
+- Commit hash: `86a49dd`
+- Push result: pushed to `origin/main`
