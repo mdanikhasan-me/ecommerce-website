@@ -23,25 +23,24 @@ export type OrderInvoiceContext = {
 
 const PAGE_WIDTH = 595.28
 const PAGE_HEIGHT = 841.89
-const PAGE_MARGIN = 48
-const PAGE_BOTTOM = 46
+const PAGE_MARGIN = 42
 
 type PdfFont = 'regular' | 'bold'
+type PdfColor = readonly [number, number, number]
+type TextAlign = 'left' | 'center' | 'right'
 
-type PdfLine = {
-  text: string
-  x: number
-  y: number
-  size: number
-  font: PdfFont
-}
-
-type WriteOptions = {
+type TextOptions = {
+  align?: TextAlign
+  color?: PdfColor
   font?: PdfFont
+  maxWidth?: number
   size?: number
-  indent?: number
-  gapAfter?: number
 }
+
+const COLOR_BLACK: PdfColor = [0, 0, 0]
+const COLOR_TEXT: PdfColor = [0.05, 0.05, 0.05]
+const COLOR_MUTED: PdfColor = [0.2, 0.2, 0.2]
+const COLOR_RULE: PdfColor = [0.27, 0.27, 0.27]
 
 export function formatOrderInvoiceEnumLabel(value: string) {
   return value
@@ -120,158 +119,345 @@ function escapePdfLiteral(value: string) {
     .replace(/\)/g, '\\)')
 }
 
-function wrapPdfText(text: string, maxChars: number) {
+function pdfNumber(value: number) {
+  return value.toFixed(2)
+}
+
+function pdfColor(color: PdfColor) {
+  return color.map((value) => value.toFixed(3)).join(' ')
+}
+
+function estimatePdfTextWidth(text: string, size: number, font: PdfFont) {
+  const base = font === 'bold' ? 0.54 : 0.5
+  return cleanPdfText(text).split('').reduce((width, character) => {
+    if (character === ' ') return width + size * 0.28
+    if ('ilI1.,:;!|'.includes(character)) return width + size * 0.26
+    if ('mwMW@#%&'.includes(character)) return width + size * 0.78
+    if (/[A-Z]/.test(character)) return width + size * 0.62
+    if (/[0-9]/.test(character)) return width + size * 0.54
+    return width + size * base
+  }, 0)
+}
+
+function wrapPdfText(text: string, maxWidth: number, size: number, font: PdfFont) {
   const cleaned = cleanPdfText(text)
   if (!cleaned) return []
 
-  const words = cleaned.split(' ')
   const lines: string[] = []
   let current = ''
 
-  for (const word of words) {
-    if (!current) {
-      current = word
+  for (const word of cleaned.split(' ')) {
+    const next = current ? `${current} ${word}` : word
+    if (estimatePdfTextWidth(next, size, font) <= maxWidth) {
+      current = next
       continue
     }
 
-    if ((current.length + 1 + word.length) <= maxChars) {
-      current += ` ${word}`
-    } else {
-      lines.push(current)
-      current = word
+    if (current) lines.push(current)
+    current = word
+
+    while (estimatePdfTextWidth(current, size, font) > maxWidth && current.length > 1) {
+      let splitAt = current.length - 1
+      for (let index = 1; index < current.length; index += 1) {
+        if (estimatePdfTextWidth(current.slice(0, index), size, font) > maxWidth) {
+          splitAt = Math.max(1, index - 1)
+          break
+        }
+      }
+      lines.push(current.slice(0, splitAt))
+      current = current.slice(splitAt)
     }
   }
 
   if (current) lines.push(current)
+  return lines
+}
 
-  return lines.flatMap((line) => {
-    if (line.length <= maxChars) return [line]
-    const chunks: string[] = []
-    for (let index = 0; index < line.length; index += maxChars) {
-      chunks.push(line.slice(index, index + maxChars))
-    }
-    return chunks
+class PdfPageCanvas {
+  private operations: string[] = []
+
+  text(x: number, y: number, text: string, options: TextOptions = {}) {
+    const cleaned = cleanPdfText(text)
+    if (!cleaned) return
+
+    const size = options.size ?? 11
+    const font = options.font ?? 'regular'
+    const color = options.color ?? COLOR_TEXT
+    const fontName = font === 'bold' ? 'F2' : 'F1'
+    const width = estimatePdfTextWidth(cleaned, size, font)
+    const originX =
+      options.align === 'right' ? x - width : options.align === 'center' ? x - width / 2 : x
+
+    this.operations.push([
+      'q',
+      `${pdfColor(color)} rg`,
+      'BT',
+      `/${fontName} ${pdfNumber(size)} Tf`,
+      `1 0 0 1 ${pdfNumber(originX)} ${pdfNumber(y)} Tm`,
+      `(${escapePdfLiteral(cleaned)}) Tj`,
+      'ET',
+      'Q',
+    ].join(' '))
+  }
+
+  paragraph(x: number, y: number, text: string, options: TextOptions & { leading?: number } = {}) {
+    const size = options.size ?? 11
+    const font = options.font ?? 'regular'
+    const maxWidth = options.maxWidth ?? PAGE_WIDTH - PAGE_MARGIN * 2
+    const leading = options.leading ?? size * 1.42
+    const lines = wrapPdfText(text, maxWidth, size, font)
+
+    lines.forEach((line, index) => {
+      this.text(x, y - index * leading, line, options)
+    })
+
+    return y - Math.max(0, lines.length - 1) * leading
+  }
+
+  line(x1: number, y1: number, x2: number, y2: number, options: { color?: PdfColor; width?: number } = {}) {
+    const color = options.color ?? COLOR_RULE
+    const width = options.width ?? 1
+    this.operations.push([
+      'q',
+      `${pdfColor(color)} RG`,
+      `${pdfNumber(width)} w`,
+      `${pdfNumber(x1)} ${pdfNumber(y1)} m`,
+      `${pdfNumber(x2)} ${pdfNumber(y2)} l`,
+      'S',
+      'Q',
+    ].join(' '))
+  }
+
+  circle(cx: number, cy: number, radius: number, options: { color?: PdfColor; width?: number } = {}) {
+    const color = options.color ?? COLOR_BLACK
+    const width = options.width ?? 1
+    const control = radius * 0.5522847498
+    const path = [
+      `${pdfNumber(cx + radius)} ${pdfNumber(cy)} m`,
+      `${pdfNumber(cx + radius)} ${pdfNumber(cy + control)} ${pdfNumber(cx + control)} ${pdfNumber(cy + radius)} ${pdfNumber(cx)} ${pdfNumber(cy + radius)} c`,
+      `${pdfNumber(cx - control)} ${pdfNumber(cy + radius)} ${pdfNumber(cx - radius)} ${pdfNumber(cy + control)} ${pdfNumber(cx - radius)} ${pdfNumber(cy)} c`,
+      `${pdfNumber(cx - radius)} ${pdfNumber(cy - control)} ${pdfNumber(cx - control)} ${pdfNumber(cy - radius)} ${pdfNumber(cx)} ${pdfNumber(cy - radius)} c`,
+      `${pdfNumber(cx + control)} ${pdfNumber(cy - radius)} ${pdfNumber(cx + radius)} ${pdfNumber(cy - control)} ${pdfNumber(cx + radius)} ${pdfNumber(cy)} c`,
+    ].join(' ')
+
+    this.operations.push([
+      'q',
+      `${pdfColor(color)} RG`,
+      `${pdfNumber(width)} w`,
+      path,
+      'S',
+      'Q',
+    ].join(' '))
+  }
+
+  polyline(points: Array<[number, number]>, options: { color?: PdfColor; width?: number } = {}) {
+    if (points.length < 2) return
+    const color = options.color ?? COLOR_BLACK
+    const width = options.width ?? 1
+    const [first, ...rest] = points
+    const path = [
+      `${pdfNumber(first[0])} ${pdfNumber(first[1])} m`,
+      ...rest.map(([x, y]) => `${pdfNumber(x)} ${pdfNumber(y)} l`),
+    ].join(' ')
+
+    this.operations.push([
+      'q',
+      `${pdfColor(color)} RG`,
+      `${pdfNumber(width)} w`,
+      path,
+      'S',
+      'Q',
+    ].join(' '))
+  }
+
+  stream() {
+    return this.operations.join('\n')
+  }
+}
+
+function drawRule(page: PdfPageCanvas, y: number, width = 1) {
+  page.line(PAGE_MARGIN, y, PAGE_WIDTH - PAGE_MARGIN, y, { width })
+}
+
+function drawLabelValueRow(page: PdfPageCanvas, y: number, label: string, value: string) {
+  page.text(PAGE_MARGIN, y, `${label}:`, { font: 'bold', size: 13.5, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN + 135, y, value, { size: 13.5, color: COLOR_BLACK })
+}
+
+function drawColumnText(page: PdfPageCanvas, x: number, y: number, lines: string[], maxWidth: number) {
+  let cursorY = y
+  lines.forEach((line) => {
+    const renderedY = page.paragraph(x, cursorY, line, {
+      color: COLOR_BLACK,
+      maxWidth,
+      size: 12.8,
+    })
+    cursorY = renderedY - 18
   })
 }
 
-class PdfTextDocument {
-  private pages: PdfLine[][] = [[]]
-  private y = PAGE_HEIGHT - PAGE_MARGIN
+function getDeliveryAddressLines(order: OrderInvoiceRecord) {
+  if (!order.address) return ['No saved delivery address is attached to this order.']
 
-  private get currentPage() {
-    return this.pages[this.pages.length - 1]
+  return [
+    order.address.fullName,
+    order.address.addressLine1,
+    order.address.addressLine2,
+    `${order.address.city}, ${order.address.district}`,
+    order.address.phone,
+  ].filter((line): line is string => Boolean(line))
+}
+
+function drawSupportIcon(page: PdfPageCanvas, cx: number, cy: number) {
+  page.circle(cx, cy, 18.5, { color: COLOR_BLACK, width: 1.35 })
+  page.polyline([
+    [cx - 9.5, cy + 1],
+    [cx - 7, cy + 8],
+    [cx, cy + 11],
+    [cx + 7, cy + 8],
+    [cx + 9.5, cy + 1],
+  ], { color: COLOR_BLACK, width: 1.7 })
+  page.line(cx - 9.5, cy + 1, cx - 9.5, cy - 6.5, { color: COLOR_BLACK, width: 2 })
+  page.line(cx + 9.5, cy + 1, cx + 9.5, cy - 6.5, { color: COLOR_BLACK, width: 2 })
+  page.polyline([
+    [cx + 6.5, cy - 9],
+    [cx + 3, cy - 12],
+    [cx - 1.5, cy - 12],
+  ], { color: COLOR_BLACK, width: 1.6 })
+}
+
+function drawTableHeader(page: PdfPageCanvas, y: number) {
+  const right = PAGE_WIDTH - PAGE_MARGIN
+  page.text(PAGE_MARGIN, y, 'Item', { font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(250, y, 'SKU', { font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(360, y, 'Qty', { align: 'center', font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(438, y, 'Unit', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(right, y, 'Line total', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
+}
+
+function drawOrderItems(page: PdfPageCanvas, context: OrderInvoiceContext) {
+  const { order } = context
+  const right = PAGE_WIDTH - PAGE_MARGIN
+  const itemX = PAGE_MARGIN
+  const skuX = 250
+  const qtyX = 360
+  const unitX = 438
+  let rowY = 186
+
+  if (order.items.length === 0) {
+    page.text(itemX, rowY, 'No line items are attached to this order.', { size: 12.5, color: COLOR_BLACK })
+    page.line(PAGE_MARGIN, rowY - 28, right, rowY - 28, { width: 0.8 })
+    return rowY - 28
   }
 
-  private addPage() {
-    this.pages.push([])
-    this.y = PAGE_HEIGHT - PAGE_MARGIN
-  }
+  for (const item of order.items) {
+    const rowHeight = item.variantName ? 42 : 38
 
-  private ensureLineSpace(lineHeight: number) {
-    if (this.y - lineHeight < PAGE_BOTTOM) {
-      this.addPage()
+    page.text(itemX, rowY, item.productName, { size: 12.4, color: COLOR_BLACK })
+    if (item.variantName) {
+      page.text(itemX, rowY - 15, item.variantName, { color: COLOR_MUTED, size: 9.8 })
     }
+
+    page.text(skuX, rowY, item.productSku, { size: 12.1, color: COLOR_BLACK })
+    page.text(qtyX, rowY, String(item.quantity), { align: 'center', size: 12.1, color: COLOR_BLACK })
+    page.text(unitX, rowY, formatPrice(item.price, order.currency), { align: 'right', size: 12.1, color: COLOR_BLACK })
+    page.text(right, rowY, formatPrice(item.total, order.currency), { align: 'right', size: 12.1, color: COLOR_BLACK })
+
+    rowY -= rowHeight
   }
 
-  blank(space = 10) {
-    this.y -= space
-    if (this.y < PAGE_BOTTOM) this.addPage()
-  }
+  const bottomY = Math.max(150, rowY + 8)
+  page.line(PAGE_MARGIN, bottomY, right, bottomY, { width: 0.8 })
+  return bottomY
+}
 
-  write(text: string, options: WriteOptions = {}) {
-    const size = options.size ?? 11
-    const font = options.font ?? 'regular'
-    const indent = options.indent ?? 0
-    const x = PAGE_MARGIN + indent
-    const lineHeight = Math.max(size + 4, size * 1.35)
-    const maxChars = Math.max(18, Math.floor((PAGE_WIDTH - PAGE_MARGIN * 2 - indent) / (size * 0.52)))
-    const lines = wrapPdfText(text, maxChars)
+function drawTotals(page: PdfPageCanvas, context: OrderInvoiceContext) {
+  const { order } = context
+  const right = PAGE_WIDTH - PAGE_MARGIN
+  const labelX = 395
+  const valueX = right
+  let y = 145
 
-    if (lines.length === 0) return
+  const totalRows: Array<[string, string, PdfFont]> = [
+    ['Subtotal', formatPrice(order.subtotal, order.currency), 'regular'],
+    ['Shipping', formatPrice(order.shippingFee, order.currency), 'regular'],
+  ]
 
-    for (const line of lines) {
-      this.ensureLineSpace(lineHeight)
-      this.currentPage.push({ text: line, x, y: this.y, size, font })
-      this.y -= lineHeight
-    }
+  if (order.discount > 0) totalRows.push(['Discount', `-${formatPrice(order.discount, order.currency)}`, 'regular'])
+  if (order.coupon) totalRows.push(['Coupon', order.coupon.code, 'regular'])
+  if (order.tax > 0) totalRows.push(['Tax', formatPrice(order.tax, order.currency), 'regular'])
 
-    if (options.gapAfter) this.blank(options.gapAfter)
-  }
+  totalRows.forEach(([label, value, font]) => {
+    page.text(labelX, y, label, { font, size: 12.8, color: COLOR_BLACK })
+    page.text(valueX, y, value, { align: 'right', font, size: 12.8, color: COLOR_BLACK })
+    y -= 25
+  })
 
-  section(title: string) {
-    this.blank(12)
-    this.write(title, { font: 'bold', size: 13, gapAfter: 3 })
-  }
-
-  keyValue(label: string, value: string | number | null | undefined) {
-    const cleaned = cleanPdfText(value)
-    if (!cleaned) return
-    this.write(`${label}: ${cleaned}`, { size: 10.5 })
-  }
-
-  toPages() {
-    return this.pages.filter((page) => page.length > 0)
-  }
+  page.line(labelX, y + 6, valueX, y + 6, { width: 1 })
+  page.text(labelX, y - 15, 'Grand total', { font: 'bold', size: 13.4, color: COLOR_BLACK })
+  page.text(valueX, y - 15, formatPrice(order.total, order.currency), {
+    align: 'right',
+    font: 'bold',
+    size: 13.4,
+    color: COLOR_BLACK,
+  })
 }
 
 function buildInvoicePages(context: OrderInvoiceContext) {
   const { order } = context
-  const document = new PdfTextDocument()
+  const page = new PdfPageCanvas()
+  const right = PAGE_WIDTH - PAGE_MARGIN
 
-  document.write('Boilabin', { font: 'bold', size: 24, gapAfter: 2 })
-  document.write('Order Invoice', { font: 'bold', size: 15 })
-  document.keyValue('Invoice / Order', order.orderNumber)
-  document.keyValue('Placed on', formatDate(order.createdAt))
-  document.keyValue('Order status', formatOrderInvoiceEnumLabel(order.status))
-  document.keyValue('Payment method', formatOrderInvoiceEnumLabel(order.paymentMethod))
-  document.keyValue('Payment status', formatOrderInvoiceEnumLabel(order.paymentStatus))
+  page.text(PAGE_MARGIN, 724, 'Boilabin', { font: 'bold', size: 64, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN, 666, 'Order Invoice', { font: 'bold', size: 25, color: COLOR_BLACK })
+  drawRule(page, 636, 1.2)
 
-  document.section('Customer')
-  document.keyValue('Name', context.customerName)
-  document.keyValue('Email', context.customerEmail)
+  const metaRows: Array<[string, string]> = [
+    ['Invoice / Order', order.orderNumber],
+    ['Placed on', formatDate(order.createdAt)],
+    ['Order status', formatOrderInvoiceEnumLabel(order.status)],
+    ['Payment method', formatOrderInvoiceEnumLabel(order.paymentMethod)],
+    ['Payment status', formatOrderInvoiceEnumLabel(order.paymentStatus)],
+  ]
+  metaRows.forEach(([label, value], index) => {
+    drawLabelValueRow(page, 602 - index * 29, label, value)
+  })
+  drawRule(page, 452, 0.8)
 
-  document.section('Delivery address')
-  if (order.address) {
-    document.write(order.address.fullName, { font: 'bold', size: 10.5 })
-    document.write(order.address.addressLine1, { size: 10.5 })
-    if (order.address.addressLine2) document.write(order.address.addressLine2, { size: 10.5 })
-    document.write(`${order.address.city}, ${order.address.district}`, { size: 10.5 })
-    document.write(order.address.phone, { size: 10.5 })
-  } else {
-    document.write('No saved delivery address is attached to this order.', { size: 10.5 })
-  }
+  const columnTopY = 414
+  const leftColumnWidth = 205
+  const rightColumnX = 322
+  const rightColumnWidth = 220
+  page.text(PAGE_MARGIN, columnTopY, 'Customer:', { font: 'bold', size: 14.5, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN, columnTopY - 31, context.customerName, { size: 12.8, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN, columnTopY - 80, 'Email:', { font: 'bold', size: 14.5, color: COLOR_BLACK })
+  page.paragraph(PAGE_MARGIN, columnTopY - 111, context.customerEmail ?? 'Not provided', {
+    maxWidth: leftColumnWidth,
+    size: 12.8,
+    color: COLOR_BLACK,
+  })
 
-  document.section('Line items')
-  if (order.items.length === 0) {
-    document.write('No line items are attached to this order.', { size: 10.5 })
-  } else {
-    order.items.forEach((item, index) => {
-      document.write(`${index + 1}. ${item.productName}`, { font: 'bold', size: 10.8 })
-      document.write(`SKU: ${item.productSku}`, { size: 9.8, indent: 12 })
-      if (item.variantName) document.write(`Variant: ${item.variantName}`, { size: 9.8, indent: 12 })
-      document.write(
-        `Qty: ${item.quantity} | Unit: ${formatPrice(item.price, order.currency)} | Line total: ${formatPrice(item.total, order.currency)}`,
-        { size: 9.8, indent: 12, gapAfter: 4 },
-      )
-    })
-  }
+  page.line(292, columnTopY + 15, 292, 285, { width: 0.8 })
+  page.text(rightColumnX, columnTopY, 'Delivery address:', { font: 'bold', size: 14.5, color: COLOR_BLACK })
+  drawColumnText(page, rightColumnX, columnTopY - 31, getDeliveryAddressLines(order), rightColumnWidth)
 
-  document.section('Totals')
-  document.keyValue('Subtotal', formatPrice(order.subtotal, order.currency))
-  document.keyValue('Shipping', formatPrice(order.shippingFee, order.currency))
-  if (order.discount > 0) document.keyValue('Discount', `-${formatPrice(order.discount, order.currency)}`)
-  if (order.coupon) document.keyValue('Coupon', order.coupon.code)
-  if (order.tax > 0) document.keyValue('Tax', formatPrice(order.tax, order.currency))
-  document.write(`Grand total: ${formatPrice(order.total, order.currency)}`, { font: 'bold', size: 14 })
+  drawRule(page, 262, 0.8)
+  drawTableHeader(page, 226)
+  page.line(PAGE_MARGIN, 209, right, 209, { width: 1 })
+  drawOrderItems(page, context)
+  drawTotals(page, context)
 
-  document.section('Support')
-  document.write(`${context.supportEmail} | ${context.supportPhone}`, { size: 10.5 })
-  document.write('This invoice uses actual order details from your Boilabin account.', { size: 9.6 })
+  drawRule(page, 72, 1)
+  drawSupportIcon(page, PAGE_MARGIN + 20, 38)
+  page.text(PAGE_MARGIN + 54, 45, 'Support', { font: 'bold', size: 12.7, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN + 54, 24, context.supportEmail, { size: 11.2, color: COLOR_BLACK })
+  page.line(PAGE_MARGIN + 158, 18, PAGE_MARGIN + 158, 36, { width: 0.8 })
+  page.text(PAGE_MARGIN + 174, 24, context.supportPhone, { size: 11.2, color: COLOR_BLACK })
 
-  return document.toPages()
+  return [page]
 }
 
-function buildPdfObjectMap(pages: PdfLine[][]) {
+function buildPdfObjectMap(pages: PdfPageCanvas[]) {
   const pageObjectIds = pages.map((_, index) => 3 + index * 2)
   const contentObjectIds = pages.map((_, index) => 4 + index * 2)
   const regularFontObjectId = 3 + pages.length * 2
@@ -286,12 +472,7 @@ function buildPdfObjectMap(pages: PdfLine[][]) {
   pages.forEach((page, index) => {
     const pageObjectId = pageObjectIds[index]
     const contentObjectId = contentObjectIds[index]
-    const stream = page
-      .map((line) => {
-        const font = line.font === 'bold' ? 'F2' : 'F1'
-        return `BT /${font} ${line.size.toFixed(2)} Tf ${line.x.toFixed(2)} ${line.y.toFixed(2)} Td (${escapePdfLiteral(line.text)}) Tj ET`
-      })
-      .join('\n')
+    const stream = page.stream()
 
     objects[pageObjectId] = [
       '<< /Type /Page',
