@@ -4,23 +4,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import type { AdminUserDetail } from '@/backend/admin/user-editor'
 
 interface UserManagementFormProps {
-  user: {
-    id: string
-    name: string | null
-    email: string
-    phone: string | null
-    role: string
-    isActive: boolean
-    createdAt: Date | string
-    _count: {
-      orders: number
-      reviews: number
-      addresses: number
-      notifications: number
-    }
-  }
+  user: AdminUserDetail
 }
 
 const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']

@@ -6,6 +6,49 @@ export const MAX_ADMIN_USER_LIST_PAGE = 1000
 export const MAX_ADMIN_USER_LIST_LIMIT = 100
 export const DEFAULT_ADMIN_USER_LIST_LIMIT = 25
 
+export const ADMIN_USER_LIST_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  role: true,
+  isActive: true,
+  createdAt: true,
+  _count: {
+    select: {
+      orders: true,
+      reviews: true,
+    },
+  },
+} satisfies Prisma.UserSelect
+
+export const ADMIN_USER_DETAIL_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  role: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+  _count: {
+    select: {
+      orders: true,
+      reviews: true,
+      addresses: true,
+      notifications: true,
+    },
+  },
+} satisfies Prisma.UserSelect
+
+export type AdminUserListItem = Prisma.UserGetPayload<{
+  select: typeof ADMIN_USER_LIST_SELECT
+}>
+
+export type AdminUserDetail = Prisma.UserGetPayload<{
+  select: typeof ADMIN_USER_DETAIL_SELECT
+}>
+
 const PLAIN_NUMBER_PATTERN = /^-?\d+(?:\.\d+)?$/
 
 const optionalTrimmedString = (max: number) =>

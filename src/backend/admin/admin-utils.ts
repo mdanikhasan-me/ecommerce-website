@@ -23,9 +23,25 @@ import { logSecurityEvent } from '@/backend/security/security-log'
 
 export async function requireAdminSession() {
   const session = await auth()
-  if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
+  if (!session?.user?.id) {
     throw new Error('Unauthorized')
   }
+
+  const currentUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      role: true,
+      isActive: true,
+    },
+  })
+
+  if (!currentUser?.isActive || !['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role)) {
+    throw new Error('Unauthorized')
+  }
+
+  session.user.id = currentUser.id
+  session.user.role = currentUser.role
 
   return session
 }

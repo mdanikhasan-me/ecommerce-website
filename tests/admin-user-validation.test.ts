@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it } from 'node:test'
 
 import {
   ADMIN_MANAGED_ROLES,
+  ADMIN_USER_DETAIL_SELECT,
+  ADMIN_USER_LIST_SELECT,
   DEFAULT_ADMIN_USER_LIST_LIMIT,
   MAX_ADMIN_USER_LIST_LIMIT,
   MAX_ADMIN_USER_LIST_PAGE,
@@ -11,9 +15,47 @@ import {
   parseAdminUserPayload,
 } from '@/backend/admin/user-editor'
 
+const repoRoot = process.cwd()
+
+function readProjectFile(pathname: string) {
+  return readFileSync(join(repoRoot, pathname), 'utf8')
+}
+
 describe('admin user validation', () => {
   it('documents managed admin user roles', () => {
     assert.deepEqual([...ADMIN_MANAGED_ROLES], ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'])
+  })
+
+  it('keeps admin user API selects free of sensitive auth fields and relations', () => {
+    const forbiddenFields = [
+      'password',
+      'accounts',
+      'sessions',
+      'cart',
+      'wishlist',
+      'addresses',
+      'orders',
+      'reviews',
+      'notifications',
+      'seller',
+      'viewedProducts',
+      'productViews',
+    ]
+
+    for (const select of [ADMIN_USER_LIST_SELECT, ADMIN_USER_DETAIL_SELECT]) {
+      for (const field of forbiddenFields) {
+        assert.equal(
+          Object.prototype.hasOwnProperty.call(select, field),
+          false,
+          `admin user response select must not expose ${field}`,
+        )
+      }
+    }
+
+    assert.equal(ADMIN_USER_LIST_SELECT._count.select.orders, true)
+    assert.equal(ADMIN_USER_LIST_SELECT._count.select.reviews, true)
+    assert.equal(ADMIN_USER_DETAIL_SELECT._count.select.addresses, true)
+    assert.equal(ADMIN_USER_DETAIL_SELECT._count.select.notifications, true)
   })
 
   it('normalizes editable user fields', () => {
@@ -169,5 +211,34 @@ describe('admin user validation', () => {
 
   it('builds empty where clauses when no search or role is provided', () => {
     assert.deepEqual(buildAdminUserWhere({ q: '', role: '' }), {})
+  })
+})
+
+describe('admin user response security guardrails', () => {
+  it('keeps admin user routes and pages on explicit safe selects', () => {
+    const listRoute = readProjectFile('src/app/api/admin/users/route.ts')
+    const detailRoute = readProjectFile('src/app/api/admin/users/[id]/route.ts')
+    const listPage = readProjectFile('src/app/(admin)/admin/users/page.tsx')
+    const detailPage = readProjectFile('src/app/(admin)/admin/users/[id]/page.tsx')
+    const combined = `${listRoute}\n${detailRoute}\n${listPage}\n${detailPage}`
+
+    assert.match(listRoute, /select:\s*ADMIN_USER_LIST_SELECT/)
+    assert.match(listPage, /select:\s*ADMIN_USER_LIST_SELECT/)
+    assert.match(detailRoute, /select:\s*ADMIN_USER_DETAIL_SELECT/)
+    assert.match(detailPage, /select:\s*ADMIN_USER_DETAIL_SELECT/)
+    assert.doesNotMatch(combined, /password:\s*true/)
+    assert.doesNotMatch(combined, /include:\s*\{\s*_count/)
+  })
+
+  it('revalidates admin access against the database before authorizing admin routes', () => {
+    const adminUtils = readProjectFile('src/backend/admin/admin-utils.ts')
+    const productEditor = readProjectFile('src/backend/admin/product-editor.ts')
+
+    assert.match(adminUtils, /db\.user\.findUnique\(/)
+    assert.match(adminUtils, /select:\s*\{[\s\S]*role:\s*true[\s\S]*isActive:\s*true[\s\S]*\}/)
+    assert.match(adminUtils, /!currentUser\?\.isActive/)
+    assert.match(adminUtils, /session\.user\.role = currentUser\.role/)
+    assert.match(productEditor, /export \{ requireAdminSession \} from '@\/backend\/admin\/admin-utils'/)
+    assert.doesNotMatch(productEditor, /const session = await auth\(\)/)
   })
 })

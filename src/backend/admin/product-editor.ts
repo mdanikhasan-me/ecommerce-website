@@ -1,6 +1,5 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
 import { persistOptimizedImageUpload } from '@/backend/admin/image-processing'
@@ -20,6 +19,8 @@ import {
 } from '@/backend/admin/media-reference-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { z } from 'zod'
+
+export { requireAdminSession } from '@/backend/admin/admin-utils'
 
 type ProductImageInput = {
   url: string
@@ -247,15 +248,6 @@ export interface AdminEditableProduct {
       value: string
     }>
   }>
-}
-
-export async function requireAdminSession() {
-  const session = await auth()
-  if (!session?.user || !['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)) {
-    throw new Error('Unauthorized')
-  }
-
-  return session
 }
 
 export async function ensureUniqueProductSlug(rawSlug: string, excludeId?: string) {

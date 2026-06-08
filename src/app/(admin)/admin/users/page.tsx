@@ -1,5 +1,10 @@
 import { db } from '@/backend/database'
-import { ADMIN_MANAGED_ROLES, buildAdminUserWhere, parseAdminUserListFilters } from '@/backend/admin/user-editor'
+import {
+  ADMIN_MANAGED_ROLES,
+  ADMIN_USER_LIST_SELECT,
+  buildAdminUserWhere,
+  parseAdminUserListFilters,
+} from '@/backend/admin/user-editor'
 import { formatDate } from '@/backend/utils'
 import { Users } from 'lucide-react'
 import Link from 'next/link'
@@ -24,7 +29,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     db.user.findMany({
       where, skip, take: limit,
       orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { orders: true } } },
+      select: ADMIN_USER_LIST_SELECT,
     }),
     db.user.count({ where }),
   ])

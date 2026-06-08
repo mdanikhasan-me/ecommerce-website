@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
-import { buildAdminUserWhere, parseAdminUserListFilters } from '@/backend/admin/user-editor'
+import {
+  ADMIN_USER_LIST_SELECT,
+  buildAdminUserWhere,
+  parseAdminUserListFilters,
+} from '@/backend/admin/user-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 
 export async function GET(req: NextRequest) {
@@ -18,14 +22,7 @@ export async function GET(req: NextRequest) {
         skip: (filters.page - 1) * filters.limit,
         take: filters.limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          _count: {
-            select: {
-              orders: true,
-              reviews: true,
-            },
-          },
-        },
+        select: ADMIN_USER_LIST_SELECT,
       }),
       db.user.count({ where }),
     ])

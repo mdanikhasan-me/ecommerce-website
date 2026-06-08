@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { isSuperAdminRole, logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
-import { parseAdminUserPayload } from '@/backend/admin/user-editor'
+import { ADMIN_USER_DETAIL_SELECT, parseAdminUserPayload } from '@/backend/admin/user-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
@@ -13,16 +13,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     const user = await db.user.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: {
-            orders: true,
-            reviews: true,
-            addresses: true,
-            notifications: true,
-          },
-        },
-      },
+      select: ADMIN_USER_DETAIL_SELECT,
     })
 
     if (!user) {
@@ -52,6 +43,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const existingUser = await db.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        role: true,
+        isActive: true,
+      },
     })
 
     if (!existingUser) {
@@ -85,16 +83,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         role: nextRole,
         isActive: nextActive,
       },
-      include: {
-        _count: {
-          select: {
-            orders: true,
-            reviews: true,
-            addresses: true,
-            notifications: true,
-          },
-        },
-      },
+      select: ADMIN_USER_DETAIL_SELECT,
     })
 
     await logAdminAudit({

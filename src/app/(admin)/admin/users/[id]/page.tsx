@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { formatDate } from '@/backend/utils'
+import { ADMIN_USER_DETAIL_SELECT } from '@/backend/admin/user-editor'
 import { UserManagementForm } from '@/frontend/components/admin/UserManagementForm'
 
 export const metadata = { title: 'Admin User Details' }
@@ -14,16 +15,7 @@ export default async function AdminUserDetailPage({
   const { id } = await params
   const user = await db.user.findUnique({
     where: { id },
-    include: {
-      _count: {
-        select: {
-          orders: true,
-          reviews: true,
-          addresses: true,
-          notifications: true,
-        },
-      },
-    },
+    select: ADMIN_USER_DETAIL_SELECT,
   })
 
   if (!user) notFound()
