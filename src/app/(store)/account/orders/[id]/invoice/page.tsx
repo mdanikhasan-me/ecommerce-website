@@ -1,0 +1,190 @@
+import { auth } from '@/backend/auth'
+import { db } from '@/backend/database'
+import { formatDate, formatPrice } from '@/backend/utils'
+import { PrintInvoiceButton } from '@/frontend/components/account/PrintInvoiceButton'
+import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+import { ArrowLeft, Printer } from 'lucide-react'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { notFound, redirect } from 'next/navigation'
+
+export const metadata: Metadata = { title: 'Boilabin Order Invoice' }
+
+function formatEnumLabel(value: string) {
+  return value
+    .split('_')
+    .map((part, index) => {
+      const lower = part.toLowerCase()
+      if (index > 0 && ['on', 'of', 'and', 'to', 'for'].includes(lower)) return lower
+      return part.charAt(0) + part.slice(1).toLowerCase()
+    })
+    .join(' ')
+}
+
+export default async function OrderInvoicePage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  if (!session?.user) redirect('/auth/login')
+  const { id } = await params
+
+  const order = await db.order.findFirst({
+    where: { id, userId: session.user.id },
+    include: {
+      items: {
+        orderBy: { id: 'asc' },
+      },
+      address: true,
+      coupon: { select: { code: true, name: true } },
+    },
+  })
+
+  if (!order) notFound()
+
+  const customerName = session.user.name?.trim() || order.address?.fullName || 'Customer'
+  const customerEmail = session.user.email?.trim()
+
+  return (
+    <main className="container-site py-6 lg:py-10 print:bg-white print:py-0">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 print:hidden">
+          <Link
+            href={`/account/orders/${order.id}`}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to order details
+          </Link>
+          <PrintInvoiceButton />
+        </div>
+
+        <article className="rounded-2xl border border-border bg-card p-5 shadow-[0_16px_42px_rgba(23,18,15,0.045)] sm:p-8 print:rounded-none print:border-0 print:bg-white print:p-0 print:shadow-none">
+          <header className="flex flex-col gap-6 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="font-display text-3xl font-bold tracking-[-0.04em]">Boilabin</p>
+              <p className="mt-2 text-sm text-muted-foreground">Order Invoice</p>
+              <div className="mt-5 space-y-1 text-sm text-muted-foreground">
+                <p>{CONTACT_EMAIL}</p>
+                <p>{CONTACT_PHONE}</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-secondary/40 p-4 sm:min-w-[18rem] print:bg-white">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Invoice / Order</p>
+              <p className="mt-1 font-mono text-lg font-bold">{order.orderNumber}</p>
+              <dl className="mt-4 space-y-2 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Placed on</dt>
+                  <dd className="font-medium">{formatDate(order.createdAt)}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Order status</dt>
+                  <dd className="font-medium">{formatEnumLabel(order.status)}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Payment</dt>
+                  <dd className="font-medium">{formatEnumLabel(order.paymentStatus)}</dd>
+                </div>
+              </dl>
+            </div>
+          </header>
+
+          <section className="grid gap-6 border-b border-border py-6 sm:grid-cols-2">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Billed to</h2>
+              <div className="mt-3 space-y-1 text-sm">
+                <p className="font-semibold">{customerName}</p>
+                {customerEmail ? <p className="text-muted-foreground">{customerEmail}</p> : null}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Delivery address</h2>
+              {order.address ? (
+                <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+                  <p className="font-semibold text-foreground">{order.address.fullName}</p>
+                  <p>{order.address.addressLine1}</p>
+                  {order.address.addressLine2 ? <p>{order.address.addressLine2}</p> : null}
+                  <p>{order.address.city}, {order.address.district}</p>
+                  <p>{order.address.phone}</p>
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">No saved delivery address is attached to this order.</p>
+              )}
+            </div>
+          </section>
+
+          <section className="py-6">
+            <div className="overflow-hidden rounded-xl border border-border print:rounded-none">
+              <table className="w-full border-collapse text-left text-sm">
+                <thead className="bg-secondary/55 text-[11px] uppercase tracking-[0.12em] text-muted-foreground print:bg-white">
+                  <tr>
+                    <th className="px-4 py-3 font-bold">Item</th>
+                    <th className="hidden px-4 py-3 text-right font-bold sm:table-cell">Unit price</th>
+                    <th className="px-4 py-3 text-right font-bold">Qty</th>
+                    <th className="px-4 py-3 text-right font-bold">Line total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {order.items.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-4 py-4 align-top">
+                        <p className="font-semibold">{item.productName}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">SKU: {item.productSku}</p>
+                        {item.variantName ? <p className="mt-1 text-xs text-muted-foreground">{item.variantName}</p> : null}
+                        <p className="mt-1 text-xs text-muted-foreground sm:hidden">Unit: {formatPrice(item.price)}</p>
+                      </td>
+                      <td className="hidden px-4 py-4 text-right align-top sm:table-cell">{formatPrice(item.price)}</td>
+                      <td className="px-4 py-4 text-right align-top">{item.quantity}</td>
+                      <td className="px-4 py-4 text-right align-top font-semibold">{formatPrice(item.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="grid gap-6 border-t border-border pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.55fr)]">
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p><span className="font-semibold text-foreground">Payment method:</span> {formatEnumLabel(order.paymentMethod)}</p>
+              {order.coupon ? (
+                <p><span className="font-semibold text-foreground">Coupon:</span> {order.coupon.code}</p>
+              ) : null}
+              <p>This invoice uses actual order details from your Boilabin account.</p>
+            </div>
+
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Subtotal</dt>
+                <dd>{formatPrice(order.subtotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Shipping</dt>
+                <dd>{formatPrice(order.shippingFee)}</dd>
+              </div>
+              {order.discount > 0 ? (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Discount</dt>
+                  <dd>-{formatPrice(order.discount)}</dd>
+                </div>
+              ) : null}
+              {order.tax > 0 ? (
+                <div className="flex justify-between gap-4">
+                  <dt className="text-muted-foreground">Tax</dt>
+                  <dd>{formatPrice(order.tax)}</dd>
+                </div>
+              ) : null}
+              <div className="flex justify-between gap-4 border-t border-border pt-3 font-display text-xl font-bold tracking-[-0.03em]">
+                <dt>Total</dt>
+                <dd>{formatPrice(order.total)}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <footer className="mt-8 flex items-center gap-2 border-t border-border pt-5 text-xs text-muted-foreground">
+            <Printer className="h-4 w-4" />
+            <p>Use your browser print dialog to save this secure invoice as a PDF.</p>
+          </footer>
+        </article>
+      </div>
+    </main>
+  )
+}
