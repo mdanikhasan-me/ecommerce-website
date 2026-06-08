@@ -7,6 +7,7 @@ import {
   formatOrderInvoiceEnumLabel,
   generateOrderInvoicePdf,
   getInvoicePdfDownloadPath,
+  invoicePdfTableLayout,
 } from '@/backend/orders/order-invoice'
 
 function makeInvoiceContext() {
@@ -117,8 +118,34 @@ describe('buyer order invoice PDF generation', () => {
     assert.match(source, /Cash on Delivery/)
     assert.match(source, /Grand total/)
     assert.match(source, /Support/)
+    assert.match(source, /\(\?\) Tj/)
     assert.match(source, /hello@boilabin\.com/)
     assert.match(source, /01758409063/)
     assert.doesNotMatch(source, /VAT|Tax invoice|Transaction ID|Tracking number/i)
+  })
+
+  it('keeps invoice table columns ordered with safe spacing', () => {
+    assert.ok(invoicePdfTableLayout.itemX < invoicePdfTableLayout.skuX)
+    assert.ok(invoicePdfTableLayout.itemX + invoicePdfTableLayout.itemWidth < invoicePdfTableLayout.skuX)
+    assert.ok(invoicePdfTableLayout.skuX + invoicePdfTableLayout.skuWidth < invoicePdfTableLayout.qtyCenterX - 6)
+    assert.ok(invoicePdfTableLayout.qtyCenterX < invoicePdfTableLayout.unitRightX)
+    assert.ok(invoicePdfTableLayout.unitRightX < invoicePdfTableLayout.lineTotalRightX)
+    assert.ok(invoicePdfTableLayout.unitRightX + 8 < invoicePdfTableLayout.lineTotalRightX - invoicePdfTableLayout.lineTotalWidth)
+  })
+
+  it('fits long product names and SKUs instead of letting table text collide', () => {
+    const context = makeInvoiceContext()
+    const longProductName = 'Samsung Galaxy S24 Ultra 256GB Official Marketplace Bundle With Extended Protection Pack'
+    const longSku = 'SAMSUNG-GALAXY-S24-ULTRA-256GB-OFFICIAL-BUNDLE-SKU'
+    context.order.items[0].productName = longProductName
+    context.order.items[0].productSku = longSku
+
+    const source = generateOrderInvoicePdf(context).toString('utf8')
+
+    assert.match(source, /Samsung Galaxy S24 Ultra/)
+    assert.match(source, /\.\.\./)
+    assert.doesNotMatch(source, new RegExp(longProductName))
+    assert.doesNotMatch(source, new RegExp(longSku))
+    assert.match(source, /Tk 169,000/)
   })
 })

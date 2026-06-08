@@ -42,6 +42,18 @@ const COLOR_TEXT: PdfColor = [0.05, 0.05, 0.05]
 const COLOR_MUTED: PdfColor = [0.2, 0.2, 0.2]
 const COLOR_RULE: PdfColor = [0.27, 0.27, 0.27]
 
+export const invoicePdfTableLayout = {
+  itemX: PAGE_MARGIN,
+  itemWidth: 220,
+  skuX: 302,
+  skuWidth: 72,
+  qtyCenterX: 398,
+  unitRightX: 476,
+  unitWidth: 70,
+  lineTotalRightX: PAGE_WIDTH - PAGE_MARGIN,
+  lineTotalWidth: 68,
+} as const
+
 export function formatOrderInvoiceEnumLabel(value: string) {
   return value
     .split('_')
@@ -173,6 +185,19 @@ function wrapPdfText(text: string, maxWidth: number, size: number, font: PdfFont
   return lines
 }
 
+function fitPdfText(text: string, maxWidth: number, size: number, font: PdfFont) {
+  const cleaned = cleanPdfText(text)
+  if (!cleaned || estimatePdfTextWidth(cleaned, size, font) <= maxWidth) return cleaned
+
+  const suffix = '...'
+  let fitted = cleaned
+  while (fitted.length > 0 && estimatePdfTextWidth(`${fitted}${suffix}`, size, font) > maxWidth) {
+    fitted = fitted.slice(0, -1).trimEnd()
+  }
+
+  return fitted ? `${fitted}${suffix}` : suffix
+}
+
 class PdfPageCanvas {
   private operations: string[] = []
 
@@ -182,9 +207,10 @@ class PdfPageCanvas {
 
     const size = options.size ?? 11
     const font = options.font ?? 'regular'
+    const displayText = options.maxWidth ? fitPdfText(cleaned, options.maxWidth, size, font) : cleaned
     const color = options.color ?? COLOR_TEXT
     const fontName = font === 'bold' ? 'F2' : 'F1'
-    const width = estimatePdfTextWidth(cleaned, size, font)
+    const width = estimatePdfTextWidth(displayText, size, font)
     const originX =
       options.align === 'right' ? x - width : options.align === 'center' ? x - width / 2 : x
 
@@ -194,7 +220,7 @@ class PdfPageCanvas {
       'BT',
       `/${fontName} ${pdfNumber(size)} Tf`,
       `1 0 0 1 ${pdfNumber(originX)} ${pdfNumber(y)} Tm`,
-      `(${escapePdfLiteral(cleaned)}) Tj`,
+      `(${escapePdfLiteral(displayText)}) Tj`,
       'ET',
       'Q',
     ].join(' '))
@@ -309,65 +335,85 @@ function getDeliveryAddressLines(order: OrderInvoiceRecord) {
 }
 
 function drawSupportIcon(page: PdfPageCanvas, cx: number, cy: number) {
-  page.circle(cx, cy, 18.5, { color: COLOR_BLACK, width: 1.35 })
-  page.polyline([
-    [cx - 9.5, cy + 1],
-    [cx - 7, cy + 8],
-    [cx, cy + 11],
-    [cx + 7, cy + 8],
-    [cx + 9.5, cy + 1],
-  ], { color: COLOR_BLACK, width: 1.7 })
-  page.line(cx - 9.5, cy + 1, cx - 9.5, cy - 6.5, { color: COLOR_BLACK, width: 2 })
-  page.line(cx + 9.5, cy + 1, cx + 9.5, cy - 6.5, { color: COLOR_BLACK, width: 2 })
-  page.polyline([
-    [cx + 6.5, cy - 9],
-    [cx + 3, cy - 12],
-    [cx - 1.5, cy - 12],
-  ], { color: COLOR_BLACK, width: 1.6 })
+  page.circle(cx, cy, 15.5, { color: COLOR_BLACK, width: 1.15 })
+  page.text(cx, cy - 6.2, '?', {
+    align: 'center',
+    color: COLOR_BLACK,
+    font: 'bold',
+    size: 18.5,
+  })
 }
 
 function drawTableHeader(page: PdfPageCanvas, y: number) {
-  const right = PAGE_WIDTH - PAGE_MARGIN
-  page.text(PAGE_MARGIN, y, 'Item', { font: 'bold', size: 12.8, color: COLOR_BLACK })
-  page.text(250, y, 'SKU', { font: 'bold', size: 12.8, color: COLOR_BLACK })
-  page.text(360, y, 'Qty', { align: 'center', font: 'bold', size: 12.8, color: COLOR_BLACK })
-  page.text(438, y, 'Unit', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
-  page.text(right, y, 'Line total', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(invoicePdfTableLayout.itemX, y, 'Item', { font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(invoicePdfTableLayout.skuX, y, 'SKU', { font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(invoicePdfTableLayout.qtyCenterX, y, 'Qty', { align: 'center', font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(invoicePdfTableLayout.unitRightX, y, 'Unit', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
+  page.text(invoicePdfTableLayout.lineTotalRightX, y, 'Line total', { align: 'right', font: 'bold', size: 12.8, color: COLOR_BLACK })
 }
 
 function drawOrderItems(page: PdfPageCanvas, context: OrderInvoiceContext) {
   const { order } = context
-  const right = PAGE_WIDTH - PAGE_MARGIN
-  const itemX = PAGE_MARGIN
-  const skuX = 250
-  const qtyX = 360
-  const unitX = 438
   let rowY = 186
 
   if (order.items.length === 0) {
-    page.text(itemX, rowY, 'No line items are attached to this order.', { size: 12.5, color: COLOR_BLACK })
-    page.line(PAGE_MARGIN, rowY - 28, right, rowY - 28, { width: 0.8 })
+    page.text(invoicePdfTableLayout.itemX, rowY, 'No line items are attached to this order.', { size: 12.5, color: COLOR_BLACK })
+    page.line(PAGE_MARGIN, rowY - 28, invoicePdfTableLayout.lineTotalRightX, rowY - 28, { width: 0.8 })
     return rowY - 28
   }
 
   for (const item of order.items) {
-    const rowHeight = item.variantName ? 42 : 38
+    const productLines = wrapPdfText(item.productName, invoicePdfTableLayout.itemWidth, 11.4, 'regular')
+    const visibleProductLines = productLines.slice(0, 2)
+    if (productLines.length > 2) {
+      visibleProductLines[1] = fitPdfText(
+        `${visibleProductLines[1] ?? ''} ${productLines.slice(2).join(' ')}`,
+        invoicePdfTableLayout.itemWidth,
+        11.4,
+        'regular',
+      )
+    }
+    const rowHeight = Math.max(39, visibleProductLines.length * 13.6 + (item.variantName ? 17 : 17))
 
-    page.text(itemX, rowY, item.productName, { size: 12.4, color: COLOR_BLACK })
+    visibleProductLines.forEach((line, index) => {
+      page.text(invoicePdfTableLayout.itemX, rowY - index * 13.6, line, {
+        color: COLOR_BLACK,
+        maxWidth: invoicePdfTableLayout.itemWidth,
+        size: 11.4,
+      })
+    })
     if (item.variantName) {
-      page.text(itemX, rowY - 15, item.variantName, { color: COLOR_MUTED, size: 9.8 })
+      page.text(invoicePdfTableLayout.itemX, rowY - visibleProductLines.length * 13.6, item.variantName, {
+        color: COLOR_MUTED,
+        maxWidth: invoicePdfTableLayout.itemWidth,
+        size: 9.4,
+      })
     }
 
-    page.text(skuX, rowY, item.productSku, { size: 12.1, color: COLOR_BLACK })
-    page.text(qtyX, rowY, String(item.quantity), { align: 'center', size: 12.1, color: COLOR_BLACK })
-    page.text(unitX, rowY, formatPrice(item.price, order.currency), { align: 'right', size: 12.1, color: COLOR_BLACK })
-    page.text(right, rowY, formatPrice(item.total, order.currency), { align: 'right', size: 12.1, color: COLOR_BLACK })
+    page.text(invoicePdfTableLayout.skuX, rowY, item.productSku, {
+      color: COLOR_BLACK,
+      maxWidth: invoicePdfTableLayout.skuWidth,
+      size: 10.9,
+    })
+    page.text(invoicePdfTableLayout.qtyCenterX, rowY, String(item.quantity), { align: 'center', size: 11.4, color: COLOR_BLACK })
+    page.text(invoicePdfTableLayout.unitRightX, rowY, formatPrice(item.price, order.currency), {
+      align: 'right',
+      color: COLOR_BLACK,
+      maxWidth: invoicePdfTableLayout.unitWidth,
+      size: 11.3,
+    })
+    page.text(invoicePdfTableLayout.lineTotalRightX, rowY, formatPrice(item.total, order.currency), {
+      align: 'right',
+      color: COLOR_BLACK,
+      maxWidth: invoicePdfTableLayout.lineTotalWidth,
+      size: 11.3,
+    })
 
     rowY -= rowHeight
   }
 
   const bottomY = Math.max(150, rowY + 8)
-  page.line(PAGE_MARGIN, bottomY, right, bottomY, { width: 0.8 })
+  page.line(PAGE_MARGIN, bottomY, invoicePdfTableLayout.lineTotalRightX, bottomY, { width: 0.8 })
   return bottomY
 }
 
@@ -448,11 +494,19 @@ function buildInvoicePages(context: OrderInvoiceContext) {
   drawTotals(page, context)
 
   drawRule(page, 72, 1)
-  drawSupportIcon(page, PAGE_MARGIN + 20, 38)
-  page.text(PAGE_MARGIN + 54, 45, 'Support', { font: 'bold', size: 12.7, color: COLOR_BLACK })
-  page.text(PAGE_MARGIN + 54, 24, context.supportEmail, { size: 11.2, color: COLOR_BLACK })
-  page.line(PAGE_MARGIN + 158, 18, PAGE_MARGIN + 158, 36, { width: 0.8 })
-  page.text(PAGE_MARGIN + 174, 24, context.supportPhone, { size: 11.2, color: COLOR_BLACK })
+  drawSupportIcon(page, PAGE_MARGIN + 19, 37)
+  page.text(PAGE_MARGIN + 54, 45, 'Support', { font: 'bold', size: 12.3, color: COLOR_BLACK })
+  page.text(PAGE_MARGIN + 54, 25, context.supportEmail, {
+    color: COLOR_BLACK,
+    maxWidth: 112,
+    size: 10.6,
+  })
+  page.line(PAGE_MARGIN + 161, 19, PAGE_MARGIN + 161, 36, { width: 0.75 })
+  page.text(PAGE_MARGIN + 176, 25, context.supportPhone, {
+    color: COLOR_BLACK,
+    maxWidth: 100,
+    size: 10.6,
+  })
 
   return [page]
 }

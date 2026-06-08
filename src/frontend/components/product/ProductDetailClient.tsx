@@ -113,7 +113,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] md:items-start md:gap-6 lg:gap-9">
-      <div className="flex flex-col gap-2.5 md:sticky md:top-24">
+      <div className="flex flex-col gap-2.5">
         <div
           ref={zoomFrameRef}
           className="relative aspect-[4/3] cursor-zoom-in overflow-hidden rounded-[1.35rem] bg-secondary md:rounded-2xl"
