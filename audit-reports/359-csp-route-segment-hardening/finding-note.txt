@@ -1,2 +1,0 @@
-Read-only finding: classifyCspRoute used raw startsWith checks for /admin, /auth, and /account. That could classify public lookalike paths such as /administrator, /authentication, and /accounting as protected route families.
-Resolution: protected route-family matching now uses path-segment boundaries, and focused tests cover real family roots plus public lookalike paths.

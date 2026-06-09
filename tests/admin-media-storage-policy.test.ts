@@ -457,44 +457,12 @@ describe('admin managed media storage policy', () => {
     assert.doesNotMatch(schema, /model\s+MediaDeletionLedger\b/)
   })
 
-  it('keeps Step 281 report and evidence from claiming implementation happened', () => {
-    const report = readFileSync(
-      'audit-reports/281_MEDIA_ASSET_MIGRATION_SAFE_IMPLEMENTATION_CHECKLIST.md',
-      'utf8',
-    )
-    const evidence = JSON.parse(readFileSync(
-      'audit-reports/281-media-asset-migration-safe-implementation-checklist/media-migration-readiness-evidence.json',
-      'utf8',
-    )) as {
-      prohibitedActions: Record<string, boolean>
-      futureGates: Record<string, boolean>
-    }
+  it('keeps the audit archive pointer in docs instead of in-repo evidence files', () => {
+    const pointer = readFileSync('docs/AUDIT_REPORTS.md', 'utf8')
 
-    assert.match(report, /Pseudo-Schema Design Summary/i)
-    assert.match(report, /Backfill Dry-Run Design/i)
-    assert.match(report, /DB-Backed Tests Required Before Migration/i)
-    assert.match(report, /no Prisma schema file was edited/i)
-    assert.doesNotMatch(report, /safe to delete/i)
-    assert.doesNotMatch(report, /migration applied/i)
-    assert.doesNotMatch(report, /provider deletion is implemented/i)
-
-    for (const key of [
-      'prismaSchemaChanged',
-      'migrationCreated',
-      'migrationRun',
-      'databaseMutation',
-      'deletionModeAdded',
-      'runtimeCleanupChanged',
-      'providerCleanupAdded',
-      'realFilesDeleted',
-      'publicAssetsTouched',
-      'privateEnvRead',
-    ]) {
-      assert.equal(evidence.prohibitedActions[key], false, `${key} should remain false`)
-    }
-
-    assert.equal(evidence.futureGates.physicalDeletionDuringSchemaMigrationOrBackfillAllowed, false)
-    assert.equal(evidence.futureGates.defaultDryRunMayPrintRawIdentifiers, false)
-    assert.equal(evidence.futureGates.publicUrlIsStorageOwnershipProof, false)
+    assert.match(pointer, /boilabin-audit-archive/i)
+    assert.match(pointer, /heavy screenshots/i)
+    assert.match(pointer, /future audit reports/i)
+    assert.doesNotMatch(pointer, /safe to delete/i)
   })
 })

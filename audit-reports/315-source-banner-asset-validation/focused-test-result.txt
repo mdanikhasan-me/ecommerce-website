@@ -1,4 +1,0 @@
-﻿Command: npx tsx --test tests/storefront-image-source.test.ts tests/storefront-media-remote-policy.test.ts tests/navbar-banner-footer-polish.test.ts tests/ui-ux-redesign-readiness.test.ts
-Result: passed
-Tests: 15 passed, 0 failed
-Key confirmation: homepage banner seed/source asset checks pass after restoring public/assets/banners/home-hero-iphone-15-pro.jpg.

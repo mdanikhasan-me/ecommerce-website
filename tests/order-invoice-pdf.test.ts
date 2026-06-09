@@ -62,7 +62,7 @@ function makeInvoiceContext() {
           orderId: 'order_390',
           productId: 'product_390',
           variantId: null,
-          productName: 'Samsung Galaxy S24 Ultra 256GB',
+          productName: 'Example Marketplace Product 256GB',
           productSku: 'S24-ULTRA-256',
           variantName: null,
           price: 169000,
@@ -114,7 +114,7 @@ describe('buyer order invoice PDF generation', () => {
     assert.match(source, /Line total/)
     assert.match(source, /BLB-260608-6771/)
     assert.match(source, /Tk 169,000/)
-    assert.match(source, /Samsung Galaxy S24 Ultra 256GB/)
+    assert.match(source, /Example Marketplace Product 256GB/)
     assert.match(source, /Cash on Delivery/)
     assert.match(source, /Grand total/)
     assert.match(source, /Support/)
@@ -135,14 +135,14 @@ describe('buyer order invoice PDF generation', () => {
 
   it('fits long product names and SKUs instead of letting table text collide', () => {
     const context = makeInvoiceContext()
-    const longProductName = 'Samsung Galaxy S24 Ultra 256GB Official Marketplace Bundle With Extended Protection Pack'
-    const longSku = 'SAMSUNG-GALAXY-S24-ULTRA-256GB-OFFICIAL-BUNDLE-SKU'
+    const longProductName = 'Example Marketplace Product 256GB Official Bundle With Extended Protection Pack'
+    const longSku = 'EXAMPLE-MARKETPLACE-PRODUCT-256GB-OFFICIAL-BUNDLE-SKU'
     context.order.items[0].productName = longProductName
     context.order.items[0].productSku = longSku
 
     const source = generateOrderInvoicePdf(context).toString('utf8')
 
-    assert.match(source, /Samsung Galaxy S24 Ultra/)
+    assert.match(source, /Example Marketplace Product/)
     assert.match(source, /\.\.\./)
     assert.doesNotMatch(source, new RegExp(longProductName))
     assert.doesNotMatch(source, new RegExp(longSku))

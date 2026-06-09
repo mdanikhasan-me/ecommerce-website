@@ -37,11 +37,9 @@ const advisorFiles = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   'docs/development/BOILABIN_ADVISOR_WORKFLOW.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
+  'docs/AUDIT_REPORTS.md',
   'scripts/boilabin-advisor-state.mjs',
   'tests/boilabin-advisor-workflow.test.ts',
-  'audit-reports/123_BOILABIN_ADVISOR_NEXT_STEP_WORKFLOW.md',
-  'audit-reports/124_ADVISOR_DRY_RUN_AND_INVOCATION_REVIEW.md',
-  'audit-reports/124_NEXT_PROMPT_DRAFT.md',
 ];
 
 test('Step 123 Advisor files exist', () => {
@@ -366,12 +364,10 @@ test('Advisor files do not contain obvious secret-looking values', () => {
 });
 
 test('Step 124 next prompt draft exists and is a single guarded prompt', () => {
-  const draft = readRepoFile('audit-reports/124_NEXT_PROMPT_DRAFT.md');
+  const pointer = readRepoFile('docs/AUDIT_REPORTS.md');
 
-  assert.match(draft, /^# Step 124 Next Prompt Draft/m);
-  assert.match(draft, /\/plan/);
-  assert.match(draft, /Step 125/i);
-  assert.match(draft, /Do not execute/i);
-  assert.match(draft, /Do not run migrations/i);
-  assert.match(draft, /Do not deploy/i);
+  assert.match(pointer, /boilabin-audit-archive/i);
+  assert.match(pointer, /prior audit context/i);
+  assert.match(pointer, /new reports/i);
+  assert.match(pointer, /heavy screenshots/i);
 });

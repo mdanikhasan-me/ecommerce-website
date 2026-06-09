@@ -12,11 +12,9 @@ const ADVISOR_FILES = [
   '.agents/skills/boilabin-advisor/SKILL.md',
   'docs/development/BOILABIN_ADVISOR_WORKFLOW.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
+  'docs/AUDIT_REPORTS.md',
   'scripts/boilabin-advisor-state.mjs',
   'tests/boilabin-advisor-workflow.test.ts',
-  'audit-reports/123_BOILABIN_ADVISOR_NEXT_STEP_WORKFLOW.md',
-  'audit-reports/124_ADVISOR_DRY_RUN_AND_INVOCATION_REVIEW.md',
-  'audit-reports/124_NEXT_PROMPT_DRAFT.md',
 ];
 
 export const ADVISOR_ACTIVATION_PHRASE = 'Run Boilabin Advisor mode.';
@@ -77,6 +75,20 @@ function assertSafeReadPath(relativePath) {
   }
 }
 
+function resolveAuditReportsDir(cwd = DEFAULT_CWD) {
+  const localAuditDir = path.resolve(cwd, 'audit-reports');
+  if (existsSync(localAuditDir)) {
+    return localAuditDir;
+  }
+
+  const archiveAuditDir = path.resolve(cwd, '..', 'boilabin-audit-archive', 'audit-reports');
+  if (existsSync(archiveAuditDir)) {
+    return archiveAuditDir;
+  }
+
+  return localAuditDir;
+}
+
 export function readSafeFile(cwd, relativePath) {
   assertSafeReadPath(relativePath);
   const absolutePath = path.resolve(cwd, relativePath);
@@ -84,7 +96,7 @@ export function readSafeFile(cwd, relativePath) {
 }
 
 export function listAuditReports(cwd = DEFAULT_CWD) {
-  const auditDir = path.resolve(cwd, 'audit-reports');
+  const auditDir = resolveAuditReportsDir(cwd);
   if (!existsSync(auditDir)) {
     return [];
   }
@@ -106,7 +118,7 @@ export function listAuditReports(cwd = DEFAULT_CWD) {
       step: Number(match[1]),
       name,
       isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(name),
-      relativePath: `audit-reports/${name}`,
+      relativePath: path.relative(cwd, path.join(auditDir, name)).replace(/\\/g, '/'),
     });
   }
 

@@ -1,2 +1,0 @@
-Read-only finding: classifyCspRoute accepted a pathname string but did not normalize query strings, hashes, or full URL inputs. If a future caller passed /admin?preview=1 or a full URL instead of req.nextUrl.pathname, route-family classification could fall back to public.
-Resolution: normalizePathname now trims input, parses HTTP-style full URLs, strips query/hash fragments from path strings, and preserves the existing relative-path fallback.

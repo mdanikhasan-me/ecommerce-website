@@ -1,2 +1,0 @@
-Read-only finding: after Step 366, safe callback targets rejected auth/API/framework/static asset destinations but still allowed exact metadata/icon routes such as /robots.txt, /sitemap.xml, /opengraph-image, /favicon.ico, and /apple-touch-icon.png. Those are not useful post-login destinations and can create confusing auth callback behavior.
-Resolution: safe callback normalization now rejects those exact metadata/icon routes, including when query strings or hashes are present, while preserving public lookalikes such as /robots.txt-preview and /favicon.icology.

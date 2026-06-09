@@ -92,10 +92,7 @@ describe('admin product image delete lifecycle', () => {
   it('classifies only product managed upload paths as product cleanup candidates', () => {
     assert.equal(isManagedProductMediaPath('/uploads/products/electronics/audio/bose/image.webp'), true)
     assert.equal(isManagedProductMediaPath('https://images.unsplash.com/photo.jpg'), false)
-    assert.equal(
-      isManagedProductMediaPath('/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif'),
-      false,
-    )
+    assert.equal(isManagedProductMediaPath('/assets/products/catalog/electronics/audio/example-product/main.avif'), false)
     assert.equal(isManagedProductMediaPath('/uploads/products/../../package.json'), false)
     assert.equal(isManagedProductMediaPath('/uploads/products/electronics/audio/bose'), false)
     assert.equal(isManagedProductMediaPath('/assets/categories/subcategories/mobile-phones.webp'), false)
@@ -105,7 +102,7 @@ describe('admin product image delete lifecycle', () => {
     const source = referenceSource()
     const removed = [
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format',
-      '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif',
+      '/assets/products/catalog/electronics/audio/example-product/main.avif',
     ]
 
     assert.deepEqual(await deleteRemovedProductImages(removed, [], { referenceSource: source }), [])
@@ -175,11 +172,11 @@ describe('admin product image delete lifecycle', () => {
     assert.equal(classifyAdminMediaPath('/assets/categories/subcategories/mobile-phones.webp').canDeleteLocalFile, true)
   })
 
-  it('preserves the current Bose source catalog asset because it is source controlled', () => {
-    const sourcePath = '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif'
+  it('keeps a source catalog path protected because it is source controlled', () => {
+    const sourcePath = '/assets/products/catalog/electronics/audio/example-product/main.avif'
     const localPath = path.join(process.cwd(), 'public', sourcePath.replace(/^\//, ''))
 
-    assert.equal(existsSync(localPath), true)
+    assert.equal(existsSync(localPath), false)
     assert.equal(isManagedProductMediaPath(sourcePath), false)
     assert.equal(classifyAdminMediaPath(sourcePath).bucket, 'protected-source-code-asset')
   })

@@ -83,25 +83,25 @@ describe('media path taxonomy', () => {
       buildCatalogProductAssetPath({
         categorySlug: 'Electronics',
         subcategorySlug: 'Mobile Phones',
-        productSlug: 'iPhone 15 Pro 128GB',
+        productSlug: 'Example Product',
         extension: 'JPG',
       }),
-      '/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg',
+      '/assets/products/catalog/electronics/mobile-phones/example-product/main.jpg',
     )
 
     assert.deepEqual(
       buildManagedProductUploadPath({
         categorySlug: 'electronics',
         subcategorySlug: 'mobile-phones',
-        productSlugOrId: 'iphone-15-pro-128gb',
+        productSlugOrId: 'example-product',
         mediaId: 'image-1',
         extension: 'png',
       }),
       {
-        directorySegments: ['uploads', 'products', 'electronics', 'mobile-phones', 'iphone-15-pro-128gb'],
-        publicPathPrefix: '/uploads/products/electronics/mobile-phones/iphone-15-pro-128gb',
+        directorySegments: ['uploads', 'products', 'electronics', 'mobile-phones', 'example-product'],
+        publicPathPrefix: '/uploads/products/electronics/mobile-phones/example-product',
         baseName: 'image-1',
-        examplePublicPath: '/uploads/products/electronics/mobile-phones/iphone-15-pro-128gb/image-1.png',
+        examplePublicPath: '/uploads/products/electronics/mobile-phones/example-product/image-1.png',
       },
     )
 

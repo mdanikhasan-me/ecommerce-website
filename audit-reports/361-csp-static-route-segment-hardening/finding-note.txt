@@ -1,2 +1,0 @@
-Read-only finding: classifyCspRoute excluded /_next/static and /_next/image with raw prefix checks. That could also exclude public lookalike paths such as /_next/staticish/chunks/app.js or /_next/image-proxy from report-only CSP classification.
-Resolution: Next framework static paths now use path-segment matching while /assets/ and /uploads/ remain explicit slash-prefixed asset buckets.

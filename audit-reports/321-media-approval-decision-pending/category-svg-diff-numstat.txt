@@ -1,8 +1,0 @@
-﻿1	7	public/assets/icons/ui/categories/beauty-health.svg
-3	5	public/assets/icons/ui/categories/books-stationery.svg
-2	7	public/assets/icons/ui/categories/electronics.svg
-3	4	public/assets/icons/ui/categories/fashion.svg
-3	6	public/assets/icons/ui/categories/gaming.svg
-3	5	public/assets/icons/ui/categories/home-appliances.svg
-3	8	public/assets/icons/ui/categories/sports-fitness.svg
-3	5	public/assets/icons/ui/categories/toys-collectibles.svg

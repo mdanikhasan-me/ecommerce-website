@@ -32,6 +32,7 @@ const SOURCE_ASSET_PREFIXES = ['/assets/', '/images/']
 const MANAGED_UPLOAD_PREFIXES = ['/uploads/admin/', '/uploads/products/']
 export const PRODUCT_SOURCE_ASSET_PREFIX = '/assets/products/'
 export const PRODUCT_SOURCE_PUBLIC_ROOT = 'public/assets/products'
+const PRODUCT_SOURCE_NAMESPACE_PATH = '/assets/products/catalog'
 export const ICON_SOURCE_PUBLIC_ROOT = 'public/assets/icons'
 const REQUIRED_UI_ICON_FILES = [
   'arrow-right.svg',
@@ -237,6 +238,7 @@ function localSourceAssetExists(reference, root) {
   if (value.endsWith('/')) return true
   if (value.includes('${')) return true
   if (value.includes('*')) return true
+  if (value === PRODUCT_SOURCE_NAMESPACE_PATH) return true
 
   const resolved = resolveLocalSourceAssetPath(reference, root)
   return Boolean(resolved && existsSync(resolved))

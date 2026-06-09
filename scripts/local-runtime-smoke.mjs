@@ -12,7 +12,7 @@ const REMOVED_ADMIN_FLASH_API_PATH = `/api/admin/${'flash'}-${'sales'}`
 export const DEFAULT_SMOKE_PROBES = [
   { label: 'home', path: '/', expectedStatuses: [200] },
   { label: 'category electronics', path: '/category/electronics', expectedStatuses: [200] },
-  { label: 'product detail', path: '/products/xiaomi-redmi-note-13-pro-256gb', expectedStatuses: [200] },
+  { label: 'all products empty-state', path: '/search', expectedStatuses: [200] },
   { label: 'cart', path: '/cart', expectedStatuses: [200] },
   { label: 'checkout auth boundary', path: '/checkout', expectedStatuses: [307, 308] },
   { label: 'track order', path: '/track-order', expectedStatuses: [200] },

@@ -17,8 +17,8 @@ import {
   loadEnv,
 } from './check-db-url-safety.mjs'
 
-const DEFAULT_PLAN_OUT = 'audit-reports/306-product-local-image-replacement/product-image-localization-plan.json'
-const DEFAULT_EVIDENCE_OUT = 'audit-reports/306-product-local-image-replacement/product-image-localization-apply-evidence.json'
+const DEFAULT_PLAN_OUT = '../boilabin-audit-archive/audit-reports/306-product-local-image-replacement/product-image-localization-plan.json'
+const DEFAULT_EVIDENCE_OUT = '../boilabin-audit-archive/audit-reports/306-product-local-image-replacement/product-image-localization-apply-evidence.json'
 const CATALOG_ROOT = path.join('public', 'assets', 'products', 'catalog')
 const IMAGE_EXTENSION_PATTERN = /\.(?:avif|gif|jpe?g|png|webp)$/i
 
@@ -327,7 +327,7 @@ async function applyPlan({
       sortOrderPreserved: number
     }>
     remainingRemoteProductImageCount: number | null
-    boseBeforeAfter: unknown
+    sampleBeforeAfter: unknown
     fullDbUrlPrinted: boolean
     privateEnvPrinted: boolean
   } = {
@@ -347,7 +347,7 @@ async function applyPlan({
     skippedRows: [],
     beforeAfter: [],
     remainingRemoteProductImageCount: null,
-    boseBeforeAfter: null,
+    sampleBeforeAfter: null,
     fullDbUrlPrinted: false,
     privateEnvPrinted: false,
   }
@@ -411,8 +411,7 @@ async function applyPlan({
       ],
     },
   })
-  evidence.boseBeforeAfter =
-    evidence.beforeAfter.find((row) => row.slug === 'bose-quietcomfort-45-headphones') ?? null
+  evidence.sampleBeforeAfter = evidence.beforeAfter[0] ?? null
 
   await writeJson(evidenceOut, evidence, cwd)
   return evidence

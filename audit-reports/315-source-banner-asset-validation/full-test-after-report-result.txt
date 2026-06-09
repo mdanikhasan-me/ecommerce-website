@@ -1,5 +1,0 @@
-﻿Command: npm test
-Result: failed after Step 315 report
-Summary: 544 tests, 543 passed, 1 failed
-Remaining failure: tests/category-media.test.ts - public/assets/categories/toys-collectibles.jpg hash mismatch (actual 11993afd8f62, expected 18811d8fecf3).
-Step 315 blocker status: resolved. Storefront image source, storefront media remote policy, navbar banner/footer polish, UI/UX media readiness, and Advisor readiness tests passed.

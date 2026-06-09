@@ -1,2 +1,0 @@
-Initial focused run exposed a task-caused IPv6 localhost boundary gap: Node URL parsing reports the IPv6 loopback hostname as [::1], while LOCAL_HOSTNAMES only included ::1.
-Resolution: src/backend/auth/host.ts now treats [::1] as local, and the focused suite passes after the fix.

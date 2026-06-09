@@ -8,78 +8,7 @@ import {
   printDatabaseSafetyReport,
 } from './check-db-url-safety.mjs'
 
-export const KNOWN_BROKEN_IMAGE_REPLACEMENTS = [
-  {
-    label: 'iPhone 15 Pro product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg',
-  },
-  {
-    label: 'Samsung Galaxy S24 Ultra legacy product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/mobile-phones/samsung-galaxy-s24-ultra-256gb/main.jpg',
-  },
-  {
-    label: 'Samsung Galaxy S24 Ultra current product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/mobile-phones/samsung-galaxy-s24-ultra-256gb/main.jpg',
-  },
-  {
-    label: 'Anker 737 Power Bank product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1609428614116-c91f3c1eac77?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/general/anker-737-power-bank-24000mah/main.webp',
-  },
-  {
-    label: 'Anker 511 Nano Pro charger product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/general/anker-511-nano-pro-65w-charger/main.jpg',
-  },
-  {
-    label: 'Dell UltraSharp 27 4K monitor product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/laptops/dell-ultrasharp-27-4k-usb-c-u2723de/main.jpg',
-  },
-  {
-    label: 'Samsung Galaxy Tab S9 product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1673841464843-af1c5c8b8c54?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/general/samsung-galaxy-tab-s9-128gb/main.jpg',
-  },
-  {
-    label: 'Samsung Galaxy Tab S9 current product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/general/samsung-galaxy-tab-s9-128gb/main.jpg',
-  },
-  {
-    label: 'Xiaomi Redmi Note 13 Pro product image',
-    model: 'productImage',
-    field: 'url',
-    from: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format',
-    to: '/assets/products/catalog/electronics/mobile-phones/xiaomi-redmi-note-13-pro-256gb/main.webp',
-  },
-  {
-    label: 'Galaxy S24 Ultra hero banner image',
-    model: 'banner',
-    field: 'imageUrl',
-    from: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=1600&auto=format',
-    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
-  },
-]
+export const KNOWN_BROKEN_IMAGE_REPLACEMENTS = []
 
 export function createKnownBrokenImageRepairPlan({
   cwd = process.cwd(),

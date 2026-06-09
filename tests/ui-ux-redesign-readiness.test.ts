@@ -14,7 +14,7 @@ describe('UI/UX redesign readiness inventory', () => {
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/category'))
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/category/electronics'))
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/search?q=phone'))
-    assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/products/iphone-15-pro-128gb'))
+    assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/search'))
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/checkout'))
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/deals'))
     assert.ok(UI_REDESIGN_ROUTE_PATHS.includes('/api/admin/flash-sales'))

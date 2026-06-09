@@ -1,2 +1,0 @@
-Read-only finding: auth host origin parsing accepted any URL object and used its origin, so unsupported protocols such as javascript:, data:, or file: could be treated as configured auth origins even though they are not valid canonical web origins. That could suppress the missing canonical origin warning or produce confusing host-trust evaluation.
-Resolution: parseOrigin now trims input and accepts only http: or https: URLs before returning an origin.

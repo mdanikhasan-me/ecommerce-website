@@ -1,2 +1,0 @@
-Read-only finding: the shared login/register callback sanitizer rejected external URLs but still allowed internal auth, API, framework, and static asset targets such as /auth/login, /api/orders, /_next/static/chunks/app.js, /assets/logo.svg, and /uploads/admin/product.webp. Those are poor post-auth destinations and can create auth loops or confusing callback behavior.
-Resolution: safe callback normalization now rejects auth/API/framework route segments and static asset prefixes while preserving public prefix lookalikes such as /authentication and /apiary.

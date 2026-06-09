@@ -40,10 +40,9 @@ const terminalLoopFiles = [
   'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
   'docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
+  'docs/AUDIT_REPORTS.md',
   'scripts/boilabin-terminal-loop-state.mjs',
   'tests/boilabin-terminal-loop-workflow.test.ts',
-  'audit-reports/125_TERMINAL_FIRST_10_STEP_LOOP_WORKFLOW.md',
-  'audit-reports/125_NEXT_PROMPT_DRAFT.md',
 ];
 
 test('terminal-loop workflow files exist', () => {
@@ -58,7 +57,7 @@ test('terminal-loop activation phrase is documented across workflow surfaces', (
     '.agents/skills/boilabin-step-workflow/SKILL.md',
     'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
     'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
-    'audit-reports/125_NEXT_PROMPT_DRAFT.md',
+    'docs/AUDIT_REPORTS.md',
   ]) {
     assert.match(readRepoFile(relativePath), new RegExp(TERMINAL_LOOP_ACTIVATION_PHRASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }

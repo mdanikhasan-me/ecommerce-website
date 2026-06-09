@@ -1,2 +1,0 @@
-Read-only finding: the authenticated buyer orders list route parsed the public page query with parseInt(...). That allowed partial numeric strings such as 2abc and did not bound large page values before skip calculation.
-Resolution: move order-list page parsing into a small backend helper that accepts only whole positive decimal integers, defaults malformed values to page 1, and caps very large pages before Prisma skip math.

@@ -1,2 +1,0 @@
-Read-only finding: admin return refundAmount used z.coerce.number(), which accepted JavaScript numeric spellings such as 0x10 and 1e3 for an admin refund amount.
-Resolution: parse refund amounts with a plain decimal string/finite number gate before the admin mutation route receives the payload.

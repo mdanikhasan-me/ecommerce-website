@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it } from 'node:test'
 
 import {
@@ -55,43 +56,13 @@ describe('public media source-of-truth audit guardrails', () => {
     assert.doesNotMatch(source, /\bprisma\.[a-zA-Z0-9_]+\.(?:create|update|upsert|delete|deleteMany)\s*\(/)
   })
 
-  it('keeps Step 311 iPhone product image repair evidence bounded to the wrong-owner row', () => {
-    const fromUrl = '/assets/banners/home-hero-iphone-15-pro.jpg'
-    const toUrl = '/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg'
-    const evidenceDir = 'audit-reports/311-wrong-owner-product-image-repair'
-    const precheck = JSON.parse(readFileSync(`${evidenceDir}/precheck.json`, 'utf8'))
-    const postcheck = JSON.parse(readFileSync(`${evidenceDir}/postcheck.json`, 'utf8'))
-    const referenceInventory = JSON.parse(readFileSync(`${evidenceDir}/media-reference-inventory.json`, 'utf8'))
+  it('keeps removed product catalog paths protected as source media', () => {
+    const productPath = '/assets/products/catalog/electronics/mobile-phones/example-product/main.jpg'
+    const localPath = join(process.cwd(), 'public', productPath.replace(/^\//, ''))
+    const classification = classifyPublicMediaPath(productPath)
 
-    assert.equal(existsSync('public/assets/products/catalog/electronics/mobile-phones/iphone-15-pro-128gb/main.jpg'), true)
-    assert.equal(precheck.passed, true)
-    assert.equal(precheck.matchingActiveProductImageRows.count, 1)
-    assert.equal(precheck.matchingActiveProductImageRows.rows[0].url, fromUrl)
-    assert.equal(postcheck.passed, true)
-    assert.equal(postcheck.guardrails.dbRowsUpdated, 1)
-    assert.equal(postcheck.remainingRowsUsingFromForProduct.count, 0)
-    assert.equal(postcheck.rowsUsingTargetForProduct.count, 1)
-    assert.equal(postcheck.rowsUsingTargetForProduct.rows[0].url, toUrl)
-    assert.equal(postcheck.bannerAsset.exists, true)
-
-    const dbProductImageRefs = referenceInventory.references.filter(
-      (reference: { ownerType: string }) => reference.ownerType === 'DB product image',
-    )
-    assert.equal(
-      dbProductImageRefs.some(
-        (reference: { ownerDetail: string; referencePathOrUrl: string }) =>
-          reference.ownerDetail === 'product:iphone-15-pro-128gb;active:true' &&
-          reference.referencePathOrUrl === fromUrl,
-      ),
-      false,
-    )
-    assert.equal(
-      dbProductImageRefs.some(
-        (reference: { ownerDetail: string; referencePathOrUrl: string }) =>
-          reference.ownerDetail === 'product:iphone-15-pro-128gb;active:true' &&
-          reference.referencePathOrUrl === toUrl,
-      ),
-      true,
-    )
+    assert.equal(existsSync(localPath), false)
+    assert.equal(classification.folderOwnerGuess, 'product catalog source')
+    assert.equal(classification.safeToDelete, 'never')
   })
 })

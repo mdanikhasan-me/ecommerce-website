@@ -1,2 +1,0 @@
-Read-only finding: after Step 369, auth host origin parsing rejected unsupported protocols but still accepted HTTP(S) URLs containing username/password userinfo. Values like https://user:pass@localhost:3000 could be treated as valid canonical origins, allowing local trust or suppressing missing-origin warnings from credential-bearing URLs.
-Resolution: parseOrigin should reject URL username/password userinfo before returning an auth origin.

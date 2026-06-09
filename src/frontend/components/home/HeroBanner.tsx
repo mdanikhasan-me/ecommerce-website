@@ -62,27 +62,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   }, [banners.length, next])
 
   if (!banners.length) {
-    return (
-      <section className="w-full">
-        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2d1b3d_0%,#5f3a80_52%,#dac8b7_180%)] py-10 lg:py-14">
-          <div className="container-site">
-            <div className="max-w-2xl">
-            <h1 className={cn('mt-3 text-[2.25rem] leading-[0.92] sm:text-[3.4rem]', heroTitleClass)}>
-              A warmer, calmer way to shop online in Bangladesh.
-            </h1>
-            <p className={cn('mt-4', heroSubtitleClass)}>
-              Browse electronics, fashion, home essentials, and product details in a storefront organized for everyday shopping.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link href="/search" className="inline-flex items-center rounded-full bg-[hsl(var(--buttermilk))] px-5 py-2.5 text-sm font-semibold text-[#2d1b3d] transition-all hover:-translate-y-px hover:bg-white">
-                Start shopping
-              </Link>
-            </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    )
+    return null
   }
 
   const banner = banners[current]

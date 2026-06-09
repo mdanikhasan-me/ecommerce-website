@@ -22,9 +22,9 @@ export const BROWSER_RUNTIME_ROUTES = [
   '/',
   '/category/electronics',
   '/category/toys-collectibles',
+  '/search',
   '/search?q=phone',
   '/new-arrivals',
-  '/products/xiaomi-redmi-note-13-pro-256gb',
   '/cart',
   '/track-order',
   REMOVED_STOREFRONT_PATH,
@@ -479,7 +479,7 @@ async function runPageChecks({ connection, sessionId, baseUrl, requestTimeoutMs 
       await navigateAndWait(connection, sessionId, new URL(path, baseUrl).href, requestTimeoutMs)
       const pageState = await evaluate(connection, sessionId, pageCheckExpression)
       const events = normalizePageEventsForPath(summarizePageEvents(connection.drainEvents(sessionId)), path)
-      const listingPage = ['/category/electronics', '/category/toys-collectibles', '/search?q=phone', '/new-arrivals'].includes(path)
+      const listingPage = ['/category/electronics', '/category/toys-collectibles', '/search', '/search?q=phone', '/new-arrivals'].includes(path)
       const prioritySpam = listingPage && pageState.productImagePreloadCount > 1
       const ok = !pageState.horizontalOverflow &&
         pageState.brokenImages.length === 0 &&

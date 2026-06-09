@@ -86,14 +86,12 @@ test('Step 308 homepage banner source and multi-banner controls are route-safe',
   assert.match(heroBanner, /onTouchEnd=\{handleTouchEnd\}/);
   assert.match(heroBanner, /aria-roledescription="carousel"/);
   assert.match(heroBanner, /setInterval\(next, 5000\)/);
+  assert.match(heroBanner, /if \(!banners\.length\) \{\s*return null\s*\}/);
+  assert.doesNotMatch(heroBanner, /A warmer, calmer way to shop online in Bangladesh/);
 
-  for (const bannerAsset of [
-    '/assets/banners/home-hero-iphone-15-pro.jpg',
-    '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
-  ]) {
-    assert.match(seed, new RegExp(bannerAsset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-    assert.equal(existsSync(path.join(repoRoot, 'public', bannerAsset.replace(/^\//, ''))), true);
-  }
+  assert.match(seed, /Products and product-linked hero banners are intentionally not seeded/);
+  assert.doesNotMatch(seed, /prisma\.banner\.(?:create|createMany|upsert)/);
+  assert.doesNotMatch(seed, /\/assets\/banners\/home-hero-(?:iphone|galaxy)/);
 });
 
 test('Step 308 does not add fake storefront routes or remote navbar icons', () => {

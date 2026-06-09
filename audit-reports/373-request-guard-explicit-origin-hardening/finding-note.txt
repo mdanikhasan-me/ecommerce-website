@@ -1,2 +1,0 @@
-Read-only finding: request guard origin normalization rejects unsupported values by returning null, but isRequestSourceAllowed treated an explicit invalid Origin or Referer the same as an absent source. That allowed a malformed or credential-bearing explicit source value to fall through to trusted Sec-Fetch-Site metadata.
-Resolution: reject URL username/password userinfo during origin normalization and treat non-empty invalid explicit Origin or Referer values as blocked sources before consulting Fetch Metadata.

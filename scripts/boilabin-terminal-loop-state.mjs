@@ -16,10 +16,9 @@ const REQUIRED_FILES = [
   'docs/development/BOILABIN_TERMINAL_FIRST_10_STEP_LOOP.md',
   'docs/development/BOILABIN_TERMINAL_BATCH_LOOP_MODE.md',
   'docs/development/BOILABIN_ADVISOR_QUICKSTART.md',
+  'docs/AUDIT_REPORTS.md',
   'scripts/boilabin-terminal-loop-state.mjs',
   'tests/boilabin-terminal-loop-workflow.test.ts',
-  'audit-reports/125_TERMINAL_FIRST_10_STEP_LOOP_WORKFLOW.md',
-  'audit-reports/125_NEXT_PROMPT_DRAFT.md',
 ];
 
 const READABLE_FILES = [
@@ -78,13 +77,27 @@ function assertSafeReadPath(relativePath) {
   }
 }
 
+function resolveAuditReportsDir(cwd = DEFAULT_CWD) {
+  const localAuditDir = path.resolve(cwd, 'audit-reports');
+  if (existsSync(localAuditDir)) {
+    return localAuditDir;
+  }
+
+  const archiveAuditDir = path.resolve(cwd, '..', 'boilabin-audit-archive', 'audit-reports');
+  if (existsSync(archiveAuditDir)) {
+    return archiveAuditDir;
+  }
+
+  return localAuditDir;
+}
+
 export function readSafeFile(cwd, relativePath) {
   assertSafeReadPath(relativePath);
   return readFileSync(path.resolve(cwd, relativePath), 'utf8');
 }
 
 export function listAuditReports(cwd = DEFAULT_CWD) {
-  const auditDir = path.resolve(cwd, 'audit-reports');
+  const auditDir = resolveAuditReportsDir(cwd);
   if (!existsSync(auditDir)) {
     return [];
   }
@@ -105,7 +118,7 @@ export function listAuditReports(cwd = DEFAULT_CWD) {
       step: Number(match[1]),
       name: entry.name,
       isPromptDraft: /NEXT_PROMPT_DRAFT/i.test(entry.name),
-      relativePath: `audit-reports/${entry.name}`,
+      relativePath: path.relative(cwd, path.join(auditDir, entry.name)).replace(/\\/g, '/'),
     });
   }
 

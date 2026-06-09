@@ -18,7 +18,7 @@ import {
 
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.css'])
 const SKIP_DIRS = new Set(['.git', '.next', 'node_modules', 'audit-reports', 'public/uploads'])
-const DEFAULT_OUT_DIR = 'audit-reports/286-ui-ux-redesign-transition-inventory'
+const DEFAULT_OUT_DIR = '../boilabin-audit-archive/audit-reports/286-ui-ux-redesign-transition-inventory'
 const DEFAULT_HOST = '127.0.0.1'
 const DEFAULT_SERVER_PORT = 3140
 const DEFAULT_CDP_PORT = 9340
@@ -31,8 +31,8 @@ export const UI_REDESIGN_ROUTE_PATHS = [
   '/',
   '/category',
   '/category/electronics',
+  '/search',
   '/search?q=phone',
-  '/products/iphone-15-pro-128gb',
   '/cart',
   '/checkout',
   '/track-order',
@@ -61,10 +61,10 @@ const SCREENSHOT_PAIRS = new Set([
   '/|desktop-1366',
   '/category/electronics|mobile-390',
   '/category/electronics|desktop-1366',
+  '/search|mobile-390',
+  '/search|desktop-1366',
   '/search?q=phone|mobile-390',
   '/search?q=phone|desktop-1366',
-  '/products/iphone-15-pro-128gb|mobile-390',
-  '/products/iphone-15-pro-128gb|desktop-1366',
   '/cart|mobile-390',
   '/cart|desktop-1366',
   '/checkout|mobile-390',

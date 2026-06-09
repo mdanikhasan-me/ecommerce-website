@@ -519,7 +519,7 @@ async function runAdminSharedPreservationFlow({
   ])
 
   evidence.cleanup.tempRecordsCreated += 2
-  await prisma.banner.update({ where: { id: first.id }, data: { imageUrl: '/assets/banners/home-hero-iphone-15-pro.jpg' } })
+  await prisma.banner.update({ where: { id: first.id }, data: { imageUrl: '/assets/banners/source-protected-placeholder.webp' } })
   const deleted = await helpers.adminUtils.deleteManagedAdminUpload(sharedUrl, { referenceSource })
   evidence.preservation.adminSharedReferencePreserved = deleted === false && await fileExistsForUrl(sharedUrl)
   await prisma.banner.deleteMany({ where: { id: { in: [first.id, second.id] } } })

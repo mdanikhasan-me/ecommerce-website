@@ -171,7 +171,7 @@ describe('local browser runtime check helper', () => {
     assert.ok(BROWSER_RUNTIME_ROUTES.includes('/category/electronics'))
     assert.ok(BROWSER_RUNTIME_ROUTES.includes('/category/toys-collectibles'))
     assert.ok(BROWSER_RUNTIME_ROUTES.includes('/search?q=phone'))
-    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/products/xiaomi-redmi-note-13-pro-256gb'))
+    assert.ok(BROWSER_RUNTIME_ROUTES.includes('/search'))
     assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 390))
     assert.ok(BROWSER_RUNTIME_VIEWPORTS.some((viewport) => viewport.width === 1366))
   })

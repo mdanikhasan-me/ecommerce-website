@@ -8,7 +8,7 @@ import {
   loadEnv,
 } from './check-db-url-safety.mjs'
 
-const DEFAULT_OUT_DIR = path.join('audit-reports', '309-media-source-of-truth')
+const DEFAULT_OUT_DIR = path.join('..', 'boilabin-audit-archive', 'audit-reports', '309-media-source-of-truth')
 const MEDIA_ROOTS = ['public/assets', 'public/uploads']
 const LOCAL_MEDIA_REFERENCE_PATTERN =
   /\/(?:assets|uploads)\/[A-Za-z0-9._~:/?#[\]@!$&'()*+,;=%-]+/g

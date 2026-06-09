@@ -1,9 +1,0 @@
-﻿ M public/assets/icons/ui/categories/beauty-health.svg
- M public/assets/icons/ui/categories/books-stationery.svg
- M public/assets/icons/ui/categories/electronics.svg
- M public/assets/icons/ui/categories/fashion.svg
- M public/assets/icons/ui/categories/gaming.svg
- M public/assets/icons/ui/categories/home-appliances.svg
- M public/assets/icons/ui/categories/sports-fitness.svg
- M public/assets/icons/ui/categories/toys-collectibles.svg
-?? public/uploads/admin/banners/hero/

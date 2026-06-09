@@ -100,7 +100,7 @@ If Advisor mode does not seem active:
 
 - Use the exact phrase `Run Boilabin Advisor mode.`
 - Include the latest Codex output or report path if the chat context is long.
-- Ask it to inspect `audit-reports/` and `git log -1 --oneline`.
+- Ask it to inspect `docs/AUDIT_REPORTS.md`, the external audit archive, and `git log -1 --oneline`.
 - Remember that skills and agents are invoked by prompts; they are not permanent background workers.
 - If subagents are unavailable, the Advisor should use clearly labeled simulated lanes and say so.
 

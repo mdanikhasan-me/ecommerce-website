@@ -1,9 +1,0 @@
-﻿ba1bec63394da51e72e88f7b6a4f7f11ee1e2169d1ad0fa8c4a69a26d8b6f0aa  public/assets/icons/ui/categories/beauty-health.svg
-1fd4479faff0b42db032c71be020dded52b86b98e0c4f94576185c331cfe9c41  public/assets/icons/ui/categories/books-stationery.svg
-5e28e2760609920570a33691b0949277c2cb5d980faf4a8840927ed0c242b54f  public/assets/icons/ui/categories/electronics.svg
-72bead6c00b1541a0e4e35944d300ca24cb7bcb5cd771a3abe9bdc0e1806ba75  public/assets/icons/ui/categories/fashion.svg
-068903694ac5e65269b69efe7ceb04036f11deb1d341433ea47201e047ea3f7d  public/assets/icons/ui/categories/gaming.svg
-51a1e6d18557b0e55040bde4acf479dd328068c9e8dd0494df4f909851dd1cae  public/assets/icons/ui/categories/home-appliances.svg
-15c3de2e28778261f29428d8b2a96a94406e87935f0661e69683690fda93aea7  public/assets/icons/ui/categories/sports-fitness.svg
-761cdcc2244767fa06a3b9f6eeb7739ffd3283724ee6344a45587a028a3ebe2b  public/assets/icons/ui/categories/toys-collectibles.svg
-053d9b6f784558ea5c24678a04a5b91db97dc0ae31f781f1862445f295c81dfe  public/assets/icons/ui/categories/view-all.svg

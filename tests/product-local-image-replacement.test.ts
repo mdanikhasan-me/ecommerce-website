@@ -1,35 +1,12 @@
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
-import path from 'node:path'
 import { describe, it } from 'node:test'
 
 import { deleteManagedUpload } from '@/backend/admin/product-editor'
 import {
   buildProductImageLocalizationPlan,
-  type LocalCatalogProductImage,
   resolveLocalCatalogImageForSlug,
 } from '@/backend/catalog/product-local-image-replacement'
-import {
-  CATALOG_PRODUCT_MEDIA,
-  CATALOG_PRODUCT_MEDIA_BY_SLUG,
-} from '@/shared/product-media'
-
-function publicAssetExists(publicUrl: string) {
-  return existsSync(path.join(process.cwd(), 'public', publicUrl.replace(/^\/+/, '')))
-}
-
-function inventoryFromCatalogManifest(): LocalCatalogProductImage[] {
-  return CATALOG_PRODUCT_MEDIA.map((entry) => ({
-    productSlug: entry.slug,
-    publicUrl: entry.path,
-    fileName: path.basename(entry.path),
-    extension: path.extname(entry.path),
-    fileExists: publicAssetExists(entry.path),
-    sourceControlled: entry.sourceControlled,
-    gitTracked: true,
-    mapsCleanlyToProductSlug: true,
-  }))
-}
+import { CATALOG_PRODUCT_MEDIA } from '@/shared/product-media'
 
 function imageFixture(url: string, overrides: Partial<{
   id: string
@@ -55,24 +32,50 @@ function productFixture(slug: string, images: ReturnType<typeof imageFixture>[])
   }
 }
 
+function syntheticInventory(slug: string, publicUrl: string) {
+  return [
+    {
+      productSlug: slug,
+      publicUrl,
+      fileName: publicUrl.split('/').pop() ?? 'main.jpg',
+      extension: publicUrl.slice(publicUrl.lastIndexOf('.')),
+      fileExists: true,
+      sourceControlled: true,
+      gitTracked: true,
+      mapsCleanlyToProductSlug: true,
+    },
+  ]
+}
+
 describe('product local catalog image replacement', () => {
-  it('resolves the Bose local catalog image from the committed product catalog', () => {
-    const inventory = inventoryFromCatalogManifest()
-    const resolution = resolveLocalCatalogImageForSlug('bose-quietcomfort-45-headphones', inventory)
+  it('resolves a matching local catalog asset when a manifest entry is supplied', () => {
+    const slug = 'example-product'
+    const localUrl = '/assets/products/catalog/electronics/general/example-product/main.webp'
+
+    const resolution = resolveLocalCatalogImageForSlug(
+      slug,
+      syntheticInventory(slug, localUrl),
+      [
+        {
+          slug,
+          categorySlug: 'electronics',
+          subcategorySlug: 'general',
+          path: localUrl,
+          sourceType: 'existing-local-source-copied',
+          sourceControlled: true,
+          ownerReviewNeeded: false,
+          note: 'synthetic test asset',
+        },
+      ],
+    )
 
     assert.equal(resolution.status, 'found')
     if (resolution.status !== 'found') return
-
-    assert.equal(
-      resolution.image.publicUrl,
-      '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif',
-    )
-    assert.equal(resolution.image.fileExists, true)
-    assert.equal(publicAssetExists(resolution.image.publicUrl), true)
+    assert.equal(resolution.image.publicUrl, localUrl)
   })
 
   it('refuses ambiguous or missing local catalog image matches', () => {
-    const ambiguousInventory: LocalCatalogProductImage[] = [
+    const inventory = [
       {
         productSlug: 'ambiguous-product',
         publicUrl: '/assets/products/catalog/electronics/general/ambiguous-product/main.jpg',
@@ -96,46 +99,60 @@ describe('product local catalog image replacement', () => {
     ]
 
     assert.equal(
-      resolveLocalCatalogImageForSlug('ambiguous-product', ambiguousInventory, []).status,
+      resolveLocalCatalogImageForSlug('ambiguous-product', inventory, []).status,
       'ambiguous',
     )
     assert.equal(resolveLocalCatalogImageForSlug('missing-product', [], []).status, 'missing')
   })
 
-  it('maps the Bose remote ProductImage row to its local catalog path', () => {
+  it('maps remote product images to local synthetic assets when a matching local catalog asset exists', () => {
+    const slug = 'synthetic-product'
     const remoteUrl = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format'
+    const localUrl = '/assets/products/catalog/electronics/general/synthetic-product/main.avif'
     const plan = buildProductImageLocalizationPlan({
       generatedAt: '2026-06-06T00:00:00.000Z',
       products: [
-        productFixture('bose-quietcomfort-45-headphones', [
+        productFixture(slug, [
           imageFixture(remoteUrl, {
-            id: 'bose-image',
-            alt: 'QuietComfort headphones',
+            id: 'synthetic-image',
+            alt: 'Synthetic product image',
             isPrimary: true,
             sortOrder: 2,
           }),
         ]),
       ],
-      localCatalogImages: inventoryFromCatalogManifest(),
+      localCatalogImages: syntheticInventory(slug, localUrl),
+      manifestEntries: [
+        {
+          slug,
+          categorySlug: 'electronics',
+          subcategorySlug: 'general',
+          path: localUrl,
+          sourceType: 'existing-local-source-copied',
+          sourceControlled: true,
+          ownerReviewNeeded: false,
+          note: 'synthetic test asset',
+        },
+      ],
     })
 
     assert.equal(plan.replacementCount, 1)
-    assert.equal(plan.replacements[0].slug, 'bose-quietcomfort-45-headphones')
+    assert.equal(plan.replacements[0].slug, slug)
     assert.equal(plan.replacements[0].currentUrl, remoteUrl)
-    assert.equal(
-      plan.replacements[0].proposedReplacementUrl,
-      '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif',
-    )
-    assert.equal(plan.replacements[0].alt, 'QuietComfort headphones')
+    assert.equal(plan.replacements[0].proposedReplacementUrl, localUrl)
+    assert.equal(plan.replacements[0].alt, 'Synthetic product image')
     assert.equal(plan.replacements[0].isPrimary, true)
     assert.equal(plan.replacements[0].sortOrder, 2)
   })
 
   it('does not change already-local image rows', () => {
-    const localUrl = CATALOG_PRODUCT_MEDIA_BY_SLUG['sony-wh-1000xm5'].path
+    const slug = 'already-local-product'
+    const localUrl = '/assets/products/catalog/electronics/general/already-local-product/main.avif'
+
     const plan = buildProductImageLocalizationPlan({
-      products: [productFixture('sony-wh-1000xm5', [imageFixture(localUrl)])],
-      localCatalogImages: inventoryFromCatalogManifest(),
+      products: [productFixture(slug, [imageFixture(localUrl)])],
+      localCatalogImages: syntheticInventory(slug, localUrl),
+      manifestEntries: [],
     })
 
     assert.equal(plan.replacementCount, 0)
@@ -150,28 +167,20 @@ describe('product local catalog image replacement', () => {
           imageFixture('https://images.unsplash.com/photo-safe?w=800&auto=format'),
         ]),
       ],
-      localCatalogImages: inventoryFromCatalogManifest(),
+      localCatalogImages: [],
+      manifestEntries: [],
     })
 
     assert.equal(plan.replacementCount, 0)
     assert.equal(plan.rows[0].action, 'keep because no local match')
   })
 
-  it('keeps active seed/catalog product source from preferring Unsplash when local media exists', () => {
-    const seed = readFileSync(path.join(process.cwd(), 'prisma/seed.ts'), 'utf8')
-    const productsBlock = seed.match(/const productsData:[\s\S]*?= \[([\s\S]*?)\n  \]/)?.[1]
-
-    assert.ok(productsBlock)
-    assert.doesNotMatch(productsBlock, /images\.unsplash\.com/)
-
-    for (const entry of CATALOG_PRODUCT_MEDIA) {
-      assert.match(productsBlock, new RegExp(`slug:\\s*'${entry.slug}'[\\s\\S]*?imageUrl:\\s*'${entry.path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`))
-      assert.equal(publicAssetExists(entry.path), true, `${entry.path} should exist`)
-    }
+  it('keeps the product media manifest empty for future real uploads', () => {
+    assert.equal(CATALOG_PRODUCT_MEDIA.length, 0)
   })
 
-  it('keeps Step 305 product cleanup from deleting source catalog product images', async () => {
-    const sourcePath = '/assets/products/catalog/electronics/audio/bose-quietcomfort-45-headphones/main.avif'
+  it('keeps source catalog product paths protected from managed deletion', async () => {
+    const sourcePath = '/assets/products/catalog/electronics/audio/example-product/main.avif'
     let referenceChecks = 0
 
     const deleted = await deleteManagedUpload(sourcePath, {
@@ -185,6 +194,5 @@ describe('product local catalog image replacement', () => {
 
     assert.equal(deleted, false)
     assert.equal(referenceChecks, 0)
-    assert.equal(publicAssetExists(sourcePath), true)
   })
 })

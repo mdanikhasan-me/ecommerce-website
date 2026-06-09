@@ -38,31 +38,18 @@ describe('storefront image source of truth', () => {
     assert.notEqual(getCategoryMediaPath({ slug: 'baby-kids' }), '/assets/categories/baby-kids.jpg')
   })
 
-  it('keeps homepage banner seed references on recoverable local assets', () => {
-    const seed = readFileSync(join(process.cwd(), 'prisma/seed.ts'), 'utf8')
-    const bannerSeed = seed.slice(seed.indexOf('// BANNERS'))
-
-    assert.equal(bannerSeed.includes('photo-1695048133142-1a20484d2569?w=1600'), false)
-    assert.equal(bannerSeed.includes('photo-1706165965474-1e45ede2e5c4?w=1600'), false)
-    assert.ok(bannerSeed.includes('/assets/banners/home-hero-iphone-15-pro.jpg'))
-    assert.ok(bannerSeed.includes('/assets/banners/home-hero-galaxy-s24-ultra.jpg'))
-
-    for (const repair of BANNER_IMAGE_REPAIRS) {
-      assert.equal(publicAssetExists(repair.to), true, `${repair.to} should exist`)
-    }
-  })
-
-  it('keeps approved product seed image replacements on local source-of-truth assets', () => {
+  it('keeps homepage seed free of product-linked hero banners', () => {
     const seed = readFileSync(join(process.cwd(), 'prisma/seed.ts'), 'utf8')
 
-    for (const replacement of CANONICAL_PRODUCT_IMAGE_REPLACEMENTS) {
-      assert.ok(seed.includes(`imageUrl: '${replacement.local}'`), `${replacement.product} should use local seed asset`)
-      assert.equal(seed.includes(`imageUrl: '${replacement.remote}'`), false, `${replacement.product} should not use stale remote seed asset`)
-      assert.equal(publicAssetExists(replacement.local), true, `${replacement.local} should exist`)
-    }
+    assert.equal(seed.includes('// BANNERS'), false)
+    assert.doesNotMatch(seed, /\/products\/[a-z0-9-]+/i)
   })
 
-  it('repairs only Category.image and Banner.imageUrl fields', async () => {
+  it('keeps the product replacement manifest empty after the demo catalog cleanup', () => {
+    assert.equal(CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length, 0)
+  })
+
+  it('repairs only Category.image fields once banner repairs are retired', async () => {
     const updates: Array<{ model: string; where: unknown; data: unknown }> = []
     const prisma = {
       category: {
@@ -83,21 +70,14 @@ describe('storefront image source of truth', () => {
 
     assert.equal(results.categories.length, CATEGORY_IMAGE_REPAIRS.length)
     assert.equal(results.banners.length, BANNER_IMAGE_REPAIRS.length)
-    assert.equal(updates.length, CATEGORY_IMAGE_REPAIRS.length + BANNER_IMAGE_REPAIRS.length)
+    assert.equal(BANNER_IMAGE_REPAIRS.length, 0)
+    assert.equal(updates.length, CATEGORY_IMAGE_REPAIRS.length)
 
     for (const [index, repair] of CATEGORY_IMAGE_REPAIRS.entries()) {
       assert.deepEqual(updates[index], {
         model: 'category',
         where: { slug: repair.slug },
         data: { image: repair.image },
-      })
-    }
-
-    for (const [index, repair] of BANNER_IMAGE_REPAIRS.entries()) {
-      assert.deepEqual(updates[CATEGORY_IMAGE_REPAIRS.length + index], {
-        model: 'banner',
-        where: { imageUrl: repair.from },
-        data: { imageUrl: repair.to },
       })
     }
   })

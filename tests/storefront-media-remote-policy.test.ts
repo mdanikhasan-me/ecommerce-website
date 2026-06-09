@@ -7,7 +7,6 @@ import {
   CANONICAL_CATEGORY_ASSETS,
   CANONICAL_HERO_ASSETS,
   CANONICAL_PRODUCT_IMAGE_REPLACEMENTS,
-  RETIRED_STOREFRONT_REMOTE_MEDIA,
 } from '../scripts/audit-storefront-media-sources.mjs'
 
 describe('storefront media remote policy inventory', () => {
@@ -29,41 +28,25 @@ describe('storefront media remote policy inventory', () => {
     assert.equal(audit.toysCollectibles.sharesPixelsWithGaming, true)
   })
 
-  it('reports accepted remote media without reintroducing retired hero remotes into seed heroes', () => {
+  it('reports no accepted remote media or product replacements in the cleaned catalog', () => {
     const audit = auditStorefrontMediaSources()
 
     assert.equal(audit.unexpectedRemoteHeroCount, 0)
     assert.equal(audit.productSeedRemoteCount, 0)
-
-    for (const remote of ACCEPTED_REMOTE_MEDIA) {
-      assert.ok(
-        audit.acceptedRemoteMedia.some((entry) => entry.url === remote.url && entry.present),
-        `${remote.url} should remain inventoried as accepted remote media`,
-      )
-    }
-
-    for (const retiredUrl of RETIRED_STOREFRONT_REMOTE_MEDIA) {
-      assert.ok(
-        audit.retiredStorefrontRemoteMedia.some(
-          (entry) => entry.url === retiredUrl && entry.presentInActiveSeedHero === false,
-        ),
-        `${retiredUrl} should not return to active seed hero references`,
-      )
-    }
+    assert.equal(audit.acceptedRemoteMedia.length, ACCEPTED_REMOTE_MEDIA.length)
+    assert.equal(audit.productImageReplacements.length, 0)
+    assert.equal(audit.productSeedLocalReplacementCount, 0)
+    assert.equal(audit.staleProductReplacementRemoteCount, 0)
   })
 
-  it('keeps approved product image replacements on committed local assets', () => {
+  it('keeps retired storefront remote media out of active seed heroes', () => {
     const audit = auditStorefrontMediaSources()
 
-    assert.equal(audit.productImageReplacements.length, CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length)
-    assert.equal(audit.productSeedLocalReplacementCount, CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length)
-    assert.equal(audit.staleProductReplacementRemoteCount, 0)
-
+    assert.equal(audit.retiredStorefrontRemoteMedia.every((entry) => entry.presentInActiveSeedHero === false), true)
+    assert.equal(CANONICAL_PRODUCT_IMAGE_REPLACEMENTS.length, 0)
     for (const replacement of audit.productImageReplacements) {
-      assert.equal(replacement.localExists, true, `${replacement.local} should exist`)
-      assert.equal(replacement.seedUsesLocal, true, `${replacement.product} should use local seed image`)
-      assert.equal(replacement.seedUsesRemote, false, `${replacement.product} should not use stale remote seed image`)
-      assert.equal(replacement.repairMapsRemoteToLocal, true, `${replacement.product} should have a local repair mapping`)
+      assert.equal(replacement.seedUsesLocal, false)
+      assert.equal(replacement.seedUsesRemote, false)
     }
   })
 })

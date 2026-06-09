@@ -12,7 +12,7 @@ import {
 const CATALOG_PRODUCT_MEDIA_SOURCE = 'src/shared/product-media.ts'
 const CATALOG_PUBLIC_PREFIX = '/assets/products/catalog/'
 const MANAGED_PRODUCT_UPLOAD_PREFIX = '/uploads/products/'
-const DEFAULT_BACKUP_PATH = 'audit-reports/290-media-filesystem-ownership-icon-reconciliation/product-media-reconciliation-backup.json'
+const DEFAULT_BACKUP_PATH = '../boilabin-audit-archive/audit-reports/290-media-filesystem-ownership-icon-reconciliation/product-media-reconciliation-backup.json'
 
 const ALLOWED_EXTENSIONS = new Set(['avif', 'gif', 'jpg', 'jpeg', 'png', 'webp'])
 

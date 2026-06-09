@@ -19,28 +19,7 @@ export const CATEGORY_IMAGE_REPAIRS = [
   { slug: 'toys-collectibles', image: '/assets/categories/toys-collectibles.jpg' },
 ]
 
-export const BANNER_IMAGE_REPAIRS = [
-  {
-    label: 'iPhone 15 Pro hero banner',
-    from: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1600&auto=format',
-    to: '/assets/banners/home-hero-iphone-15-pro.jpg',
-  },
-  {
-    label: 'Galaxy S24 Ultra legacy remote hero banner',
-    from: 'https://images.unsplash.com/photo-1706165965474-1e45ede2e5c4?w=1600&auto=format',
-    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
-  },
-  {
-    label: 'Galaxy S24 Ultra current remote hero banner',
-    from: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=1600&auto=format',
-    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
-  },
-  {
-    label: 'Galaxy S24 Ultra uploaded hero banner',
-    from: '/uploads/admin/banners/banners-mnyz4sgc-f0051b3e.jpg',
-    to: '/assets/banners/home-hero-galaxy-s24-ultra.jpg',
-  },
-]
+export const BANNER_IMAGE_REPAIRS = []
 
 export function createStorefrontImageRepairPlan({
   cwd = process.cwd(),
