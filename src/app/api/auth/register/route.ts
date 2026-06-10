@@ -7,7 +7,7 @@ import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const registerSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  email: z.string().trim().toLowerCase().email().max(254),
   password: z.string().min(8),
   phone: z.string().optional(),
 })

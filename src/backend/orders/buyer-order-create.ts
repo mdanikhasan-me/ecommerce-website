@@ -45,7 +45,7 @@ type BuyerOrderTx = {
   productVariant: { updateMany: (args: unknown) => Promise<{ count: number }> }
   address: { create: (args: unknown) => Promise<{ id: string }> }
   order: { create: (args: unknown) => Promise<{ id: string; orderNumber: string }> }
-  coupon: { update: (args: unknown) => Promise<unknown> }
+  coupon: { update: (args: unknown) => Promise<{ usageCount: number; usageLimit: number | null }> }
   payment: { create: (args: unknown) => Promise<unknown> }
 }
 
@@ -282,7 +282,17 @@ export async function createBuyerOrder({
       })
 
       if (couponId) {
-        await tx.coupon.update({ where: { id: couponId }, data: { usageCount: { increment: 1 } } })
+        // Increment-then-check inside the transaction so concurrent orders
+        // cannot both pass the pre-transaction usage-limit read.
+        const updatedCoupon = await tx.coupon.update({
+          where: { id: couponId },
+          data: { usageCount: { increment: 1 } },
+          select: { usageCount: true, usageLimit: true },
+        })
+
+        if (updatedCoupon.usageLimit && updatedCoupon.usageCount > updatedCoupon.usageLimit) {
+          throw new Error('COUPON_USAGE_LIMIT_EXCEEDED')
+        }
       }
 
       await tx.payment.create({
@@ -305,10 +315,15 @@ export async function createBuyerOrder({
         logCode: 'insufficient_stock',
       }
     }
+    if (error instanceof Error && error.message === 'COUPON_USAGE_LIMIT_EXCEEDED') {
+      return { success: false, status: 400, error: 'Coupon usage limit reached' }
+    }
     throw error
   }
 
-  await syncSoldCounts(preparedItems.map((line) => line.productId))
+  // The order is committed at this point; stat aggregation must not turn a
+  // successfully placed order into an error response.
+  await syncSoldCounts(preparedItems.map((line) => line.productId)).catch(() => {})
 
   await database.notification.create({
     data: {

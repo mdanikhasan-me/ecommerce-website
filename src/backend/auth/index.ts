@@ -13,6 +13,17 @@ type SignInEventParams = Parameters<NonNullable<AuthEvents['signIn']>>[0]
 
 const googleOAuthCredentials = getGoogleOAuthCredentials()
 
+// Hash of a discarded random value. Compared against when no usable account
+// exists so unknown-email and wrong-password attempts take similar time.
+const TIMING_EQUALIZATION_HASH = '$2a$12$s1gHIDsPRG9/C3Jqhfe2zuhhwYquueyBdBDNa93rYUke7pVCpkdqm'
+
+export function normalizeCredentialsEmail(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const normalized = value.trim().toLowerCase()
+  if (!normalized || normalized.length > 254 || !normalized.includes('@')) return null
+  return normalized
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
@@ -26,12 +37,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
+        const email = normalizeCredentialsEmail(credentials.email)
+        if (!email) return null
+
         const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         })
 
-        if (!user || !user.password) return null
-        if (!user.isActive) return null
+        if (!user || !user.password || !user.isActive) {
+          await bcrypt.compare(credentials.password as string, TIMING_EQUALIZATION_HASH)
+          return null
+        }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,

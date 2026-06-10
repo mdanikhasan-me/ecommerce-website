@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseCouponAmount, parseCouponCode, parsePublicIdList } from '@/backend/api/public-input'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(req, { key: 'coupons:validate', limit: 30, windowMs: 60_000 })
+  if (limited) return limited
+
   const code = parseCouponCode(req.nextUrl.searchParams.get('code'))
   const amount = parseCouponAmount(req.nextUrl.searchParams.get('amount') ?? '0')
   const productIds = parsePublicIdList(req.nextUrl.searchParams.get('productIds'))

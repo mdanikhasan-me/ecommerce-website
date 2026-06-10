@@ -1,4 +1,18 @@
 // ORDER NUMBER
+const ORDER_NUMBER_SUFFIX_LENGTH = 8
+const ORDER_NUMBER_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+
+function randomOrderSuffix(): string {
+  const bytes = new Uint8Array(ORDER_NUMBER_SUFFIX_LENGTH)
+  crypto.getRandomValues(bytes)
+
+  let suffix = ''
+  for (const byte of bytes) {
+    suffix += ORDER_NUMBER_ALPHABET[byte % ORDER_NUMBER_ALPHABET.length]
+  }
+  return suffix
+}
+
 export function generateOrderNumber(): string {
   const now = new Date()
   const date = [
@@ -6,8 +20,7 @@ export function generateOrderNumber(): string {
     String(now.getMonth() + 1).padStart(2, '0'),
     String(now.getDate()).padStart(2, '0'),
   ].join('')
-  const random = Math.floor(1000 + Math.random() * 9000)
-  return `BLB-${date}-${random}`
+  return `BLB-${date}-${randomOrderSuffix()}`
 }
 
 // SHIPPING

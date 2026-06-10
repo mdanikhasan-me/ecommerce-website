@@ -78,16 +78,14 @@ function parseImageUrl(value: unknown) {
   const trimmed = value.trim()
   if (!trimmed || trimmed.length > MAX_ORDER_IMAGE_URL_LENGTH) return null
 
-  if (trimmed.startsWith('/') && !trimmed.startsWith('//') && !trimmed.includes('\\')) {
+  // Order snapshots may only reference same-site media paths. Remote URLs,
+  // protocol-relative paths, and data URLs are dropped (snapshot falls back
+  // to the product image at render time).
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//') && !trimmed.includes('\\') && !/[\0?#]/.test(trimmed)) {
     return trimmed
   }
 
-  try {
-    const url = new URL(trimmed)
-    return url.protocol === 'http:' || url.protocol === 'https:' ? trimmed : null
-  } catch {
-    return null
-  }
+  return null
 }
 
 function parseBuyerOrderAddress(value: unknown): ParsedBuyerOrderAddress | null {
