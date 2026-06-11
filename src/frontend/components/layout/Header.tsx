@@ -649,42 +649,28 @@ export function Header() {
           data-testid="mobile-header"
           className="grid h-16 grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] items-center lg:hidden"
         >
-          <button
-            ref={mobileMenuButtonRef}
-            type="button"
-            data-testid="mobile-menu-button"
-            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-            title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => {
-              setIsMobileMenuOpen((open) => !open)
-              setIsSearchOpen(false)
-              setShowSuggestions(false)
-              setExpandedMobileCategory(null)
-            }}
-            className="flex h-10 w-10 items-center justify-center justify-self-start rounded-full transition-colors hover:bg-secondary"
-          >
-            {isMobileMenuOpen ? (
-              <LocalIcon name="close" className="h-5 w-5" />
-            ) : (
-              <LocalIcon name="menu" className="h-5 w-5" />
-            )}
-          </button>
+          <div className="flex items-center justify-self-start">
+            <button
+              ref={mobileMenuButtonRef}
+              type="button"
+              data-testid="mobile-menu-button"
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => {
+                setIsMobileMenuOpen((open) => !open)
+                setIsSearchOpen(false)
+                setShowSuggestions(false)
+                setExpandedMobileCategory(null)
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+            >
+              {isMobileMenuOpen ? (
+                <LocalIcon name="close" className="h-5 w-5" />
+              ) : (
+                <LocalIcon name="menu" className="h-5 w-5" />
+              )}
+            </button>
 
-          <Link
-            href="/"
-            data-testid="mobile-brand-link"
-            aria-label="Boilabin home"
-            className="flex min-w-0 justify-self-center"
-          >
-            <BoilabinLogo
-              variant="wordmark"
-              size={24}
-              priority
-              className="h-auto w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
-            />
-          </Link>
-
-          <div className="flex items-center justify-end gap-0 justify-self-end">
             <button
               ref={mobileSearchButtonRef}
               type="button"
@@ -703,7 +689,23 @@ export function Header() {
             >
               <LocalIcon name="search" className="h-5 w-5" />
             </button>
+          </div>
 
+          <Link
+            href="/"
+            data-testid="mobile-brand-link"
+            aria-label="Boilabin home"
+            className="flex min-w-0 justify-self-center"
+          >
+            <BoilabinLogo
+              variant="wordmark"
+              size={24}
+              priority
+              className="h-auto w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
+            />
+          </Link>
+
+          <div className="flex items-center justify-end gap-0 justify-self-end">
             <button
               type="button"
               data-testid="mobile-cart-button"
