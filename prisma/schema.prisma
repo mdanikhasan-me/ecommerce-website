@@ -81,6 +81,24 @@ enum NotificationType {
   SELLER
 }
 
+enum EmailOutboxStatus {
+  PENDING
+  PROCESSING
+  RETRY
+  SENT
+  DEAD
+  CANCELLED
+}
+
+enum EmailEventType {
+  ORDER_PLACED_CUSTOMER
+  ORDER_PLACED_ADMIN
+  ORDER_STATUS_CUSTOMER
+  PAYMENT_CONFIRMED_CUSTOMER
+  RETURN_REQUESTED_ADMIN
+  RETURN_STATUS_CUSTOMER
+}
+
 // USERS & AUTH
 model User {
   id                String    @id @default(cuid())
@@ -493,10 +511,43 @@ model Order {
   payment        Payment?
   statusHistory  OrderStatusHistory[]
   returnRequest  ReturnRequest?
+  emailOutbox    EmailOutbox[]
 
   @@index([userId])
   @@index([orderNumber])
   @@index([status])
+}
+
+// TRANSACTIONAL EMAIL OUTBOX
+// Email events are committed in the same transaction as the order change
+// they describe, then delivered asynchronously by a protected processor.
+model EmailOutbox {
+  id                  String            @id @default(cuid())
+  eventType           EmailEventType
+  dedupeKey           String            @unique
+  orderId             String?
+  recipient           String
+  payload             Json
+  status              EmailOutboxStatus @default(PENDING)
+  attemptCount        Int               @default(0)
+  maxAttempts         Int               @default(6)
+  nextAttemptAt       DateTime          @default(now())
+  lockedAt            DateTime?
+  lockToken           String?
+  providerMessageId   String?
+  lastErrorCode       String?
+  lastSafeError       String?
+  lastDeliveryEvent   String?
+  lastDeliveryEventAt DateTime?
+  sentAt              DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextAttemptAt])
+  @@index([orderId])
+  @@index([providerMessageId])
 }
 
 model OrderItem {

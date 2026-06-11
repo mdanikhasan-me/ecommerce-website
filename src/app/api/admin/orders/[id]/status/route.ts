@@ -5,6 +5,7 @@ import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { parseAdminOrderStatusPayload } from '@/backend/admin/order-update-editor'
+import { enqueueOrderStatusEmail } from '@/backend/email/outbox'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
 const ALLOWED_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
@@ -44,6 +45,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         items: {
           select: { productId: true, variantId: true, quantity: true },
         },
+        user: {
+          select: { email: true, name: true },
+        },
       },
     })
     if (!order) {
@@ -74,7 +78,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
       }
 
-      return tx.order.update({
+      const nextOrder = await tx.order.update({
         where: { id },
         data: {
           status,
@@ -88,6 +92,24 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           },
         },
       })
+
+      // Email events commit with the status change itself; reapplying the
+      // same status is skipped here and deduplicated at the database level.
+      if (status !== order.status) {
+        await enqueueOrderStatusEmail(tx, {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          status,
+          total: order.total,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          trackingNumber: order.trackingNumber,
+          customerEmail: order.user.email,
+          customerName: order.user.name,
+        })
+      }
+
+      return nextOrder
     })
 
     await db.notification.create({

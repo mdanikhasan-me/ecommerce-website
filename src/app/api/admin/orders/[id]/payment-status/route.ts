@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminPaymentStatusPayload } from '@/backend/admin/order-update-editor'
+import { enqueuePaymentConfirmedEmail } from '@/backend/email/outbox'
 import { toSafeClientErrorMessage } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
@@ -22,7 +23,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const order = await db.order.findUnique({
       where: { id },
-      include: { payment: true },
+      include: {
+        payment: true,
+        user: { select: { email: true, name: true } },
+      },
     })
 
     if (!order) {
@@ -61,6 +65,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             status,
             paidAt: status === 'PAID' ? new Date() : null,
           },
+        })
+      }
+
+      // Trusted backend payment confirmation: only an authorized admin
+      // recording a real transition into PAID enqueues this email.
+      if (status === 'PAID' && order.paymentStatus !== 'PAID') {
+        await enqueuePaymentConfirmedEmail(tx, {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          total: order.total,
+          paymentMethod: order.paymentMethod,
+          customerEmail: order.user.email,
+          customerName: order.user.name,
         })
       }
 

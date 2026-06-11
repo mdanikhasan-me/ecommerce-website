@@ -1,23 +1,28 @@
+import { enqueueReturnRequestedAdminEmail, type EmailEnqueueTx } from '@/backend/email/outbox'
 import type { ParsedBuyerReturnRequestPayload } from '@/backend/orders/buyer-validation'
 
 const RETURN_WINDOW_DAYS = 7
 
 type ReturnOrderRecord = {
   id: string
+  orderNumber: string
   status: string
   deliveredAt: Date | null
   returnRequest: unknown
   statusHistory: { status: string; createdAt: Date }[]
+  user: { name: string | null } | null
 }
+
+type BuyerReturnTx = {
+  order: { update: (args: unknown) => Promise<unknown> }
+  returnRequest: { create: (args: unknown) => Promise<unknown> }
+} & EmailEnqueueTx
 
 export type BuyerReturnDb = {
   order: {
     findFirst: (args: unknown) => Promise<ReturnOrderRecord | null>
-    update: (args: unknown) => Promise<unknown>
   }
-  returnRequest: {
-    create: (args: unknown) => Promise<unknown>
-  }
+  $transaction: <T>(callback: (tx: BuyerReturnTx) => Promise<T>) => Promise<T>
 }
 
 export type BuyerReturnRequestResult =
@@ -48,6 +53,7 @@ export async function createBuyerReturnRequest({
         orderBy: { createdAt: 'desc' },
         take: 1,
       },
+      user: { select: { name: true } },
     },
   })
 
@@ -68,27 +74,40 @@ export async function createBuyerReturnRequest({
     return { success: false, status: 403, error: 'The 7 day return window has closed' }
   }
 
-  const request = await database.returnRequest.create({
-    data: {
-      orderId: order.id,
-      userId,
-      reason: payload.reason,
-      description: payload.description,
-      images: [],
-    },
-  })
+  // One transaction so the return request, the order-status change, and the
+  // admin notification event commit (or roll back) together.
+  const request = await database.$transaction(async (tx) => {
+    const created = await tx.returnRequest.create({
+      data: {
+        orderId: order.id,
+        userId,
+        reason: payload.reason,
+        description: payload.description,
+        images: [],
+      },
+    })
 
-  await database.order.update({
-    where: { id: order.id },
-    data: {
-      status: 'RETURN_REQUESTED',
-      statusHistory: {
-        create: {
-          status: 'RETURN_REQUESTED',
-          note: 'Return requested by customer',
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: 'RETURN_REQUESTED',
+        statusHistory: {
+          create: {
+            status: 'RETURN_REQUESTED',
+            note: 'Return requested by customer',
+          },
         },
       },
-    },
+    })
+
+    await enqueueReturnRequestedAdminEmail(tx, {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      customerName: order.user?.name ?? null,
+      reason: payload.reason,
+    })
+
+    return created
   })
 
   revalidate(`/account/orders/${order.id}`)

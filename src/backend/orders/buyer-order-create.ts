@@ -1,4 +1,5 @@
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { enqueueOrderPlacedEmails, type EmailEnqueueTx } from '@/backend/email/outbox'
 import type { ParsedBuyerOrderPayload } from '@/backend/orders/buyer-validation'
 
 const SHIPPING_FEE_FLAT = 60
@@ -44,16 +45,17 @@ type BuyerOrderTx = {
   product: { updateMany: (args: unknown) => Promise<{ count: number }> }
   productVariant: { updateMany: (args: unknown) => Promise<{ count: number }> }
   address: { create: (args: unknown) => Promise<{ id: string }> }
-  order: { create: (args: unknown) => Promise<{ id: string; orderNumber: string }> }
+  order: { create: (args: unknown) => Promise<{ id: string; orderNumber: string; createdAt: Date }> }
   coupon: { update: (args: unknown) => Promise<{ usageCount: number; usageLimit: number | null }> }
   payment: { create: (args: unknown) => Promise<unknown> }
-}
+} & EmailEnqueueTx
 
 export type BuyerOrderDb = {
   product: { findMany: (args: unknown) => Promise<ProductRecord[]> }
   productVariant: { findMany: (args: unknown) => Promise<VariantRecord[]> }
   coupon: { findUnique: (args: unknown) => Promise<CouponRecord | null> }
   order: { count: (args: unknown) => Promise<number> }
+  user: { findUnique: (args: unknown) => Promise<{ email: string; name: string | null } | null> }
   $transaction: <T>(callback: (tx: BuyerOrderTx) => Promise<T>) => Promise<T>
   notification: { create: (args: unknown) => Promise<unknown> }
 }
@@ -112,6 +114,18 @@ export async function createBuyerOrder({
   const variantIds = Array.from(
     new Set(payload.items.map((item) => item.variantId).filter((id): id is string => Boolean(id))),
   )
+
+  const customer = await database.user.findUnique({
+    where: { id: userId },
+    select: { email: true, name: true },
+  })
+  if (!customer) {
+    return {
+      success: false,
+      status: 401,
+      error: 'Please sign in or create an account before placing an order',
+    }
+  }
 
   const [products, variants] = await Promise.all([
     database.product.findMany({
@@ -302,6 +316,31 @@ export async function createBuyerOrder({
           method: payload.paymentMethod,
           status: 'PENDING',
         },
+      })
+
+      // Same-transaction outbox insert: the order and its email events
+      // either both commit or both roll back. Delivery happens later via
+      // the protected processor, so provider downtime cannot fail checkout.
+      await enqueueOrderPlacedEmails(tx, {
+        orderId: created.id,
+        orderNumber: created.orderNumber,
+        createdAt: created.createdAt,
+        subtotal,
+        discount,
+        shippingFee,
+        total,
+        paymentMethod: payload.paymentMethod,
+        paymentStatus: 'PENDING',
+        customerEmail: customer.email,
+        customerName: customer.name,
+        address: payload.address,
+        items: preparedItems.map((line) => ({
+          productName: line.productName,
+          variantName: line.variantName,
+          quantity: line.quantity,
+          price: line.price,
+          total: line.total,
+        })),
       })
 
       return created

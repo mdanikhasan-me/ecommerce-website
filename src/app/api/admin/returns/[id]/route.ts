@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminReturnPayload, resolveReturnOrderStatus } from '@/backend/admin/return-editor'
+import { enqueueReturnStatusCustomerEmail } from '@/backend/email/outbox'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
@@ -73,6 +74,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             status: true,
             paymentStatus: true,
             userId: true,
+            user: { select: { email: true, name: true } },
           },
         },
       },
@@ -109,6 +111,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           },
         },
       })
+
+      // Customer notification commits with the return decision. Reapplying
+      // the same return status is skipped and database-deduplicated; refund
+      // wording is only possible because this transaction records it.
+      if (nextStatus !== existingRequest.status) {
+        await enqueueReturnStatusCustomerEmail(tx, {
+          orderId: existingRequest.order.id,
+          orderNumber: existingRequest.order.orderNumber,
+          returnStatus: nextStatus,
+          refundRecorded: nextStatus === 'REFUNDED',
+          customerEmail: existingRequest.order.user.email,
+          customerName: existingRequest.order.user.name,
+        })
+      }
 
       return updated
     })
