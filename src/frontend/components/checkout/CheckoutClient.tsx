@@ -27,6 +27,10 @@ const addressSchema = z.object({
 
 type AddressForm = z.infer<typeof addressSchema>
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback
+}
+
 const DIVISIONS = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Sylhet', 'Barisal', 'Rangpur', 'Mymensingh']
 const STEPS = ['Delivery', 'Payment', 'Review']
 const PAYMENT_GATEWAY_OPTIONS = PAYMENT_GATEWAYS
@@ -107,13 +111,13 @@ export function CheckoutClient() {
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      if (!res.ok) throw new Error(data.error || 'Failed to place order')
 
       clearCart()
       router.push(`/order/${data.orderNumber}/confirmation`)
       toast.success('Order placed successfully!')
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to place order')
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to place order'))
     } finally {
       setSubmitting(false)
     }

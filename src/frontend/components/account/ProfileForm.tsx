@@ -8,6 +8,10 @@ interface ProfileFormProps {
   user: { id: string; name: string | null; email: string; phone: string | null; image: string | null }
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function ProfileForm({ user }: ProfileFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -36,8 +40,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
       if (!res.ok) throw new Error('Failed to update profile')
       setSaved(true)
       router.refresh()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to update profile'))
     } finally {
       setLoading(false)
     }

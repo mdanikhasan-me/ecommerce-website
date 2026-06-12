@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     ])
 
     return NextResponse.json({ success: true, userId: user.id }, { status: 201 })
-  } catch (error: any) {
-    if (error.name === 'ZodError') return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+  } catch (error) {
+    if (error instanceof z.ZodError) return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 })
   }
 }

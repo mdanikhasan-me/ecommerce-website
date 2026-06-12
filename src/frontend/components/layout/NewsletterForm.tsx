@@ -10,6 +10,10 @@ type HomepageNewsletterFormProps = {
   layout?: 'stacked' | 'inline'
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function HomepageNewsletterForm({
   variant = 'dark',
   source = 'homepage',
@@ -34,8 +38,8 @@ export function HomepageNewsletterForm({
       if (!res.ok) throw new Error(data.error || 'Could not subscribe')
       toast.success('Subscribed! Thanks for joining the list.')
       setEmail('')
-    } catch (err: any) {
-      toast.error(err.message || 'Could not subscribe')
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Could not subscribe'))
     } finally {
       setSubmitting(false)
     }

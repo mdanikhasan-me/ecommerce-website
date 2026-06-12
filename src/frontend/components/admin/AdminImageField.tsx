@@ -16,6 +16,10 @@ interface AdminImageFieldProps {
 
 const DEFAULT_DATA_URL_ERROR = 'Upload the image file instead of pasting base64 image data.'
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 function isImageDataUrl(value: string) {
   return value.trim().toLowerCase().startsWith('data:image/')
 }
@@ -47,8 +51,8 @@ export function AdminImageField({
       }
 
       onChange(nextValue)
-    } catch (uploadError: any) {
-      setError(uploadError.message || 'Could not load image')
+    } catch (uploadError) {
+      setError(getErrorMessage(uploadError, 'Could not load image'))
     } finally {
       setIsUploading(false)
       event.target.value = ''

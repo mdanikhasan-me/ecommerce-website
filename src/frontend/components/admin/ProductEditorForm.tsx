@@ -7,6 +7,11 @@ import type {
   AdminCategoryOption,
   AdminEditableProduct,
 } from '@/backend/admin/product-editor'
+import { createRowId, readFileAsDataUrl, toSlug } from './form-utils'
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
 
 interface ProductImageValue {
   id: string
@@ -31,28 +36,6 @@ interface ProductEditorFormProps {
   officialStoreName: string
   product?: AdminEditableProduct
   redirectTo?: string
-}
-
-function createRowId() {
-  return Math.random().toString(36).slice(2, 10)
-}
-
-function toSlug(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function readFileAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = () => reject(new Error(`Could not read ${file.name}`))
-    reader.readAsDataURL(file)
-  })
 }
 
 export function ProductEditorForm({
@@ -159,8 +142,8 @@ export function ProductEditorForm({
       )
 
       setImages((current) => [...current, ...uploadedImages])
-    } catch (uploadError: any) {
-      setError(uploadError.message || 'Could not process selected image')
+    } catch (uploadError) {
+      setError(getErrorMessage(uploadError, 'Could not process selected image'))
     } finally {
       event.target.value = ''
     }
@@ -286,8 +269,8 @@ export function ProductEditorForm({
       }
 
       router.replace(redirectTo)
-    } catch (submitError: any) {
-      setError(submitError.message || 'Could not save product')
+    } catch (submitError) {
+      setError(getErrorMessage(submitError, 'Could not save product'))
     } finally {
       setIsSaving(false)
     }
@@ -312,8 +295,8 @@ export function ProductEditorForm({
       }
 
       router.replace(redirectTo)
-    } catch (deleteError: any) {
-      setError(deleteError.message || 'Could not delete product')
+    } catch (deleteError) {
+      setError(getErrorMessage(deleteError, 'Could not delete product'))
     } finally {
       setIsDeleting(false)
     }
