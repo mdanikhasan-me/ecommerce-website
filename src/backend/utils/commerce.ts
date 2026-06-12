@@ -1,26 +1,28 @@
 // ORDER NUMBER
-const ORDER_NUMBER_SUFFIX_LENGTH = 8
-const ORDER_NUMBER_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+// Short, human-friendly format: BLB-NNNNNN (six digits). The number is drawn
+// randomly (not sequential) so it cannot be guessed by incrementing, and all
+// order access is authorization-scoped, so a short number is safe from
+// enumeration. Uniqueness is guaranteed by the database `@unique` constraint
+// plus the collision retry in createBuyerOrder.
+export const ORDER_NUMBER_PREFIX = 'BLB'
+const ORDER_NUMBER_MIN = 100_000
+const ORDER_NUMBER_RANGE = 900_000 // inclusive range 100000..999999
+export const ORDER_NUMBER_PATTERN = /^BLB-\d{6}$/
 
-function randomOrderSuffix(): string {
-  const bytes = new Uint8Array(ORDER_NUMBER_SUFFIX_LENGTH)
-  crypto.getRandomValues(bytes)
-
-  let suffix = ''
-  for (const byte of bytes) {
-    suffix += ORDER_NUMBER_ALPHABET[byte % ORDER_NUMBER_ALPHABET.length]
-  }
-  return suffix
+/** Uniform integer in [0, maxExclusive) using rejection sampling (no modulo bias). */
+function secureRandomBelow(maxExclusive: number): number {
+  const limit = Math.floor(0xffffffff / maxExclusive) * maxExclusive
+  const buffer = new Uint32Array(1)
+  let value: number
+  do {
+    crypto.getRandomValues(buffer)
+    value = buffer[0]
+  } while (value >= limit)
+  return value % maxExclusive
 }
 
 export function generateOrderNumber(): string {
-  const now = new Date()
-  const date = [
-    String(now.getFullYear()).slice(-2),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-  ].join('')
-  return `BLB-${date}-${randomOrderSuffix()}`
+  return `${ORDER_NUMBER_PREFIX}-${ORDER_NUMBER_MIN + secureRandomBelow(ORDER_NUMBER_RANGE)}`
 }
 
 // SHIPPING

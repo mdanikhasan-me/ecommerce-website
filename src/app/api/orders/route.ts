@@ -24,7 +24,11 @@ export async function GET(req: NextRequest) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
+  const currentUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true, isActive: true },
+  })
+  const isAdmin = Boolean(currentUser?.isActive && ['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role))
   const sp = req.nextUrl.searchParams
   const page = parseOrderListPage(sp.get('page'))
   const limit = ORDER_LIST_PAGE_SIZE
@@ -78,7 +82,7 @@ export async function POST(req: NextRequest) {
       database: db as unknown as BuyerOrderDb,
       userId: session.user.id,
       payload: parsedPayload.data,
-      orderNumber: generateOrderNumber(),
+      generateOrderNumber,
       syncSoldCounts: syncProductSoldCounts,
     })
 

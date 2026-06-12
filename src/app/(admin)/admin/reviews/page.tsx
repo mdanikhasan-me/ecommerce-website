@@ -1,5 +1,6 @@
 import { db } from '@/backend/database'
 import { formatDateRelative } from '@/backend/utils'
+import { parseAdminListPage, parseReviewStatusFilter } from '@/backend/admin/list-filters'
 import { Star } from 'lucide-react'
 import Link from 'next/link'
 import { ReviewModerationActions } from '@/frontend/components/admin/ReviewModerationActions'
@@ -9,14 +10,14 @@ export const metadata = { title: 'Admin Reviews' }
 
 export default async function AdminReviewsPage({ searchParams }: Props) {
   const filters = await searchParams
-  const page = Math.max(1, parseInt(filters.page ?? '1'))
+  const page = parseAdminListPage(filters.page)
   const limit = 20
   const skip = (page - 1) * limit
-  const statusFilter = filters.status ?? 'PENDING'
+  const statusFilter = parseReviewStatusFilter(filters.status) ?? 'PENDING'
 
   const [reviews, total] = await Promise.all([
     db.review.findMany({
-      where: { status: statusFilter as any },
+      where: { status: statusFilter },
       skip, take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
@@ -24,7 +25,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
         user: { select: { name: true, email: true } },
       },
     }),
-    db.review.count({ where: { status: statusFilter as any } }),
+    db.review.count({ where: { status: statusFilter } }),
   ])
 
   const counts = await db.review.groupBy({ by: ['status'], _count: true })

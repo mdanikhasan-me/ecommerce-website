@@ -1,6 +1,8 @@
+import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
+import { parseAdminListPage, parseOrderStatusFilter } from '@/backend/admin/list-filters'
 import { Search, ShoppingBag } from 'lucide-react'
 
 interface Props {
@@ -22,17 +24,19 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default async function AdminOrdersPage({ searchParams }: Props) {
   const filters = await searchParams
-  const page = Math.max(1, parseInt(filters.page ?? '1'))
+  const page = parseAdminListPage(filters.page)
   const limit = 20
   const skip = (page - 1) * limit
 
-  const where: any = {}
-  if (filters.status) where.status = filters.status
+  const where: Prisma.OrderWhereInput = {}
+  const statusFilter = parseOrderStatusFilter(filters.status)
+  if (statusFilter) where.status = statusFilter
   if (filters.q) {
+    const q = filters.q.trim().slice(0, 120)
     where.OR = [
-      { orderNumber: { contains: filters.q, mode: 'insensitive' } },
-      { user: { email: { contains: filters.q, mode: 'insensitive' } } },
-      { guestEmail: { contains: filters.q, mode: 'insensitive' } },
+      { orderNumber: { contains: q, mode: 'insensitive' } },
+      { user: { email: { contains: q, mode: 'insensitive' } } },
+      { guestEmail: { contains: q, mode: 'insensitive' } },
     ]
   }
 

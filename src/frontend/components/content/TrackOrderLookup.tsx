@@ -28,7 +28,7 @@ export function TrackOrderLookup() {
           <input
             aria-label="Order number"
             type="text"
-            placeholder="e.g. BB-20260413-XXXX"
+            placeholder="e.g. BLB-482913"
             value={orderNumber}
             onChange={(event) => setOrderNumber(event.target.value)}
             className="input-base pl-10"

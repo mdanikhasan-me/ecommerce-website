@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { formatDate, formatPrice } from '@/backend/utils'
+import { parseReturnStatusFilter } from '@/backend/admin/list-filters'
 
 export const metadata = { title: 'Admin Returns' }
 
@@ -10,7 +12,8 @@ export default async function AdminReturnsPage({
   searchParams: Promise<{ status?: string }>
 }) {
   const filters = await searchParams
-  const where = filters.status ? { status: filters.status as any } : undefined
+  const statusFilter = parseReturnStatusFilter(filters.status)
+  const where: Prisma.ReturnRequestWhereInput | undefined = statusFilter ? { status: statusFilter } : undefined
   const requests = await db.returnRequest.findMany({
     where,
     orderBy: { updatedAt: 'desc' },

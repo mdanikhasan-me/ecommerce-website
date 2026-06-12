@@ -1,8 +1,10 @@
+import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Pencil, Eye, Package } from 'lucide-react'
 import { formatPrice } from '@/backend/utils'
+import { parseAdminListPage } from '@/backend/admin/list-filters'
 
 interface Props {
   searchParams: Promise<{ page?: string; q?: string; category?: string; status?: string }>
@@ -12,15 +14,16 @@ export const metadata = { title: 'Admin Products' }
 
 export default async function AdminProductsPage({ searchParams }: Props) {
   const filters = await searchParams
-  const page = Math.max(1, parseInt(filters.page ?? '1'))
+  const page = parseAdminListPage(filters.page)
   const limit = 20
   const skip = (page - 1) * limit
 
-  const where: any = {}
+  const where: Prisma.ProductWhereInput = {}
   if (filters.q) {
+    const q = filters.q.trim().slice(0, 120)
     where.OR = [
-      { name: { contains: filters.q, mode: 'insensitive' } },
-      { sku: { contains: filters.q, mode: 'insensitive' } },
+      { name: { contains: q, mode: 'insensitive' } },
+      { sku: { contains: q, mode: 'insensitive' } },
     ]
   }
   if (filters.category) where.categoryId = filters.category

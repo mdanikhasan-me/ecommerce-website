@@ -97,17 +97,19 @@ export function computeBuyerOrderShipping(subtotal: number) {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
 }
 
+const MAX_ORDER_NUMBER_COLLISION_RETRIES = 10
+
 export async function createBuyerOrder({
   database,
   userId,
   payload,
-  orderNumber,
+  generateOrderNumber,
   syncSoldCounts,
 }: {
   database: BuyerOrderDb
   userId: string
   payload: ParsedBuyerOrderPayload
-  orderNumber: string
+  generateOrderNumber: () => string
   syncSoldCounts: (productIds: string[]) => Promise<void>
 }): Promise<BuyerOrderCreateResult> {
   const productIds = Array.from(new Set(payload.items.map((item) => item.productId)))
@@ -245,8 +247,15 @@ export async function createBuyerOrder({
   const total = Math.max(0, subtotal - discount + shippingFee)
 
   let order: { id: string; orderNumber: string }
-  try {
-    order = await database.$transaction(async (tx) => {
+  let orderNumber = generateOrderNumber()
+  let collisionRetries = 0
+
+  // The transaction is retried only when the random order number collides with
+  // an existing one (unique-constraint violation). All other failures return
+  // or rethrow immediately, so business errors are never silently retried.
+  while (true) {
+    try {
+      order = await database.$transaction(async (tx) => {
       for (const line of preparedItems) {
         const updated = await tx.product.updateMany({
           where: getBuyerVisibleProductWhere({
@@ -344,20 +353,29 @@ export async function createBuyerOrder({
       })
 
       return created
-    })
-  } catch (error: unknown) {
-    if (error instanceof Error && error.message.startsWith('INSUFFICIENT_STOCK:')) {
-      return {
-        success: false,
-        status: 409,
-        error: `Insufficient stock for "${error.message.split(':')[1]}"`,
-        logCode: 'insufficient_stock',
+      })
+      break
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.startsWith('INSUFFICIENT_STOCK:')) {
+        return {
+          success: false,
+          status: 409,
+          error: `Insufficient stock for "${error.message.split(':')[1]}"`,
+          logCode: 'insufficient_stock',
+        }
       }
+      if (error instanceof Error && error.message === 'COUPON_USAGE_LIMIT_EXCEEDED') {
+        return { success: false, status: 400, error: 'Coupon usage limit reached' }
+      }
+      // Unique-constraint violation: regenerate the order number and retry.
+      const code = (error as { code?: unknown }).code
+      if (code === 'P2002' && collisionRetries < MAX_ORDER_NUMBER_COLLISION_RETRIES) {
+        collisionRetries += 1
+        orderNumber = generateOrderNumber()
+        continue
+      }
+      throw error
     }
-    if (error instanceof Error && error.message === 'COUPON_USAGE_LIMIT_EXCEEDED') {
-      return { success: false, status: 400, error: 'Coupon usage limit reached' }
-    }
-    throw error
   }
 
   // The order is committed at this point; stat aggregation must not turn a
