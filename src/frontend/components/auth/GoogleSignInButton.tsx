@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import { ariaDisabled } from '@/frontend/components/ui/aria'
 
 type GoogleSignInButtonProps = {
   callbackUrl: string
@@ -36,7 +37,7 @@ export function GoogleSignInButton({ callbackUrl, isAvailable }: GoogleSignInBut
         type="button"
         onClick={handleGoogle}
         disabled={!isAvailable || loading}
-        aria-disabled={!isAvailable}
+        {...ariaDisabled(!isAvailable)}
         className="btn-outline w-full h-11 gap-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleLogo />}
