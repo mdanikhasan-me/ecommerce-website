@@ -61,6 +61,7 @@ export type AdminProductPayload = {
   isBestSeller?: boolean
   pinnedInNew?: boolean
   pinnedInBestSeller?: boolean
+  isPreOrder?: boolean
   images?: ProductImageInput[]
   variants?: ProductVariantInput[]
 }
@@ -153,6 +154,7 @@ const productPayloadSchema = z
     isBestSeller: z.boolean().optional().default(false),
     pinnedInNew: z.boolean().optional().default(false),
     pinnedInBestSeller: z.boolean().optional().default(false),
+    isPreOrder: z.boolean().optional().default(false),
     images: z.array(productImagePayloadSchema).max(20).optional().default([]),
     variants: z.array(productVariantPayloadSchema).max(100).optional().default([]),
   })
@@ -228,6 +230,7 @@ export interface AdminEditableProduct {
   isBestSeller: boolean
   pinnedInNew: boolean
   pinnedInBestSeller: boolean
+  isPreOrder: boolean
   images: Array<{
     id: string
     url: string
@@ -553,6 +556,8 @@ export async function validateProductRelations(payload: AdminProductPayload) {
     brandId: null,
     sellerId: officialSeller.id,
     officialStoreName: officialSeller.storeName,
+    categorySlug: category.slug,
+    parentCategorySlug: category.parent?.slug ?? null,
     mediaTaxonomy: {
       categorySlug: category.parent?.slug ?? category.slug,
       subcategorySlug: category.parent ? category.slug : 'general',
@@ -606,6 +611,7 @@ export async function getAdminEditableProduct(id: string) {
       isBestSeller: true,
       pinnedInNew: true,
       pinnedInBestSeller: true,
+      isPreOrder: true,
       seller: {
         select: {
           storeName: true,

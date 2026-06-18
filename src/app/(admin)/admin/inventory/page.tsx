@@ -41,21 +41,21 @@ export default async function AdminInventoryPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+        <div className="rounded-md border border-red-100 bg-red-50 p-4">
           <p className="text-2xl font-bold text-red-600">{outOfStock.length}</p>
           <p className="mt-0.5 text-sm text-red-700">Out of stock</p>
         </div>
-        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+        <div className="rounded-md border border-amber-100 bg-amber-50 p-4">
           <p className="text-2xl font-bold text-amber-600">{lowStock.length}</p>
           <p className="mt-0.5 text-sm text-amber-700">Low stock</p>
         </div>
-        <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
+        <div className="rounded-md border border-green-100 bg-green-50 p-4">
           <p className="text-2xl font-bold text-green-600">{inStock.length}</p>
           <p className="mt-0.5 text-sm text-green-700">Healthy stock</p>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -81,7 +81,7 @@ export default async function AdminInventoryPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-secondary/50">
+                <tr key={product.id} className="md:hover:bg-secondary/50">
                   <td className="max-w-[260px] px-4 py-3">
                     <div className="space-y-0.5">
                       <p className="truncate font-medium">{product.name}</p>
@@ -136,7 +136,7 @@ export default async function AdminInventoryPage() {
                       />
                       <Link
                         href={`/admin/products/${product.id}`}
-                        className="text-xs text-primary hover:underline"
+                        className="text-xs text-primary md:hover:underline"
                       >
                         Edit
                       </Link>

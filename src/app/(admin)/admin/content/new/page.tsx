@@ -18,7 +18,7 @@ export default function AdminNewContentSectionPage() {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-md border border-border bg-card p-5">
         <HomepageSectionEditorForm />
       </div>
     </div>

@@ -37,7 +37,7 @@ export default async function AdminNotificationsPage() {
 
       <NotificationComposer users={users} />
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <div className="divide-y divide-border">
           {notifications.length === 0 ? (
             <div className="px-4 py-12 text-center text-muted-foreground">

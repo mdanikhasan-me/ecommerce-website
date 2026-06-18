@@ -41,6 +41,8 @@ export {
   generateLocalBusinessJsonLd,
   generateFAQJsonLd,
   generateItemListJsonLd,
+  generateCategoryListJsonLd,
+  generateWebPageJsonLd,
 } from './structured-data'
 
 export { JsonLd, serializeJsonLd } from './JsonLd'

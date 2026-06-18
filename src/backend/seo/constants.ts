@@ -1,4 +1,4 @@
-import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, YOUTUBE_URL } from '@/shared/contact'
 import { BRAND_ASSETS } from '@/shared/assets'
 import { getSiteUrl, toAbsoluteUrl } from '@/backend/seo/urls'
 import { indexableRobots } from '@/backend/seo/robots'
@@ -52,7 +52,7 @@ export const SEO = {
       addressRegion: 'Dhaka Division',
       addressCountry: 'BD',
     },
-    sameAs: [] as string[],
+    sameAs: [FACEBOOK_URL, INSTAGRAM_URL, YOUTUBE_URL] as string[],
   },
 
   og: {

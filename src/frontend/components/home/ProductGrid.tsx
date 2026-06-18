@@ -14,7 +14,7 @@ interface ProductGridProps {
   gridClassName?: string
 }
 
-const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw'
+const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 559px) 50vw, (max-width: 767px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw'
 
 export function ProductGrid({
   title,
@@ -41,13 +41,13 @@ export function ProductGrid({
             className="editorial-link group w-fit shrink-0"
             aria-label={viewAllLabel}
           >
-            View all <LocalIcon name="chevron-right" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            View all <LocalIcon name="chevron-right" className="h-4 w-4" />
           </Link>
         )}
       </div>
 
       <div className={cn(
-        'product-grid-rhythm grid grid-cols-2 gap-x-2.5 gap-y-3.5 sm:grid-cols-3 sm:gap-x-3.5 sm:gap-y-5 md:grid-cols-4 lg:gap-x-4 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6',
+        'product-grid-rhythm grid grid-cols-2 gap-x-2.5 gap-y-3.5 min-[560px]:grid-cols-3 min-[560px]:gap-x-3 min-[560px]:gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6',
         gridClassName,
       )}>
         {products.map((product) => (

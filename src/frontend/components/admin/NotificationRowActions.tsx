@@ -66,10 +66,10 @@ export function NotificationRowActions({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <button type="button" onClick={toggleRead} disabled={loading !== null} className="text-xs text-primary hover:underline disabled:opacity-50">
+      <button type="button" onClick={toggleRead} disabled={loading !== null} className="text-xs text-primary md:hover:underline disabled:opacity-50">
         {isRead ? 'Mark unread' : 'Mark read'}
       </button>
-      <button type="button" onClick={remove} disabled={loading !== null} className="text-xs text-red-600 hover:underline disabled:opacity-50">
+      <button type="button" onClick={remove} disabled={loading !== null} className="text-xs text-red-600 md:hover:underline disabled:opacity-50">
         Delete
       </button>
     </div>

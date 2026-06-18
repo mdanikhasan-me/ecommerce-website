@@ -24,7 +24,7 @@ export function FeaturedProductRotator({ products, intervalMs = 4500 }: Featured
       setTimeout(() => {
         setIndex((i) => (i + 1) % pool.length)
         setTransitioning(false)
-      }, 350)
+      }, 180)
     }, intervalMs)
     return () => clearInterval(tick)
   }, [pool.length, intervalMs])
@@ -38,7 +38,7 @@ export function FeaturedProductRotator({ products, intervalMs = 4500 }: Featured
 
   return (
     <div className="relative w-full max-w-[24rem]">
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/40 shadow-[0_32px_64px_rgba(0,0,0,0.35)]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/40 shadow-[0_18px_34px_rgba(0,0,0,0.24)]">
         {image ? (
           <Image
             key={product.id}
@@ -47,8 +47,8 @@ export function FeaturedProductRotator({ products, intervalMs = 4500 }: Featured
             fill
             sizes="(max-width: 1024px) 90vw, 24rem"
             className={cn(
-              'object-cover transition-all duration-700',
-              transitioning ? 'scale-[1.06] opacity-0' : 'scale-100 opacity-100',
+              'object-cover transition-opacity duration-200',
+              transitioning ? 'opacity-0' : 'opacity-100',
             )}
             quality={90}
           />
@@ -67,8 +67,8 @@ export function FeaturedProductRotator({ products, intervalMs = 4500 }: Featured
 
         <div
           className={cn(
-            'absolute inset-x-0 bottom-0 p-5 transition-all duration-500',
-            transitioning ? 'translate-y-2 opacity-0' : 'translate-y-0 opacity-100',
+            'absolute inset-x-0 bottom-0 p-5 transition-opacity duration-200',
+            transitioning ? 'opacity-0' : 'opacity-100',
           )}
         >
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/72">

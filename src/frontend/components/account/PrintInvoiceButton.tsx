@@ -1,15 +1,15 @@
 'use client'
 
-import { Printer } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 export function PrintInvoiceButton() {
   return (
     <button
       type="button"
       onClick={() => window.print()}
-      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors md:hover:bg-primary/90"
     >
-      <Printer className="h-4 w-4" />
+      <LocalIcon name="printer" className="h-4 w-4" />
       Print
     </button>
   )

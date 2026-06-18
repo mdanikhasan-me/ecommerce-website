@@ -1,88 +1,120 @@
 import type { Metadata } from 'next'
-import { generatePageMetadata } from '@/backend/seo'
-import { CONTACT_EMAIL, CONTACT_PHONE } from '@/shared/contact'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin Returns and Refund Policy',
-  'Read Boilabin return eligibility, refund timelines, exclusions, and support steps before requesting a return.',
+  'Boilabin accepts returns within seven days of delivery for products that arrive defective or are damaged in transit. With proof, choose a refund or a replacement.',
   '/returns',
 )
 
 export default function ReturnsPage() {
   return (
-    <ContentPageShell
-      eyebrow="Refund policy"
-      title="Return rules and refund review steps."
-      description="This page explains which items can be returned, how the request flow works, and how refund next steps are reviewed after approval."
-      updatedAt="January 2025"
+    <>
+      <JsonLd
+        data={[
+          generateWebPageJsonLd({
+            name: 'Boilabin Returns and Refund Policy',
+            description: 'Boilabin accepts returns within seven days of delivery for products that arrive defective or are damaged in transit. With proof, choose a refund or a replacement.',
+            path: '/returns',
+          }),
+          generateBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Returns', url: '/returns' },
+          ]),
+        ]}
+      />
+      <ContentPageShell
+      eyebrow="Returns & refunds"
+      title="Seven-day returns for defective or damaged items."
+      description="Boilabin accepts returns within seven days of delivery when a product arrives defective or is damaged during delivery. With clear proof of the issue, you can choose a refund or a replacement."
+      updatedAt="June 2026"
+      highlights={[
+        { label: 'Window', value: 'Seven days from the delivery date' },
+        { label: 'Covers', value: 'Defective items and delivery damage, with proof' },
+        { label: 'Resolution', value: 'Your choice of a refund or a replacement' },
+      ]}
       sections={[
         {
           id: 'eligible',
-          title: 'Eligible for return',
+          title: 'What you can return',
           body: (
-            <ul>
-              <li>Items received damaged or defective</li>
-              <li>Wrong product delivered</li>
-              <li>Products that materially differ from the listing description</li>
-              <li>Unused items in original packaging submitted within seven days of delivery</li>
-            </ul>
+            <>
+              <p>
+                A return can be requested within <strong>seven days of delivery</strong> if the product:
+              </p>
+              <ul>
+                <li>arrived <strong>defective</strong> and does not work as described, or</li>
+                <li>was <strong>damaged during delivery</strong>.</li>
+              </ul>
+              <p>
+                To process the request, you need to share clear <strong>proof of the issue</strong>, such as
+                photos or a short video showing the defect or the delivery damage, along with the packaging.
+              </p>
+            </>
+          ),
+        },
+        {
+          id: 'options',
+          title: 'Your options',
+          body: (
+            <p>
+              Once the return is reviewed and approved, you choose how it is resolved: a <strong>refund</strong> of the
+              amount paid, or a <strong>replacement</strong> of the same product where stock is available. Tell us which
+              option you prefer when you submit the request.
+            </p>
           ),
         },
         {
           id: 'not-eligible',
-          title: 'Not eligible for return',
+          title: 'What is not covered',
           body: (
             <ul>
-              <li>Items reported after the return window closes</li>
-              <li>Products missing original packaging or accessories</li>
-              <li>Damage caused by customer misuse</li>
-              <li>Perishable goods, software, or digital products</li>
-              <li>Undergarments and intimate apparel for hygiene reasons</li>
+              <li>Requests made <strong>after seven days</strong> from the delivery date.</li>
+              <li>Change of mind, the wrong size or color chosen, or items you no longer need.</li>
+              <li>Items without proof of a manufacturing defect or delivery damage.</li>
+              <li>Damage caused by use, mishandling, or accidents after delivery.</li>
             </ul>
           ),
         },
         {
           id: 'process',
-          title: 'How the process works',
+          title: 'How to request a return',
           body: (
             <ol>
-              <li>Open your account order history and choose the relevant order.</li>
-              <li>Select the return request action and choose the reason.</li>
+              <li>Sign in and open <strong>My Account → Orders</strong>.</li>
+              <li>Open the relevant order within seven days of delivery and choose <strong>Request a return</strong>.</li>
+              <li>Describe the problem and attach clear photos or video as proof.</li>
               <li>Our team reviews the request and shares the next step.</li>
-              <li>If approved, pickup or return instructions are shared with you.</li>
-              <li>The refund is released after item inspection is complete.</li>
+              <li>If approved, we arrange the return or pickup and complete an inspection.</li>
+              <li>After inspection, your chosen refund or replacement is processed.</li>
             </ol>
           ),
         },
         {
-          id: 'timeline',
-          title: 'Refund timeline',
+          id: 'refund',
+          title: 'Refunds and replacements',
           body: (
             <>
-              <div className="grid gap-3 md:grid-cols-2">
-                {[
-                  ['Bank transfer', 'Timing is confirmed after approval and inspection'],
-                  ['Cash on delivery orders', 'Support confirms the refund method after inspection'],
-                ].map(([method, time]) => (
-                  <div
-                    key={method}
-                    className="rounded-[22px] border border-border/70 bg-background/70 px-4 py-4"
-                  >
-                    <p className="text-sm font-semibold text-foreground">{method}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{time}</p>
-                  </div>
-                ))}
-              </div>
               <p>
-                For return requests, contact {CONTACT_EMAIL} or call {CONTACT_PHONE}.
+                For cash on delivery orders, support confirms the refund method with you after the returned item is
+                inspected. A replacement is shipped once the request is approved and stock is confirmed.
+              </p>
+              <p>
+                To start a return or ask a question, use the contact page and the team will guide you through it.
               </p>
             </>
           ),
         },
       ]}
       supportTitle="Need help with a return?"
-      supportCopy="If something is unclear, our support team can guide you through the request and refund steps."
+      supportCopy="If anything is unclear, our support team can guide you through the request, proof, and refund or replacement steps."
     />
+    </>
   )
 }

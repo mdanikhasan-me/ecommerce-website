@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
+import { revalidateCategorySurfaces as revalidateStorefrontCategorySurfaces } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedAdminUploads,
   ensureUniqueSlug,
@@ -12,13 +13,9 @@ import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 
 function revalidateCategorySurfaces(categoryId?: string | null, slug?: string | null) {
-  revalidatePath('/')
-  revalidatePath('/category')
+  revalidateStorefrontCategorySurfaces({ categorySlugs: slug ? [slug] : [] })
   revalidatePath('/admin/categories')
 
-  if (slug) {
-    revalidatePath(`/category/${slug}`)
-  }
   if (categoryId) {
     revalidatePath(`/admin/categories/${categoryId}`)
   }
@@ -62,7 +59,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ category }, { status: 201 })
     } catch (error) {
-      await cleanupManagedAdminUploads([image])
+      await cleanupManagedAdminUploads([image, payload.icon])
       throw error
     }
   } catch (error: unknown) {

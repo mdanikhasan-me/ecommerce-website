@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { calculateEffectivePrice } from '@/backend/catalog/product-price-filter'
+import { revalidateProductSurfaces } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedUploads,
   deleteManagedUpload,
@@ -32,6 +34,12 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       where: { id },
       include: {
         images: true,
+        category: {
+          select: {
+            slug: true,
+            parent: { select: { slug: true } },
+          },
+        },
       },
     })
 
@@ -45,7 +53,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
     }
 
     const payload = parsed.data
-    const { sellerId, mediaTaxonomy } = await validateProductRelations(payload)
+    const { sellerId, mediaTaxonomy, categorySlug, parentCategorySlug } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name, existingProduct.id)
     const images = await normalizeProductImages(payload.images, slug, mediaTaxonomy)
@@ -75,6 +83,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
               sellerId,
               basePrice: payload.basePrice,
               salePrice: payload.salePrice ?? null,
+              effectivePrice: calculateEffectivePrice(payload.basePrice, payload.salePrice),
               costPrice: payload.costPrice ?? null,
               stockQuantity: payload.stockQuantity ?? 0,
               lowStockThreshold: payload.lowStockThreshold ?? 5,
@@ -85,6 +94,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
               isBestSeller: payload.isBestSeller ?? false,
               pinnedInNew: payload.pinnedInNew ?? false,
               pinnedInBestSeller: payload.pinnedInBestSeller ?? false,
+              isPreOrder: payload.isPreOrder ?? false,
               tags: normalizeTags(payload.tags),
               metaTitle: payload.metaTitle?.trim() || null,
               metaDescription: payload.metaDescription?.trim() || null,
@@ -119,6 +129,16 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       })
     }
 
+    revalidateProductSurfaces({
+      productSlugs: [existingProduct.slug, product.slug],
+      categorySlugs: [
+        existingProduct.category.slug,
+        existingProduct.category.parent?.slug,
+        categorySlug,
+        parentCategorySlug,
+      ],
+    })
+
     return NextResponse.json({ product })
   } catch (error: unknown) {
     const { message, status } = toSafeClientError(error, 'Unable to update product')
@@ -136,7 +156,15 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
 
     const existingProduct = await db.product.findUnique({
       where: { id },
-      include: { images: true },
+      include: {
+        images: true,
+        category: {
+          select: {
+            slug: true,
+            parent: { select: { slug: true } },
+          },
+        },
+      },
     })
 
     if (!existingProduct) {
@@ -147,11 +175,21 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
       await db.product.delete({ where: { id: existingProduct.id } })
       await Promise.all(existingProduct.images.map((image) => deleteManagedUpload(image.url)))
 
+      revalidateProductSurfaces({
+        productSlugs: [existingProduct.slug],
+        categorySlugs: [existingProduct.category.slug, existingProduct.category.parent?.slug],
+      })
+
       return NextResponse.json({ success: true, deleted: true })
     } catch {
       await db.product.update({
         where: { id: existingProduct.id },
         data: { isActive: false },
+      })
+
+      revalidateProductSurfaces({
+        productSlugs: [existingProduct.slug],
+        categorySlugs: [existingProduct.category.slug, existingProduct.category.parent?.slug],
       })
 
       return NextResponse.json({

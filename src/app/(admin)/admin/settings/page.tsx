@@ -102,10 +102,10 @@ export default function AdminSettingsPage() {
               <button type="button"
                 key={group.id}
                 onClick={() => setActiveGroup(group.id)}
-                className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeGroup === group.id
                     ? 'bg-primary text-white'
-                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                    : 'text-muted-foreground md:hover:bg-secondary md:hover:text-foreground'
                 }`}
               >
                 {group.label}
@@ -115,7 +115,7 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Fields */}
-        <div className="flex-1 bg-card border border-border rounded-2xl p-6 space-y-5">
+        <div className="flex-1 bg-card border border-border rounded-md p-6 space-y-5">
           <h2 className="font-semibold text-base">{currentGroup?.label}</h2>
           {currentGroup?.fields.map((field) => (
             <div key={field.key}>

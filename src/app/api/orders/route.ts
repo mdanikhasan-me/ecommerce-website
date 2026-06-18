@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { OrderStatus, type Prisma } from '@prisma/client'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { revalidateProductSurfacesByIds } from '@/backend/catalog/storefront-revalidation'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { generateOrderNumber } from '@/backend/utils'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
@@ -102,6 +103,8 @@ export async function POST(req: NextRequest) {
       }
       return NextResponse.json({ error: orderResult.error }, { status: orderResult.status })
     }
+
+    await revalidateProductSurfacesByIds(parsedPayload.data.items.map((item) => item.productId)).catch(() => {})
 
     return NextResponse.json(orderResult.payload, { status: 201 })
   } catch (error: unknown) {

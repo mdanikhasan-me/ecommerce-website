@@ -77,8 +77,8 @@ export function AdminImageField({
         {helperText && <p className="text-xs text-muted-foreground">{helperText}</p>}
       </div>
 
-      <div className="rounded-2xl border border-border bg-secondary/30 p-3">
-        <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border bg-card">
+      <div className="rounded-md border border-border bg-secondary/30 p-3">
+        <div className="aspect-[16/10] overflow-hidden rounded-md border border-border bg-card">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className="h-full w-full object-cover" />

@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { useCartStore } from '@/frontend/stores'
+import { useCartStore } from '@/frontend/stores/cart'
 
 const CartDrawer = dynamic(
   () => import('@/frontend/components/cart/CartDrawer').then((mod) => mod.CartDrawer),

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, Grid3X3, ShoppingBag, Users, Ticket,
   Image, Star, Warehouse, BarChart3, Settings, RefreshCcw, Bell,
-  FileText, ChevronRight, Zap
+  FileText, Zap
 } from 'lucide-react'
 import { cn } from '@/backend/utils'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
@@ -37,23 +37,23 @@ export function AdminSidebar({
   const pathname = usePathname()
 
   return (
-    <aside className={cn('w-60 bg-foreground text-background flex flex-col flex-shrink-0 overflow-y-auto', className)}>
+    <aside className={cn('w-60 flex-shrink-0 overflow-y-auto bg-[hsl(270_16%_13%)] text-[hsl(42_28%_92%)] flex flex-col', className)}>
       {/* Logo */}
-      <div className="p-5 border-b border-white/10">
+      <div className="border-b border-white/10 p-5">
         <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-          <span className="rounded-xl bg-white p-1.5">
+          <span className="rounded-md bg-[hsl(42_36%_96%)] p-1.5">
             <BoilabinLogo variant="full" size={46} />
           </span>
           <div>
-            <span className="block text-sm font-semibold text-white">Boilabin</span>
-            <span className="text-xs text-white/50 block -mt-0.5">Admin Panel</span>
+            <span className="block text-sm font-semibold text-[hsl(42_36%_96%)]">Boilabin</span>
+            <span className="-mt-0.5 block text-xs text-[hsl(40_18%_74%)]">Admin Panel</span>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-3">
-        <p className="text-white/40 text-xs font-semibold uppercase tracking-widest px-3 mb-2">Main Menu</p>
+        <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-widest text-[hsl(38_14%_62%)]">Main Menu</p>
         {ADMIN_NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
           return (
@@ -62,15 +62,14 @@ export function AdminSidebar({
               href={item.href}
               onClick={onNavigate}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 mb-0.5',
+                'mb-0.5 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150',
                 isActive
-                  ? 'bg-primary text-white'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
+                  ? 'bg-[hsl(270_24%_24%)] text-[hsl(42_36%_96%)]'
+                  : 'text-[hsl(42_16%_76%)] md:hover:bg-[hsl(270_18%_18%)] md:hover:text-[hsl(42_36%_96%)]'
               )}
             >
-              <item.icon className="h-4 w-4 flex-shrink-0" />
+              <item.icon className={cn('h-4 w-4 flex-shrink-0', isActive && 'text-[hsl(var(--accent))]')} />
               {item.label}
-              {isActive && <ChevronRight className="h-3.5 w-3.5 ml-auto" />}
             </Link>
           )
         })}
@@ -78,11 +77,11 @@ export function AdminSidebar({
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-white/10">
+      <div className="border-t border-white/10 p-3">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-2 px-3 py-2 text-xs text-white/40 hover:text-white transition-colors rounded-xl hover:bg-white/10"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-xs text-[hsl(38_14%_62%)] transition-colors md:hover:bg-[hsl(270_18%_18%)] md:hover:text-[hsl(42_36%_96%)]"
         >
           <Zap className="h-3.5 w-3.5" />
           View Store

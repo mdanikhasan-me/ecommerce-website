@@ -14,52 +14,52 @@ export function AdminHeader({
   onMenuClick?: () => void
 }) {
   return (
-    <header className="h-14 bg-background border-b border-border flex items-center justify-between px-3 sm:px-6 flex-shrink-0">
+    <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border/80 bg-card/95 px-3 shadow-[0_1px_0_rgba(23,18,15,0.03)] sm:px-6">
       <button
         type="button"
         aria-label="Open admin menu"
         title="Open admin menu"
         onClick={onMenuClick}
-        className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary md:hidden"
+        className="rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70 md:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
       <div className="flex items-center gap-1.5 sm:gap-3">
-        <Link href="/" target="_blank" className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground" title="View Store">
+        <Link href="/" target="_blank" className="rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70" title="View Store">
           <ExternalLink className="h-4 w-4" />
         </Link>
         <Link
           href="/admin/notifications"
           aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
           title={unreadCount > 0 ? `${unreadCount} unread` : 'Notifications'}
-          className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground relative"
+          className="relative rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70"
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-primary text-[10px] font-bold text-white flex items-center justify-center">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
               {unreadCount > 99 ? '99+' : unreadCount}
             </span>
           )}
         </Link>
-        <div className="flex items-center gap-2 pl-2 sm:pl-3 border-l border-border">
-          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-primary/10 ring-1 ring-black/5">
+        <div className="flex items-center gap-2 border-l border-border pl-2 sm:pl-3">
+          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-secondary ring-1 ring-black/5">
             {user.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={user.image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
             ) : (
-              <span className="text-xs font-bold text-primary">{user.name?.[0]?.toUpperCase() ?? 'A'}</span>
+              <span className="text-xs font-bold text-foreground">{user.name?.[0]?.toUpperCase() ?? 'A'}</span>
             )}
           </div>
           <div className="hidden sm:block">
             <p className="text-xs font-semibold leading-none">{user.name}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{user.role.replace('_', ' ')}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{user.role.replace('_', ' ')}</p>
           </div>
           <button
             type="button"
             aria-label="Sign out"
             title="Sign out"
             onClick={() => signOut({ callbackUrl: '/auth/login' })}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground ml-1"
+            className="ml-1 rounded-md p-1.5 text-muted-foreground transition-colors md:hover:bg-secondary/70"
           >
             <LogOut className="h-4 w-4" />
           </button>

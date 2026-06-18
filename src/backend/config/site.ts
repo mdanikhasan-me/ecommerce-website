@@ -30,8 +30,10 @@ export const siteConfig = {
   },
 
   shipping: {
-    freeShippingMin: 2000,   // Tk 2,000 for free shipping
-    baseFee: 60,             // Tk 60 base shipping fee
+    freeShippingMin: 2000,   // Free standard delivery on orders over Tk 2,000
+    baseFee: 100,            // Standard delivery rate (inside Dhaka) used as the headline figure
+    dhakaFee: 100,           // Standard delivery inside Dhaka
+    outsideDhakaFee: 150,    // Standard delivery outside Dhaka
   },
 
   limits: {

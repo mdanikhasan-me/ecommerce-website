@@ -211,6 +211,42 @@ export function generateLocalBusinessJsonLd() {
   }
 }
 
+type WebPageJsonLdType = 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage'
+
+interface WebPageJsonLdInput {
+  name: string
+  description: string
+  path: string
+  type?: WebPageJsonLdType
+}
+
+export function generateWebPageJsonLd({
+  name,
+  description,
+  path,
+  type = 'WebPage',
+}: WebPageJsonLdInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': type,
+    name,
+    description,
+    url: canonicalUrl(path),
+    inLanguage: SEO.language,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: SEO.siteName,
+      url: canonicalUrl('/'),
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SEO.organization.name,
+      url: canonicalUrl('/'),
+      logo: toAbsoluteUrl(SEO.organization.logo) ?? SEO.organization.logo,
+    },
+  }
+}
+
 // FAQ JSON-LD
 interface FAQItem {
   question: string
@@ -264,6 +300,35 @@ export function generateItemListJsonLd(
           priceCurrency: 'BDT',
           price: (p.salePrice ?? p.basePrice).toFixed(2),
         },
+      },
+    })),
+  }
+}
+
+interface CategoryListItem {
+  name: string
+  slug: string
+  description?: string | null
+  position: number
+}
+
+export function generateCategoryListJsonLd(
+  listName: string,
+  categories: CategoryListItem[],
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: listName,
+    numberOfItems: categories.length,
+    itemListElement: categories.map((category) => ({
+      '@type': 'ListItem',
+      position: category.position,
+      item: {
+        '@type': 'CollectionPage',
+        name: category.name,
+        url: canonicalUrl(`/category/${category.slug}`),
+        ...(category.description ? { description: category.description } : {}),
       },
     })),
   }

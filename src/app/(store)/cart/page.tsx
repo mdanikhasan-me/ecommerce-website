@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCartStore } from '@/frontend/stores'
+import { useCartStore } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, applyCoupon } from '@/backend/utils'
 import toast from 'react-hot-toast'
@@ -64,7 +64,7 @@ export default function CartPage() {
   return (
     <div className="container-site py-5 sm:py-6 lg:py-8">
       <nav className="mb-4 flex items-center gap-2 text-xs text-muted-foreground sm:mb-5 sm:text-sm">
-        <Link href="/" className="hover:text-foreground">Home</Link>
+        <Link href="/" className="md:hover:text-foreground">Home</Link>
         <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
         <span className="text-foreground">Shopping Cart</span>
       </nav>
@@ -84,7 +84,7 @@ export default function CartPage() {
               </Link>
 
               <div className="flex-1 min-w-0">
-                <Link href={`/products/${item.slug}`} className="font-medium hover:text-primary transition-colors line-clamp-2 text-sm">
+                <Link href={`/products/${item.slug}`} className="font-medium md:hover:text-primary transition-colors line-clamp-2 text-sm">
                   {item.name}
                 </Link>
                 {item.variantName && <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>}
@@ -97,7 +97,7 @@ export default function CartPage() {
                       aria-label={`Decrease quantity for ${item.name}`}
                       title={`Decrease quantity for ${item.name}`}
                       onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
-                      className="p-2 hover:bg-secondary transition-colors"
+                      className="p-2 md:hover:bg-secondary transition-colors"
                     >
                       <LocalIcon name="minus" className="h-3.5 w-3.5" />
                     </button>
@@ -108,7 +108,7 @@ export default function CartPage() {
                       title={`Increase quantity for ${item.name}`}
                       onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
                       disabled={item.quantity >= item.stockQuantity}
-                      className="p-2 hover:bg-secondary transition-colors disabled:opacity-40"
+                      className="p-2 md:hover:bg-secondary transition-colors disabled:opacity-40"
                     >
                       <LocalIcon name="plus" className="h-3.5 w-3.5" />
                     </button>
@@ -126,7 +126,7 @@ export default function CartPage() {
                       aria-label={`Remove ${item.name} from cart`}
                       title={`Remove ${item.name} from cart`}
                       onClick={() => removeItem(item.productId, item.variantId)}
-                      className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      className="rounded-lg p-2 text-muted-foreground transition-colors md:hover:bg-destructive/10 md:hover:text-destructive"
                     >
                       <LocalIcon name="trash-2" className="h-4 w-4" />
                     </button>
@@ -145,7 +145,7 @@ export default function CartPage() {
                   aria-label={`Remove ${item.name} from cart`}
                   title={`Remove ${item.name} from cart`}
                   onClick={() => removeItem(item.productId, item.variantId)}
-                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  className="rounded-lg p-2 text-muted-foreground transition-colors md:hover:bg-destructive/10 md:hover:text-destructive"
                 >
                   <LocalIcon name="trash-2" className="h-4 w-4" />
                 </button>
@@ -185,7 +185,7 @@ export default function CartPage() {
                     <LocalIcon name="check" className="h-3.5 w-3.5" />
                     {appliedCoupon.name} applied, {formatPrice(discount)} off
                   </p>
-                  <button type="button" onClick={clearAppliedCoupon} className="font-semibold hover:underline">
+                  <button type="button" onClick={clearAppliedCoupon} className="font-semibold md:hover:underline">
                     Remove
                   </button>
                 </div>

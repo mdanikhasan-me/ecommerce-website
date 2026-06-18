@@ -3,6 +3,7 @@ import {
   persistAdminCategoryImageFile,
   type AdminCategoryUploadFile,
 } from '@/backend/admin/category-image-upload'
+import { persistAdminSubcategoryIconFile } from '@/backend/admin/category-icon-upload'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
@@ -35,9 +36,13 @@ export async function POST(req: NextRequest) {
       throw new Error('Image file is required')
     }
 
-    const url = await persistAdminCategoryImageFile(file, {
-      ownerSlugOrId: getStringValue(formData, 'owner') || 'category',
-    })
+    const owner = getStringValue(formData, 'owner') || 'category'
+    const kind = getStringValue(formData, 'kind').toLowerCase()
+
+    const url =
+      kind === 'subcategory'
+        ? await persistAdminSubcategoryIconFile(file, { ownerSlugOrId: owner })
+        : await persistAdminCategoryImageFile(file, { ownerSlugOrId: owner })
 
     return NextResponse.json({ url })
   } catch (error: unknown) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/backend/utils'
-import { Check, Copy } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -36,11 +36,11 @@ export function CopyOrderNumberButton({ orderNumber, className }: CopyOrderNumbe
       aria-label="Copy order ID"
       title="Copy order ID"
       className={cn(
-        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground',
+        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors md:hover:bg-secondary md:hover:text-foreground',
         className,
       )}
     >
-      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+      {copied ? <LocalIcon name="check" className="h-4 w-4" /> : <LocalIcon name="copy" className="h-4 w-4" />}
     </button>
   )
 }

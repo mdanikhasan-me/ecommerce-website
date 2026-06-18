@@ -7,7 +7,7 @@ import {
 } from '@/backend/orders/order-invoice'
 import { formatDate, formatPrice } from '@/backend/utils'
 import { PrintInvoiceButton } from '@/frontend/components/account/PrintInvoiceButton'
-import { ArrowLeft, Download, Printer } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
@@ -40,18 +40,18 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <Link
             href={`/account/orders/${order.id}`}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors md:hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <LocalIcon name="arrow-left" className="h-4 w-4" />
             Back to order details
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <a
               href={invoicePdfPath}
               download={invoicePdfFilename}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors md:hover:bg-primary/90"
             >
-              <Download className="h-4 w-4" />
+              <LocalIcon name="download" className="h-4 w-4" />
               Download PDF
             </a>
             <PrintInvoiceButton />
@@ -182,7 +182,7 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
           </section>
 
           <footer className="mt-8 flex items-center gap-2 border-t border-border pt-5 text-xs text-muted-foreground">
-            <Printer className="h-4 w-4" />
+            <LocalIcon name="printer" className="h-4 w-4" />
             <p>Download the PDF for a saved copy, or print this secure invoice from your browser.</p>
           </footer>
         </article>

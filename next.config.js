@@ -42,9 +42,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'utfs.io' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
-    // Improve image quality and format support
-    formats: ['image/webp', 'image/avif'],
-    qualities: [75, 82, 84, 90, 92],
+    // Keep image optimizer variants tight to avoid repeated paid transforms.
+    formats: ['image/webp'],
+    qualities: [75, 90],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Optimize caching
@@ -55,6 +55,7 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
+    optimizePackageImports: ['lucide-react'],
     serverActions: { bodySizeLimit: '10mb' },
   },
 }

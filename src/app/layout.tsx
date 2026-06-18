@@ -1,34 +1,22 @@
 import type { Metadata, Viewport } from 'next'
-import { DM_Sans, Sora, DM_Mono, Poppins } from 'next/font/google'
+import { IBM_Plex_Sans, DM_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { BRAND_ASSETS } from '@/shared/assets'
 import { getSiteUrl } from '@/backend/seo'
 import './globals.css'
 
-const dmSans = DM_Sans({
+// Body + titles: a clean, professional text sans. Reads like normal standard text; titles use the
+// same face at bold weight (see --font-display in globals.css).
+const fontSans = IBM_Plex_Sans({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  variable: '--font-sans',
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
 })
 
-const sora = Sora({
+const fontMono = DM_Mono({
   subsets: ['latin'],
-  variable: '--font-sora',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
-})
-
-// Brand display face that matches the BOILABIN wordmark (geometric rounded sans).
-const poppins = Poppins({
-  subsets: ['latin'],
-  variable: '--font-poppins',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800', '900'],
-})
-
-const dmMono = DM_Mono({
-  subsets: ['latin'],
-  variable: '--font-dm-mono',
+  variable: '--font-mono',
   display: 'swap',
   weight: ['400', '500'],
 })
@@ -93,7 +81,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${sora.variable} ${poppins.variable} ${dmMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
@@ -107,7 +95,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           toastOptions={{
             duration: 3000,
             style: {
-              fontFamily: 'var(--font-dm-sans)',
+              fontFamily: 'var(--font-sans)',
               borderRadius: '8px',
               background: 'hsl(270 36% 18%)',
               color: '#fff',

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { OrderStatus } from '@prisma/client'
 import { db } from '@/backend/database'
+import { revalidateProductSurfacesByIds } from '@/backend/catalog/storefront-revalidation'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { parseAdminOrderStatusPayload } from '@/backend/admin/order-update-editor'
@@ -136,6 +137,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath('/admin/orders')
     revalidatePath(`/admin/orders/${order.id}`)
     revalidatePath(`/account/orders/${order.id}`)
+    await revalidateProductSurfacesByIds(order.items.map((item) => item.productId)).catch(() => {})
 
     return NextResponse.json({ success: true, order: updatedOrder })
   } catch (error: unknown) {

@@ -1,6 +1,6 @@
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { enqueueOrderPlacedEmails, type EmailEnqueueTx } from '@/backend/email/outbox'
-import type { ParsedBuyerOrderPayload } from '@/backend/orders/buyer-validation'
+import type { ParsedBuyerOrderAddress, ParsedBuyerOrderPayload } from '@/backend/orders/buyer-validation'
 
 const SHIPPING_FEE_FLAT = 60
 const FREE_SHIPPING_THRESHOLD = 2000
@@ -44,7 +44,10 @@ type CouponRecord = {
 type BuyerOrderTx = {
   product: { updateMany: (args: unknown) => Promise<{ count: number }> }
   productVariant: { updateMany: (args: unknown) => Promise<{ count: number }> }
-  address: { create: (args: unknown) => Promise<{ id: string }> }
+  address: {
+    create: (args: unknown) => Promise<{ id: string }>
+    findFirst: (args: unknown) => Promise<(ParsedBuyerOrderAddress & { id: string }) | null>
+  }
   order: { create: (args: unknown) => Promise<{ id: string; orderNumber: string; createdAt: Date }> }
   coupon: { update: (args: unknown) => Promise<{ usageCount: number; usageLimit: number | null }> }
   payment: { create: (args: unknown) => Promise<unknown> }
@@ -280,15 +283,54 @@ export async function createBuyerOrder({
         }
       }
 
-      const createdAddress = await tx.address.create({
-        data: { userId, ...payload.address },
-      })
+      let orderAddressId: string
+      let orderAddress: ParsedBuyerOrderAddress
+
+      if (payload.addressId) {
+        const savedAddress = await tx.address.findFirst({
+          where: { id: payload.addressId, userId },
+          select: {
+            id: true,
+            fullName: true,
+            phone: true,
+            addressLine1: true,
+            addressLine2: true,
+            city: true,
+            district: true,
+            division: true,
+            postalCode: true,
+          },
+        })
+        if (!savedAddress) {
+          throw new Error('ADDRESS_NOT_FOUND')
+        }
+        orderAddressId = savedAddress.id
+        orderAddress = {
+          fullName: savedAddress.fullName,
+          phone: savedAddress.phone,
+          addressLine1: savedAddress.addressLine1,
+          addressLine2: savedAddress.addressLine2,
+          city: savedAddress.city,
+          district: savedAddress.district,
+          division: savedAddress.division,
+          postalCode: savedAddress.postalCode,
+        }
+      } else {
+        if (!payload.address) {
+          throw new Error('ADDRESS_NOT_FOUND')
+        }
+        const createdAddress = await tx.address.create({
+          data: { userId, isSaved: payload.saveAddress, ...payload.address },
+        })
+        orderAddressId = createdAddress.id
+        orderAddress = payload.address
+      }
 
       const created = await tx.order.create({
         data: {
           orderNumber,
           userId,
-          addressId: createdAddress.id,
+          addressId: orderAddressId,
           subtotal,
           shippingFee,
           discount,
@@ -342,7 +384,7 @@ export async function createBuyerOrder({
         paymentStatus: 'PENDING',
         customerEmail: customer.email,
         customerName: customer.name,
-        address: payload.address,
+        address: orderAddress,
         items: preparedItems.map((line) => ({
           productName: line.productName,
           variantName: line.variantName,
@@ -362,6 +404,13 @@ export async function createBuyerOrder({
           status: 409,
           error: `Insufficient stock for "${error.message.split(':')[1]}"`,
           logCode: 'insufficient_stock',
+        }
+      }
+      if (error instanceof Error && error.message === 'ADDRESS_NOT_FOUND') {
+        return {
+          success: false,
+          status: 400,
+          error: 'Select a valid delivery address',
         }
       }
       if (error instanceof Error && error.message === 'COUPON_USAGE_LIMIT_EXCEEDED') {

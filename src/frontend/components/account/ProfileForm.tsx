@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 interface ProfileFormProps {
   user: { id: string; name: string | null; email: string; phone: string | null; image: string | null }
@@ -121,7 +122,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="flex justify-end">
         <button type="submit" disabled={loading} className="btn-primary gap-2">
-          {loading ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+          {loading ? <Loader2 className="size-4 animate-spin" /> : <LocalIcon name="save" className="size-4" />}
           Save Profile
         </button>
       </div>

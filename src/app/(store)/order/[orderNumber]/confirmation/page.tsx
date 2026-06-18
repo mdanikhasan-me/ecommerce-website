@@ -24,7 +24,11 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
   if (!session?.user) notFound()
 
-  const isOrderAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
+  const currentUser = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true, isActive: true },
+  })
+  const isOrderAdmin = Boolean(currentUser?.isActive && ['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role))
   const order = await db.order.findFirst({
     where: {
       orderNumber,

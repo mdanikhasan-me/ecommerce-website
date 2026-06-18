@@ -4,10 +4,6 @@ function booleanAria(value: boolean): BooleanAriaValue {
   return value ? 'true' : 'false'
 }
 
-export function ariaExpanded(expanded: boolean): { 'aria-expanded': BooleanAriaValue } {
-  return { 'aria-expanded': booleanAria(expanded) }
-}
-
 export function ariaPressed(pressed: boolean): { 'aria-pressed': BooleanAriaValue } {
   return { 'aria-pressed': booleanAria(pressed) }
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Mail } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 import { ProductCardData } from '@/backend/types/product'
 import { calculateDiscount, formatPrice } from '@/backend/utils'
@@ -99,9 +99,9 @@ function PromoTextPanel({
           </div>
 
           <div className="mt-7">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors group-hover:bg-white">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors md:group-hover:bg-white">
               {collection.cta}
-              <ArrowRight className="h-4 w-4" />
+              <LocalIcon name="arrow-right" className="h-4 w-4" />
             </span>
           </div>
         </div>
@@ -177,7 +177,7 @@ function PromoProductPreview({
             fill
             className="object-cover"
             sizes={compact ? '168px' : '(max-width: 1024px) 36vw, 16vw'}
-            quality={82}
+            quality={75}
           />
         ) : null}
         {discount > 0 ? (
@@ -211,10 +211,10 @@ export function NewsletterSection() {
   return (
     <section>
       <div className="container-site pt-4 pb-8 sm:pt-6 sm:pb-10 lg:pb-12">
-        <div className="w-full overflow-hidden rounded-[1.45rem] border border-black/6 bg-[linear-gradient(135deg,#2f1f42_0%,#5b3c7a_52%,#cbb7a3_170%)] px-5 py-8 shadow-[0_22px_54px_rgba(27,20,18,0.11)] sm:rounded-[1.8rem] sm:px-8 lg:px-10 xl:flex xl:items-center xl:justify-between xl:gap-12 xl:px-14 xl:py-10 2xl:px-16">
+        <div className="w-full overflow-hidden rounded-[1.45rem] border border-black/6 bg-[linear-gradient(135deg,#2f1f42_0%,#5b3c7a_52%,#cbb7a3_170%)] px-5 py-8 shadow-[0_12px_28px_rgba(27,20,18,0.08)] sm:rounded-[1.8rem] sm:px-8 lg:px-10 xl:flex xl:items-center xl:justify-between xl:gap-12 xl:px-14 xl:py-10 2xl:px-16">
           <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-[33rem] xl:text-left">
             <div className="mb-3 flex items-center justify-center gap-2 xl:justify-start">
-              <Mail className="h-4 w-4 text-[hsl(var(--buttermilk))]" />
+              <LocalIcon name="mail" className="h-4 w-4 text-[hsl(var(--buttermilk))]" />
               <span className="text-[hsl(var(--buttermilk))] text-xs font-semibold uppercase tracking-[0.26em]">Newsletter</span>
             </div>
             <h2 className="font-display text-[1.8rem] font-bold leading-[0.96] text-white sm:text-[2.2rem] xl:text-[2.5rem]">

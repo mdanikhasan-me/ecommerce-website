@@ -41,12 +41,12 @@ export default async function AdminOrderDetailPage({ params }: Props) {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="border-b border-border px-5 py-4 font-semibold">Order Items</div>
             <div className="divide-y divide-border">
               {order.items.map((item) => (
                 <div key={item.id} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-4">
-                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-secondary">
+                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md bg-secondary">
                     {item.imageUrl && (
                       <Image
                         src={item.imageUrl}
@@ -95,7 +95,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="border-b border-border px-5 py-4 font-semibold">Order Timeline</div>
             <div className="p-5">
               <div className="space-y-4">
@@ -128,7 +128,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
         </div>
 
         <div className="space-y-5">
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="border-b border-border px-5 py-4 font-semibold">Customer</div>
             <div className="space-y-2 p-5 text-sm">
               <p className="font-medium">{order.user?.name ?? 'Guest'}</p>
@@ -143,7 +143,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </div>
 
           {order.address && (
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="overflow-hidden rounded-md border border-border bg-card">
               <div className="border-b border-border px-5 py-4 font-semibold">
                 Delivery Address
               </div>
@@ -160,7 +160,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           )}
 
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="overflow-hidden rounded-md border border-border bg-card">
             <div className="border-b border-border px-5 py-4 font-semibold">Payment</div>
             <div className="space-y-4 p-5 text-sm">
               <div className="flex justify-between">
@@ -188,7 +188,7 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </div>
 
           {order.notes && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
               <p className="mb-1 text-xs font-semibold text-amber-700">Order Note</p>
               <p className="text-sm text-amber-800">{order.notes}</p>
             </div>

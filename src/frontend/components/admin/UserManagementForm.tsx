@@ -68,7 +68,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <section className="space-y-6 rounded-2xl border border-border bg-card p-5">
+      <section className="space-y-6 rounded-md border border-border bg-card p-5">
         <div>
           <h2 className="font-display text-lg font-semibold">Account Details</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -128,7 +128,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
 
         <label
           htmlFor={`${fieldIdPrefix}-is-active`}
-          className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm"
+          className="flex items-center gap-3 rounded-md border border-border bg-secondary/40 px-4 py-3 text-sm"
         >
           <input
             id={`${fieldIdPrefix}-is-active`}
@@ -151,7 +151,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
       </section>
 
       <aside className="space-y-4">
-        <section className="rounded-2xl border border-border bg-card p-5">
+        <section className="rounded-md border border-border bg-card p-5">
           <h3 className="font-display font-semibold">Activity Summary</h3>
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between">

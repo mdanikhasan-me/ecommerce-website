@@ -51,7 +51,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
+      <div className="bg-card border border-border rounded-md p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3">
           <input aria-label="Search name or email..." title="Search name or email..." name="q" defaultValue={filters.q} placeholder="Search name or email..." className="input-base max-w-xs" />
           <select aria-label="Role" title="Role" name="role" defaultValue={filters.role} className="input-base w-40">
@@ -66,7 +66,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </form>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
@@ -88,7 +88,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 </td>
               </tr>
             ) : users.map((user) => (
-              <tr key={user.id} className="hover:bg-secondary/50">
+              <tr key={user.id} className="md:hover:bg-secondary/50">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
@@ -114,7 +114,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                   {formatDate(user.createdAt)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-primary hover:underline">
+                  <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-primary md:hover:underline">
                     Manage
                   </Link>
                 </td>

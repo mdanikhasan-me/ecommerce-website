@@ -1,4 +1,4 @@
-import { OrderStatus } from '@prisma/client'
+import { OrderStatus, Prisma } from '@prisma/client'
 
 import { db } from '@/backend/database'
 
@@ -21,18 +21,15 @@ export async function syncProductSoldCounts(productIds: string[]) {
     _sum: { quantity: true },
   })
 
-  await db.$transaction([
-    db.product.updateMany({
-      where: { id: { in: ids } },
-      data: { soldCount: 0 },
-    }),
-    ...grouped.map((entry) =>
-      db.product.update({
-        where: { id: entry.productId },
-        data: { soldCount: entry._sum.quantity ?? 0 },
-      })
-    ),
-  ])
+  const counts = new Map(grouped.map((entry) => [entry.productId, entry._sum.quantity ?? 0]))
+  const rows = ids.map((id) => Prisma.sql`(${id}::text, ${counts.get(id) ?? 0}::integer)`)
+
+  await db.$executeRaw`
+    UPDATE "Product" AS p
+    SET "soldCount" = v."soldCount"
+    FROM (VALUES ${Prisma.join(rows)}) AS v("id", "soldCount")
+    WHERE p."id" = v."id"
+  `
 }
 
 type RecordProductViewArgs = {

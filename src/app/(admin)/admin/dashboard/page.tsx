@@ -108,13 +108,13 @@ export default async function AdminDashboard() {
         </div>
         <div className="flex items-center gap-2">
           {data.pendingOrders > 0 && (
-            <Link href="/admin/orders?status=PENDING" className="flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl px-3 py-2 text-sm font-medium hover:bg-amber-100 transition-colors">
+            <Link href="/admin/orders?status=PENDING" className="flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-md px-3 py-2 text-sm font-medium md:hover:bg-amber-100 transition-colors">
               <Clock className="h-4 w-4" />
               {data.pendingOrders} pending orders
             </Link>
           )}
           {data.pendingReviews > 0 && (
-            <Link href="/admin/reviews?status=PENDING" className="flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl px-3 py-2 text-sm font-medium hover:bg-blue-100 transition-colors">
+            <Link href="/admin/reviews?status=PENDING" className="flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-md px-3 py-2 text-sm font-medium md:hover:bg-blue-100 transition-colors">
               {data.pendingReviews} reviews to moderate
             </Link>
           )}
@@ -124,7 +124,7 @@ export default async function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {STATS.map((stat) => (
-          <div key={stat.title} className="bg-card border border-border rounded-2xl p-5">
+          <div key={stat.title} className="bg-card border border-border rounded-md p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">{stat.title}</p>
@@ -136,7 +136,7 @@ export default async function AdminDashboard() {
                   </div>
                 )}
               </div>
-              <div className={`p-2.5 rounded-xl ${stat.bg}`}>
+              <div className={`p-2.5 rounded-md ${stat.bg}`}>
                 <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
               </div>
             </div>
@@ -146,17 +146,17 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Recent Orders */}
-        <div className="xl:col-span-2 bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="xl:col-span-2 bg-card border border-border rounded-md overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <h2 className="font-semibold">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-sm text-primary hover:underline">View All</Link>
+            <Link href="/admin/orders" className="text-sm text-primary md:hover:underline">View All</Link>
           </div>
           <div className="divide-y divide-border">
             {data.recentOrders.map((order) => {
               const statusInfo = statusMap[order.status] ?? { label: order.status, color: 'text-muted-foreground', icon: Clock }
               const StatusIcon = statusInfo.icon
               return (
-                <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-secondary transition-colors">
+                <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center gap-3 px-5 py-3 md:hover:bg-secondary transition-colors">
                   <div>
                     <p className="text-sm font-semibold font-mono">{order.orderNumber}</p>
                     <p className="text-xs text-muted-foreground">{order.user?.name ?? order.guestEmail}</p>
@@ -181,7 +181,7 @@ export default async function AdminDashboard() {
         {/* Side Panel */}
         <div className="space-y-5">
           {/* Order Status */}
-          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="bg-card border border-border rounded-md overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
               <h2 className="font-semibold">Order Status</h2>
             </div>
@@ -205,14 +205,14 @@ export default async function AdminDashboard() {
 
           {/* Low Stock */}
           {data.lowStockProducts.length > 0 && (
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="bg-card border border-border rounded-md overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-border">
                 <h2 className="font-semibold text-amber-600">Low Stock Alert</h2>
                 <Link href="/admin/inventory" className="text-xs text-primary">Manage</Link>
               </div>
               <div className="p-3 space-y-2">
                 {data.lowStockProducts.map((p) => (
-                  <Link key={p.id} href={`/admin/products/${p.id}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary transition-colors text-sm">
+                  <Link key={p.id} href={`/admin/products/${p.id}`} className="flex items-center justify-between p-2 rounded-md md:hover:bg-secondary transition-colors text-sm">
                     <span className="truncate font-medium">{p.name}</span>
                     <span className={`font-bold ml-2 ${p.stockQuantity === 0 ? 'text-red-500' : 'text-amber-500'}`}>
                       {p.stockQuantity === 0 ? 'Out' : `${p.stockQuantity} left`}

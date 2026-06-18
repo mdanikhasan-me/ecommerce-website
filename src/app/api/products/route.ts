@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import {
+  buildEffectivePriceOrderBy,
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
-  orderProductsById,
-  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseProductApiParams } from '@/backend/catalog/search-params'
 
@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
   }
   if (params.category) andClauses.push({ category: { slug: params.category } })
   if (params.featured) andClauses.push({ isFeatured: true })
+  if (params.bestSeller) andClauses.push({ isBestSeller: true })
   if (params.isNew) andClauses.push({ isNew: true })
   const effectivePriceWhere = buildEffectivePriceWhere(
     params.minPrice,
@@ -39,37 +40,34 @@ export async function GET(req: NextRequest) {
   if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
   const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
   const effectivePriceSort = getEffectivePriceSortDirection(params.sort)
+  const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
 
   let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   if (params.sort === 'newest') orderBy = { createdAt: 'desc' }
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const productInclude = {
-    images: { where: { isPrimary: true }, take: 1 },
-    category: { select: { name: true, slug: true } },
-  } satisfies Prisma.ProductInclude
+  // Opt-in extra detail (specs + attributes) used by the compare page.
+  const includeDetails = req.nextUrl.searchParams.get('details') === '1'
+  const productSelect = {
+    ...productCardSelect,
+    ...(includeDetails
+      ? {
+          description: true,
+          shortDescription: true,
+          attributes: { select: { id: true, name: true, value: true }, orderBy: { sortOrder: 'asc' } },
+          specifications: { select: { group: true, name: true, value: true, sortOrder: true }, orderBy: { sortOrder: 'asc' } },
+        }
+      : {}),
+  } satisfies Prisma.ProductSelect
 
   const [products, total] = await Promise.all([
-    effectivePriceSort
-      ? db.product.findMany({
-          where,
-          orderBy: { id: 'asc' },
-          select: { id: true, basePrice: true, salePrice: true },
-        }).then(async (items) => {
-          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
-          if (pageIds.length === 0) return []
-
-          const pageProducts = await db.product.findMany({
-            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
-            include: productInclude,
-          })
-
-          return orderProductsById(pageProducts, pageIds)
-        })
-      : db.product.findMany({
-          where, orderBy, skip, take: limit,
-          include: productInclude,
-        }),
+    db.product.findMany({
+      where,
+      orderBy: effectivePriceOrderBy ?? orderBy,
+      skip,
+      take: limit,
+      select: productSelect,
+    }),
     db.product.count({ where }),
   ])
 

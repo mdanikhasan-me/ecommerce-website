@@ -54,14 +54,44 @@ function StarBar({ count, total, star }: { count: number; total: number; star: n
 export function ReviewSection({ product, reviews, distribution, reviewAccess }: Props) {
   const router = useRouter()
   const { data: session } = useSession()
+  const [currentReviewAccess, setCurrentReviewAccess] = useState(reviewAccess)
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({ rating: 0, title: '', body: '', hoverRating: 0 })
   const [sortBy, setSortBy] = useState<'newest' | 'highest' | 'lowest' | 'helpful'>('newest')
-  const canWriteReview = Boolean(session && reviewAccess.canReview)
+  const canWriteReview = Boolean(session && currentReviewAccess.canReview)
   const visibleReviewLabel = product.reviewCount > reviews.length
     ? `Showing ${reviews.length} of ${product.reviewCount} reviews`
     : `${product.reviewCount} reviews`
+
+  useEffect(() => {
+    if (!session?.user) {
+      setCurrentReviewAccess(reviewAccess)
+      return
+    }
+
+    const controller = new AbortController()
+
+    fetch(`/api/reviews/access?productId=${encodeURIComponent(product.id)}`, {
+      signal: controller.signal,
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        if (!payload) return
+        setCurrentReviewAccess({
+          canReview: Boolean(payload.canReview),
+          hasDeliveredPurchase: Boolean(payload.hasDeliveredPurchase),
+          existingReviewStatus: payload.existingReviewStatus ?? null,
+        })
+      })
+      .catch((error) => {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          setCurrentReviewAccess(reviewAccess)
+        }
+      })
+
+    return () => controller.abort()
+  }, [product.id, reviewAccess, session?.user])
 
   useEffect(() => {
     if (!canWriteReview || typeof window === 'undefined') return
@@ -75,13 +105,13 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
     return b.helpfulCount - a.helpfulCount
   })
 
-  const reviewStatusLabel = reviewAccess.existingReviewStatus === 'APPROVED'
+  const reviewStatusLabel = currentReviewAccess.existingReviewStatus === 'APPROVED'
     ? 'Your review is live'
-    : reviewAccess.existingReviewStatus === 'PENDING'
+    : currentReviewAccess.existingReviewStatus === 'PENDING'
       ? 'Review pending'
-      : reviewAccess.existingReviewStatus === 'REJECTED'
+      : currentReviewAccess.existingReviewStatus === 'REJECTED'
         ? 'Review unavailable'
-        : !reviewAccess.hasDeliveredPurchase && session
+        : !currentReviewAccess.hasDeliveredPurchase && session
           ? 'Review unlocks after delivery'
           : null
 
@@ -89,7 +119,7 @@ export function ReviewSection({ product, reviews, distribution, reviewAccess }: 
     e.preventDefault()
     if (!session) { toast.error('Please sign in to leave a review'); return }
     if (!canWriteReview) {
-      toast.error(reviewAccess.hasDeliveredPurchase ? 'You already reviewed this product' : 'Review unlocks after delivery')
+      toast.error(currentReviewAccess.hasDeliveredPurchase ? 'You already reviewed this product' : 'Review unlocks after delivery')
       return
     }
     if (form.rating === 0) { toast.error('Please select a rating'); return }

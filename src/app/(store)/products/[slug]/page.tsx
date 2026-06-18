@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense, cache } from 'react'
 
-import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import {
   getBuyerVisibleProductWhere,
   getPublicProductDetailWhere,
@@ -25,7 +25,11 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
-export const revalidate = 60
+export const revalidate = 600
+
+export async function generateStaticParams() {
+  return []
+}
 
 const getProduct = cache(async (slug: string) => {
   return db.product.findFirst({
@@ -82,10 +86,7 @@ const getRelatedProducts = cache(async (categoryId: string, productId: string) =
       id: { not: productId },
     }),
     take: 4,
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
+    select: productCardSelect,
   })
 })
 
@@ -132,7 +133,7 @@ function RelatedProductsFallback() {
   return (
     <section className="mt-10 sm:mt-12">
       <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:grid-cols-4 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
             <div className="skeleton aspect-[4/3] w-full" />
@@ -160,40 +161,16 @@ async function ProductReviewsSection({
   rating: number
   reviewCount: number
 }) {
-  const session = await auth()
-
-  const [reviews, distribution, reviewAccessData] = await Promise.all([
+  const [reviews, distribution] = await Promise.all([
     getApprovedReviews(productId),
     getReviewDistribution(productId),
-    session?.user
-      ? Promise.all([
-          db.order.findFirst({
-            where: {
-              userId: session.user.id,
-              status: 'DELIVERED',
-              items: { some: { productId } },
-            },
-            select: { id: true },
-          }),
-          db.review.findUnique({
-            where: { productId_userId: { productId, userId: session.user.id } },
-            select: { status: true },
-          }),
-        ]).then(([deliveredOrder, existingReview]) => ({ deliveredOrder, existingReview }))
-      : Promise.resolve(null),
   ])
 
-  const reviewAccess: ReviewAccessState = reviewAccessData
-    ? {
-        canReview: Boolean(reviewAccessData.deliveredOrder && !reviewAccessData.existingReview),
-        hasDeliveredPurchase: Boolean(reviewAccessData.deliveredOrder),
-        existingReviewStatus: reviewAccessData.existingReview?.status ?? null,
-      }
-    : {
-        canReview: false,
-        hasDeliveredPurchase: false,
-        existingReviewStatus: null,
-      }
+  const reviewAccess: ReviewAccessState = {
+    canReview: false,
+    hasDeliveredPurchase: false,
+    existingReviewStatus: null,
+  }
 
   return (
     <ReviewSection
@@ -219,12 +196,12 @@ async function RelatedProductsSection({
   return (
     <section className="mt-10 sm:mt-12">
       <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:grid-cols-4 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
         {related.map((relatedProduct) => (
           <ProductCard
             key={relatedProduct.id}
             product={relatedProduct}
-            imageSizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw"
+            imageSizes="(max-width: 559px) 50vw, (max-width: 1023px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw"
           />
         ))}
       </div>
@@ -263,11 +240,11 @@ export default async function ProductPage({ params }: Props) {
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
 
       <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-5 sm:gap-2 sm:text-sm">
-        <Link href="/" className="whitespace-nowrap transition-colors hover:text-foreground">
+        <Link href="/" className="whitespace-nowrap transition-colors md:hover:text-foreground">
           Home
         </Link>
         <span>/</span>
-        <Link href={`/category/${product.category.slug}`} className="whitespace-nowrap capitalize transition-colors hover:text-foreground">
+        <Link href={`/category/${product.category.slug}`} className="whitespace-nowrap capitalize transition-colors md:hover:text-foreground">
           {product.category.name}
         </Link>
         <span className="hidden sm:inline">/</span>

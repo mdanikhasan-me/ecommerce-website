@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { revalidateProductSurfaces } from '@/backend/catalog/storefront-revalidation'
 import { parseReviewPayload, syncProductReviewStats } from '@/backend/reviews'
 import { parsePublicId } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
@@ -54,6 +55,25 @@ export async function POST(req: NextRequest) {
     })
 
     const stats = await syncProductReviewStats(productId)
+    const product = await db.product.findUnique({
+      where: { id: productId },
+      select: {
+        slug: true,
+        category: {
+          select: {
+            slug: true,
+            parent: { select: { slug: true } },
+          },
+        },
+      },
+    })
+
+    if (product) {
+      revalidateProductSurfaces({
+        productSlugs: [product.slug],
+        categorySlugs: [product.category.slug, product.category.parent?.slug],
+      })
+    }
 
     return NextResponse.json({ success: true, review, stats }, { status: 201 })
   } catch {

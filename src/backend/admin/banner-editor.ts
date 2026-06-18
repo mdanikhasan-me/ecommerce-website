@@ -42,7 +42,8 @@ const bannerPayloadSchema = z
     imageUrl: optionalBannerImageUrl,
     mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
-    position: z.string().trim().min(1).max(80).optional().default('hero'),
+    // Single banner placement for now: the homepage hero. Any legacy value is coerced.
+    position: z.string().trim().max(80).optional().transform(() => 'hero' as const),
     sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),
     isActive: z.boolean().optional().default(true),
     startsAt: optionalDate('Start date is invalid'),

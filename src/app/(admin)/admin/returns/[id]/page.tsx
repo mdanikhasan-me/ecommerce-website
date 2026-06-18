@@ -58,7 +58,7 @@ export default async function AdminReturnDetailPage({
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Reason</p>
@@ -81,7 +81,7 @@ export default async function AdminReturnDetailPage({
             </div>
 
             {request.description && (
-              <div className="mt-5 rounded-2xl border border-border bg-secondary/40 p-4">
+              <div className="mt-5 rounded-md border border-border bg-secondary/40 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Customer description</p>
                 <p className="mt-2 text-sm">{request.description}</p>
               </div>
@@ -92,7 +92,7 @@ export default async function AdminReturnDetailPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Uploaded evidence</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {request.images.map((image, index) => (
-                    <div key={`${image}-${index}`} className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-secondary">
+                    <div key={`${image}-${index}`} className="relative aspect-square overflow-hidden rounded-md border border-border bg-secondary">
                       <Image src={image} alt={`Return evidence ${index + 1}`} fill className="object-cover" sizes="220px" />
                     </div>
                   ))}
@@ -101,12 +101,12 @@ export default async function AdminReturnDetailPage({
             )}
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-border bg-card">
+          <section className="overflow-hidden rounded-md border border-border bg-card">
             <div className="border-b border-border px-5 py-4 font-semibold">Order Items</div>
             <div className="divide-y divide-border">
               {request.order.items.map((item) => (
                 <div key={item.id} className="flex gap-4 p-4">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-secondary">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-md bg-secondary">
                     {item.imageUrl && (
                       <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="64px" />
                     )}
@@ -123,7 +123,7 @@ export default async function AdminReturnDetailPage({
         </div>
 
         <div className="space-y-5">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h3 className="font-display font-semibold">Customer</h3>
             <div className="mt-4 space-y-2 text-sm">
               <p className="font-medium">{request.order.user?.name || 'Guest'}</p>
@@ -132,7 +132,7 @@ export default async function AdminReturnDetailPage({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h3 className="font-display font-semibold">Order Summary</h3>
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between">
@@ -147,7 +147,7 @@ export default async function AdminReturnDetailPage({
                 <span className="text-muted-foreground">Order total</span>
                 <span>{formatPrice(request.order.total)}</span>
               </div>
-              <Link href={`/admin/orders/${request.order.id}`} className="inline-flex text-primary hover:underline">
+              <Link href={`/admin/orders/${request.order.id}`} className="inline-flex text-primary md:hover:underline">
                 Open order details
               </Link>
             </div>

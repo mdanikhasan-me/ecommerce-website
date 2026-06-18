@@ -1,6 +1,7 @@
 import { db } from '@/backend/database'
 
 export type AdminReportExportType = 'orders' | 'products' | 'customers'
+export type AdminReportExportRole = 'ADMIN' | 'SUPER_ADMIN'
 
 export type AdminReportFieldSensitivity =
   | 'non-sensitive-operational'
@@ -102,6 +103,19 @@ export const ADMIN_REPORT_EXPORT_METADATA = {
     ],
   },
 } satisfies Record<AdminReportExportType, AdminReportExportMetadata>
+
+export const ADMIN_REPORT_EXPORT_ALLOWED_ROLES = {
+  orders: ['SUPER_ADMIN'],
+  products: ['ADMIN', 'SUPER_ADMIN'],
+  customers: ['SUPER_ADMIN'],
+} as const satisfies Record<AdminReportExportType, readonly AdminReportExportRole[]>
+
+export function canExportAdminReport(
+  type: AdminReportExportType,
+  role: string | null | undefined,
+) {
+  return ADMIN_REPORT_EXPORT_ALLOWED_ROLES[type].some((allowedRole) => allowedRole === role)
+}
 
 export function parseAdminReportRange(from?: string | null, to?: string | null) {
   const now = new Date()

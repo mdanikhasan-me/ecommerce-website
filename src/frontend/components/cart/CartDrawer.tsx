@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCartStore } from '@/frontend/stores'
+import { useCartStore } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, cn } from '@/backend/utils'
 
@@ -40,7 +40,7 @@ export function CartDrawer() {
       {/* Backdrop */}
       <div
         className={cn(
-          'fixed inset-0 z-50 bg-foreground/40 transition-opacity duration-300',
+          'fixed inset-0 z-50 bg-foreground/32 transition-opacity duration-150',
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
         onClick={closeCart}
@@ -50,7 +50,7 @@ export function CartDrawer() {
       <div
         ref={drawerRef}
         className={cn(
-          'fixed right-0 top-0 bottom-0 z-50 flex w-full max-w-[26rem] flex-col bg-background shadow-2xl transition-transform duration-300 sm:max-w-md',
+          'fixed bottom-0 right-0 top-0 z-50 flex w-[min(20.75rem,calc(100vw-3.25rem))] flex-col bg-background shadow-[-8px_0_18px_rgba(20,18,16,0.1)] transition-transform duration-150 ease-out sm:w-full sm:max-w-md',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
@@ -70,7 +70,7 @@ export function CartDrawer() {
             aria-label="Close cart"
             title="Close cart"
             onClick={closeCart}
-            className="p-2 rounded-lg hover:bg-secondary transition-colors"
+            className="rounded-lg p-2 transition-colors md:hover:bg-secondary"
           >
             <LocalIcon name="close" className="h-5 w-5" />
           </button>
@@ -103,12 +103,12 @@ export function CartDrawer() {
               </button>
             </div>
           ) : (
-            <div className="space-y-2.5 p-3 sm:space-y-3 sm:p-4">
+            <div className="space-y-2.5 p-2.5 sm:space-y-3 sm:p-4">
               {items.map((item) => (
-                <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[4.75rem_minmax(0,1fr)_auto] gap-2.5 rounded-2xl border border-border bg-background p-2.5 shadow-sm sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:gap-3 sm:p-3">
+                <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[4rem_minmax(0,1fr)_auto] gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:gap-3 sm:rounded-2xl sm:p-3">
                   {/* Image */}
                   <Link href={`/products/${item.slug}`} onClick={closeCart}>
-                    <div className="relative h-[4.75rem] w-[4.75rem] flex-shrink-0 overflow-hidden rounded-xl bg-secondary sm:h-20 sm:w-20">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-secondary sm:h-20 sm:w-20 sm:rounded-xl">
                       {item.image && (
                         <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
                       )}
@@ -118,7 +118,7 @@ export function CartDrawer() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <Link href={`/products/${item.slug}`} onClick={closeCart}>
-                      <p className="text-sm font-medium line-clamp-2 hover:text-primary transition-colors">
+                      <p className="line-clamp-2 text-sm font-medium transition-colors md:hover:text-primary">
                         {item.name}
                       </p>
                     </Link>
@@ -133,7 +133,7 @@ export function CartDrawer() {
                           aria-label="Decrease quantity"
                           title="Decrease quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
-                          className="p-1.5 hover:bg-secondary transition-colors"
+                          className="p-1.5 transition-colors md:hover:bg-secondary"
                         >
                           <LocalIcon name="minus" className="h-3 w-3" />
                         </button>
@@ -144,7 +144,7 @@ export function CartDrawer() {
                           title="Increase quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
                           disabled={item.quantity >= item.stockQuantity}
-                          className="p-1.5 hover:bg-secondary transition-colors disabled:opacity-40"
+                          className="p-1.5 transition-colors disabled:opacity-40 md:hover:bg-secondary"
                         >
                           <LocalIcon name="plus" className="h-3 w-3" />
                         </button>
@@ -165,7 +165,7 @@ export function CartDrawer() {
                     aria-label={`Remove ${item.name}`}
                     title={`Remove ${item.name}`}
                     onClick={() => removeItem(item.productId, item.variantId)}
-                    className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors md:hover:bg-destructive/10 md:hover:text-destructive"
                   >
                     <LocalIcon name="trash-2" className="h-4 w-4" />
                   </button>

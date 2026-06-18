@@ -22,7 +22,6 @@ interface EditableBanner {
   imageUrl: string
   mobileImageUrl: string | null
   linkUrl: string | null
-  position: string
   sortOrder: number
   isActive: boolean
   startsAt: string | Date | null
@@ -50,7 +49,6 @@ export function BannerEditorForm({
     imageUrl: banner?.imageUrl ?? '',
     mobileImageUrl: banner?.mobileImageUrl ?? '',
     linkUrl: banner?.linkUrl ?? '',
-    position: banner?.position ?? 'hero',
     sortOrder: String(banner?.sortOrder ?? 0),
     isActive: banner?.isActive ?? true,
     startsAt: toDateTimeLocalValue(banner?.startsAt),
@@ -68,14 +66,14 @@ export function BannerEditorForm({
     imageUrl: form.imageUrl.trim(),
     mobileImageUrl: form.mobileImageUrl.trim() || null,
     linkUrl: form.linkUrl.trim() || null,
-    position: form.position.trim() || 'hero',
+    position: 'hero',
     sortOrder: Number(form.sortOrder || 0),
     isActive: form.isActive,
     startsAt: form.startsAt || null,
     endsAt: form.endsAt || null,
   })
 
-  const getBannerUploadOwner = () => banner?.id || form.title.trim() || form.position.trim() || 'banner'
+  const getBannerUploadOwner = () => banner?.id || form.title.trim() || 'banner'
 
   const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
     const uploadForm = new FormData()
@@ -159,14 +157,14 @@ export function BannerEditorForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Banner Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -201,7 +199,7 @@ export function BannerEditorForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <AdminImageField
               label="Desktop image"
               value={form.imageUrl}
@@ -213,7 +211,7 @@ export function BannerEditorForm({
             />
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <AdminImageField
               label="Mobile image"
               value={form.mobileImageUrl}
@@ -227,27 +225,12 @@ export function BannerEditorForm({
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Placement</h2>
             <div className="mt-4 space-y-4">
-              <div>
-                <label htmlFor={`${fieldIdPrefix}-position`} className="mb-1.5 block text-sm font-medium">Position</label>
-                <p className="mb-1.5 text-xs text-muted-foreground">
-                  Controls where this banner shows on the storefront.
-                </p>
-                <select
-                  id={`${fieldIdPrefix}-position`}
-                  value={form.position}
-                  onChange={(event) => updateField('position', event.target.value)}
-                  className="input-base"
-                >
-                  <option value="hero">Hero (top of homepage)</option>
-                  <option value="new-arrivals">New Arrivals band</option>
-                  <option value="best-sellers">Best Sellers band</option>
-                  <option value="promo">Promo strip</option>
-                  <option value="category">Category page header</option>
-                </select>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                Banners show in the hero rotator at the top of the homepage. Sort order controls the rotation sequence.
+              </p>
               <div>
                 <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">Sort order</label>
                 <input id={`${fieldIdPrefix}-sort-order`}

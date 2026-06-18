@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
+import { revalidateCategorySurfaces as revalidateStorefrontCategorySurfaces } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedAdminUploads,
   deleteManagedAdminUpload,
@@ -23,15 +24,8 @@ function revalidateCategorySurfaces(input: {
   slugs?: Array<string | null | undefined>
   adminCategoryIds?: Array<string | null | undefined>
 }) {
-  revalidatePath('/')
-  revalidatePath('/category')
+  revalidateStorefrontCategorySurfaces({ categorySlugs: input.slugs })
   revalidatePath('/admin/categories')
-
-  for (const slug of input.slugs ?? []) {
-    if (slug) {
-      revalidatePath(`/category/${slug}`)
-    }
-  }
 
   for (const id of input.adminCategoryIds ?? []) {
     if (id) {
@@ -71,8 +65,14 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       mediaId: 'image',
       categoryKind: payload.parentId ? 'subcategory' : 'category',
     })
-    const newUploads = [image].filter(
-      (url): url is string => Boolean(url && url !== existingCategory.image && isManagedAdminUpload(url)),
+    const newUploads = [image, payload.icon].filter(
+      (url): url is string =>
+        Boolean(
+          url &&
+            url !== existingCategory.image &&
+            url !== existingCategory.icon &&
+            isManagedAdminUpload(url),
+        ),
     )
 
     try {
@@ -91,7 +91,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       })
 
       try {
-        await deleteReplacedAdminUploads([existingCategory.image], [image])
+        await deleteReplacedAdminUploads(
+          [existingCategory.image, existingCategory.icon],
+          [image, payload.icon],
+        )
       } catch {
         logSecurityEvent({
           type: 'admin_upload_cleanup_failed',
@@ -158,6 +161,7 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
 
     await db.category.delete({ where: { id: existingCategory.id } })
     await deleteManagedAdminUpload(existingCategory.image)
+    await deleteManagedAdminUpload(existingCategory.icon)
 
     revalidateCategorySurfaces({
       slugs: [existingCategory.slug],

@@ -4,7 +4,7 @@ import {
   isAdminReportExportType,
   type AdminExportAuditEventInput,
 } from '@/backend/admin/export-audit-log'
-import { buildAdminReportCsv, parseAdminReportRange } from '@/backend/admin/reports'
+import { buildAdminReportCsv, canExportAdminReport, parseAdminReportRange } from '@/backend/admin/reports'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { logSecurityEvent } from '@/backend/security/security-log'
@@ -38,6 +38,18 @@ export async function GET(req: NextRequest) {
     }
 
     reportTypeForAudit = type
+    if (!canExportAdminReport(type, session.user.role)) {
+      logAdminExportAudit({
+        result: 'blocked',
+        reportType: reportTypeForAudit,
+        statusCode: 403,
+        errorCode: 'forbidden',
+        actorRole: session.user.role,
+      })
+
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const range = parseAdminReportRange(searchParams.get('from'), searchParams.get('to'))
     const csv = await buildAdminReportCsv(type, range)
     const timestamp = new Date().toISOString().slice(0, 10)

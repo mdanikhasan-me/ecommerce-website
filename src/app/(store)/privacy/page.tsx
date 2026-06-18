@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
-import { generatePageMetadata } from '@/backend/seo'
-import { CONTACT_EMAIL } from '@/shared/contact'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -11,10 +15,24 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function PrivacyPage() {
   return (
-    <ContentPageShell
+    <>
+      <JsonLd
+        data={[
+          generateWebPageJsonLd({
+            name: 'Boilabin Privacy Policy',
+            description: 'Learn what customer information Boilabin collects, how it is used, and how account and order data is protected.',
+            path: '/privacy',
+          }),
+          generateBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Privacy Policy', url: '/privacy' },
+          ]),
+        ]}
+      />
+      <ContentPageShell
       eyebrow="Privacy policy"
-      title="How customer data is collected, used, and protected."
-      description="This page explains what information Boilabin collects, why it is needed, and the steps taken to keep customer data safer across the platform."
+      title="What we collect, and why."
+      description="The information Boilabin collects when you shop, how we use it to get your order to you, and how we keep it safe."
       updatedAt="January 2025"
       sections={[
         {
@@ -69,8 +87,8 @@ export default function PrivacyPage() {
                 deletion where applicable.
               </p>
               <p>
-                For privacy related questions, contact {CONTACT_EMAIL}. We also use essential cookies
-                for authentication and cart functions, while analytics cookies help us improve the
+                For privacy questions, use the contact page. We also use essential cookies for
+                authentication and cart functions, while analytics cookies help us improve the
                 storefront experience.
               </p>
             </>
@@ -78,5 +96,6 @@ export default function PrivacyPage() {
         },
       ]}
     />
+    </>
   )
 }

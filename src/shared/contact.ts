@@ -1,5 +1,7 @@
 export const CONTACT_EMAIL = 'hello@boilabin.com'
-export const CONTACT_PHONE = '01758409063'
+export const CONTACT_PHONE = '01570208986'
 export const CONTACT_ADDRESS = 'Bashundhara R/A, J Block, Road 20'
 export const INSTAGRAM_URL = 'https://www.instagram.com/boilabin/'
 export const FACEBOOK_URL = 'https://www.facebook.com/Boilabin'
+export const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
+export const WHATSAPP_URL = 'https://wa.me/message/ZKHFMIONDZ5LJ1'

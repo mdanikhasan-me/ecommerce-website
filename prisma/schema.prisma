@@ -186,11 +186,14 @@ model Address {
   division     String
   postalCode   String?
   isDefault    Boolean  @default(false)
+  isSaved      Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders Order[]
+
+  @@index([userId, isSaved])
 }
 
 // SELLER
@@ -277,6 +280,7 @@ model Product {
   sellerId         String
   basePrice        Float
   salePrice        Float?
+  effectivePrice   Float    @default(0)
   salePriceExpiry  DateTime?
   costPrice        Float?
   currency         String   @default("BDT")
@@ -292,6 +296,7 @@ model Product {
   isBestSeller        Boolean  @default(false)
   pinnedInNew         Boolean  @default(false)
   pinnedInBestSeller  Boolean  @default(false)
+  isPreOrder          Boolean  @default(false)
   tags             String[]
   metaTitle        String?
   metaDescription  String?
@@ -325,6 +330,9 @@ model Product {
   @@index([isActive, isNew])
   @@index([isActive, isBestSeller])
   @@index([isActive, createdAt])
+  @@index([soldCount])
+  @@index([rating])
+  @@index([effectivePrice])
 }
 
 model ProductView {

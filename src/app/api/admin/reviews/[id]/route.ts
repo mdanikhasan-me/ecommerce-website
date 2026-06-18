@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { db } from '@/backend/database'
+import { revalidateProductSurfacesByIds } from '@/backend/catalog/storefront-revalidation'
 import { syncProductReviewStats } from '@/backend/reviews'
 import { parseAdminReviewModerationPayload } from '@/backend/admin/review-moderation'
 import { toSafeClientError } from '@/backend/security/client-error'
@@ -26,6 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     })
 
     const stats = await syncProductReviewStats(review.productId)
+    await revalidateProductSurfacesByIds([review.productId]).catch(() => {})
 
     return NextResponse.json({ success: true, review, stats })
   } catch (error: unknown) {

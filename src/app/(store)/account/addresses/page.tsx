@@ -11,7 +11,7 @@ export default async function AddressesPage() {
   if (!session?.user) redirect('/auth/login')
 
   const addresses = await db.address.findMany({
-    where: { userId: session.user.id },
+    where: { userId: session.user.id, isSaved: true },
     orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
   })
 

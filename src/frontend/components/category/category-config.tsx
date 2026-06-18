@@ -1,19 +1,4 @@
-import {
-  BookOpen,
-  ChefHat,
-  Dumbbell,
-  Gamepad2,
-  LayoutGrid,
-  MonitorSmartphone,
-  Shirt,
-  Sparkles,
-  ToyBrick,
-} from 'lucide-react'
-
-type CategoryIcon = typeof MonitorSmartphone
-
 type CategoryConfig = {
-  icon: CategoryIcon
   eyebrow: string
   summary: string
   accent: string
@@ -26,7 +11,6 @@ type CategoryConfig = {
 
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   electronics: {
-    icon: MonitorSmartphone,
     eyebrow: 'Tech essentials',
     summary: 'Phones, laptops, audio, and smart gear for work, play, and everyday upgrades.',
     accent: '#4f6bff',
@@ -37,7 +21,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#1d2b63]',
   },
   fashion: {
-    icon: Shirt,
     eyebrow: 'Daily style',
     summary: "Wardrobe basics, statement pieces, and easy routes into men's and women's collections.",
     accent: '#e24d9c',
@@ -48,7 +31,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#71284e]',
   },
   'home-appliances': {
-    icon: ChefHat,
     eyebrow: 'Home setup',
     summary: 'Kitchen tools, home upgrades, and practical essentials for everyday living.',
     accent: '#d08a1f',
@@ -59,7 +41,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#6c4a16]',
   },
   'beauty-health': {
-    icon: Sparkles,
     eyebrow: 'Care and wellness',
     summary: 'Self care, grooming, and wellness products gathered into one easy starting point.',
     accent: '#d84f84',
@@ -70,7 +51,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#6f2945]',
   },
   'sports-fitness': {
-    icon: Dumbbell,
     eyebrow: 'Active living',
     summary: 'Training gear, recovery staples, and fitness essentials for an active routine.',
     accent: '#1d9a74',
@@ -81,7 +61,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#155744]',
   },
   'books-stationery': {
-    icon: BookOpen,
     eyebrow: 'Reading and work',
     summary: 'Books, study supplies, and desk essentials organized into a calmer library-style section.',
     accent: '#7a58f4',
@@ -92,7 +71,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#3f2d80]',
   },
   gaming: {
-    icon: Gamepad2,
     eyebrow: 'Play and performance',
     summary: 'Consoles, accessories, and gaming gear collected into a dedicated hub.',
     accent: '#5c63ff',
@@ -103,7 +81,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#26318e]',
   },
   'toys-collectibles': {
-    icon: ToyBrick,
     eyebrow: 'Play and collectibles',
     summary: 'Hot Wheels, LEGO sets, diecast models, action figures, and collectible cards for focused browsing.',
     accent: '#0f8f85',
@@ -114,7 +91,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     linkClass: 'text-[#10554f]',
   },
   'baby-kids': {
-    icon: ToyBrick,
     eyebrow: 'Play and collectibles',
     summary: 'Legacy category route fallback for toys, model cars, figures, building sets, and cards.',
     accent: '#0f8f85',
@@ -127,7 +103,6 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 }
 
 const DEFAULT_CATEGORY_CONFIG: CategoryConfig = {
-  icon: LayoutGrid,
   eyebrow: 'Department',
   summary: 'Browse the full department and jump into the right collection from one place.',
   accent: '#4b5563',

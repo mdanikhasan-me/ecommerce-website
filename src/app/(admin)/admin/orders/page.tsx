@@ -66,7 +66,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-md p-4">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto_auto]">
           <input
             aria-label="Search by order number or email"
@@ -91,7 +91,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -114,7 +114,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                   </td>
                 </tr>
               ) : orders.map((order) => (
-                <tr key={order.id} className="hover:bg-secondary/50 transition-colors">
+                <tr key={order.id} className="md:hover:bg-secondary/50 transition-colors">
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs font-semibold tracking-[0.04em]">{order.orderNumber}</span>
                     <p className="text-xs text-muted-foreground capitalize">{order.paymentMethod.replace('_', ' ')}</p>
@@ -137,7 +137,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     {formatDate(order.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/orders/${order.id}`} className="text-xs text-primary hover:underline font-medium">
+                    <Link href={`/admin/orders/${order.id}`} className="text-xs text-primary md:hover:underline font-medium">
                       View
                     </Link>
                   </td>

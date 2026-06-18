@@ -50,12 +50,13 @@ export function getRatingLabel(rating: number): string {
 }
 
 // STOCK
-export function getStockStatus(quantity: number): {
+export function getStockStatus(quantity: number, isPreOrder = false): {
   label: string
   color: string
   inStock: boolean
 } {
   if (quantity <= 0) return { label: 'Out of Stock', color: 'text-red-500', inStock: false }
+  if (isPreOrder) return { label: 'Available for pre-order', color: 'text-sky-700', inStock: true }
   if (quantity <= 5) return { label: `Only ${quantity} left`, color: 'text-amber-500', inStock: true }
   return { label: 'In Stock', color: 'text-green-600', inStock: true }
 }

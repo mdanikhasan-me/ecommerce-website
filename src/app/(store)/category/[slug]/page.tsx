@@ -6,11 +6,11 @@ import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchF
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
 import {
+  buildEffectivePriceOrderBy,
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
-  orderProductsById,
-  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseCategorySearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
 import {
@@ -30,6 +30,10 @@ interface Props {
 
 export const revalidate = 300
 
+export async function generateStaticParams() {
+  return []
+}
+
 const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
   { value: 'newest', label: 'Newest First' },
@@ -37,7 +41,7 @@ const SORT_OPTIONS = [
   { value: 'price_desc', label: 'Price: High to Low' },
   { value: 'rating', label: 'Highest Rated' },
 ]
-const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1120px) 33vw, (max-width: 1440px) 24vw, (max-width: 1536px) 20vw, 16vw'
+const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 559px) 50vw, (max-width: 1023px) 33vw, (max-width: 1120px) 33vw, (max-width: 1440px) 24vw, (max-width: 1536px) 20vw, 16vw'
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
@@ -95,42 +99,22 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (rating !== null) andClauses.push({ rating: { gte: rating } })
   const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
   const effectivePriceSort = getEffectivePriceSortDirection(resolvedSearchParams.sort)
+  const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
 
   let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   if (resolvedSearchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
   else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const productInclude = {
-    images: { where: { isPrimary: true }, take: 1 },
-    category: { select: { name: true, slug: true } },
-  } satisfies Prisma.ProductInclude
-
-  const [products, total] = effectivePriceSort
-    ? await Promise.all([
-        db.product.findMany({
-          where,
-          orderBy: { id: 'asc' },
-          select: { id: true, basePrice: true, salePrice: true },
-        }).then(async (items) => {
-          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
-          if (pageIds.length === 0) return []
-
-          const pageProducts = await db.product.findMany({
-            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
-            include: productInclude,
-          })
-
-          return orderProductsById(pageProducts, pageIds)
-        }),
-        db.product.count({ where }),
-      ])
-    : await Promise.all([
-        db.product.findMany({
-          where, orderBy, skip, take: limit,
-          include: productInclude,
-        }),
-        db.product.count({ where }),
-      ])
+  const [products, total] = await Promise.all([
+    db.product.findMany({
+      where,
+      orderBy: effectivePriceOrderBy ?? orderBy,
+      skip,
+      take: limit,
+      select: productCardSelect,
+    }),
+    db.product.count({ where }),
+  ])
 
   const totalPages = Math.ceil(total / limit)
   const filterCategories = category.children.map((child) => ({ name: child.name, slug: child.slug }))
@@ -185,7 +169,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <a
               key={sub.slug}
               href={`/category/${sub.slug}`}
-              className="snap-start flex-shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-medium transition-colors hover:border-primary hover:text-primary sm:px-4 sm:py-2 sm:text-sm"
+              className="snap-start flex-shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-medium sm:transition-colors md:hover:border-primary md:hover:text-primary sm:px-4 sm:py-2 sm:text-sm"
             >
               {sub.name}
             </a>
@@ -227,7 +211,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3.5 md:grid-cols-3 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
                 {products.map((p, index) => (
                   <ProductCard
                     key={p.id}
@@ -244,7 +228,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                     <a
                       key={p}
                       href={buildPageUrl(categoryPath, resolvedSearchParams.queryParams, p)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'}`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium sm:transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border md:hover:bg-secondary'}`}
                     >
                       {p}
                     </a>

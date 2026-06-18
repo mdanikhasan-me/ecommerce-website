@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { calculateEffectivePrice } from '@/backend/catalog/product-price-filter'
+import { revalidateProductSurfaces } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedUploads,
   ensureUniqueProductSlug,
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = parsed.data
-    const { sellerId, mediaTaxonomy } = await validateProductRelations(payload)
+    const { sellerId, mediaTaxonomy, categorySlug, parentCategorySlug } = await validateProductRelations(payload)
 
     const slug = await ensureUniqueProductSlug(payload.slug || payload.name)
     const images = await normalizeProductImages(payload.images, slug, mediaTaxonomy)
@@ -46,6 +48,7 @@ export async function POST(req: NextRequest) {
           sellerId,
           basePrice: payload.basePrice,
           salePrice: payload.salePrice ?? null,
+          effectivePrice: calculateEffectivePrice(payload.basePrice, payload.salePrice),
           costPrice: payload.costPrice ?? null,
           stockQuantity: payload.stockQuantity ?? 0,
           lowStockThreshold: payload.lowStockThreshold ?? 5,
@@ -56,6 +59,7 @@ export async function POST(req: NextRequest) {
           isBestSeller: payload.isBestSeller ?? false,
           pinnedInNew: payload.pinnedInNew ?? false,
           pinnedInBestSeller: payload.pinnedInBestSeller ?? false,
+          isPreOrder: payload.isPreOrder ?? false,
           tags: normalizeTags(payload.tags),
           metaTitle: payload.metaTitle?.trim() || null,
           metaDescription: payload.metaDescription?.trim() || null,
@@ -66,6 +70,11 @@ export async function POST(req: NextRequest) {
           images: true,
           variants: { include: { options: true } },
         },
+      })
+
+      revalidateProductSurfaces({
+        productSlugs: [product.slug],
+        categorySlugs: [categorySlug, parentCategorySlug],
       })
 
       return NextResponse.json({ product }, { status: 201 })

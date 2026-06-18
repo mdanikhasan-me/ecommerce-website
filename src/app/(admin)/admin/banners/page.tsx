@@ -7,7 +7,7 @@ export const metadata = { title: 'Admin Banners' }
 
 export default async function AdminBannersPage() {
   const banners = await db.banner.findMany({
-    orderBy: [{ position: 'asc' }, { sortOrder: 'asc' }],
+    orderBy: { sortOrder: 'asc' },
   })
 
   return (
@@ -17,7 +17,7 @@ export default async function AdminBannersPage() {
           <div>
             <h1 className="font-display text-xl font-bold">Banners</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Active promotional banners and hero placements.
+              Hero banners shown at the top of the homepage, in sort order.
             </p>
           </div>
           <Link href="/admin/banners/new" className="btn-primary flex items-center gap-2 text-sm">
@@ -26,12 +26,11 @@ export default async function AdminBannersPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
               <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Title</th>
-              <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Position</th>
               <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Link</th>
               <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Status</th>
               <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Updated</th>
@@ -40,15 +39,14 @@ export default async function AdminBannersPage() {
           </thead>
           <tbody className="divide-y divide-border">
             {banners.map((banner) => (
-              <tr key={banner.id} className="hover:bg-secondary/40">
+              <tr key={banner.id} className="md:hover:bg-secondary/40">
                 <td className="px-4 py-3">
                   <p className="font-medium">{banner.title || 'Untitled banner'}</p>
                   {banner.subtitle && <p className="text-xs text-muted-foreground">{banner.subtitle}</p>}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{banner.position}</td>
                 <td className="px-4 py-3 text-xs text-muted-foreground">
                   {banner.linkUrl ? (
-                    <Link href={banner.linkUrl} target="_blank" className="text-primary hover:underline">
+                    <Link href={banner.linkUrl} target="_blank" className="text-primary md:hover:underline">
                       {banner.linkUrl}
                     </Link>
                   ) : (
@@ -64,7 +62,7 @@ export default async function AdminBannersPage() {
                   {formatDate(banner.updatedAt)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/banners/${banner.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                  <Link href={`/admin/banners/${banner.id}`} className="p-1.5 rounded-md md:hover:bg-secondary inline-flex">
                     <Pencil className="h-4 w-4 text-muted-foreground" />
                   </Link>
                 </td>

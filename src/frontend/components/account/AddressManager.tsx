@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, MapPin, Loader2, X, Check } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import toast from 'react-hot-toast'
 
 interface Address {
@@ -109,10 +110,10 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
       {/* Address List */}
       {initial.length === 0 && !showForm ? (
         <div className="text-center py-16 bg-card rounded-xl border border-border">
-          <MapPin className="size-12 text-muted-foreground mx-auto mb-4" />
+          <LocalIcon name="map-pin" className="size-12 text-muted-foreground mx-auto mb-4" />
           <h2 className="font-display font-semibold text-lg mb-2">No addresses saved</h2>
           <p className="text-muted-foreground text-sm mb-6">Add a shipping address to speed up checkout</p>
-          <button type="button" onClick={() => setShowForm(true)} className="btn-primary gap-2"><Plus className="size-4" /> Add Address</button>
+          <button type="button" onClick={() => setShowForm(true)} className="btn-primary gap-2"><LocalIcon name="plus" className="size-4" /> Add Address</button>
         </div>
       ) : (
         <>
@@ -135,28 +136,28 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
                   <button
                     type="button"
                     onClick={() => startEdit(addr)}
-                    className="p-1.5 rounded-lg hover:bg-secondary transition-colors"
+                    className="p-1.5 rounded-lg md:hover:bg-secondary transition-colors"
                     aria-label={`Edit address for ${addr.fullName}`}
                     title={`Edit address for ${addr.fullName}`}
                   >
-                    <Pencil className="size-3.5 text-muted-foreground" />
+                    <LocalIcon name="pencil" className="size-3.5 text-muted-foreground" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(addr.id)}
                     disabled={deletingId === addr.id}
-                    className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                    className="p-1.5 rounded-lg md:hover:bg-red-50 transition-colors"
                     aria-label={`Delete address for ${addr.fullName}`}
                     title={`Delete address for ${addr.fullName}`}
                   >
-                    {deletingId === addr.id ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5 text-red-400" />}
+                    {deletingId === addr.id ? <Loader2 className="size-3.5 animate-spin" /> : <LocalIcon name="trash-2" className="size-3.5 text-red-400" />}
                   </button>
                 </div>
               </div>
             ))}
           </div>
           {!showForm && (
-            <button type="button" onClick={() => setShowForm(true)} className="btn-outline gap-2 w-full"><Plus className="size-4" /> Add New Address</button>
+            <button type="button" onClick={() => setShowForm(true)} className="btn-outline gap-2 w-full"><LocalIcon name="plus" className="size-4" /> Add New Address</button>
           )}
         </>
       )}
@@ -169,11 +170,11 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
             <button
               type="button"
               onClick={resetForm}
-              className="p-1.5 rounded-lg hover:bg-secondary"
+              className="p-1.5 rounded-lg md:hover:bg-secondary"
               aria-label="Close address form"
               title="Close address form"
             >
-              <X className="size-4" />
+              <LocalIcon name="x" className="size-4" />
             </button>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -220,7 +221,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
             <div className="flex justify-end gap-3 pt-2">
               <button type="button" onClick={resetForm} className="btn-outline">Cancel</button>
               <button type="submit" disabled={loading} className="btn-primary gap-2">
-                {loading ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : <LocalIcon name="check" className="size-4" />}
                 {editing ? 'Update' : 'Save Address'}
               </button>
             </div>

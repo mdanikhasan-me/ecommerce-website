@@ -32,7 +32,9 @@ export type ParsedBuyerOrderAddress = {
 
 export type ParsedBuyerOrderPayload = {
   items: ParsedBuyerOrderItem[]
-  address: ParsedBuyerOrderAddress
+  address: ParsedBuyerOrderAddress | null
+  addressId: string | null
+  saveAddress: boolean
   paymentMethod: PaymentMethod
   notes?: string
   couponCode: string | null
@@ -135,10 +137,20 @@ export function parseBuyerOrderPayload(
     return { success: false, error: 'Cart has too many items' }
   }
 
+  const rawAddressId = input.addressId
+  let addressId: string | null = null
+  if (rawAddressId !== undefined && rawAddressId !== null && rawAddressId !== '') {
+    addressId = parsePublicId(rawAddressId)
+    if (!addressId) {
+      return { success: false, error: 'Invalid delivery address' }
+    }
+  }
+
   const address = parseBuyerOrderAddress(input.address)
-  if (!address) {
+  if (!address && !addressId) {
     return { success: false, error: 'Delivery address is incomplete' }
   }
+  const saveAddress = typeof input.saveAddress === 'boolean' ? input.saveAddress : true
 
   const items: ParsedBuyerOrderItem[] = []
   for (const rawItem of input.items) {
@@ -185,6 +197,8 @@ export function parseBuyerOrderPayload(
     data: {
       items,
       address,
+      addressId,
+      saveAddress,
       paymentMethod: input.paymentMethod,
       notes,
       couponCode,

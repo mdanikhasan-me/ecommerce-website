@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { revalidateHomeSurface } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedAdminUploads,
   persistAdminUpload,
@@ -46,6 +47,8 @@ export async function POST(req: NextRequest) {
           endsAt: payload.endsAt,
         },
       })
+
+      revalidateHomeSurface()
 
       return NextResponse.json({ banner }, { status: 201 })
     } catch (error) {

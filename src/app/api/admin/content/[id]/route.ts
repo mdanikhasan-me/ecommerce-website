@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
+import { revalidateHomeSurface } from '@/backend/catalog/storefront-revalidation'
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminHomepageSectionPayload } from '@/backend/admin/homepage-section-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
@@ -41,6 +43,10 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       },
     })
 
+    revalidateHomeSurface()
+    revalidatePath('/admin/content')
+    revalidatePath(`/admin/content/${existingSection.id}`)
+
     return NextResponse.json({ section })
   } catch (error: unknown) {
     const { message, status } = toSafeClientError(error, 'Unable to update section')
@@ -62,6 +68,10 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
     }
 
     await db.homepageSection.delete({ where: { id: existingSection.id } })
+    revalidateHomeSurface()
+    revalidatePath('/admin/content')
+    revalidatePath(`/admin/content/${existingSection.id}`)
+
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
     const { message, status } = toSafeClientError(error, 'Unable to delete section')

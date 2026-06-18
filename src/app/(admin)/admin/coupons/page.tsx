@@ -17,7 +17,7 @@ export default async function AdminCouponsPage() {
         </Link>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
@@ -40,7 +40,7 @@ export default async function AdminCouponsPage() {
                 </td>
               </tr>
             ) : coupons.map((coupon) => (
-              <tr key={coupon.id} className="hover:bg-secondary/50">
+              <tr key={coupon.id} className="md:hover:bg-secondary/50">
                 <td className="px-4 py-3 font-mono font-bold text-primary">{coupon.code}</td>
                 <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">{coupon.name}</td>
                 <td className="px-4 py-3 font-medium">
@@ -60,7 +60,7 @@ export default async function AdminCouponsPage() {
                   {coupon.expiresAt ? formatDate(coupon.expiresAt) : 'No expiry'}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/coupons/${coupon.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                  <Link href={`/admin/coupons/${coupon.id}`} className="p-1.5 rounded-md md:hover:bg-secondary inline-flex">
                     <Pencil className="h-4 w-4 text-muted-foreground" />
                   </Link>
                 </td>

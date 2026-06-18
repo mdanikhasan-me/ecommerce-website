@@ -88,13 +88,13 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-xs text-primary hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-xs text-primary md:hover:underline">
         Adjust
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-2xl">
+          <div className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-md border border-border bg-card p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-display text-lg font-semibold">{product.name}</h3>
@@ -150,7 +150,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
               </div>
 
               {variants.length > 0 && (
-                <section className="space-y-3 rounded-2xl border border-border bg-secondary/40 p-4">
+                <section className="space-y-3 rounded-md border border-border bg-secondary/40 p-4">
                   <div>
                     <h4 className="font-display font-semibold">Variant stock</h4>
                     <p className="text-sm text-muted-foreground">
@@ -160,7 +160,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
                   <div className="space-y-3">
                     {variants.map((variant) => (
-                      <div key={variant.id} className="grid gap-3 rounded-xl border border-border bg-card p-3 md:grid-cols-[minmax(0,1fr)_120px]">
+                      <div key={variant.id} className="grid gap-3 rounded-md border border-border bg-card p-3 md:grid-cols-[minmax(0,1fr)_120px]">
                         <div>
                           <p className="font-medium">{variant.name}</p>
                           <p className="text-xs text-muted-foreground">

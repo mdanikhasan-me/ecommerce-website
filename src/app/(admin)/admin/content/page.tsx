@@ -26,7 +26,7 @@ export default async function AdminContentPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
@@ -46,7 +46,7 @@ export default async function AdminContentPage() {
               </tr>
             ) : (
               sections.map((section) => (
-                <tr key={section.id} className="hover:bg-secondary/40">
+                <tr key={section.id} className="md:hover:bg-secondary/40">
                   <td className="px-4 py-3">
                     <p className="font-medium">{section.title ?? 'Untitled section'}</p>
                     {section.subtitle && <p className="text-xs text-muted-foreground">{section.subtitle}</p>}
@@ -61,7 +61,7 @@ export default async function AdminContentPage() {
                     {formatDate(section.updatedAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/content/${section.id}`} className="p-1.5 rounded-lg hover:bg-secondary inline-flex">
+                    <Link href={`/admin/content/${section.id}`} className="p-1.5 rounded-md md:hover:bg-secondary inline-flex">
                       <Pencil className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   </td>

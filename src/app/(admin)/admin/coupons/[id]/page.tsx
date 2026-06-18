@@ -61,7 +61,7 @@ export default async function AdminCouponDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-md border border-border bg-card p-5">
         <CouponEditorForm categories={categories} products={products} coupon={coupon} />
       </div>
     </div>

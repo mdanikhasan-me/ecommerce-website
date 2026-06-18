@@ -13,6 +13,7 @@ export interface ProductCardData {
   isFeatured: boolean
   isNew: boolean
   isBestSeller: boolean
+  isPreOrder?: boolean
   images: { url: string; isPrimary: boolean }[]
   category: { name: string; slug: string }
 }

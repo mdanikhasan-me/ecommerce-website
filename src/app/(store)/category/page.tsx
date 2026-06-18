@@ -1,16 +1,24 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { generatePageMetadata } from '@/backend/seo'
+import { unstable_cache } from 'next/cache'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generateCategoryListJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 import { db } from '@/backend/database'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { ariaCurrentPage } from '@/frontend/components/ui/aria'
-import { getSubcategoryMediaPath } from '@/shared/category-media'
+import { getSubcategoryMediaPath, getSubcategoryIconPath } from '@/shared/category-media'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
-import { Prisma } from '@prisma/client'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin Categories',
@@ -26,8 +34,8 @@ type CategoriesPageProps = {
   searchParams?: Promise<{ department?: string }>
 }
 
-async function getCategories() {
-  return db.category.findMany({
+const getCategories = unstable_cache(
+  async () => db.category.findMany({
     where: { isActive: true, parentId: null },
     orderBy: { sortOrder: 'asc' },
     include: {
@@ -36,27 +44,27 @@ async function getCategories() {
         orderBy: { sortOrder: 'asc' },
       },
     },
-  })
-}
+  }),
+  ['category-index-tree-v1'],
+  { revalidate: 300, tags: [STOREFRONT_CACHE_TAGS.categories] },
+)
 
-async function getAllProductsPreview() {
-  const productInclude = {
-    images: { where: { isPrimary: true }, take: 1 },
-    category: { select: { name: true, slug: true } },
-  } satisfies Prisma.ProductInclude
-
+const getAllProductsPreview = unstable_cache(async () => {
   const [products, total] = await Promise.all([
     db.product.findMany({
       where: getBuyerVisibleProductWhere(),
       orderBy: { soldCount: 'desc' },
       take: ALL_PRODUCTS_LIMIT,
-      include: productInclude,
+      select: productCardSelect,
     }),
     db.product.count({ where: getBuyerVisibleProductWhere() }),
   ])
 
   return { products, total }
-}
+}, ['category-index-products-preview-v1'], {
+  revalidate: 300,
+  tags: [STOREFRONT_CACHE_TAGS.products, STOREFRONT_CACHE_TAGS.categories],
+})
 
 type CategoryItem = Awaited<ReturnType<typeof getCategories>>[number]
 type SubcategoryItem = CategoryItem['children'][number]
@@ -77,6 +85,25 @@ function getCategoryIconName(slug: string): StorefrontIconName {
   return CATEGORY_ICON_NAMES[slug as keyof typeof CATEGORY_ICON_NAMES] ?? 'category-view-all'
 }
 
+// Renders an admin-uploaded subcategory SVG icon when present, else the built-in icon.
+function SubcategoryGlyph({
+  svgIcon,
+  fallbackIcon,
+  alt,
+  className,
+}: {
+  svgIcon: string | null
+  fallbackIcon: StorefrontIconName
+  alt: string
+  className: string
+}) {
+  if (svgIcon) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={svgIcon} alt={alt} className={className} loading="lazy" decoding="async" />
+  }
+  return <LocalIcon name={fallbackIcon} className={className} />
+}
+
 export default async function CategoriesPage({ searchParams }: CategoriesPageProps) {
   const [categories, allProductsPreview, resolvedSearchParams] = await Promise.all([
     getCategories(),
@@ -88,9 +115,30 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
     categories.find((category) => category.slug === 'electronics') ??
     categories[0] ??
     null
+  const pageDescription = 'Browse Boilabin shopping categories and subcategories for products available across Bangladesh.'
+  const pageJsonLd = generateWebPageJsonLd({
+    type: 'CollectionPage',
+    name: 'Boilabin Categories',
+    description: pageDescription,
+    path: '/category',
+  })
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'Categories', url: '/category' },
+  ])
+  const categoryListJsonLd = generateCategoryListJsonLd(
+    'Boilabin shopping categories',
+    categories.map((category, index) => ({
+      name: category.name,
+      slug: category.slug,
+      description: category.description,
+      position: index + 1,
+    })),
+  )
 
   return (
     <div className="min-h-screen">
+      <JsonLd data={[pageJsonLd, breadcrumbJsonLd, categoryListJsonLd]} />
       <div className="container-site py-5 sm:py-7 lg:py-8">
         <header className="mb-4 max-w-[48rem] sm:mb-6">
           <h1 className="font-display text-[1.85rem] font-semibold leading-tight text-foreground sm:text-3xl lg:text-[2.25rem]">
@@ -154,14 +202,14 @@ function CategoryRail({
               key={category.id}
               href={`/category?department=${category.slug}`}
               {...ariaCurrentPage(isSelected)}
-              className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-                isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 hover:bg-secondary/45'
+              className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left sm:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 md:hover:bg-secondary/45'
               }`}
             >
               {isSelected && <span className="absolute left-0 top-3 h-7 w-0.5 rounded-r-full bg-primary/70" />}
               <LocalIcon name={iconName} className="h-5 w-5 shrink-0 text-foreground/88" />
               <span className="min-w-0 flex-1 text-sm font-medium leading-5">{category.name}</span>
-              <LocalIcon name="chevron-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              <LocalIcon name="chevron-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             </Link>
           )
         })}
@@ -215,27 +263,28 @@ function SubcategoryCard({
   category: CategoryItem
   child: SubcategoryItem
 }) {
-  const imageSrc = getSubcategoryMediaPath(child)
+  const svgIcon = getSubcategoryIconPath(child)
+  const imageSrc = svgIcon ? null : getSubcategoryMediaPath(child)
   const iconName = getCategoryIconName(category.slug)
 
   if (!imageSrc) {
     return (
       <Link
         href={`/category/${child.slug}`}
-        className="product-card group flex min-h-[104px] items-center gap-3.5 p-3.5 transition-colors hover:border-primary/20 hover:bg-secondary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-[112px] sm:p-4"
+        className="product-card group flex min-h-[104px] items-center gap-3.5 p-3.5 sm:transition-colors md:hover:border-primary/20 md:hover:bg-secondary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-[112px] sm:p-4"
       >
         <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
-          <LocalIcon name={iconName} className="h-5 w-5" />
+          <SubcategoryGlyph svgIcon={svgIcon} fallbackIcon={iconName} alt={child.name} className="h-5 w-5" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
+          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground sm:transition-colors md:group-hover:text-primary">
             {child.name}
           </span>
           <span className="mt-1.5 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
             {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
           </span>
         </span>
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </Link>
@@ -252,21 +301,21 @@ function SubcategoryCard({
           src={imageSrc}
           alt={child.name}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+          className="object-cover"
           sizes="(max-width: 1024px) 42vw, (max-width: 1280px) 24vw, 260px"
-          quality={84}
+          quality={75}
         />
       </div>
       <div className="flex min-h-[96px] flex-1 items-start gap-3 p-3.5 sm:p-4">
         <div className="min-w-0 flex-1">
-          <h4 className="line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">
+          <h4 className="line-clamp-2 text-[15px] font-semibold leading-5 text-foreground sm:transition-colors md:group-hover:text-primary">
             {child.name}
           </h4>
           <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
             {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
           </p>
         </div>
-        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>
@@ -278,7 +327,7 @@ function ViewAllCategoryLink({ category }: { category: CategoryItem }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group mt-5 flex min-h-[72px] items-center gap-3 rounded-[1.05rem] border border-border/80 bg-card/90 px-4 py-3.5 transition-colors hover:border-primary/20 hover:bg-secondary/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-5"
+      className="group mt-5 flex min-h-[72px] items-center gap-3 rounded-[1.05rem] border border-border/80 bg-card/90 px-4 py-3.5 sm:transition-colors md:hover:border-primary/20 md:hover:bg-secondary/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-5"
     >
       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
         <LocalIcon name="category-view-all" className="h-5 w-5" />
@@ -289,7 +338,7 @@ function ViewAllCategoryLink({ category }: { category: CategoryItem }) {
           Explore all {category.name.toLowerCase()} products and accessories.
         </span>
       </span>
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
         <LocalIcon name="arrow-right" className="h-4 w-4" />
       </span>
     </Link>
@@ -348,7 +397,8 @@ function MobileSubcategoryRow({
   category: CategoryItem
   child: SubcategoryItem
 }) {
-  const imageSrc = getSubcategoryMediaPath(child)
+  const svgIcon = getSubcategoryIconPath(child)
+  const imageSrc = svgIcon ? null : getSubcategoryMediaPath(child)
   const iconName = getCategoryIconName(category.slug)
 
   if (!imageSrc) {
@@ -358,15 +408,15 @@ function MobileSubcategoryRow({
         className="product-card group flex min-h-[86px] items-center gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
-          <LocalIcon name={iconName} className="h-5 w-5" />
+          <SubcategoryGlyph svgIcon={svgIcon} fallbackIcon={iconName} alt={child.name} className="h-5 w-5" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
+          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground">{child.name}</span>
           <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
             {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
           </span>
         </span>
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </Link>
@@ -385,16 +435,16 @@ function MobileSubcategoryRow({
           fill
           className="object-cover"
           sizes="150px"
-          quality={82}
+          quality={75}
         />
       </span>
       <span className="min-w-0 flex-1 self-center py-3 pr-1">
-        <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors group-hover:text-primary">{child.name}</span>
+        <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground">{child.name}</span>
         <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
           {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
         </span>
       </span>
-      <span className="mr-3 self-center inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground transition-transform group-hover:translate-x-0.5">
+      <span className="mr-3 self-center inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
         <LocalIcon name="arrow-right" className="h-4 w-4" />
       </span>
     </Link>

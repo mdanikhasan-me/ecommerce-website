@@ -149,14 +149,14 @@ export function CouponEditorForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Coupon Details</h2>
             <div className="mt-4 grid gap-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -259,7 +259,7 @@ export function CouponEditorForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Restrictions</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
@@ -308,7 +308,7 @@ export function CouponEditorForm({
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Schedule</h2>
             <div className="mt-4 space-y-4">
               <div>

@@ -24,6 +24,7 @@ export type SanitizedSearchParams = Record<string, string | undefined> & {
   sort?: SearchSort
   page?: string
   featured?: 'true'
+  bestSeller?: 'true'
 }
 
 export type ParsedSearchParams = {
@@ -36,6 +37,7 @@ export type ParsedSearchParams = {
   sort: SearchSort
   page: number
   featured: boolean
+  bestSeller: boolean
   queryParams: SanitizedSearchParams
 }
 
@@ -155,6 +157,7 @@ export function parseSearchParams(params: ParamSource = {}): ParsedSearchParams 
   const sort = normalizeSort(readParam(params, 'sort'))
   const page = normalizePage(readParam(params, 'page'))
   const featured = readParam(params, 'featured')?.trim() === 'true'
+  const bestSeller = readParam(params, 'bestSeller')?.trim() === 'true'
 
   const queryParams: SanitizedSearchParams = {}
   if (q) queryParams.q = q
@@ -166,6 +169,7 @@ export function parseSearchParams(params: ParamSource = {}): ParsedSearchParams 
   if (sort !== 'popular') queryParams.sort = sort
   if (page !== DEFAULT_SEARCH_PAGE) queryParams.page = String(page)
   if (featured) queryParams.featured = 'true'
+  if (bestSeller) queryParams.bestSeller = 'true'
 
   return {
     q,
@@ -177,6 +181,7 @@ export function parseSearchParams(params: ParamSource = {}): ParsedSearchParams 
     sort,
     page,
     featured,
+    bestSeller,
     queryParams,
   }
 }

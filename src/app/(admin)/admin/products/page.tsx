@@ -60,7 +60,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3">
+      <div className="bg-card border border-border rounded-md p-4 flex flex-wrap gap-3">
         <form className="flex flex-wrap gap-3 flex-1">
           <input aria-label="Search products..." title="Search products..."
             name="q"
@@ -84,7 +84,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -107,10 +107,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
                 </tr>
               ) : products.map((p) => (
-                <tr key={p.id} className="hover:bg-secondary/50 transition-colors">
+                <tr key={p.id} className="md:hover:bg-secondary/50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                      <div className="relative h-10 w-10 rounded-md overflow-hidden bg-secondary flex-shrink-0">
                         {p.images[0]?.url && (
                           <Image src={p.images[0].url} alt={p.name} fill className="object-cover" sizes="40px" />
                         )}
@@ -141,10 +141,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground" title="View">
+                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-md md:hover:bg-secondary transition-colors text-muted-foreground" title="View">
                         <Eye className="h-4 w-4" />
                       </Link>
-                      <Link href={`/admin/products/${p.id}`} className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground" title="Edit">
+                      <Link href={`/admin/products/${p.id}`} className="p-1.5 rounded-md md:hover:bg-secondary transition-colors text-muted-foreground" title="Edit">
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </div>

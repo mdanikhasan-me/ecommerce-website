@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { TrendingUp, ShoppingBag, Users, Package } from 'lucide-react'
 import { AdminReportExportLink } from '@/frontend/components/admin/AdminReportExportLink'
+import { requireAdminSession } from '@/backend/admin/admin-utils'
 import {
   ADMIN_REPORT_EXPORT_METADATA,
+  canExportAdminReport,
   getAdminReportData,
   parseAdminReportRange,
 } from '@/backend/admin/reports'
@@ -19,6 +21,7 @@ interface Props {
 }
 
 export default async function AdminReportsPage({ searchParams }: Props) {
+  const session = await requireAdminSession()
   const filters = await searchParams
   const activeTab = filters.tab || 'orders'
   const range = parseAdminReportRange(filters.from, filters.to)
@@ -49,7 +52,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       href: `/api/admin/reports/export?type=customers&${exportQuery}`,
       metadata: ADMIN_REPORT_EXPORT_METADATA.customers,
     },
-  ]
+  ] as const
 
   return (
     <div className="space-y-6">
@@ -64,7 +67,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
             Handling Guide before sharing or storing exports.
           </p>
         </div>
-        <form className="flex flex-wrap gap-2 rounded-2xl border border-border bg-card p-3">
+        <form className="flex flex-wrap gap-2 rounded-md border border-border bg-card p-3">
           <input aria-label="Form input" title="Form input" type="date" name="from" defaultValue={toDateInputValue(range.from)} className="input-base" />
           <input aria-label="Form input" title="Form input" type="date" name="to" defaultValue={toDateInputValue(range.to)} className="input-base" />
           <input aria-label="Form input" title="Form input" type="hidden" name="tab" value={activeTab} />
@@ -75,21 +78,21 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground">
             <TrendingUp className="h-4 w-4" />
             Revenue
           </div>
           <p className="mt-3 font-display text-2xl font-bold">{formatPrice(report.summary.revenue)}</p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground">
             <ShoppingBag className="h-4 w-4" />
             Orders
           </div>
           <p className="mt-3 font-display text-2xl font-bold">{report.summary.orders}</p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Package className="h-4 w-4" />
             Average Order
@@ -98,7 +101,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
             {formatPrice(report.summary.averageOrderValue)}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-md border border-border bg-card p-5">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4" />
             New Customers
@@ -116,7 +119,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
               className={`rounded-full px-3 py-1.5 text-sm font-medium ${
                 activeTab === tab.value
                   ? 'bg-primary text-white'
-                  : 'bg-secondary text-muted-foreground hover:text-foreground'
+                  : 'bg-secondary text-muted-foreground md:hover:text-foreground'
               }`}
             >
               {tab.label}
@@ -126,12 +129,21 @@ export default async function AdminReportsPage({ searchParams }: Props) {
         <div className="flex flex-wrap gap-3">
           {exportLinks.map((item) => (
             <div key={item.type} className="max-w-52 space-y-1">
-              <AdminReportExportLink
-                href={item.href}
-                label={item.label}
-                reportSensitivityLabel={item.metadata.reportSensitivityLabel}
-                warningLabel={item.metadata.warningLabel}
-              />
+              {canExportAdminReport(item.type, session.user.role) ? (
+                <AdminReportExportLink
+                  href={item.href}
+                  label={item.label}
+                  reportSensitivityLabel={item.metadata.reportSensitivityLabel}
+                  warningLabel={item.metadata.warningLabel}
+                />
+              ) : (
+                <span
+                  className="inline-flex rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-muted-foreground"
+                  title={item.metadata.permissionLabel}
+                >
+                  Super admin only
+                </span>
+              )}
               <p className="text-xs font-medium text-muted-foreground">
                 {item.metadata.reportSensitivityLabel}
               </p>
@@ -142,7 +154,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       </div>
 
       {activeTab === 'orders' && (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="border-b border-border px-5 py-4 font-semibold">Recent Orders in Range</div>
           <table className="w-full text-sm">
             <thead>
@@ -172,18 +184,18 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       )}
 
       {activeTab === 'revenue' && (
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-md border border-border bg-card p-5">
           <h2 className="font-display text-lg font-semibold">Revenue Snapshot</h2>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl border border-border bg-secondary/40 p-4">
+            <div className="rounded-md border border-border bg-secondary/40 p-4">
               <p className="text-sm text-muted-foreground">Gross revenue</p>
               <p className="mt-2 text-xl font-bold">{formatPrice(report.summary.revenue)}</p>
             </div>
-            <div className="rounded-xl border border-border bg-secondary/40 p-4">
+            <div className="rounded-md border border-border bg-secondary/40 p-4">
               <p className="text-sm text-muted-foreground">Average order value</p>
               <p className="mt-2 text-xl font-bold">{formatPrice(report.summary.averageOrderValue)}</p>
             </div>
-            <div className="rounded-xl border border-border bg-secondary/40 p-4">
+            <div className="rounded-md border border-border bg-secondary/40 p-4">
               <p className="text-sm text-muted-foreground">Paid orders</p>
               <p className="mt-2 text-xl font-bold">{report.summary.orders}</p>
             </div>
@@ -192,7 +204,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       )}
 
       {activeTab === 'products' && (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="border-b border-border px-5 py-4 font-semibold">Top Products</div>
           <table className="w-full text-sm">
             <thead>
@@ -218,7 +230,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
       )}
 
       {activeTab === 'customers' && (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="overflow-hidden rounded-md border border-border bg-card">
           <div className="border-b border-border px-5 py-4 font-semibold">Top Customers</div>
           <table className="w-full text-sm">
             <thead>

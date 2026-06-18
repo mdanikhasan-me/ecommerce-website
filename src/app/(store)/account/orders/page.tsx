@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
-import { CalendarDays, ChevronRight, Package, ReceiptText } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 export const metadata = { title: 'Boilabin Orders' }
 
@@ -62,7 +62,7 @@ export default async function AccountOrdersPage({
 
         {orders.length === 0 ? (
           <div className="text-center py-20">
-            <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-40" />
+            <LocalIcon name="package" className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-40" />
             <h2 className="font-display text-xl font-semibold">No orders yet</h2>
             <p className="text-muted-foreground mt-2">Your order history will appear here.</p>
             <Link href="/" className="btn-primary mt-5 inline-flex">Start Shopping</Link>
@@ -73,13 +73,13 @@ export default async function AccountOrdersPage({
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-[0_18px_44px_rgba(23,18,15,0.08)]"
+                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-colors md:hover:border-primary/30"
               >
                 <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:p-5">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 font-mono text-xs font-bold tracking-[0.04em] text-foreground">
-                        <ReceiptText className="h-3.5 w-3.5 text-primary" />
+                        <LocalIcon name="receipt-text" className="h-3.5 w-3.5 text-primary" />
                         {order.orderNumber}
                       </span>
                       <span className={`inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold ${STATUS_COLORS[order.status] ?? 'bg-secondary text-foreground'}`}>
@@ -87,7 +87,7 @@ export default async function AccountOrdersPage({
                       </span>
                     </div>
                     <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <CalendarDays className="h-3.5 w-3.5" />
+                      <LocalIcon name="calendar-days" className="h-3.5 w-3.5" />
                       {formatDate(order.createdAt)}
                     </p>
                   </div>
@@ -127,8 +127,8 @@ export default async function AccountOrdersPage({
                       ))}
                       {order._count.items > 3 && <span> +{order._count.items - 3} more</span>}
                     </p>
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-white">
-                      <ChevronRight className="h-4 w-4" />
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground transition-colors md:group-hover:bg-secondary md:group-hover:text-foreground">
+                      <LocalIcon name="chevron-right" className="h-4 w-4" />
                     </div>
                   </div>
                 </div>

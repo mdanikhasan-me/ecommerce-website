@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
-import { generatePageMetadata } from '@/backend/seo'
-import { CONTACT_EMAIL } from '@/shared/contact'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 import { ContentPageShell } from '@/frontend/components/content/ContentPageShell'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -11,10 +15,24 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function TermsPage() {
   return (
-    <ContentPageShell
+    <>
+      <JsonLd
+        data={[
+          generateWebPageJsonLd({
+            name: 'Boilabin Terms of Service',
+            description: 'Review the Boilabin shopping terms covering accounts, orders, product information, payments, returns, and platform use.',
+            path: '/terms',
+          }),
+          generateBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Terms of Service', url: '/terms' },
+          ]),
+        ]}
+      />
+      <ContentPageShell
       eyebrow="Terms of service"
-      title="Clear marketplace rules, written to be readable."
-      description="These terms explain how Boilabin works, what customers can expect from us, and the responsibilities that come with using the platform."
+      title="The rules for shopping on Boilabin."
+      description="What you agree to when you use Boilabin: your account, placing orders, cash-on-delivery payment, returns, and the legal basics."
       updatedAt="January 2025"
       sections={[
         {
@@ -103,12 +121,13 @@ export default function TermsPage() {
               </p>
               <p>
                 These terms are governed by the laws of the People&apos;s Republic of Bangladesh.
-                For questions, contact {CONTACT_EMAIL}.
+                For questions about these terms, use the contact page.
               </p>
             </>
           ),
         },
       ]}
     />
+    </>
   )
 }

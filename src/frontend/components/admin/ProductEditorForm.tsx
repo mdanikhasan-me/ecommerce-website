@@ -76,6 +76,7 @@ export function ProductEditorForm({
     isBestSeller: product?.isBestSeller ?? false,
     pinnedInNew: product?.pinnedInNew ?? false,
     pinnedInBestSeller: product?.pinnedInBestSeller ?? false,
+    isPreOrder: product?.isPreOrder ?? false,
   })
 
   const [images, setImages] = useState<ProductImageValue[]>(
@@ -219,6 +220,7 @@ export function ProductEditorForm({
     isBestSeller: form.isBestSeller,
     pinnedInNew: form.isNew ? form.pinnedInNew : false,
     pinnedInBestSeller: form.isBestSeller ? form.pinnedInBestSeller : false,
+    isPreOrder: form.isPreOrder,
     images: images
       .map((image) => ({
         url: image.url.trim(),
@@ -305,20 +307,20 @@ export function ProductEditorForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
 
       {!isSetupReady && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
           Products need at least one active category and a configured main store profile before they can be saved.
         </div>
       )}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Basic Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -377,7 +379,7 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Pricing and Inventory</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
@@ -451,13 +453,30 @@ export function ProductEditorForm({
                 />
               </div>
             </div>
+
+            <div className="mt-4 rounded-md border border-border/70 bg-background/50 p-3">
+              <label className="flex items-center gap-3 text-sm font-medium">
+                <input
+                  aria-label="Sell as pre-order"
+                  title="Sell as pre-order"
+                  type="checkbox"
+                  checked={form.isPreOrder}
+                  onChange={(event) => updateField('isPreOrder', event.target.checked)}
+                  className="size-4 rounded border-input"
+                />
+                Sell as pre-order
+              </label>
+              <p className="mt-1.5 pl-7 text-xs text-muted-foreground">
+                Shows a Pre-order badge and replaces the stock label and buy button with pre-order wording. Stock quantity still limits how many units can be reserved.
+              </p>
+            </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Images</h2>
 
             <div className="mt-4 flex flex-wrap gap-3">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary/80">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground md:hover:bg-secondary/80">
                 <Upload className="h-4 w-4" />
                 Upload files
                 <input aria-label="Form input" title="Form input" type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
@@ -482,8 +501,8 @@ export function ProductEditorForm({
             ) : (
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {images.map((image, index) => (
-                  <div key={image.id} className="rounded-2xl border border-border bg-secondary/40 p-3">
-                    <div className="aspect-[4/3] overflow-hidden rounded-xl bg-card">
+                  <div key={image.id} className="rounded-md border border-border bg-secondary/40 p-3">
+                    <div className="aspect-[4/3] overflow-hidden rounded-md bg-card">
                       {image.url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={image.url} alt={image.alt || form.name || ''} className="h-full w-full object-cover" />
@@ -534,7 +553,7 @@ export function ProductEditorForm({
             )}
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">Variants</h2>
               <button type="button" onClick={addVariant} className="btn-outline gap-2 px-3 py-2 text-xs">
@@ -548,7 +567,7 @@ export function ProductEditorForm({
             ) : (
               <div className="mt-4 space-y-4">
                 {variants.map((variant) => (
-                  <div key={variant.id} className="rounded-2xl border border-border bg-secondary/40 p-4">
+                  <div key={variant.id} className="rounded-md border border-border bg-secondary/40 p-4">
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                       <input aria-label="Form input" title="Form input"
                         value={variant.name}
@@ -600,7 +619,7 @@ export function ProductEditorForm({
                         className="input-base text-sm"
                         placeholder="Stock"
                       />
-                      <label className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm">
+                      <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 text-sm">
                         <input aria-label="Form input" title="Form input"
                           type="checkbox"
                           checked={variant.isActive}
@@ -624,7 +643,7 @@ export function ProductEditorForm({
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Classification</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -663,7 +682,7 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Choose which storefront sections show this product. Enable a section to reveal its pin-to-rotator option.
@@ -682,7 +701,7 @@ export function ProductEditorForm({
                 Published
               </label>
 
-              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+              <div className="rounded-md border border-border/70 bg-background/50 p-3">
                 <label className="flex items-center gap-3 text-sm font-medium">
                   <input
                     aria-label="Show in Featured Products"
@@ -696,7 +715,7 @@ export function ProductEditorForm({
                 </label>
               </div>
 
-              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+              <div className="rounded-md border border-border/70 bg-background/50 p-3">
                 <label className="flex items-center gap-3 text-sm font-medium">
                   <input
                     aria-label="Show in New Arrivals"
@@ -723,7 +742,7 @@ export function ProductEditorForm({
                 ) : null}
               </div>
 
-              <div className="rounded-xl border border-border/70 bg-background/50 p-3">
+              <div className="rounded-md border border-border/70 bg-background/50 p-3">
                 <label className="flex items-center gap-3 text-sm font-medium">
                   <input
                     aria-label="Show in Best Sellers"
@@ -752,7 +771,7 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-md border border-border bg-card p-5">
             <h2 className="font-display text-lg font-semibold">SEO</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Leave everything blank. SEO is generated automatically from the product name, category and price. Only override when you need custom wording.
@@ -778,7 +797,7 @@ export function ProductEditorForm({
                 />
               </div>
 
-              <div className="rounded-xl border border-dashed border-border bg-background/60 p-4">
+              <div className="rounded-md border border-dashed border-border bg-background/60 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Auto-SEO preview</p>
                 <div className="mt-2 space-y-2 text-xs">
                   <p>

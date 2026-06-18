@@ -1,6 +1,13 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { FAQContent, type FAQSection } from '@/frontend/components/content/FAQContent'
-import { JsonLd, generateFAQJsonLd, generatePageMetadata } from '@/backend/seo'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generateFAQJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin FAQ',
@@ -10,44 +17,44 @@ export const metadata: Metadata = generatePageMetadata(
 
 const FAQS: FAQSection[] = [
   {
-    category: 'Orders and Delivery',
+    category: 'Orders and delivery',
     items: [
-      { q: 'How long does delivery take?', a: 'Delivery timing depends on the order address, item availability, holidays, and fulfillment capacity. Review the shipping page and checkout details before placing an order.' },
-      { q: 'How much is the delivery fee?', a: 'Delivery is free on orders over Tk 2,000. Below that, delivery is Tk 60.' },
-      { q: 'Can I track my order?', a: 'Signed-in customers can check order status from My Account and Orders. Tracking details appear there when they are available.' },
-      { q: 'Can I change or cancel my order?', a: 'Contact support as soon as possible. Available changes depend on the current order status and fulfillment progress.' },
+      { q: 'How long does delivery take?', a: 'Orders inside Dhaka usually arrive within a few working days, and a little longer for other districts. Your estimated timing and fee are shown at checkout before you confirm.' },
+      { q: 'How much is the delivery fee?', a: 'Tk 100 inside Dhaka and Tk 150 to other districts. Orders over Tk 2,000 ship free. Express delivery is available in some areas for a fee based on your location.' },
+      { q: 'Can I track my order?', a: 'Sign in and open My Account → Orders to see your status, or use the Track Order page with your order number.' },
+      { q: 'Can I change or cancel my order?', a: 'Contact us as soon as you can with your order number. We can usually change or cancel an order until it has been packed for delivery.' },
     ],
   },
   {
     category: 'Payments',
     items: [
-      { q: 'What payment methods do you accept?', a: 'Cash on Delivery is available now. Online payment options are shown at checkout when they are available.' },
-      { q: 'How are online payment options handled?', a: 'Online payment options appear only when they are available in the checkout flow. Cash on Delivery remains available for eligible orders.' },
-      { q: 'Do I get an order confirmation?', a: 'Yes, an order confirmation is created after checkout with the order and payment details available for that order.' },
+      { q: 'What payment methods do you accept?', a: 'Cash on delivery — you pay when your order reaches you. No online payment is needed to order.' },
+      { q: 'Will you add online payment?', a: 'When we add online payment, it will appear as an option at checkout. Until then, every order is cash on delivery.' },
+      { q: 'Do I get an order confirmation?', a: 'Yes. As soon as you check out, we create a confirmation with your items, delivery address, and total.' },
     ],
   },
   {
-    category: 'Returns and Refunds',
+    category: 'Returns and refunds',
     items: [
-      { q: 'What is the return policy?', a: 'We offer a seven day return window for most products. Items must be in original, unused condition with all accessories and packaging.' },
-      { q: 'How do I return a product?', a: 'Go to My Account, then Orders, then select your order and request a return. If the request is approved, return or pickup instructions are shared with you.' },
-      { q: 'When will I get my refund?', a: 'Refund timing depends on the return review, item inspection, and refund method. Support shares the next step after the request is reviewed.' },
+      { q: 'What is the return policy?', a: 'You have seven days from delivery to report an item that arrived defective or was damaged in transit. Send us proof and choose a refund or a replacement. Requests after seven days are not accepted.' },
+      { q: 'How do I return a product?', a: 'Open My Account → Orders within seven days of delivery, choose Request a return, and attach clear photos or a short video. If approved, we share the pickup or return steps.' },
+      { q: 'When will I get my refund?', a: 'Once we receive and inspect the item, we confirm your refund or send a replacement. For cash-on-delivery orders we arrange the refund method with you directly.' },
     ],
   },
   {
-    category: 'Products and Details',
+    category: 'Products and details',
     items: [
-      { q: 'Where can I check product details?', a: 'Review each product page for images, price, availability, category, variant, and description details before ordering.' },
-      { q: 'Do products come with warranty?', a: 'Warranty or return notes should be checked on the product page or with support before ordering.' },
-      { q: 'Can I find a product that is out of stock?', a: 'You can request to be notified when a product comes back in stock. Use the Notify Me button on the product page.' },
+      { q: 'Where can I check product details?', a: 'Each product page has the images, price, stock, variants, and full description. Check there before you order.' },
+      { q: 'Do products come with a warranty?', a: 'It varies by product. Any warranty or return note is listed on the product page, or ask us before you order.' },
+      { q: 'Can I get notified when something is back in stock?', a: 'Yes. Tap Notify Me on a sold-out product page and we will email you when it returns.' },
     ],
   },
   {
-    category: 'Account and Security',
+    category: 'Account and security',
     items: [
-      { q: 'How do I get help with my password?', a: 'Contact support with the email address on your account. The team will help you recover access safely.' },
-      { q: 'Can I shop without creating an account?', a: 'You can browse products without an account, but you must sign in or create an account before placing an order.' },
-      { q: 'Where can I read about personal data?', a: 'See the Privacy Policy for the current explanation of account, order, and contact data handling.' },
+      { q: 'I forgot my password. What do I do?', a: 'Contact us from the email address on your account and we will help you recover access safely.' },
+      { q: 'Can I shop without an account?', a: 'You can browse freely, but you will need to sign in or create an account to place an order.' },
+      { q: 'How is my personal data handled?', a: 'Our Privacy Policy explains exactly what we collect, why, and how we keep it safe.' },
     ],
   },
 ]
@@ -59,20 +66,41 @@ export default function FAQPage() {
   })))
 
   return (
-    <div className="container-site py-12 lg:py-16">
-      <JsonLd data={generateFAQJsonLd(faqItems)} />
-      <div className="mx-auto max-w-4xl">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h1 className="mb-2 font-display text-3xl font-bold md:text-4xl">Frequently Asked Questions</h1>
-          <p className="text-muted-foreground">Everything you need to know about shopping on Boilabin.</p>
+    <div className="container-site py-9 lg:py-14">
+      <JsonLd
+        data={[
+          generateWebPageJsonLd({
+            name: 'Boilabin FAQ',
+            description: 'Answers about Boilabin orders, delivery, payments, returns, product details, and account support.',
+            path: '/faq',
+          }),
+          generateBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'FAQ', url: '/faq' },
+          ]),
+          generateFAQJsonLd(faqItems),
+        ]}
+      />
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-12">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Help &amp; FAQ</p>
+          <h1 className="mt-3 font-display text-[2rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-[2.5rem]">
+            Frequently asked questions
+          </h1>
+          <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-[17px] sm:leading-8">
+            Quick answers about orders, delivery, payment, returns, and your account.
+          </p>
+
+          <div className="mt-6 rounded-2xl border border-border bg-secondary/40 p-5">
+            <p className="font-semibold text-foreground">Still stuck?</p>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">If your question is not here, our team is happy to help.</p>
+            <Link href="/contact" className="btn-primary mt-4 inline-flex">Contact support</Link>
+          </div>
         </div>
 
-        <FAQContent sections={FAQS} />
-
-        <div className="mt-10 rounded-[24px] border border-border/70 bg-secondary/55 p-6 text-center">
-          <p className="mb-1 font-semibold">Still have questions?</p>
-          <p className="text-sm text-muted-foreground">Our team is ready to help.</p>
-          <a href="/contact" className="btn-primary mt-4 inline-flex">Contact Support</a>
+        <div>
+          <FAQContent sections={FAQS} />
         </div>
       </div>
     </div>

@@ -48,7 +48,7 @@ export function PaymentStatusUpdater({
   }
 
   return (
-    <div className="space-y-2 rounded-xl border border-border bg-secondary/40 p-3">
+    <div className="space-y-2 rounded-md border border-border bg-secondary/40 p-3">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
         Update payment status
       </p>

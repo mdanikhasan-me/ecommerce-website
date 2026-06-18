@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
+import { revalidateHomeSurface } from '@/backend/catalog/storefront-revalidation'
 import {
   cleanupManagedAdminUploads,
   deleteReplacedAdminUploads,
@@ -88,6 +89,8 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         })
       }
 
+      revalidateHomeSurface()
+
       return NextResponse.json({ banner })
     } catch (error) {
       await cleanupManagedAdminUploads(newUploads)
@@ -114,6 +117,8 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
 
     await db.banner.delete({ where: { id: existingBanner.id } })
     await cleanupManagedAdminUploads([existingBanner.imageUrl, existingBanner.mobileImageUrl])
+
+    revalidateHomeSurface()
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {

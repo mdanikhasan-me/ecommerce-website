@@ -78,7 +78,7 @@ export function NotificationComposer({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-card p-5">
+    <form onSubmit={handleSubmit} className="rounded-md border border-border bg-card p-5">
       <div className="mb-4">
         <h2 className="font-display text-lg font-semibold">Compose Notification</h2>
         <p className="mt-1 text-sm text-muted-foreground">

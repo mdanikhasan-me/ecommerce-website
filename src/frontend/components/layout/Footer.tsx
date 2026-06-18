@@ -50,7 +50,7 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
     links: [
       { label: 'All categories', href: '/category' },
       { label: 'New arrivals', href: '/new-arrivals' },
-      { label: 'Search products', href: '/search' },
+      { label: 'Best Sellers', href: '/search?bestSeller=true' },
     ],
   },
   {
@@ -72,15 +72,20 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
       { label: 'Wishlist', href: '/wishlist' },
     ],
   },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' },
-      { label: 'Sitemap', href: '/sitemap.xml' },
-    ],
-  },
 ]
+
+const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS.map((section) => {
+  if (section.title !== 'Support') return section
+
+  return {
+    ...section,
+    links: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Help center', href: '/help' },
+      { label: 'Contact', href: '/contact' },
+    ],
+  }
+})
 
 const BOTTOM_LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/privacy' },
@@ -90,29 +95,29 @@ const BOTTOM_LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-black/8 bg-[hsl(42_42%_96%)] text-foreground">
+    <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground">
       <div className="container-site">
-        <div className="w-full py-5 min-[600px]:py-6 lg:py-8">
-          <div className="grid gap-5 min-[600px]:gap-6 lg:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] lg:gap-9 xl:gap-11">
-            <section aria-label="Boilabin contact" className="max-w-[32rem] lg:max-w-[18rem]">
+        <div className="w-full pb-3.5 pt-2 min-[600px]:py-6 lg:py-8">
+          <div className="grid gap-3 min-[600px]:gap-6 lg:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] lg:gap-9 xl:gap-11">
+            <section aria-label="Boilabin contact" className="hidden max-w-[32rem] min-[600px]:block lg:max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
                 <span className="font-display text-[1.28rem] font-bold leading-none tracking-normal text-foreground sm:text-[1.42rem]">
                   Boilabin
                 </span>
               </Link>
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
-                Browse products, manage orders, and reach support from one practical shopping hub.
+                Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground sm:text-sm">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:text-foreground"
+                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
                 >
                   <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:text-foreground"
+                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
                 >
                   <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
                 </a>
@@ -120,7 +125,8 @@ export function Footer() {
                   <LocalIcon name="location" className="h-3.5 w-3.5 shrink-0 text-primary/70" /> {CONTACT_ADDRESS}
                 </span>
               </div>
-              <div className="mt-3 flex items-center gap-2">
+              {/* Mobile only: social icons stay under the address. On desktop they move to the Social column. */}
+              <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
                 {SOCIAL_LINKS.map((item) => (
                   <a
                     key={item.label}
@@ -128,7 +134,7 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors md:hover:bg-primary/8 md:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
                     <LocalIcon name={item.icon} className="h-4 w-4" />
                   </a>
@@ -140,7 +146,7 @@ export function Footer() {
               aria-label="Footer"
               className="hidden gap-x-8 gap-y-5 min-[600px]:grid min-[600px]:grid-cols-2 lg:grid-cols-4 lg:gap-x-7 xl:gap-x-9"
             >
-              {FOOTER_LINK_SECTIONS.map((section) => (
+              {DESKTOP_FOOTER_LINK_SECTIONS.map((section) => (
                 <div key={section.title}>
                   <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">
                     {section.title}
@@ -151,7 +157,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="text-sm leading-5 text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+                          className="text-sm leading-5 text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
                         >
                           {link.label}
                         </Link>
@@ -160,6 +166,26 @@ export function Footer() {
                   </ul>
                 </div>
               ))}
+
+              <div>
+                <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">Social</h2>
+                <ul className="mt-2 space-y-2.5">
+                  {SOCIAL_LINKS.map((item) => (
+                    <li key={item.label}>
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={item.label}
+                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                      >
+                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </nav>
 
             <nav aria-label="Footer sections" className="space-y-1 min-[600px]:hidden">
@@ -168,17 +194,17 @@ export function Footer() {
                   key={section.title}
                   className="group overflow-hidden border-b border-black/8"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2.5 text-[0.92rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-1.5 text-[0.86rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
                     <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
-                  <ul className="space-y-0.5 pb-2">
+                  <ul className="space-y-0.5 pb-1">
                     {section.links.map((link) => (
                       <li key={link.href}>
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="block rounded-lg py-2 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+                          className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
                         >
                           {link.label}
                         </Link>
@@ -190,10 +216,10 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="mt-5 grid gap-4 border-t border-black/8 pt-4 min-[600px]:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)] min-[600px]:items-start min-[600px]:gap-6 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.62fr)] lg:items-center lg:gap-9">
-            <section className="order-2 min-[600px]:order-1">
-              <h2 className="text-sm font-semibold text-foreground">Checkout payment options</h2>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 min-[600px]:gap-x-3.5 lg:gap-x-4">
+          <div className="mt-2.5 grid gap-2.5 pt-0 min-[600px]:mt-5 min-[600px]:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)] min-[600px]:items-start min-[600px]:gap-6 min-[600px]:border-t min-[600px]:border-black/8 min-[600px]:pt-4 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.62fr)] lg:items-center lg:gap-9">
+            <section className="order-3 min-[600px]:order-1">
+              <h2 className="text-[0.82rem] font-semibold text-foreground min-[600px]:text-sm">Checkout payment options</h2>
+              <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 min-[600px]:mt-2 min-[600px]:gap-x-3.5 lg:gap-x-4">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
@@ -203,38 +229,76 @@ export function Footer() {
                     height={method.height}
                     loading="eager"
                     decoding="async"
-                    className={`${method.className} block w-auto object-contain`}
+                    className={`${method.className} block w-auto origin-left scale-[0.92] object-contain min-[600px]:scale-100`}
                   />
                 ))}
               </div>
             </section>
 
             <section className="order-1 min-[600px]:order-2 min-[600px]:max-w-[20rem] min-[600px]:justify-self-end lg:max-w-none">
-              <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
-              <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+              <h2 className="text-[0.82rem] font-semibold text-foreground min-[600px]:text-sm">Stay in the loop</h2>
+              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground min-[600px]:mt-1 min-[600px]:text-xs min-[600px]:leading-5">
                 Get launch updates and selected store notices.
               </p>
-              <div className="mt-2.5">
+              <div className="mt-1.5 min-[600px]:mt-2">
                 <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
+              </div>
+            </section>
+
+            <section aria-label="Boilabin contact" className="order-2 pt-1 min-[600px]:hidden">
+              <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
+                <span className="font-display text-[1.16rem] font-bold leading-none tracking-normal text-foreground">
+                  Boilabin
+                </span>
+              </Link>
+              <p className="mt-1 max-w-[28rem] text-[0.82rem] leading-5 text-muted-foreground">
+                Everyday finds. Best deals. Delivered across Bangladesh.
+              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[11px] text-muted-foreground">
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                >
+                  <LocalIcon name="mail" className="h-3 w-3 text-primary/70" /> {CONTACT_EMAIL}
+                </a>
+                <a
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                >
+                  <LocalIcon name="phone" className="h-3 w-3 text-primary/70" /> {CONTACT_PHONE}
+                </a>
+              </div>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                {SOCIAL_LINKS.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={item.label}
+                    className="flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors md:hover:bg-primary/8 md:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                  >
+                    <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                  </a>
+                ))}
               </div>
             </section>
           </div>
         </div>
 
-        <div className="w-full border-t border-black/6 py-3 text-xs text-muted-foreground">
-          <div className="flex w-full flex-col items-center justify-between gap-2 min-[700px]:flex-row">
+        <div className="w-full border-t border-black/6 py-2 text-[11px] text-muted-foreground min-[600px]:py-3 min-[600px]:text-xs">
+          <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>Copyright {new Date().getFullYear()}</span>
-              <span className="font-semibold text-foreground">Boilabin</span>
               <span>All rights reserved.</span>
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 min-[700px]:justify-end">
+            <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
               {BOTTOM_LEGAL_LINKS.map((link, index) => (
                 <span key={link.href} className="inline-flex items-center gap-3">
                   {index > 0 ? <span aria-hidden="true" className="text-black/20">|</span> : null}
                   <Link
                     href={link.href}
-                    className="transition-colors hover:text-foreground focus-visible:text-foreground"
+                    className="transition-colors md:hover:text-foreground focus-visible:text-foreground"
                   >
                     {link.label}
                   </Link>

@@ -23,7 +23,7 @@ export default async function AdminCategoriesPage() {
         </Link>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-md overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
@@ -37,7 +37,7 @@ export default async function AdminCategoriesPage() {
           <tbody className="divide-y divide-border">
             {categories.map((cat) => (
               <>
-                <tr key={cat.id} className="hover:bg-secondary/50 bg-secondary/20">
+                <tr key={cat.id} className="md:hover:bg-secondary/50 bg-secondary/20">
                   <td className="px-4 py-3 font-semibold">{cat.name}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{cat.children.length} sub-categories</td>
                   <td className="px-4 py-3 text-right">{cat._count.products}</td>
@@ -47,13 +47,13 @@ export default async function AdminCategoriesPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/categories/${cat.id}`} className="p-1.5 rounded-lg hover:bg-muted inline-flex">
+                    <Link href={`/admin/categories/${cat.id}`} className="p-1.5 rounded-md md:hover:bg-muted inline-flex">
                       <Pencil className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   </td>
                 </tr>
                 {cat.children.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-secondary/50">
+                  <tr key={sub.id} className="md:hover:bg-secondary/50">
                     <td className="px-4 py-2.5 pl-10 text-muted-foreground text-sm">↳ {sub.name}</td>
                     <td className="px-4 py-2.5 hidden md:table-cell" />
                     <td className="px-4 py-2.5 text-right text-muted-foreground text-sm">{sub._count.products}</td>
@@ -63,7 +63,7 @@ export default async function AdminCategoriesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-right">
-                      <Link href={`/admin/categories/${sub.id}`} className="p-1.5 rounded-lg hover:bg-muted inline-flex">
+                      <Link href={`/admin/categories/${sub.id}`} className="p-1.5 rounded-md md:hover:bg-muted inline-flex">
                         <Pencil className="h-4 w-4 text-muted-foreground" />
                       </Link>
                     </td>

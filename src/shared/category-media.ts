@@ -4,40 +4,40 @@ import path from 'node:path'
 
 export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: string }> = {
   electronics: {
-    path: '/assets/categories/electronics.jpg',
-    version: '75b478cf761d',
+    path: '/assets/categories/electronics.webp',
+    version: 'ee014689882e',
   },
   fashion: {
-    path: '/assets/categories/fashion.jpg',
-    version: '50f7092c1d2d',
+    path: '/assets/categories/fashion.webp',
+    version: 'd9a272ef93d8',
   },
   'home-appliances': {
-    path: '/assets/categories/home-appliances.jpg',
-    version: '4ea4173c04ae',
+    path: '/assets/categories/home-appliances.webp',
+    version: 'fae444fc7175',
   },
   'beauty-health': {
     path: '/assets/categories/beauty-health.jpg',
     version: '5709ce7f5817',
   },
   'sports-fitness': {
-    path: '/assets/categories/sports-fitness.jpg',
-    version: 'f91b7397630a',
+    path: '/assets/categories/sports-fitness.webp',
+    version: '9b2626af629e',
   },
   'books-stationery': {
     path: '/assets/categories/books-stationery.jpg',
     version: '9b0fa704b0cb',
   },
   gaming: {
-    path: '/assets/categories/gaming.jpg',
-    version: '1ec2f8930d9a',
+    path: '/assets/categories/gaming.webp',
+    version: '62beedc4987f',
   },
   'toys-collectibles': {
-    path: '/assets/categories/toys-collectibles.jpg',
-    version: '18811d8fecf3',
+    path: '/assets/categories/toys-collectibles.webp',
+    version: '768acfdfa9d0',
   },
   'baby-kids': {
-    path: '/assets/categories/gaming.jpg',
-    version: '1ec2f8930d9a',
+    path: '/assets/categories/gaming.webp',
+    version: '62beedc4987f',
   },
 }
 
@@ -92,11 +92,11 @@ function versionManagedCategoryUpload(publicPath: string) {
 
 export function getCategoryMediaBasePath(category: CategoryImageInput) {
   const savedImage = getSavedCategoryImage(category)
-  if (savedImage) {
+  const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
+  if (savedImage && !isReplacedBuiltInCategoryAsset(category, savedImage, localAsset)) {
     return savedImage
   }
 
-  const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
   if (localAsset) {
     return localAsset.path
   }
@@ -134,11 +134,23 @@ function getSavedCategoryImage(category: CategoryImageInput) {
   return image
 }
 
+function isReplacedBuiltInCategoryAsset(
+  category: CategoryImageInput,
+  savedImage: string,
+  localAsset?: { path: string; version: string },
+) {
+  return Boolean(
+    localAsset &&
+      savedImage !== localAsset.path &&
+      savedImage.toLowerCase().startsWith(`/assets/categories/${category.slug.toLowerCase()}.`),
+  )
+}
+
 export function getCategoryMediaPath(category: CategoryImageInput) {
   const savedImage = getSavedCategoryImage(category)
   const localAsset = CATEGORY_PHOTO_ASSETS[category.slug]
 
-  if (savedImage) {
+  if (savedImage && !isReplacedBuiltInCategoryAsset(category, savedImage, localAsset)) {
     if (localAsset?.path === savedImage) {
       return versionCategoryAsset(localAsset)
     }
@@ -162,6 +174,22 @@ export function getSubcategoryMediaPath(category: CategoryImageInput) {
     image.startsWith('/uploads/admin/categories/')
   ) {
     return image
+  }
+
+  return null
+}
+
+type CategoryIconInput = {
+  icon?: string | null
+}
+
+// Admin-uploaded subcategory SVG icon (sanitized at upload, stored under public assets).
+export function getSubcategoryIconPath(category: CategoryIconInput) {
+  const icon = category.icon?.trim()
+  if (!icon) return null
+
+  if (icon.startsWith('/assets/categories/subcategories/') && icon.toLowerCase().endsWith('.svg')) {
+    return icon
   }
 
   return null

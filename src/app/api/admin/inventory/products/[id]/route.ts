@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/backend/database'
+import { revalidateProductSurfacesByIds } from '@/backend/catalog/storefront-revalidation'
 import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminInventoryPayload } from '@/backend/admin/inventory-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
@@ -110,6 +111,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     revalidatePath('/admin/inventory')
     revalidatePath('/admin/products')
     revalidatePath(`/admin/products/${product.id}`)
+    await revalidateProductSurfacesByIds([product.id]).catch(() => {})
 
     return NextResponse.json({ product: updatedProduct })
   } catch (error: unknown) {

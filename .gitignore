@@ -15,8 +15,22 @@ node_modules
 
 # misc
 .DS_Store
+desktop.ini
 *.pem
-audit-reports/
+.maintenance-output/
+expanded-folders.txt
+project-folders.txt
+docs/
+tests/
+scripts/
+docker/
+docker-compose.local.yml
+README.md
+.vscode/
+.env.example
+.env.local.example
+prisma/seed.ts
+prisma/seed-config.json
 
 # debug
 npm-debug.log*

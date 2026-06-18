@@ -4,6 +4,7 @@ import {
   CATEGORY_IMAGE_DATA_URL_ERROR,
   isCategoryImageDataUrl,
 } from '@/backend/admin/category-image-policy'
+import { isSubcategoryIconPath } from '@/backend/admin/svg-icon-policy'
 
 type CategoryParentLink = {
   id: string
@@ -49,12 +50,32 @@ const optionalCategoryImageString = z
   })
   .transform((value) => stripCategoryImageVersion(value) || null)
 
+// `icon` now carries the managed subcategory SVG icon path (e.g.
+// /assets/categories/subcategories/<slug>.svg). Short legacy keyword values stay allowed.
+const optionalCategoryIconString = z
+  .string()
+  .trim()
+  .max(2048, 'Category icon path is too long')
+  .optional()
+  .nullable()
+  .superRefine((value, context) => {
+    const normalized = value?.trim()
+    if (!normalized) return
+    if (normalized.startsWith('/') && !isSubcategoryIconPath(normalized)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Category icon must be an uploaded SVG icon',
+      })
+    }
+  })
+  .transform((value) => value?.trim() || null)
+
 const categoryPayloadSchema = z.object({
   name: z.string().trim().min(1, 'Category name is required').max(120, 'Category name is too long'),
   slug: optionalTrimmedString(140),
   description: optionalTrimmedString(500),
   image: optionalCategoryImageString,
-  icon: optionalTrimmedString(80),
+  icon: optionalCategoryIconString,
   isActive: z.boolean().optional().default(true),
   sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),
   parentId: optionalTrimmedString(120),

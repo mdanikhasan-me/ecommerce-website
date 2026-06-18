@@ -1,9 +1,18 @@
 import { db } from '@/backend/database'
+import { unstable_cache } from 'next/cache'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
-import { generatePageMetadata } from '@/backend/seo'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
+import {
+  JsonLd,
+  generateBreadcrumbJsonLd,
+  generateItemListJsonLd,
+  generatePageMetadata,
+  generateWebPageJsonLd,
+} from '@/backend/seo'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
-import { Sparkles } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -12,17 +21,13 @@ export const metadata: Metadata = generatePageMetadata(
   '/new-arrivals',
 )
 export const revalidate = 300
-const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw'
+const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 559px) 50vw, (max-width: 767px) 33vw, (max-width: 1280px) 25vw, (max-width: 1536px) 20vw, 16vw'
 
-export default async function NewArrivalsPage() {
-  const products = await db.product.findMany({
+const getNewArrivalProducts = unstable_cache(async () => db.product.findMany({
     where: getBuyerVisibleProductWhere({ isNew: true }),
     orderBy: { createdAt: 'desc' },
     take: 32,
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
+    select: productCardSelect,
   }).catch(() => {
     logSecurityEvent({
       type: 'server_page_data_load_failed',
@@ -36,13 +41,41 @@ export default async function NewArrivalsPage() {
       },
     })
     return []
+  }), ['storefront-new-arrivals-v1'], {
+    revalidate: 300,
+    tags: [STOREFRONT_CACHE_TAGS.products],
   })
+
+export default async function NewArrivalsPage() {
+  const products = await getNewArrivalProducts()
+  const pageJsonLd = generateWebPageJsonLd({
+    type: 'CollectionPage',
+    name: 'Boilabin New Arrivals',
+    description: 'Explore the newest products added to Boilabin, with clear prices and delivery across Bangladesh.',
+    path: '/new-arrivals',
+  })
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Home', url: '/' },
+    { name: 'New Arrivals', url: '/new-arrivals' },
+  ])
+  const itemListJsonLd = generateItemListJsonLd(
+    'Boilabin new arrivals',
+    products.map((product, index) => ({
+      name: product.name,
+      slug: product.slug,
+      basePrice: product.basePrice,
+      salePrice: product.salePrice,
+      image: product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url,
+      position: index + 1,
+    })),
+  )
 
   return (
     <div className="container-site py-8">
+      <JsonLd data={[pageJsonLd, breadcrumbJsonLd, itemListJsonLd]} />
       <div className="flex items-center gap-3 mb-8">
         <div className="p-2.5 rounded-xl bg-green-100">
-          <Sparkles className="h-5 w-5 text-green-600" />
+          <LocalIcon name="sparkles" className="h-5 w-5 text-green-600" />
         </div>
         <div>
           <h1 className="font-display text-2xl font-bold">New Arrivals</h1>
@@ -53,7 +86,7 @@ export default async function NewArrivalsPage() {
       {products.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">No new arrivals yet. Check back soon!</div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:grid-cols-4 md:gap-3.5 lg:gap-4 xl:grid-cols-5 2xl:grid-cols-6">
           {products.map((p, index) => (
             <ProductCard
               key={p.id}

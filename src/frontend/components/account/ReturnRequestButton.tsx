@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, RotateCcw } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import toast from 'react-hot-toast'
 
 type ReturnRequestButtonProps = {
@@ -47,7 +48,7 @@ export function ReturnRequestButton({ orderId, disabled, disabledReason }: Retur
         title={disabled ? disabledReason : 'Request return'}
         className="btn-outline w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <RotateCcw className="h-4 w-4" />
+        <LocalIcon name="refresh-ccw" className="h-4 w-4" />
         Request Return
       </button>
       {disabled ? <p className="mt-2 text-xs leading-5 text-muted-foreground">{disabledReason}</p> : null}

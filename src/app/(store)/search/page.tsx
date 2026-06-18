@@ -1,16 +1,18 @@
 import { db } from '@/backend/database'
+import { unstable_cache } from 'next/cache'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
 import {
+  buildEffectivePriceOrderBy,
   buildEffectivePriceWhere,
   getEffectivePriceSortDirection,
-  orderProductsById,
-  selectEffectivePricePage,
 } from '@/backend/catalog/product-price-filter'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseSearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { generateSearchMetadata } from '@/backend/seo'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
@@ -19,7 +21,19 @@ interface Props {
   searchParams: Promise<RawSearchParams>
 }
 
-const SEARCH_PRODUCT_IMAGE_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1120px) 33vw, (max-width: 1440px) 24vw, (max-width: 1536px) 20vw, 16vw'
+export const revalidate = 120
+
+const SEARCH_PRODUCT_IMAGE_SIZES = '(max-width: 559px) 50vw, (max-width: 1023px) 33vw, (max-width: 1120px) 33vw, (max-width: 1440px) 24vw, (max-width: 1536px) 20vw, 16vw'
+
+const getSearchFilterCategories = unstable_cache(
+  async () => db.category.findMany({
+    where: { isActive: true },
+    select: { name: true, slug: true },
+    orderBy: { name: 'asc' },
+  }),
+  ['search-filter-categories-v1'],
+  { revalidate: 300, tags: [STOREFRONT_CACHE_TAGS.categories] },
+)
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const params = parseSearchParams(await searchParams)
@@ -84,7 +98,11 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
   return { OR: productOR }
 }
 
-async function getSearchResults(rawParams: RawSearchParams) {
+function getSearchCacheKey(rawParams: RawSearchParams) {
+  return JSON.stringify(parseSearchParams(rawParams).queryParams)
+}
+
+async function getUncachedSearchResults(rawParams: RawSearchParams) {
   const params = parseSearchParams(rawParams)
   const page = params.page
   const limit = 24
@@ -108,53 +126,47 @@ async function getSearchResults(rawParams: RawSearchParams) {
   if (params.inStock) andClauses.push({ stockQuantity: { gt: 0 } })
   if (params.rating !== null) andClauses.push({ rating: { gte: params.rating } })
   if (params.featured) andClauses.push({ isFeatured: true })
+  if (params.bestSeller) andClauses.push({ isBestSeller: true })
 
   const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
   const effectivePriceSort = getEffectivePriceSortDirection(params.sort)
+  const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
 
   let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
   if (params.sort === 'newest') orderBy = { createdAt: 'desc' }
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const productInclude = {
-    images: { where: { isPrimary: true }, take: 1 },
-    category: { select: { name: true, slug: true } },
-  } satisfies Prisma.ProductInclude
-
   const [products, total, categories] = await Promise.all([
-    effectivePriceSort
-      ? db.product.findMany({
-          where,
-          orderBy: { id: 'asc' },
-          select: { id: true, basePrice: true, salePrice: true },
-        }).then(async (items) => {
-          const pageIds = selectEffectivePricePage(items, effectivePriceSort, skip, limit).map((item) => item.id)
-          if (pageIds.length === 0) return []
-
-          const pageProducts = await db.product.findMany({
-            where: getBuyerVisibleProductWhere({ id: { in: pageIds } }),
-            include: productInclude,
-          })
-
-          return orderProductsById(pageProducts, pageIds)
-        })
-      : db.product.findMany({
-          where,
-          orderBy,
-          skip,
-          take: limit,
-          include: productInclude,
-        }),
+    db.product.findMany({
+      where,
+      orderBy: effectivePriceOrderBy ?? orderBy,
+      skip,
+      take: limit,
+      select: productCardSelect,
+    }),
     db.product.count({ where }),
-    db.category.findMany({ where: { isActive: true }, select: { name: true, slug: true }, orderBy: { name: 'asc' } }),
+    getSearchFilterCategories(),
   ])
 
   return { products, total, categories, page, totalPages: Math.ceil(total / limit), params }
 }
 
+const getCachedSearchResults = unstable_cache(
+  async (cacheKey: string) => {
+    const rawParams = JSON.parse(cacheKey) as RawSearchParams
+    return getUncachedSearchResults(rawParams)
+  },
+  ['storefront-search-results-v1'],
+  {
+    revalidate: 120,
+    tags: [STOREFRONT_CACHE_TAGS.products, STOREFRONT_CACHE_TAGS.categories],
+  },
+)
+
 export default async function SearchPage({ searchParams }: Props) {
   const rawParams = await searchParams
-  const { products, total, categories, page, totalPages, params } = await getSearchResults(rawParams)
+  const { products, total, categories, page, totalPages, params } = await getCachedSearchResults(getSearchCacheKey(rawParams))
+  const listingTitle = params.bestSeller ? 'Best Sellers' : params.featured ? 'Featured Products' : 'All Products'
 
   const SORT_OPTIONS = [
     { value: 'popular', label: 'Most Popular' },
@@ -179,7 +191,7 @@ export default async function SearchPage({ searchParams }: Props) {
           </h1>
         ) : (
           <h1 className="font-display text-[1.68rem] font-bold leading-[1.08] sm:text-3xl sm:leading-tight">
-            <span>All Products</span>
+            <span>{listingTitle}</span>
             <span className="mt-1 block text-sm font-normal text-muted-foreground sm:ml-2 sm:mt-0 sm:inline sm:text-base">
               ({total} products)
             </span>
@@ -210,7 +222,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3.5 md:grid-cols-3 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}
@@ -253,7 +265,7 @@ function PaginationLink({ href, active, children }: { href: string; active?: boo
     <a
       href={href}
       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-        active ? 'bg-primary text-white' : 'border border-border hover:bg-secondary'
+        active ? 'bg-primary text-white' : 'border border-border md:hover:bg-secondary'
       }`}
     >
       {children}

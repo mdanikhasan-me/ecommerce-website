@@ -1,6 +1,6 @@
 'use client'
 
-import { useWishlistStore } from '@/frontend/stores'
+import { useWishlistStore } from '@/frontend/stores/wishlist'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import Link from 'next/link'
@@ -44,13 +44,13 @@ export default function WishlistPage() {
           <Link href="/" className="btn-primary mt-5 inline-flex">Discover Products</Link>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:grid-cols-4 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
           {visibleItems.map((_, i) => (
             <div key={i} className="aspect-square bg-secondary animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:grid-cols-4 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
           {products.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       )}

@@ -1,9 +1,12 @@
 import { db } from '@/backend/database'
+import { unstable_cache } from 'next/cache'
 import { HeroBanner } from '@/frontend/components/home/HeroBanner'
 import { FeaturedCategories } from '@/frontend/components/home/FeaturedCategories'
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { getVisibleCategoryProductCounts } from '@/backend/catalog/category-product-counts'
+import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import type { Metadata } from 'next'
 
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 300
 
-async function getHomeData() {
+const getHomeData = unstable_cache(async () => {
   const categoriesPromise = db.category.findMany({
     where: { isActive: true, parentId: null },
     orderBy: { sortOrder: 'asc' },
@@ -43,28 +46,19 @@ async function getHomeData() {
     where: getBuyerVisibleProductWhere({ isFeatured: true }),
     take: 8,
     orderBy: { soldCount: 'desc' },
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
+    select: productCardSelect,
   })
   const bestSellersPromise = db.product.findMany({
     where: getBuyerVisibleProductWhere({ isBestSeller: true }),
     take: 8,
     orderBy: { soldCount: 'desc' },
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
+    select: productCardSelect,
   })
   const newArrivalsPromise = db.product.findMany({
     where: getBuyerVisibleProductWhere({ isNew: true }),
     take: 8,
     orderBy: { createdAt: 'desc' },
-    include: {
-      images: { where: { isPrimary: true }, take: 1 },
-      category: { select: { name: true, slug: true } },
-    },
+    select: productCardSelect,
   })
   const categories = await categoriesPromise
   const categoryProductCountsPromise = getVisibleCategoryProductCounts(categories)
@@ -93,7 +87,14 @@ async function getHomeData() {
     bestSellers,
     newArrivals,
   }
-}
+}, ['storefront-home-data-v1'], {
+  revalidate: 300,
+  tags: [
+    STOREFRONT_CACHE_TAGS.banners,
+    STOREFRONT_CACHE_TAGS.categories,
+    STOREFRONT_CACHE_TAGS.products,
+  ],
+})
 
 export default async function HomePage() {
   const {
@@ -108,11 +109,10 @@ export default async function HomePage() {
   const bestSellersSection = bestSellers.length > 0 ? (
     <section className="container-site py-5 sm:py-7 lg:py-8">
       <ProductGrid
-        eyebrow="Popular picks"
         title="Best Sellers"
         subtitle="Popular listings from the current catalog"
         products={bestSellers}
-        viewAllHref="/search?sort=popular"
+        viewAllHref="/search?bestSeller=true"
       />
     </section>
   ) : null
@@ -131,7 +131,6 @@ export default async function HomePage() {
         {featured.length > 0 && (
           <section className="container-site pt-5 sm:pt-8">
             <ProductGrid
-              eyebrow="Featured catalog"
               title="Featured Products"
               subtitle="Selected listings from the current catalog"
               products={featured}
@@ -143,9 +142,7 @@ export default async function HomePage() {
         {shouldLeadWithBestSellers ? bestSellersSection : null}
 
         {categories.length > 0 && (
-          <section className="container-site py-5 sm:py-7 lg:py-8">
-            <FeaturedCategories categories={categories} />
-          </section>
+          <FeaturedCategories categories={categories} />
         )}
 
         {!shouldLeadWithBestSellers ? bestSellersSection : null}
@@ -153,7 +150,6 @@ export default async function HomePage() {
         {newArrivals.length > 0 && (
           <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8">
             <ProductGrid
-              eyebrow="Recently added"
               title="New Arrivals"
               subtitle="Fresh finds, just landed"
               products={newArrivals}
