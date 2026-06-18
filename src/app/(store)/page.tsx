@@ -5,7 +5,6 @@ import { FeaturedCategories } from '@/frontend/components/home/FeaturedCategorie
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { generateOrganizationJsonLd, generateWebsiteJsonLd, generateLocalBusinessJsonLd, JsonLd, SEO } from '@/backend/seo'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
-import { getVisibleCategoryProductCounts } from '@/backend/catalog/category-product-counts'
 import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import type { Metadata } from 'next'
@@ -60,18 +59,16 @@ const getHomeData = unstable_cache(async () => {
     orderBy: { createdAt: 'desc' },
     select: productCardSelect,
   })
-  const categories = await categoriesPromise
-  const categoryProductCountsPromise = getVisibleCategoryProductCounts(categories)
 
   const [
+    categories,
     banners,
-    categoryProductCounts,
     featured,
     bestSellers,
     newArrivals,
   ] = await Promise.all([
+    categoriesPromise,
     bannersPromise,
-    categoryProductCountsPromise,
     featuredPromise,
     bestSellersPromise,
     newArrivalsPromise,
@@ -79,15 +76,12 @@ const getHomeData = unstable_cache(async () => {
 
   return {
     banners,
-    categories: categories.map((category) => ({
-      ...category,
-      productCount: categoryProductCounts.get(category.id) ?? 0,
-    })),
+    categories,
     featured,
     bestSellers,
     newArrivals,
   }
-}, ['storefront-home-data-v1'], {
+}, ['storefront-home-data-v2'], {
   revalidate: 300,
   tags: [
     STOREFRONT_CACHE_TAGS.banners,

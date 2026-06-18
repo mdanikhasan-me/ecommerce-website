@@ -9,7 +9,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   fashion: {
     path: '/assets/categories/fashion.webp',
-    version: 'd9a272ef93d8',
+    version: '20056dae5362',
   },
   'home-appliances': {
     path: '/assets/categories/home-appliances.webp',

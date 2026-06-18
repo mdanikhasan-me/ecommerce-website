@@ -10,12 +10,19 @@ interface Category {
   icon?: string | null
   image?: string | null
   description?: string | null
-  productCount: number
   children: { id: string; name: string; slug: string }[]
 }
 
-function formatProductCount(count: number) {
-  return `${count} ${count === 1 ? 'product' : 'products'}`
+const COMPACT_CATEGORY_LABELS: Record<string, string> = {
+  'home-appliances': 'Home',
+  'beauty-health': 'Beauty',
+  'sports-fitness': 'Fitness',
+  'books-stationery': 'Books',
+  'toys-collectibles': 'Toys',
+}
+
+function getCategoryCardLabel(category: Category) {
+  return COMPACT_CATEGORY_LABELS[category.slug] ?? category.name.replace(/\s+/g, ' ').trim()
 }
 
 export function FeaturedCategories({ categories }: { categories: Category[] }) {
@@ -35,7 +42,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           </Link>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:gap-3.5 min-[1120px]:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+        <div className="mt-4 grid grid-cols-2 gap-2.5 min-[480px]:grid-cols-3 sm:mt-5 sm:gap-3 md:grid-cols-4 lg:gap-3.5 min-[1120px]:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
           {visibleCategories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
@@ -46,34 +53,35 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 }
 
 function CategoryCard({ category }: { category: Category }) {
+  const displayName = getCategoryCardLabel(category)
+
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group relative block aspect-square overflow-hidden rounded-2xl bg-secondary ring-1 ring-black/[0.06] sm:transition sm:duration-150 md:hover:ring-black/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      aria-label={`Shop ${category.name}`}
+      title={category.name}
+      className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-secondary ring-1 ring-black/[0.06] sm:transition sm:duration-150 md:aspect-square md:hover:ring-black/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <Image
         src={getCategoryMediaPath(category)}
         alt={category.name}
         fill
         className="object-cover"
-        sizes="(max-width: 640px) 46vw, (max-width: 767px) 31vw, (max-width: 1119px) 24vw, (max-width: 1279px) 20vw, (max-width: 1535px) 16vw, 13vw"
+        sizes="(max-width: 479px) 46vw, (max-width: 767px) 31vw, (max-width: 1119px) 24vw, (max-width: 1279px) 20vw, (max-width: 1535px) 16vw, 13vw"
         quality={75}
       />
 
       {/* Soft bottom fade keeps the label readable without hiding the photo. */}
-      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-[linear-gradient(180deg,rgba(15,12,10,0)_0%,rgba(15,12,10,0.34)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(180deg,rgba(15,12,10,0)_0%,rgba(15,12,10,0.48)_100%)]" />
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3 sm:p-3.5">
-        <div className="min-w-0">
-          <p className="line-clamp-2 text-[0.92rem] font-semibold leading-tight text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.38)] sm:text-[1rem]">
-            {category.name}
-          </p>
-          <p className="mt-1 text-[0.72rem] font-medium text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.34)] sm:text-xs">
-            {formatProductCount(category.productCount)}
-          </p>
-        </div>
+      <div className="absolute inset-x-0 bottom-0 flex min-h-[3.4rem] items-end justify-between gap-2 p-2.5 sm:min-h-[3.75rem] sm:p-3 md:min-h-[4.2rem] md:p-3.5">
+        <span className="min-w-0 flex-1 pb-0.5">
+          <span className="block line-clamp-2 text-balance text-[0.82rem] font-semibold leading-[1.08] text-white [overflow-wrap:anywhere] [text-shadow:0_1px_5px_rgba(0,0,0,0.52)] sm:text-[0.9rem] lg:text-[0.96rem]">
+            {displayName}
+          </span>
+        </span>
 
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/35 bg-white/20 text-white ring-1 ring-black/[0.04] sm:transition-colors sm:duration-150 md:group-hover:bg-white/30">
+        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/35 bg-white/20 text-white ring-1 ring-black/[0.04] sm:h-7 sm:w-7 sm:transition-colors sm:duration-150 lg:h-8 lg:w-8 md:group-hover:bg-white/30">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>
