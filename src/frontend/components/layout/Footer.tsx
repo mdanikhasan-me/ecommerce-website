@@ -304,7 +304,7 @@ export function Footer() {
             <section aria-label="Boilabin contact" className="pt-1">
               <div className="flex items-center justify-between gap-4">
                 <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                  <span className="font-display text-[1.12rem] font-semibold leading-none tracking-normal text-foreground">
+                  <span className="font-display text-[1.2rem] font-semibold leading-none tracking-normal text-foreground">
                     Boilabin
                   </span>
                 </Link>
