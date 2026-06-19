@@ -323,18 +323,18 @@ export function Footer() {
                   ))}
                 </div>
               </div>
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="mail" className="h-3 w-3 text-primary/70" /> {CONTACT_EMAIL}
+                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="phone" className="h-3 w-3 text-primary/70" /> {CONTACT_PHONE}
+                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
                 </a>
               </div>
             </section>
