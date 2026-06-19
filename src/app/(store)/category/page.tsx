@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -13,11 +12,11 @@ import { db } from '@/backend/database'
 import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
-import { getCategoryConfig } from '@/frontend/components/category/category-config'
 import { ProductGrid } from '@/frontend/components/home/ProductGrid'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { ariaCurrentPage } from '@/frontend/components/ui/aria'
-import { getSubcategoryMediaPath, getSubcategoryIconPath } from '@/shared/category-media'
+import { NAV_CATEGORIES, getViewAllCategoryLabel } from '@/frontend/components/layout/header-navigation-data'
+import { getSubcategoryIconPath } from '@/shared/category-media'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -81,8 +80,16 @@ const CATEGORY_ICON_NAMES = {
   'baby-kids': 'category-toys-collectibles',
 } as const satisfies Record<string, StorefrontIconName>
 
+const SUBCATEGORY_ICON_NAMES = Object.fromEntries(
+  NAV_CATEGORIES.flatMap((category) => category.sub.map((sub) => [sub.slug, sub.icon])),
+) as Partial<Record<string, StorefrontIconName>>
+
 function getCategoryIconName(slug: string): StorefrontIconName {
   return CATEGORY_ICON_NAMES[slug as keyof typeof CATEGORY_ICON_NAMES] ?? 'category-view-all'
+}
+
+function getSubcategoryIconName(categorySlug: string, childSlug: string): StorefrontIconName {
+  return SUBCATEGORY_ICON_NAMES[childSlug] ?? getCategoryIconName(categorySlug)
 }
 
 // Renders an admin-uploaded subcategory SVG icon when present, else the built-in icon.
@@ -144,9 +151,6 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
           <h1 className="font-display text-[1.85rem] font-semibold leading-tight text-foreground sm:text-3xl lg:text-[2.25rem]">
             All Categories
           </h1>
-          <p className="mt-2 max-w-[40rem] text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-            Browse departments and subcategories, then explore our latest products.
-          </p>
         </header>
 
         {selectedCategory ? (
@@ -219,14 +223,12 @@ function CategoryRail({
 }
 
 function CategoryDetailPanel({ category }: { category: CategoryItem }) {
-  const config = getCategoryConfig(category.slug)
   const iconName = getCategoryIconName(category.slug)
-  const summary = category.description?.trim() || config.summary
 
   return (
     <section
       aria-labelledby={`category-panel-${category.slug}`}
-      className="rounded-[1.35rem] border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
+      className="flex flex-col rounded-[1.35rem] border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
     >
       <div className="flex items-center gap-4 border-b border-border/70 pb-5">
         <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/75 text-foreground">
@@ -236,22 +238,17 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
           <h2 id={`category-panel-${category.slug}`} className="font-display text-[1.55rem] font-semibold leading-tight text-foreground sm:text-[1.85rem]">
             {category.name}
           </h2>
-          <p className="mt-1.5 max-w-3xl text-sm leading-6 text-muted-foreground">{summary}</p>
         </div>
       </div>
 
-      {category.children.length > 0 && (
-        <div className="pt-5">
-          <h3 className="text-sm font-semibold text-foreground">Shop by subcategory</h3>
-          <div className="mt-3.5 grid gap-3.5 sm:grid-cols-2 min-[1120px]:grid-cols-3 min-[1380px]:grid-cols-4">
-            {category.children.map((child) => (
-              <SubcategoryCard key={child.id} category={category} child={child} />
-            ))}
-          </div>
+      <div className="flex flex-1 items-center justify-center py-5">
+        <div className="flex flex-wrap justify-center gap-4">
+          {category.children.map((child) => (
+            <SubcategoryCard key={child.id} category={category} child={child} />
+          ))}
+          <ViewAllCategoryTile category={category} />
         </div>
-      )}
-
-      <ViewAllCategoryLink category={category} />
+      </div>
     </section>
   )
 }
@@ -263,83 +260,32 @@ function SubcategoryCard({
   category: CategoryItem
   child: SubcategoryItem
 }) {
-  const svgIcon = getSubcategoryIconPath(child)
-  const imageSrc = svgIcon ? null : getSubcategoryMediaPath(child)
-  const iconName = getCategoryIconName(category.slug)
-
-  if (!imageSrc) {
-    return (
-      <Link
-        href={`/category/${child.slug}`}
-        className="product-card group flex min-h-[104px] items-center gap-3.5 p-3.5 sm:transition-colors md:hover:border-primary/20 md:hover:bg-secondary/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:min-h-[112px] sm:p-4"
-      >
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
-          <SubcategoryGlyph svgIcon={svgIcon} fallbackIcon={iconName} alt={child.name} className="h-5 w-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground sm:transition-colors md:group-hover:text-primary">
-            {child.name}
-          </span>
-          <span className="mt-1.5 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
-            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
-          </span>
-        </span>
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-          <LocalIcon name="arrow-right" className="h-4 w-4" />
-        </span>
-      </Link>
-    )
-  }
+  const iconName = getSubcategoryIconName(category.slug, child.slug)
+  const customSvgIcon = SUBCATEGORY_ICON_NAMES[child.slug] ? null : getSubcategoryIconPath(child)
 
   return (
     <Link
       href={`/category/${child.slug}`}
-      className="product-card group flex h-full flex-col overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="relative h-[7.25rem] overflow-hidden bg-muted sm:h-[7.75rem] 2xl:h-[8.25rem]">
-        <Image
-          src={imageSrc}
-          alt={child.name}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 42vw, (max-width: 1280px) 24vw, 260px"
-          quality={75}
-        />
-      </div>
-      <div className="flex min-h-[96px] flex-1 items-start gap-3 p-3.5 sm:p-4">
-        <div className="min-w-0 flex-1">
-          <h4 className="line-clamp-2 text-[15px] font-semibold leading-5 text-foreground sm:transition-colors md:group-hover:text-primary">
-            {child.name}
-          </h4>
-          <p className="mt-1.5 line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-[13px]">
-            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
-          </p>
-        </div>
-        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-          <LocalIcon name="arrow-right" className="h-4 w-4" />
-        </span>
-      </div>
+      <SubcategoryGlyph svgIcon={customSvgIcon} fallbackIcon={iconName} alt={child.name} className="h-8 w-8 text-foreground" />
+      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors md:group-hover:text-primary">
+        {child.name}
+      </span>
     </Link>
   )
 }
 
-function ViewAllCategoryLink({ category }: { category: CategoryItem }) {
+function ViewAllCategoryTile({ category }: { category: CategoryItem }) {
   return (
     <Link
       href={`/category/${category.slug}`}
-      className="group mt-5 flex min-h-[72px] items-center gap-3 rounded-[1.05rem] border border-border/80 bg-card/90 px-4 py-3.5 sm:transition-colors md:hover:border-primary/20 md:hover:bg-secondary/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-5"
+      aria-label={getViewAllCategoryLabel(category)}
+      className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
-        <LocalIcon name="category-view-all" className="h-5 w-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[15px] font-semibold leading-5 text-foreground">View All {category.name}</span>
-        <span className="mt-0.5 block text-xs leading-5 text-muted-foreground sm:text-sm">
-          Explore all {category.name.toLowerCase()} products and accessories.
-        </span>
-      </span>
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-        <LocalIcon name="arrow-right" className="h-4 w-4" />
+      <LocalIcon name="subcategory-grid" className="h-8 w-8 text-foreground" />
+      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors md:group-hover:text-primary">
+        {getViewAllCategoryLabel(category)}
       </span>
     </Link>
   )
@@ -355,33 +301,28 @@ function MobileCategoryAccordion({
   return (
     <section className="overflow-hidden rounded-[1.15rem] border border-border/80 bg-card shadow-[0_12px_30px_rgba(23,18,15,0.045)]">
       {categories.map((category) => {
-        const config = getCategoryConfig(category.slug)
         const iconName = getCategoryIconName(category.slug)
-        const summary = category.description?.trim() || config.summary
         const isOpen = category.slug === selectedSlug
 
         return (
           <details key={category.id} className="group border-b border-black/10 last:border-b-0" open={isOpen}>
             <summary className="cursor-pointer list-none marker:content-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring">
               <div className="flex min-h-[68px] items-center gap-3 px-4 py-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
-                  <LocalIcon name={iconName} className="h-5 w-5" />
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center text-foreground/88">
+                  <LocalIcon name={iconName} className="h-[1.35rem] w-[1.35rem]" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base font-semibold leading-6 text-foreground">{category.name}</span>
-                  {isOpen && (
-                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">{summary}</span>
-                  )}
+                  <span className="block text-[15px] font-normal leading-6 text-foreground">{category.name}</span>
                 </span>
                 <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
               </div>
             </summary>
 
-            <div className="space-y-2 px-4 pb-4">
+            <div className="mx-auto flex max-w-[14.75rem] flex-wrap justify-center gap-3 pb-4 sm:max-w-none sm:px-4">
               {category.children.map((child) => (
                 <MobileSubcategoryRow key={child.id} category={category} child={child} />
               ))}
-              <ViewAllCategoryLink category={category} />
+              <ViewAllCategoryTile category={category} />
             </div>
           </details>
         )
@@ -397,55 +338,17 @@ function MobileSubcategoryRow({
   category: CategoryItem
   child: SubcategoryItem
 }) {
-  const svgIcon = getSubcategoryIconPath(child)
-  const imageSrc = svgIcon ? null : getSubcategoryMediaPath(child)
-  const iconName = getCategoryIconName(category.slug)
-
-  if (!imageSrc) {
-    return (
-      <Link
-        href={`/category/${child.slug}`}
-        className="product-card group flex min-h-[86px] items-center gap-3 p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/75 text-foreground">
-          <SubcategoryGlyph svgIcon={svgIcon} fallbackIcon={iconName} alt={child.name} className="h-5 w-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground">{child.name}</span>
-          <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
-            {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
-          </span>
-        </span>
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-          <LocalIcon name="arrow-right" className="h-4 w-4" />
-        </span>
-      </Link>
-    )
-  }
+  const iconName = getSubcategoryIconName(category.slug, child.slug)
+  const customSvgIcon = SUBCATEGORY_ICON_NAMES[child.slug] ? null : getSubcategoryIconPath(child)
 
   return (
     <Link
       href={`/category/${child.slug}`}
-      className="product-card group flex min-h-[104px] items-stretch gap-3 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="flex aspect-square w-[7rem] flex-col items-center justify-center gap-2.5 rounded-lg border border-black/10 bg-card px-2.5 py-3 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <span className="relative block min-h-[104px] w-[96px] shrink-0 overflow-hidden rounded-l-[1.05rem] bg-muted min-[390px]:w-[104px] sm:w-[112px]">
-        <Image
-          src={imageSrc}
-          alt={child.name}
-          fill
-          className="object-cover"
-          sizes="150px"
-          quality={75}
-        />
-      </span>
-      <span className="min-w-0 flex-1 self-center py-3 pr-1">
-        <span className="block line-clamp-2 text-[15px] font-semibold leading-5 text-foreground">{child.name}</span>
-        <span className="mt-1 block line-clamp-2 text-[12px] leading-5 text-muted-foreground sm:text-sm">
-          {child.description?.trim() || `Explore ${child.name} in ${category.name}.`}
-        </span>
-      </span>
-      <span className="mr-3 self-center inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
-        <LocalIcon name="arrow-right" className="h-4 w-4" />
+      <SubcategoryGlyph svgIcon={customSvgIcon} fallbackIcon={iconName} alt={child.name} className="h-7 w-7 text-foreground" />
+      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground">
+        {child.name}
       </span>
     </Link>
   )
