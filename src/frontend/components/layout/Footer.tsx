@@ -310,11 +310,11 @@ export function Footer() {
             <section aria-label="Boilabin contact" className="pt-1">
               <div className="flex items-center justify-between gap-4">
                 <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                  <span className="font-display text-[1.2rem] font-semibold leading-none tracking-normal text-foreground">
+                  <span className="font-display text-[1.28rem] font-semibold leading-none tracking-normal text-foreground">
                     Boilabin
                   </span>
                 </Link>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   {SOCIAL_LINKS.map((item) => (
                     <a
                       key={item.label}
@@ -322,35 +322,35 @@ export function Footer() {
                       target={item.href.startsWith('http') ? '_blank' : undefined}
                       rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       aria-label={item.label}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus-visible:bg-primary/8 focus-visible:text-primary"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus-visible:bg-primary/8 focus-visible:text-primary"
                     >
-                      <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                      <LocalIcon name={item.icon} className="h-4 w-4" />
                     </a>
                   ))}
                 </div>
               </div>
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+              <div className="mt-2 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-sm text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
+                  <LocalIcon name="mail" className="h-4 w-4 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+                  <LocalIcon name="phone" className="h-4 w-4 text-primary/70" /> {CONTACT_PHONE}
                 </a>
               </div>
             </section>
 
-            <nav aria-label="Footer sections" className="mt-3 divide-y divide-black/8 border-y border-black/8">
+            <nav aria-label="Footer sections" className="mt-2.5 divide-y divide-black/8 border-y border-black/8">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-[0.82rem] font-normal text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-normal text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
-                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                    <LocalIcon name="chevron-down" className="h-[1.05rem] w-[1.05rem] shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
                   <ul className="space-y-0.5 pb-2">
                     {section.links.map((link) => (
@@ -358,7 +358,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors focus-visible:text-foreground"
+                          className="block rounded-lg py-1 text-sm text-muted-foreground transition-colors focus-visible:text-foreground"
                         >
                           {link.label}
                         </Link>
@@ -369,15 +369,15 @@ export function Footer() {
               ))}
             </nav>
 
-            <section className="pt-3">
-              <h2 className="text-[0.82rem] font-medium text-foreground">Stay in the loop</h2>
-              <div className="mt-2">
+            <section className="pt-2.5">
+              <h2 className="text-sm font-medium text-foreground">Stay in the loop</h2>
+              <div className="mt-1.5 [&_button]:h-10 [&_button]:w-10 [&_input]:h-10 [&_input]:text-[13px]">
                 <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
               </div>
             </section>
 
-            <section className="pt-3">
-              <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+            <section className="pt-2.5">
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
@@ -387,7 +387,7 @@ export function Footer() {
                     height={method.height}
                     loading="eager"
                     decoding="async"
-                    className={`${method.className} block w-auto origin-left scale-[0.92] object-contain`}
+                    className={`${method.className} block w-auto origin-left object-contain`}
                   />
                 ))}
               </div>
@@ -395,7 +395,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="w-full border-t border-black/6 py-2 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 min-[560px]:text-xs xl:block">
+        <div className="w-full border-t border-black/6 py-2 text-xs text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block xl:text-[11px]">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
