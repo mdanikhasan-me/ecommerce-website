@@ -29,7 +29,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   gaming: {
     path: '/assets/categories/gaming.webp',
-    version: '62beedc4987f',
+    version: '8cbd81df76eb',
   },
   'toys-collectibles': {
     path: '/assets/categories/toys-collectibles.webp',
@@ -37,7 +37,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   'baby-kids': {
     path: '/assets/categories/gaming.webp',
-    version: '62beedc4987f',
+    version: '8cbd81df76eb',
   },
 }
 
