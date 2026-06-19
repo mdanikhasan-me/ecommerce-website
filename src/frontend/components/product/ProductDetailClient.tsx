@@ -61,6 +61,41 @@ function markProductView(productId: string) {
   }
 }
 
+async function copyTextToClipboard(text: string) {
+  if (!text) return false
+
+  try {
+    if (window.isSecureContext && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch {
+    // Fall back to the legacy copy path below.
+  }
+
+  const textarea = document.createElement('textarea')
+
+  try {
+    textarea.value = text
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.left = '0'
+    textarea.style.top = '0'
+    textarea.style.opacity = '0'
+    textarea.style.pointerEvents = 'none'
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+    textarea.setSelectionRange(0, textarea.value.length)
+
+    return document.execCommand('copy')
+  } catch {
+    return false
+  } finally {
+    textarea.remove()
+  }
+}
+
 export function ProductDetailClient({ product }: { product: ProductDetailClientData }) {
   const router = useRouter()
   const { status: sessionStatus } = useSession()
@@ -151,6 +186,39 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     if (!inStock) return
     handleAddToCart()
     router.push('/checkout')
+  }
+
+  const handleShare = async () => {
+    const url = window.location.href
+
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({
+          title: product.name,
+          text: product.shortDescription?.trim() || product.name,
+          url,
+        })
+        return
+      }
+
+      if (await copyTextToClipboard(url)) {
+        toast.success('Link copied!')
+        return
+      }
+
+      toast.error('Sharing is not available on this browser')
+    } catch (error) {
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'AbortError') {
+        return
+      }
+
+      if (await copyTextToClipboard(url)) {
+        toast.success('Link copied!')
+        return
+      }
+
+      toast.error('Could not share this product')
+    }
   }
 
   const requireCompareSignIn = () => {
@@ -415,12 +483,9 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             </button>
             <button
               type="button"
-              aria-label="Copy product link"
-              title="Copy product link"
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href)
-                toast.success('Link copied!')
-              }}
+              aria-label="Share product"
+              title="Share product"
+              onClick={handleShare}
               className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border text-[13px] font-medium transition-colors md:hover:border-primary/50"
             >
               <LocalIcon name="share" className="h-4 w-4" />
