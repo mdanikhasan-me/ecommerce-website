@@ -33,8 +33,11 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   return (
     <section className="w-full bg-white py-7 sm:py-9 lg:py-10">
       <div className="container-site">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="section-title">Shop by category</h2>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="section-title">Category</h2>
+            <p className="mt-2 max-w-[40rem] text-sm leading-6 text-muted-foreground">Browse departments and collections</p>
+          </div>
 
           <Link href="/category" className="editorial-link group shrink-0">
             All categories

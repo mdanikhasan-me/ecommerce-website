@@ -87,7 +87,7 @@ export function ProductCard({
   }
 
   return (
-    <div className={cn('product-card group flex h-full flex-col', className)}>
+    <div className={cn('product-card group relative flex h-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[1.05rem] bg-white sm:rounded-t-[1.35rem]">
         <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative block aspect-square">
           {primaryImage ? (
@@ -115,12 +115,6 @@ export function ProductCard({
 
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.06)_100%)] opacity-0" />
         </Link>
-
-        <ProductCardActions
-          product={actionProduct}
-          inStock={inStock}
-          layout="grid"
-        />
       </div>
 
       <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="flex flex-1 flex-col p-3 sm:p-4">
@@ -149,6 +143,11 @@ export function ProductCard({
 
         <p className={cn('mt-auto pt-1.5 text-[13px] font-medium sm:pt-2 sm:text-[13px]', stockColor)}>{stockLabel}</p>
       </Link>
+      <ProductCardActions
+        product={actionProduct}
+        inStock={inStock}
+        layout="grid"
+      />
     </div>
   )
 }

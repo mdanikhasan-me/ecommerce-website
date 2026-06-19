@@ -47,7 +47,7 @@ export function ProductGrid({
       </div>
 
       <div className={cn(
-        'product-grid-rhythm grid grid-cols-2 gap-x-2.5 gap-y-3.5 min-[560px]:grid-cols-3 min-[560px]:gap-x-3 min-[560px]:gap-y-4 md:grid-cols-4 lg:gap-x-4 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6',
+        'product-grid-rhythm grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:grid-cols-4 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6',
         gridClassName,
       )}>
         {products.map((product) => (

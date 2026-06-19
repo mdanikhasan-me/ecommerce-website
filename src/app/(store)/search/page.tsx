@@ -185,16 +185,10 @@ export default async function SearchPage({ searchParams }: Props) {
               <span>Results for</span>
               <span className="text-primary">&quot;{params.q}&quot;</span>
             </span>
-            <span className="mt-1 block text-sm font-normal text-muted-foreground sm:ml-2 sm:mt-0 sm:inline sm:text-base">
-              ({total} products)
-            </span>
           </h1>
         ) : (
           <h1 className="font-display text-[1.68rem] font-bold leading-[1.08] sm:text-3xl sm:leading-tight">
             <span>{listingTitle}</span>
-            <span className="mt-1 block text-sm font-normal text-muted-foreground sm:ml-2 sm:mt-0 sm:inline sm:text-base">
-              ({total} products)
-            </span>
           </h1>
         )}
       </div>
@@ -205,13 +199,10 @@ export default async function SearchPage({ searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-4 flex flex-col gap-2 rounded-[1rem] border border-border/80 bg-card/95 p-2.5 shadow-[0_10px_24px_rgba(23,18,15,0.035)] sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-3.5">
-            <p className="text-xs font-medium text-muted-foreground sm:text-sm">{total} results</p>
-            <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end sm:gap-2">
-              <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
-              <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
-              <SortSelect current={params.sort} options={SORT_OPTIONS} />
-            </div>
+          <div className="mb-4 flex w-full flex-wrap items-center gap-1.5 sm:mb-6 sm:justify-end sm:gap-2">
+            <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
+            <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
+            <SortSelect current={params.sort} options={SORT_OPTIONS} />
           </div>
 
           {products.length === 0 ? (
@@ -222,7 +213,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}

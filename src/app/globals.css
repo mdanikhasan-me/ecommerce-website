@@ -130,11 +130,13 @@
   .product-card {
     @apply bg-card overflow-hidden;
     border-radius: 1.15rem;
-    border: 0;
+    border: 1px solid hsl(var(--border) / 0.52);
+    background-clip: padding-box;
     box-shadow: none;
   }
   @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
     .product-card:hover {
+      border-color: hsl(var(--border) / 0.66);
       box-shadow: none;
     }
 

@@ -136,7 +136,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
 
   return (
     <>
-      <div className="absolute right-2 top-2 flex flex-col gap-1 opacity-100 sm:gap-1.5">
+      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1 opacity-100 sm:gap-1.5">
         <button
           title={wishlistActionLabel}
           type="button"
@@ -165,11 +165,11 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
       </div>
 
       {inStock && (
-        <div className="bg-white px-3 py-2 sm:px-4 sm:py-2.5">
+        <div className="bg-white px-3 pb-3 pt-0 sm:px-4 sm:pb-4 sm:pt-0">
           <button
-          type="button"
-          onClick={handleAddToCart}
-          aria-label={addToCartActionLabel}
+            type="button"
+            onClick={handleAddToCart}
+            aria-label={addToCartActionLabel}
             className="product-card-add-button flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-foreground/16 bg-transparent text-xs font-semibold text-foreground/88 md:transition-colors sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
           >
             <LocalIcon name="cart" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

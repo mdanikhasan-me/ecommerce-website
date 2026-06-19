@@ -146,14 +146,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <span className="text-foreground">{category.name}</span>
       </nav>
 
-      <div className="mb-4 flex flex-col gap-2.5 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-[48rem]">
-          <h1 className="font-display text-[1.85rem] font-bold leading-tight sm:text-3xl">{category.name}</h1>
-          {category.description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{category.description}</p>}
-        </div>
-        <span className="w-fit shrink-0 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground sm:px-3 sm:py-1.5 sm:text-sm">
-          {total} products
-        </span>
+      <div className="mb-4 max-w-[48rem] sm:mb-5">
+        <h1 className="font-display text-[1.85rem] font-bold leading-tight sm:text-3xl">{category.name}</h1>
+        {category.description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{category.description}</p>}
       </div>
 
       {/* Sub-categories */}
@@ -188,19 +183,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         </aside>
 
         <div className="flex-1 min-w-0">
-          <div className="mb-4 flex flex-col gap-2 rounded-[1rem] border border-border/80 bg-card/95 p-2.5 shadow-[0_10px_24px_rgba(23,18,15,0.035)] sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-3.5">
-            <p className="text-xs font-medium text-muted-foreground sm:text-sm">{total} results</p>
-            <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end sm:gap-2">
-              <MobileSearchFilters
-                categories={filterCategories}
-                searchParams={resolvedSearchParams.queryParams}
-                basePath={categoryPath}
-                preserveOnClear={[]}
-                label="Category"
-              />
-              <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
-              <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
-            </div>
+          <div className="mb-4 flex w-full flex-wrap items-center gap-1.5 sm:mb-6 sm:justify-end sm:gap-2">
+            <MobileSearchFilters
+              categories={filterCategories}
+              searchParams={resolvedSearchParams.queryParams}
+              basePath={categoryPath}
+              preserveOnClear={[]}
+              label="Category"
+            />
+            <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
+            <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
           </div>
 
           {products.length === 0 ? (
@@ -211,7 +203,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 min-[560px]:gap-3 md:gap-3.5 lg:gap-4 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
                 {products.map((p, index) => (
                   <ProductCard
                     key={p.id}
