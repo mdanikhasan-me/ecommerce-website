@@ -42,7 +42,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           </Link>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2.5 min-[480px]:grid-cols-3 sm:mt-5 sm:gap-3 md:grid-cols-4 lg:gap-3.5 min-[1120px]:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+        <div className="mt-4 grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 sm:mt-5 sm:gap-3 md:grid-cols-4 lg:gap-3.5 min-[1120px]:grid-cols-5 min-[1400px]:grid-cols-6">
           {visibleCategories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
@@ -60,14 +60,14 @@ function CategoryCard({ category }: { category: Category }) {
       href={`/category/${category.slug}`}
       aria-label={`Shop ${category.name}`}
       title={category.name}
-      className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-secondary ring-1 ring-black/[0.06] sm:transition sm:duration-150 md:aspect-square md:hover:ring-black/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group relative block aspect-square overflow-hidden rounded-2xl bg-secondary ring-1 ring-black/[0.06] sm:transition sm:duration-150 md:hover:ring-black/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <Image
         src={getCategoryMediaPath(category)}
         alt={category.name}
         fill
         className="object-cover"
-        sizes="(max-width: 479px) 46vw, (max-width: 767px) 31vw, (max-width: 1119px) 24vw, (max-width: 1279px) 20vw, (max-width: 1535px) 16vw, 13vw"
+        sizes="(max-width: 559px) 46vw, (max-width: 767px) 31vw, (max-width: 1119px) 24vw, (max-width: 1279px) 20vw, (max-width: 1535px) 16vw, 13vw"
         quality={75}
       />
 
