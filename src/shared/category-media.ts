@@ -21,7 +21,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   'sports-fitness': {
     path: '/assets/categories/sports-fitness.webp',
-    version: '6d8dc5a69bcc',
+    version: '18fb82189b2b',
   },
   'books-stationery': {
     path: '/assets/categories/books-stationery.webp',
