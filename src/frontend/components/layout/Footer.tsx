@@ -100,7 +100,7 @@ export function Footer() {
   return (
     <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground md:border-t-0 xl:border-t">
       <div className="container-site">
-        <div className="w-full pb-3.5 pt-2 min-[600px]:py-6 lg:py-8">
+        <div className="w-full pb-3.5 pt-2 min-[600px]:py-6 md:py-4 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
@@ -199,7 +199,7 @@ export function Footer() {
                 aria-expanded={tabletLinksExpanded}
                 aria-controls="tablet-footer-links"
                 onClick={() => setTabletLinksExpanded((expanded) => !expanded)}
-                className="relative flex w-full items-center py-5 text-left"
+                className="relative flex w-full items-center py-3 text-left"
               >
                 <span className="mx-auto grid w-full max-w-[44rem] min-w-0 grid-cols-3 gap-10">
                   {FOOTER_LINK_SECTIONS.map((section) => (
@@ -221,7 +221,7 @@ export function Footer() {
               {tabletLinksExpanded ? (
                 <div
                   id="tablet-footer-links"
-                  className="mx-auto grid w-full max-w-[44rem] grid-cols-3 gap-10 pb-8"
+                  className="mx-auto grid w-full max-w-[44rem] grid-cols-3 gap-10 pb-4"
                 >
                   {FOOTER_LINK_SECTIONS.map((section) => (
                     <ul key={section.title} className="mx-auto w-32 space-y-2.5 text-left text-sm leading-6">
@@ -242,7 +242,7 @@ export function Footer() {
               ) : null}
             </nav>
 
-            <section className="grid grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] items-center gap-8 py-10">
+            <section className="grid grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] items-center gap-6 py-5">
               <div className="flex min-w-0 items-center gap-3 text-muted-foreground">
                 <LocalIcon name="mail" className="h-5 w-5 text-primary/70" />
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -261,7 +261,7 @@ export function Footer() {
 
             <section
               aria-label="Boilabin contact"
-              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 py-8"
+              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 py-5"
             >
               <div className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
                 <Link
@@ -302,7 +302,7 @@ export function Footer() {
               </div>
             </section>
 
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-8 pt-8">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-8 pt-3">
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
