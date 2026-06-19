@@ -5,7 +5,7 @@ import path from 'node:path'
 export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: string }> = {
   electronics: {
     path: '/assets/categories/electronics.webp',
-    version: 'ee014689882e',
+    version: '1093746dba64',
   },
   fashion: {
     path: '/assets/categories/fashion.webp',
@@ -21,7 +21,7 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
   },
   'sports-fitness': {
     path: '/assets/categories/sports-fitness.webp',
-    version: 'e1d0cc39b64e',
+    version: '6d8dc5a69bcc',
   },
   'books-stationery': {
     path: '/assets/categories/books-stationery.jpg',
