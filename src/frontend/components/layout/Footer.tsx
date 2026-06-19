@@ -98,9 +98,9 @@ export function Footer() {
   const [tabletLinksExpanded, setTabletLinksExpanded] = useState(false)
 
   return (
-    <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground md:border-t-0 xl:border-t">
+    <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground min-[560px]:border-t-0 xl:border-t">
       <div className="container-site">
-        <div className="w-full pb-3.5 pt-2 min-[600px]:py-6 md:py-4 xl:py-8">
+        <div className="w-full pb-3.5 pt-2 min-[560px]:py-4 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
@@ -192,76 +192,10 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="hidden md:block xl:hidden">
-            <nav aria-label="Footer sections" className="text-muted-foreground">
-              <button
-                type="button"
-                aria-expanded={tabletLinksExpanded}
-                aria-controls="tablet-footer-links"
-                onClick={() => setTabletLinksExpanded((expanded) => !expanded)}
-                className="relative flex w-full items-center py-3 text-left"
-              >
-                <span className="mx-auto grid w-full max-w-[44rem] min-w-0 grid-cols-3 gap-10">
-                  {FOOTER_LINK_SECTIONS.map((section) => (
-                    <span
-                      key={section.title}
-                      className="mx-auto w-32 text-left text-sm font-semibold leading-6 text-foreground/88"
-                    >
-                      {section.title}
-                    </span>
-                  ))}
-                </span>
-                <span className="absolute right-0 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-foreground/70">
-                  <LocalIcon
-                    name="chevron-down"
-                    className={`h-4 w-4 transition-transform ${tabletLinksExpanded ? 'rotate-180' : ''}`}
-                  />
-                </span>
-              </button>
-              {tabletLinksExpanded ? (
-                <div
-                  id="tablet-footer-links"
-                  className="mx-auto grid w-full max-w-[44rem] grid-cols-3 gap-10 pb-4"
-                >
-                  {FOOTER_LINK_SECTIONS.map((section) => (
-                    <ul key={section.title} className="mx-auto w-32 space-y-2.5 text-left text-sm leading-6">
-                      {section.links.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            prefetch={link.prefetch}
-                            className="transition-colors focus-visible:text-foreground"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ))}
-                </div>
-              ) : null}
-            </nav>
-
-            <section className="grid grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] items-center gap-6 py-5">
-              <div className="flex min-w-0 items-center gap-3 text-muted-foreground">
-                <LocalIcon name="mail" className="h-5 w-5 text-primary/70" />
-                <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
-                  <p className="text-xs leading-5">Get updates and offers.</p>
-                </div>
-              </div>
-              <HomepageNewsletterForm
-                variant="light"
-                source="footer"
-                layout="inline"
-                density="spacious"
-                submitDisplay="icon"
-              />
-            </section>
-
+          <div className="hidden min-[560px]:block xl:hidden">
             <section
               aria-label="Boilabin contact"
-              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 py-5"
+              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-b border-black/8 pb-3"
             >
               <div className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
                 <Link
@@ -302,7 +236,73 @@ export function Footer() {
               </div>
             </section>
 
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-8 pt-3">
+            <nav aria-label="Footer sections" className="text-muted-foreground">
+              <button
+                type="button"
+                aria-expanded={tabletLinksExpanded}
+                aria-controls="tablet-footer-links"
+                onClick={() => setTabletLinksExpanded((expanded) => !expanded)}
+                className="relative flex w-full items-center py-3 pr-12 text-left"
+              >
+                <span className="mx-auto grid w-full max-w-[38rem] min-w-0 grid-cols-3 gap-4 min-[700px]:max-w-[44rem] min-[700px]:gap-10">
+                  {FOOTER_LINK_SECTIONS.map((section) => (
+                    <span
+                      key={section.title}
+                      className="mx-auto w-28 text-left text-sm font-semibold leading-6 text-foreground/88 min-[700px]:w-32"
+                    >
+                      {section.title}
+                    </span>
+                  ))}
+                </span>
+                <span className="absolute right-0 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-foreground/70">
+                  <LocalIcon
+                    name="chevron-down"
+                    className={`h-4 w-4 transition-transform ${tabletLinksExpanded ? 'rotate-180' : ''}`}
+                  />
+                </span>
+              </button>
+              {tabletLinksExpanded ? (
+                <div
+                  id="tablet-footer-links"
+                  className="mx-auto grid w-full max-w-[38rem] grid-cols-3 gap-4 pb-4 min-[700px]:max-w-[44rem] min-[700px]:gap-10"
+                >
+                  {FOOTER_LINK_SECTIONS.map((section) => (
+                    <ul key={section.title} className="mx-auto w-28 space-y-2.5 text-left text-sm leading-6 min-[700px]:w-32">
+                      {section.links.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            prefetch={link.prefetch}
+                            className="transition-colors focus-visible:text-foreground"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ))}
+                </div>
+              ) : null}
+            </nav>
+
+            <section className="grid gap-3 border-b border-black/8 py-4 min-[700px]:grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] min-[700px]:items-center min-[700px]:gap-6 min-[700px]:py-5">
+              <div className="flex min-w-0 items-center gap-3 text-muted-foreground">
+                <LocalIcon name="mail" className="h-5 w-5 text-primary/70" />
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
+                  <p className="text-xs leading-5">Get updates and offers.</p>
+                </div>
+              </div>
+              <HomepageNewsletterForm
+                variant="light"
+                source="footer"
+                layout="inline"
+                density="spacious"
+                submitDisplay="icon"
+              />
+            </section>
+
+            <div className="grid gap-3 pt-2 min-[700px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] min-[700px]:items-center min-[700px]:gap-8 min-[700px]:pt-3">
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -317,17 +317,17 @@ export function Footer() {
                   />
                 ))}
               </div>
-              <p className="flex items-center justify-end text-sm text-muted-foreground">
+              <p className="flex items-center text-sm text-muted-foreground min-[700px]:justify-end">
                 <span>&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
               </p>
             </div>
           </div>
 
-          <div className="md:hidden">
+          <div className="min-[560px]:hidden">
             <section aria-label="Boilabin contact" className="pt-1">
               <div className="flex items-center justify-between gap-4">
                 <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                  <span className="font-display text-[1rem] font-bold leading-none tracking-normal text-foreground">
+                  <span className="font-display text-[1rem] font-semibold leading-none tracking-normal text-foreground">
                     Boilabin
                   </span>
                 </Link>
@@ -356,7 +356,6 @@ export function Footer() {
                 >
                   <LocalIcon name="mail" className="h-3 w-3 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
-                <span aria-hidden="true" className="h-4 w-px bg-black/12" />
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
@@ -369,7 +368,7 @@ export function Footer() {
             <nav aria-label="Footer sections" className="mt-3 divide-y divide-black/8 border-y border-black/8">
               {FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-[0.82rem] font-medium text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-[0.82rem] font-normal text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
                     <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
@@ -391,7 +390,7 @@ export function Footer() {
             </nav>
 
             <section className="pt-3">
-              <h2 className="text-[0.82rem] font-semibold text-foreground">Stay in the loop</h2>
+              <h2 className="text-[0.82rem] font-medium text-foreground">Stay in the loop</h2>
               <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
                 Get launch updates and selected store notices.
               </p>
@@ -401,7 +400,7 @@ export function Footer() {
             </section>
 
             <section className="pt-3">
-              <h2 className="text-[0.78rem] font-semibold text-foreground">Checkout payment options</h2>
+              <h2 className="text-[0.78rem] font-medium text-foreground">Checkout payment options</h2>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -420,7 +419,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="w-full border-t border-black/6 py-2 text-[11px] text-muted-foreground min-[600px]:py-3 min-[600px]:text-xs md:hidden xl:block">
+        <div className="w-full border-t border-black/6 py-2 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 min-[560px]:text-xs xl:block">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
