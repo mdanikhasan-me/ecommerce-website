@@ -323,37 +323,86 @@ export function Footer() {
             </div>
           </div>
 
-          <nav aria-label="Footer sections" className="space-y-1 md:hidden">
-            {FOOTER_LINK_SECTIONS.map((section) => (
-              <details
-                key={section.title}
-                className="group overflow-hidden border-b border-black/8"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-1.5 text-[0.86rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-                  {section.title}
-                  <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-                </summary>
-                <ul className="space-y-0.5 pb-1">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        prefetch={link.prefetch}
-                        className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
+          <div className="md:hidden">
+            <section aria-label="Boilabin contact" className="pt-1">
+              <div className="flex items-center justify-between gap-4">
+                <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
+                  <span className="font-display text-[1rem] font-bold leading-none tracking-normal text-foreground">
+                    Boilabin
+                  </span>
+                </Link>
+                <div className="flex items-center gap-2">
+                  {SOCIAL_LINKS.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      aria-label={item.label}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus-visible:bg-primary/8 focus-visible:text-primary"
+                    >
+                      <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                    </a>
                   ))}
-                </ul>
-              </details>
-            ))}
-          </nav>
+                </div>
+              </div>
+              <p className="mt-3 max-w-[28rem] text-[0.82rem] leading-5 text-muted-foreground">
+                Everyday finds. Best deals. Delivered across Bangladesh.
+              </p>
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                >
+                  <LocalIcon name="mail" className="h-3 w-3 text-primary/70" /> {CONTACT_EMAIL}
+                </a>
+                <span aria-hidden="true" className="h-4 w-px bg-black/12" />
+                <a
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                >
+                  <LocalIcon name="phone" className="h-3 w-3 text-primary/70" /> {CONTACT_PHONE}
+                </a>
+              </div>
+            </section>
 
-          <div className="mt-2.5 grid gap-2.5 pt-0 min-[600px]:mt-5 min-[600px]:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)] min-[600px]:items-start min-[600px]:gap-6 min-[600px]:border-t min-[600px]:border-black/8 min-[600px]:pt-4 md:hidden xl:mt-6 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.62fr)] xl:items-center xl:gap-9">
-            <section className="order-3 min-[600px]:order-1">
-              <h2 className="text-[0.82rem] font-semibold text-foreground min-[600px]:text-sm">Checkout payment options</h2>
-              <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 min-[600px]:mt-2 min-[600px]:gap-x-3.5 lg:gap-x-4">
+            <nav aria-label="Footer sections" className="mt-3 divide-y divide-black/8 border-y border-black/8">
+              {FOOTER_LINK_SECTIONS.map((section) => (
+                <details key={section.title} className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-[0.82rem] font-medium text-foreground [&::-webkit-details-marker]:hidden">
+                    {section.title}
+                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                  </summary>
+                  <ul className="space-y-0.5 pb-2">
+                    {section.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          prefetch={link.prefetch}
+                          className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors focus-visible:text-foreground"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ))}
+            </nav>
+
+            <section className="pt-3">
+              <h2 className="text-[0.82rem] font-semibold text-foreground">Stay in the loop</h2>
+              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                Get launch updates and selected store notices.
+              </p>
+              <div className="mt-2">
+                <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
+              </div>
+            </section>
+
+            <section className="pt-3">
+              <h2 className="text-[0.78rem] font-semibold text-foreground">Checkout payment options</h2>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
@@ -363,57 +412,8 @@ export function Footer() {
                     height={method.height}
                     loading="eager"
                     decoding="async"
-                    className={`${method.className} block w-auto origin-left scale-[0.92] object-contain min-[600px]:scale-100`}
+                    className={`${method.className} block w-auto origin-left scale-[0.92] object-contain`}
                   />
-                ))}
-              </div>
-            </section>
-
-            <section className="order-1 min-[600px]:order-2 min-[600px]:max-w-[20rem] min-[600px]:justify-self-end lg:max-w-none">
-              <h2 className="text-[0.82rem] font-semibold text-foreground min-[600px]:text-sm">Stay in the loop</h2>
-              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground min-[600px]:mt-1 min-[600px]:text-xs min-[600px]:leading-5">
-                Get launch updates and selected store notices.
-              </p>
-              <div className="mt-1.5 min-[600px]:mt-2">
-                <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
-              </div>
-            </section>
-
-            <section aria-label="Boilabin contact" className="order-2 pt-1 md:hidden">
-              <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                <span className="font-display text-[1.16rem] font-bold leading-none tracking-normal text-foreground">
-                  Boilabin
-                </span>
-              </Link>
-              <p className="mt-1 max-w-[28rem] text-[0.82rem] leading-5 text-muted-foreground">
-                Everyday finds. Best deals. Delivered across Bangladesh.
-              </p>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[11px] text-muted-foreground">
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                >
-                  <LocalIcon name="mail" className="h-3 w-3 text-primary/70" /> {CONTACT_EMAIL}
-                </a>
-                <a
-                  href={`tel:${CONTACT_PHONE}`}
-                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                >
-                  <LocalIcon name="phone" className="h-3 w-3 text-primary/70" /> {CONTACT_PHONE}
-                </a>
-              </div>
-              <div className="mt-1.5 flex items-center gap-1.5">
-                {SOCIAL_LINKS.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target={item.href.startsWith('http') ? '_blank' : undefined}
-                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    aria-label={item.label}
-                    className="flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors md:hover:bg-primary/8 md:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
-                  >
-                    <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
-                  </a>
                 ))}
               </div>
             </section>
