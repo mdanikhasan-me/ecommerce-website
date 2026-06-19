@@ -74,6 +74,12 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   },
 ]
 
+const MOBILE_FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
+  FOOTER_LINK_SECTIONS[2],
+  FOOTER_LINK_SECTIONS[1],
+  FOOTER_LINK_SECTIONS[0],
+]
+
 const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS.map((section) => {
   if (section.title !== 'Support') return section
 
@@ -340,7 +346,7 @@ export function Footer() {
             </section>
 
             <nav aria-label="Footer sections" className="mt-3 divide-y divide-black/8 border-y border-black/8">
-              {FOOTER_LINK_SECTIONS.map((section) => (
+              {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-[0.82rem] font-normal text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
