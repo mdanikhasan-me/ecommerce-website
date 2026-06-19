@@ -345,7 +345,7 @@ export function Footer() {
               </div>
             </section>
 
-            <nav aria-label="Footer sections" className="mt-2.5 divide-y divide-black/8 border-y border-black/8">
+            <nav aria-label="Footer sections" className="mt-2.5">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-normal text-foreground [&::-webkit-details-marker]:hidden">
