@@ -133,7 +133,7 @@ function RelatedProductsFallback() {
   return (
     <section className="mt-10 sm:mt-12">
       <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:grid-cols-4 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-7 min-[700px]:grid-cols-3 min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-10">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
             <div className="skeleton aspect-[4/3] w-full" />
@@ -196,7 +196,7 @@ async function RelatedProductsSection({
   return (
     <section className="mt-10 sm:mt-12">
       <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:grid-cols-4 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-7 min-[700px]:grid-cols-3 min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-10">
         {related.map((relatedProduct) => (
           <ProductCard
             key={relatedProduct.id}

@@ -172,7 +172,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
                   subtitle={`Showing ${allProductsPreview.products.length} of ${allProductsPreview.total} public products.`}
                   products={allProductsPreview.products}
                   viewAllHref="/search"
-                  gridClassName="sm:grid-cols-3 md:grid-cols-4 min-[1120px]:grid-cols-5 2xl:grid-cols-6"
+                  gridClassName="min-[700px]:grid-cols-3 xl:grid-cols-4"
                 />
               </section>
             )}

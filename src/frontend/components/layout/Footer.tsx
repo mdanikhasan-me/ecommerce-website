@@ -415,17 +415,15 @@ export function Footer() {
                 />
               ))}
             </div>
-            <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
-              {BOTTOM_LEGAL_LINKS.map((link, index) => (
-                <span key={link.href} className="inline-flex items-center gap-3">
-                  {index > 0 ? <span aria-hidden="true" className="text-black/20">|</span> : null}
-                  <Link
-                    href={link.href}
-                    className="transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </span>
+            <div className="hidden flex-wrap items-center justify-center gap-x-5 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
+              {BOTTOM_LEGAL_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                >
+                  {link.label}
+                </Link>
               ))}
             </div>
           </div>

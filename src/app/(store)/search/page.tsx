@@ -23,7 +23,7 @@ interface Props {
 
 export const revalidate = 120
 
-const SEARCH_PRODUCT_IMAGE_SIZES = '(max-width: 559px) 50vw, (max-width: 1023px) 33vw, (max-width: 1120px) 33vw, (max-width: 1440px) 24vw, (max-width: 1536px) 20vw, 16vw'
+const SEARCH_PRODUCT_IMAGE_SIZES = '(max-width: 699px) 50vw, (max-width: 1499px) 33vw, 25vw'
 
 const getSearchFilterCategories = unstable_cache(
   async () => db.category.findMany({
@@ -213,7 +213,7 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-4 min-[1440px]:grid-cols-5 2xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-7 min-[700px]:grid-cols-3 min-[700px]:gap-x-5 min-[700px]:gap-y-8 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-9 min-[1500px]:grid-cols-4 min-[1500px]:gap-x-8 min-[1500px]:gap-y-10">
                 {products.map((product, index) => (
                   <ProductCard
                     key={product.id}

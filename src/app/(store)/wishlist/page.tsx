@@ -44,13 +44,13 @@ export default function WishlistPage() {
           <Link href="/" className="btn-primary mt-5 inline-flex">Discover Products</Link>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:grid-cols-4 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-7 min-[700px]:grid-cols-3 min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-10">
           {visibleItems.map((_, i) => (
             <div key={i} className="aspect-square bg-secondary animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-3 gap-y-4 min-[560px]:grid-cols-3 min-[560px]:gap-x-3.5 min-[560px]:gap-y-5 md:grid-cols-4 md:gap-x-4 md:gap-y-5 lg:gap-x-5 lg:gap-y-6 min-[1120px]:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-7 min-[700px]:grid-cols-3 min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-10">
           {products.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       )}
