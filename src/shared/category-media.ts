@@ -24,8 +24,8 @@ export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: stri
     version: '6d8dc5a69bcc',
   },
   'books-stationery': {
-    path: '/assets/categories/books-stationery.jpg',
-    version: '9b0fa704b0cb',
+    path: '/assets/categories/books-stationery.webp',
+    version: '824f64366061',
   },
   gaming: {
     path: '/assets/categories/gaming.webp',
