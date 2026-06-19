@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
@@ -94,8 +95,10 @@ const BOTTOM_LEGAL_LINKS = [
 ]
 
 export function Footer() {
+  const [tabletLinksExpanded, setTabletLinksExpanded] = useState(false)
+
   return (
-    <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground">
+    <footer className="border-t border-black/10 bg-[#fffdfa] text-foreground md:border-t-0 xl:border-t">
       <div className="container-site">
         <div className="w-full pb-3.5 pt-2 min-[600px]:py-6 lg:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
@@ -190,144 +193,161 @@ export function Footer() {
           </div>
 
           <div className="hidden md:block xl:hidden">
-              <nav
-                aria-label="Footer sections"
-                className="grid grid-cols-3 border-b border-black/8 pb-9 pt-3 text-muted-foreground"
+            <nav aria-label="Footer sections" className="text-muted-foreground">
+              <button
+                type="button"
+                aria-expanded={tabletLinksExpanded}
+                aria-controls="tablet-footer-links"
+                onClick={() => setTabletLinksExpanded((expanded) => !expanded)}
+                className="relative flex w-full items-center py-5 text-left"
               >
-                {FOOTER_LINK_SECTIONS.map((section, index) => (
-                  <details
-                    key={section.title}
-                    className={`group px-8 ${index > 0 ? 'border-l border-black/10' : ''}`}
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-center gap-12 text-base font-medium text-muted-foreground [&::-webkit-details-marker]:hidden">
+                <span className="mx-auto grid w-full max-w-[44rem] min-w-0 grid-cols-3 gap-10">
+                  {FOOTER_LINK_SECTIONS.map((section) => (
+                    <span
+                      key={section.title}
+                      className="mx-auto w-32 text-left text-sm font-semibold leading-6 text-foreground/88"
+                    >
                       {section.title}
-                      <LocalIcon name="chevron-down" className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180" />
-                    </summary>
-                    <ul className="mx-auto mt-4 max-w-[10rem] space-y-2 text-center text-sm">
+                    </span>
+                  ))}
+                </span>
+                <span className="absolute right-0 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-foreground/70">
+                  <LocalIcon
+                    name="chevron-down"
+                    className={`h-4 w-4 transition-transform ${tabletLinksExpanded ? 'rotate-180' : ''}`}
+                  />
+                </span>
+              </button>
+              {tabletLinksExpanded ? (
+                <div
+                  id="tablet-footer-links"
+                  className="mx-auto grid w-full max-w-[44rem] grid-cols-3 gap-10 pb-8"
+                >
+                  {FOOTER_LINK_SECTIONS.map((section) => (
+                    <ul key={section.title} className="mx-auto w-32 space-y-2.5 text-left text-sm leading-6">
                       {section.links.map((link) => (
                         <li key={link.href}>
                           <Link
                             href={link.href}
                             prefetch={link.prefetch}
-                            className="transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                            className="transition-colors focus-visible:text-foreground"
                           >
                             {link.label}
                           </Link>
                         </li>
                       ))}
                     </ul>
-                  </details>
-                ))}
-              </nav>
-
-              <section className="grid grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] items-center gap-8 border-b border-black/8 py-10">
-                <div className="flex min-w-0 items-center gap-4 text-muted-foreground">
-                  <LocalIcon name="mail" className="h-7 w-7 text-foreground" />
-                  <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <h2 className="text-lg font-semibold text-foreground">Stay in the loop</h2>
-                    <p className="text-sm leading-5">Get updates and offers.</p>
-                  </div>
-                </div>
-                <HomepageNewsletterForm
-                  variant="light"
-                  source="footer"
-                  layout="inline"
-                  density="spacious"
-                  submitDisplay="icon"
-                />
-              </section>
-
-              <section
-                aria-label="Boilabin contact"
-                className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 border-b border-black/8 py-8"
-              >
-                <div className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
-                  <Link
-                    href="/"
-                    className="text-2xl font-semibold leading-none text-foreground"
-                    aria-label="Boilabin home"
-                  >
-                    Boilabin
-                  </Link>
-                  <span aria-hidden="true" className="h-9 w-px bg-black/10" />
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="inline-flex items-center gap-3 transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                  >
-                    <LocalIcon name="mail" className="h-5 w-5 text-foreground" /> {CONTACT_EMAIL}
-                  </a>
-                  <span aria-hidden="true" className="h-9 w-px bg-black/10" />
-                  <a
-                    href={`tel:${CONTACT_PHONE}`}
-                    className="inline-flex items-center gap-3 transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                  >
-                    <LocalIcon name="phone" className="h-5 w-5 text-foreground" /> {CONTACT_PHONE}
-                  </a>
-                </div>
-                <div className="flex items-center gap-5">
-                  {SOCIAL_LINKS.map((item) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={item.label}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-foreground transition-colors md:hover:border-primary/20 md:hover:text-primary focus-visible:border-primary/20 focus-visible:text-primary"
-                    >
-                      <LocalIcon name={item.icon} className="h-4 w-4" />
-                    </a>
                   ))}
                 </div>
-              </section>
+              ) : null}
+            </nav>
 
-              <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-8 pt-8">
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                  {FOOTER_PAYMENT_LOGOS.map((method) => (
-                    <img
-                      key={method.alt}
-                      src={method.src}
-                      alt={method.alt}
-                      width={method.width}
-                      height={method.height}
-                      loading="eager"
-                      decoding="async"
-                      className={`${method.className} block w-auto object-contain`}
-                    />
-                  ))}
+            <section className="grid grid-cols-[minmax(14rem,0.75fr)_minmax(20rem,1fr)] items-center gap-8 py-10">
+              <div className="flex min-w-0 items-center gap-3 text-muted-foreground">
+                <LocalIcon name="mail" className="h-5 w-5 text-primary/70" />
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
+                  <p className="text-xs leading-5">Get updates and offers.</p>
                 </div>
-                <span aria-hidden="true" className="h-10 w-px bg-black/10" />
-                <p className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
-                  <LocalIcon name="shopping-bag" className="h-5 w-5 text-muted-foreground" />
-                  <span>&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
-                </p>
               </div>
+              <HomepageNewsletterForm
+                variant="light"
+                source="footer"
+                layout="inline"
+                density="spacious"
+                submitDisplay="icon"
+              />
+            </section>
+
+            <section
+              aria-label="Boilabin contact"
+              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 py-8"
+            >
+              <div className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-3"
+                  aria-label="Boilabin home"
+                >
+                  <span className="font-display text-[1.42rem] font-bold leading-none tracking-normal text-foreground">
+                    Boilabin
+                  </span>
+                </Link>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                >
+                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
+                </a>
+                <a
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                >
+                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+                </a>
+              </div>
+              <div className="flex items-center gap-5">
+                {SOCIAL_LINKS.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-foreground transition-colors focus-visible:border-primary/20 focus-visible:text-primary"
+                  >
+                    <LocalIcon name={item.icon} className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            </section>
+
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-8 pt-8">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                {FOOTER_PAYMENT_LOGOS.map((method) => (
+                  <img
+                    key={method.alt}
+                    src={method.src}
+                    alt={method.alt}
+                    width={method.width}
+                    height={method.height}
+                    loading="eager"
+                    decoding="async"
+                    className={`${method.className} block w-auto object-contain`}
+                  />
+                ))}
+              </div>
+              <p className="flex items-center justify-end text-sm text-muted-foreground">
+                <span>&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
+              </p>
+            </div>
           </div>
 
           <nav aria-label="Footer sections" className="space-y-1 md:hidden">
-              {FOOTER_LINK_SECTIONS.map((section) => (
-                <details
-                  key={section.title}
-                  className="group overflow-hidden border-b border-black/8"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-1.5 text-[0.86rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-                    {section.title}
-                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-                  </summary>
-                  <ul className="space-y-0.5 pb-1">
-                    {section.links.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          prefetch={link.prefetch}
-                          className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              ))}
+            {FOOTER_LINK_SECTIONS.map((section) => (
+              <details
+                key={section.title}
+                className="group overflow-hidden border-b border-black/8"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-1.5 text-[0.86rem] font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                  {section.title}
+                  <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <ul className="space-y-0.5 pb-1">
+                  {section.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        prefetch={link.prefetch}
+                        className="block rounded-lg py-1 text-[0.82rem] text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ))}
           </nav>
 
           <div className="mt-2.5 grid gap-2.5 pt-0 min-[600px]:mt-5 min-[600px]:grid-cols-[minmax(0,1fr)_minmax(16rem,0.78fr)] min-[600px]:items-start min-[600px]:gap-6 min-[600px]:border-t min-[600px]:border-black/8 min-[600px]:pt-4 md:hidden xl:mt-6 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.62fr)] xl:items-center xl:gap-9">
