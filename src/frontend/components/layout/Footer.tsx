@@ -195,32 +195,33 @@ export function Footer() {
           <div className="hidden min-[560px]:block xl:hidden">
             <section
               aria-label="Boilabin contact"
-              className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-b border-black/8 pb-3"
+              className="flex items-center justify-between gap-3 border-b border-black/8 pb-3"
             >
-              <div className="flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
+              <div className="flex min-w-0 items-center gap-3 text-xs text-muted-foreground min-[700px]:gap-7 min-[700px]:text-sm">
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-3"
+                  className="inline-flex shrink-0 items-center gap-3"
                   aria-label="Boilabin home"
                 >
-                  <span className="font-display text-[1.42rem] font-bold leading-none tracking-normal text-foreground">
+                  <span className="font-display text-[1.08rem] font-bold leading-none tracking-normal text-foreground min-[700px]:text-[1.42rem]">
                     Boilabin
                   </span>
                 </Link>
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                  className="inline-flex min-w-0 items-center gap-1.5 truncate transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
+                  <LocalIcon name="mail" className="h-3 w-3 text-primary/70 min-[700px]:h-3.5 min-[700px]:w-3.5" />
+                  <span className="truncate">{CONTACT_EMAIL}</span>
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                  className="inline-flex shrink-0 items-center gap-1.5 transition-colors focus-visible:text-foreground"
                 >
-                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+                  <LocalIcon name="phone" className="h-3 w-3 text-primary/70 min-[700px]:h-3.5 min-[700px]:w-3.5" /> {CONTACT_PHONE}
                 </a>
               </div>
-              <div className="flex items-center gap-5">
+              <div className="flex shrink-0 items-center gap-2 min-[700px]:gap-5">
                 {SOCIAL_LINKS.map((item) => (
                   <a
                     key={item.label}
@@ -228,9 +229,9 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-foreground transition-colors focus-visible:border-primary/20 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-foreground transition-colors focus-visible:border-primary/20 focus-visible:text-primary min-[700px]:h-10 min-[700px]:w-10"
                   >
-                    <LocalIcon name={item.icon} className="h-4 w-4" />
+                    <LocalIcon name={item.icon} className="h-3.5 w-3.5 min-[700px]:h-4 min-[700px]:w-4" />
                   </a>
                 ))}
               </div>
@@ -302,8 +303,8 @@ export function Footer() {
               />
             </section>
 
-            <div className="grid gap-3 pt-2 min-[700px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] min-[700px]:items-center min-[700px]:gap-8 min-[700px]:pt-3">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 pt-2 min-[700px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] min-[700px]:gap-8 min-[700px]:pt-3">
+              <div className="flex items-center gap-x-5">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
@@ -317,8 +318,8 @@ export function Footer() {
                   />
                 ))}
               </div>
-              <p className="flex items-center text-sm text-muted-foreground min-[700px]:justify-end">
-                <span>&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
+              <p className="flex items-center justify-end text-right text-xs text-muted-foreground min-[700px]:text-sm">
+                <span className="whitespace-nowrap">&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
               </p>
             </div>
           </div>
