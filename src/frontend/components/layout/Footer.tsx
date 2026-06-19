@@ -304,7 +304,7 @@ export function Footer() {
             <section aria-label="Boilabin contact" className="pt-1">
               <div className="flex items-center justify-between gap-4">
                 <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                  <span className="font-display text-[1rem] font-semibold leading-none tracking-normal text-foreground">
+                  <span className="font-display text-[1.12rem] font-semibold leading-none tracking-normal text-foreground">
                     Boilabin
                   </span>
                 </Link>
@@ -323,9 +323,6 @@ export function Footer() {
                   ))}
                 </div>
               </div>
-              <p className="mt-3 max-w-[28rem] text-[0.82rem] leading-5 text-muted-foreground">
-                Everyday finds. Best deals. Delivered across Bangladesh.
-              </p>
               <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
@@ -368,17 +365,13 @@ export function Footer() {
 
             <section className="pt-3">
               <h2 className="text-[0.82rem] font-medium text-foreground">Stay in the loop</h2>
-              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
-                Get launch updates and selected store notices.
-              </p>
               <div className="mt-2">
                 <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
               </div>
             </section>
 
             <section className="pt-3">
-              <h2 className="text-[0.78rem] font-medium text-foreground">Checkout payment options</h2>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}
