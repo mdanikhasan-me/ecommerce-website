@@ -25,7 +25,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
       data-testid="desktop-categories-menu"
       role="region"
       aria-label="Categories menu"
-      className="absolute left-1/2 top-full z-50 mt-4 h-[25rem] max-h-[calc(100vh-7rem)] w-[min(60rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-black/10 bg-[#fffdfa] shadow-[0_22px_54px_rgba(20,18,16,0.16)]"
+      className="absolute left-1/2 top-full z-50 mt-4 h-[25rem] max-h-[calc(100vh-7rem)] w-[min(60rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-black/10 bg-white"
     >
       <div className="grid h-full min-h-[18rem] grid-cols-[15.75rem_minmax(0,1fr)]">
         <nav
@@ -81,7 +81,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
         <section
           aria-labelledby={`desktop-category-panel-heading-${selectedDesktopCategory.slug}`}
           data-testid="desktop-category-selected-panel"
-          className="min-h-0 overflow-hidden bg-[#fffdfa] px-8 py-8"
+          className="min-h-0 overflow-hidden bg-white px-8 py-8"
         >
           <div className="flex items-center gap-4">
             <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-secondary/70 text-foreground">

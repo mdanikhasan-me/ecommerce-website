@@ -112,7 +112,7 @@ export default async function HomePage() {
   ) : null
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#fff]">
       <JsonLd data={[
         generateOrganizationJsonLd(),
         generateWebsiteJsonLd(),

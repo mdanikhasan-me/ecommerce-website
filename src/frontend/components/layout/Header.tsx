@@ -288,7 +288,7 @@ export function Header() {
   }
 
   return (
-    <header className="relative z-40 w-full border-b border-black/10 bg-[#fffdfa]">
+    <header className="relative z-40 w-full bg-white">
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">

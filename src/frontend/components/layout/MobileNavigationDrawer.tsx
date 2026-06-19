@@ -55,7 +55,7 @@ export function MobileNavigationDrawer({
         aria-label="Mobile navigation"
         tabIndex={-1}
         className={cn(
-          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] transform-gpu overflow-hidden border-r border-black/10 bg-[#fffdfa] transition-transform duration-150 ease-out will-change-transform motion-reduce:transition-none',
+          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] transform-gpu overflow-hidden border-r border-black/10 bg-white transition-transform duration-150 ease-out will-change-transform motion-reduce:transition-none',
           isVisible ? 'translate-x-0' : '-translate-x-full'
         )}
       >

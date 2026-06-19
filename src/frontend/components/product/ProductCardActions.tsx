@@ -142,7 +142,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           type="button"
           onClick={handleWishlist}
           className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 shadow-none sm:shadow-[0_8px_18px_rgba(23,18,15,0.06)] sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             isWished ? 'bg-red-50 text-red-500 md:hover:bg-red-500 md:hover:text-white' : 'bg-[hsl(var(--card)/0.94)]',
           )}
           aria-label={wishlistActionLabel}
@@ -154,7 +154,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           onClick={handleCompare}
           disabled={checkingCompare}
           className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] shadow-none sm:shadow-[0_8px_18px_rgba(23,18,15,0.06)] sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60',
+            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60',
             storedIsCompared && 'bg-primary/10 text-primary',
           )}
           aria-label={compareActionLabel}
@@ -165,7 +165,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
       </div>
 
       {inStock && (
-        <div className="border-t border-black/10 bg-card/55 px-3 py-2 sm:px-4 sm:py-2.5">
+        <div className="bg-white px-3 py-2 sm:px-4 sm:py-2.5">
           <button
           type="button"
           onClick={handleAddToCart}

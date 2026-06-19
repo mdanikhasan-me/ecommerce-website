@@ -46,7 +46,7 @@ export function ProductCard({
   if (layout === 'list') {
     return (
       <div className={cn('product-card flex gap-2.5 p-2.5 sm:gap-4 sm:p-4 md:p-5', className)}>
-        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[1rem] bg-[#eee6db] sm:h-28 sm:w-28">
+        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[1rem] bg-white sm:h-28 sm:w-28">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -88,7 +88,7 @@ export function ProductCard({
 
   return (
     <div className={cn('product-card group flex h-full flex-col', className)}>
-      <div className="relative overflow-hidden rounded-t-[1.05rem] bg-[#eee6db] sm:rounded-t-[1.35rem]">
+      <div className="relative overflow-hidden rounded-t-[1.05rem] bg-white sm:rounded-t-[1.35rem]">
         <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative block aspect-square">
           {primaryImage ? (
             <Image

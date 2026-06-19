@@ -31,7 +31,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   if (visibleCategories.length === 0) return null
 
   return (
-    <section className="w-full border-y border-border/55 bg-gradient-to-b from-card to-secondary/30 py-7 sm:py-9 lg:py-10">
+    <section className="w-full bg-white py-7 sm:py-9 lg:py-10">
       <div className="container-site">
         <div className="flex items-center justify-between gap-3">
           <h2 className="section-title">Shop by category</h2>
@@ -60,7 +60,7 @@ function CategoryCard({ category }: { category: Category }) {
       href={`/category/${category.slug}`}
       aria-label={`Shop ${category.name}`}
       title={category.name}
-      className="group relative block aspect-square overflow-hidden rounded-2xl bg-secondary ring-1 ring-black/[0.06] sm:transition sm:duration-150 md:hover:ring-black/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group relative block aspect-square overflow-hidden rounded-2xl bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <Image
         src={getCategoryMediaPath(category)}
@@ -81,7 +81,7 @@ function CategoryCard({ category }: { category: Category }) {
           </span>
         </span>
 
-        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/35 bg-white/20 text-white ring-1 ring-black/[0.04] sm:h-7 sm:w-7 sm:transition-colors sm:duration-150 lg:h-8 lg:w-8 md:group-hover:bg-white/30">
+        <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/35 bg-white/20 text-white sm:h-7 sm:w-7 lg:h-8 lg:w-8">
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </span>
       </div>

@@ -7,13 +7,13 @@
     /* Titles share the body font face (set by next/font); they differ by weight/size only. */
     --font-display: var(--font-sans);
 
-    --background: 40 38% 95%;
+    --background: 0 0% 100%;
     --foreground: 268 14% 11%;
 
-    --card: 42 50% 97%;
+    --card: 0 0% 100%;
     --card-foreground: 268 14% 11%;
 
-    --popover: 42 50% 97%;
+    --popover: 0 0% 100%;
     --popover-foreground: 268 14% 11%;
 
     --primary: 270 36% 18%;
@@ -76,6 +76,7 @@
     @apply border-border;
   }
 
+  html,
   body {
     @apply bg-background text-foreground;
     -webkit-tap-highlight-color: transparent;
@@ -127,19 +128,14 @@
   }
 
   .product-card {
-    @apply bg-card overflow-hidden transition-colors duration-150;
+    @apply bg-card overflow-hidden;
     border-radius: 1.15rem;
-    border: 1px solid hsl(var(--border) / 0.74);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.8) inset,
-      0 8px 18px rgba(33, 25, 21, 0.04);
+    border: 0;
+    box-shadow: none;
   }
   @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
     .product-card:hover {
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.86) inset,
-        0 12px 24px rgba(33, 25, 21, 0.06);
-      border-color: hsl(var(--primary) / 0.14);
+      box-shadow: none;
     }
 
     .product-card-add-button:hover {
@@ -201,7 +197,7 @@
     inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
     transition-colors duration-150
     disabled:pointer-events-none disabled:opacity-50;
-    box-shadow: 0 14px 28px rgba(45, 27, 61, 0.16);
+    box-shadow: none;
   }
   .btn-secondary {
     @apply bg-secondary text-secondary-foreground
@@ -769,11 +765,9 @@
 
   .section-shell {
     border: 1px solid hsl(var(--border) / 0.72);
-    background: linear-gradient(180deg, hsl(var(--card)), hsl(43 36% 96% / 0.92));
+    background: hsl(var(--card));
     border-radius: 1.65rem;
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.86) inset,
-      0 18px 42px rgba(23, 18, 15, 0.05);
+    box-shadow: none;
   }
 
   .storefront-home-stack {
@@ -791,7 +785,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    border-bottom: 1px solid hsl(var(--border) / 0.58);
     padding-bottom: clamp(0.85rem, 0.7rem + 0.5vw, 1.25rem);
   }
 
@@ -827,10 +820,7 @@
   }
 
   .store-band {
-    border-top: 1px solid hsl(var(--border) / 0.56);
-    border-bottom: 1px solid hsl(var(--border) / 0.56);
-    background:
-      linear-gradient(180deg, hsl(39 38% 93% / 0.78), hsl(43 34% 95% / 0.9));
+    background: hsl(var(--background));
   }
 
   .progress-track {
@@ -1028,9 +1018,7 @@
     }
 
     .section-shell {
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.82) inset,
-        0 8px 18px rgba(23, 18, 15, 0.035);
+      box-shadow: none;
     }
   }
 
