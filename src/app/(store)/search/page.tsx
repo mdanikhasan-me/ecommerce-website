@@ -200,9 +200,16 @@ export default async function SearchPage({ searchParams }: Props) {
 
         <div className="flex-1 min-w-0">
           <div className="mb-4 flex w-full flex-wrap items-center gap-1.5 sm:mb-6 sm:justify-end sm:gap-2">
-            <MobileSearchFilters categories={categories} searchParams={params.queryParams} />
-            <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
-            <SortSelect current={params.sort} options={SORT_OPTIONS} />
+            <MobileSearchFilters
+              categories={categories}
+              searchParams={params.queryParams}
+              sortOptions={SORT_OPTIONS}
+              currentSort={params.sort}
+            />
+            <div className="ml-auto hidden items-center gap-2 lg:flex">
+              <span className="text-sm font-medium">Sort:</span>
+              <SortSelect current={params.sort} options={SORT_OPTIONS} />
+            </div>
           </div>
 
           {products.length === 0 ? (

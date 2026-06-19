@@ -190,9 +190,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               basePath={categoryPath}
               preserveOnClear={[]}
               label="Category"
+              sortOptions={SORT_OPTIONS}
+              currentSort={resolvedSearchParams.sort}
             />
-            <span className="ml-auto text-xs font-medium sm:ml-0 sm:text-sm">Sort:</span>
-            <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
+            <div className="ml-auto hidden items-center gap-2 lg:flex">
+              <span className="text-sm font-medium">Sort:</span>
+              <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
+            </div>
           </div>
 
           {products.length === 0 ? (
