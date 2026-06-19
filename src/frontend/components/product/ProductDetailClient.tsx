@@ -264,11 +264,11 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] md:items-start md:gap-6 lg:gap-9">
-      <div className="flex flex-col gap-2.5">
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(26rem,0.92fr)_minmax(30rem,1.08fr)] xl:items-start xl:gap-9">
+      <div className="mx-auto flex w-full max-w-[42rem] flex-col gap-2.5 xl:mx-0 xl:max-w-none">
         <div
           ref={zoomFrameRef}
-          className="relative aspect-[4/3] cursor-zoom-in overflow-hidden rounded-[1.35rem] bg-secondary md:rounded-2xl"
+          className="relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-[1.35rem] bg-secondary md:rounded-2xl"
           onMouseEnter={() => {
             zoomFrameRef.current?.style.setProperty('--zoom-origin', '50% 50%')
             setIsZoomed(true)
@@ -284,7 +284,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               priority
               quality={90}
               className={cn('zoom-image object-contain', isZoomed && 'scale-[2]')}
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="(max-width: 1279px) 100vw, 50vw"
             />
           )}
 
@@ -547,7 +547,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
       </div>
 
       {product.description && (
-        <div className="overflow-hidden rounded-2xl border border-border md:col-span-2">
+        <div className="overflow-hidden rounded-2xl border border-border xl:col-span-2">
           <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
             <h3 className="font-display text-lg font-semibold">Product Description</h3>
           </div>
