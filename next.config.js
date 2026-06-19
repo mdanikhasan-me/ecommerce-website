@@ -1,3 +1,20 @@
+const os = require('node:os')
+
+function getAllowedDevOrigins() {
+  const configuredOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
+  if (configuredOrigins) {
+    return configuredOrigins
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  }
+
+  return Object.values(os.networkInterfaces())
+    .flatMap((entries) => entries ?? [])
+    .filter((entry) => entry.family === 'IPv4' && !entry.internal)
+    .map((entry) => entry.address)
+}
+
 function buildSecurityHeaders() {
   const headers = [
     { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -23,6 +40,7 @@ function buildSecurityHeaders() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: getAllowedDevOrigins(),
   async headers() {
     return [
       {
