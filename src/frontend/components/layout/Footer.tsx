@@ -421,11 +421,25 @@ export function Footer() {
         </div>
 
         <div className="w-full border-t border-black/6 py-2 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 min-[560px]:text-xs xl:block">
-          <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row">
+          <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
               <span>All rights reserved.</span>
             </p>
+            <div className="hidden items-center justify-center gap-x-4 xl:flex">
+              {FOOTER_PAYMENT_LOGOS.map((method) => (
+                <img
+                  key={method.alt}
+                  src={method.src}
+                  alt={method.alt}
+                  width={method.width}
+                  height={method.height}
+                  loading="eager"
+                  decoding="async"
+                  className={`${method.className} block w-auto object-contain`}
+                />
+              ))}
+            </div>
             <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
               {BOTTOM_LEGAL_LINKS.map((link, index) => (
                 <span key={link.href} className="inline-flex items-center gap-3">
