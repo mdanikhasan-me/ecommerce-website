@@ -165,7 +165,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
       </div>
 
       {inStock && (
-        <div className="bg-white px-3 pb-3 pt-0 sm:px-4 sm:pb-4 sm:pt-0">
+        <div className="bg-white px-3 pb-3 pt-1 sm:px-4 sm:pb-4 sm:pt-1.5">
           <button
             type="button"
             onClick={handleAddToCart}

@@ -117,12 +117,12 @@ export function ProductCard({
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="flex flex-1 flex-col p-3 sm:p-4">
-        <h3 className="min-h-[2.6rem] line-clamp-2 text-[14px] font-medium leading-[1.3rem] text-foreground sm:min-h-[3rem] sm:text-[15px] sm:leading-6 sm:transition-colors md:group-hover:text-primary">
+      <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="flex flex-col px-3 pb-2 pt-3 sm:px-4 sm:pb-2.5 sm:pt-4">
+        <h3 className="min-h-[2.5rem] line-clamp-2 text-[14px] font-medium leading-5 text-foreground sm:min-h-[2.7rem] sm:text-[15px] sm:leading-[1.35rem] sm:transition-colors md:group-hover:text-primary">
           {product.name}
         </h3>
 
-        <div className="mt-2 flex min-h-[0.9rem] items-center gap-1 sm:mt-2.5 sm:gap-1.5" role="img" aria-label={ratingLabel}>
+        <div className="mt-1.5 flex min-h-[0.9rem] items-center gap-1 sm:mt-2 sm:gap-1.5" role="img" aria-label={ratingLabel}>
           <LocalIcon name="star-filled" className="h-2.5 w-2.5 star-filled sm:h-3 sm:w-3" />
           <span className="text-[12px] font-semibold text-foreground/75 sm:text-[12px]" aria-hidden="true">
             {product.rating.toFixed(1)}
@@ -132,7 +132,7 @@ export function ProductCard({
           </span>
         </div>
 
-        <div className="mt-2.5 flex min-h-[2.15rem] flex-col items-start gap-0.5 min-[420px]:flex-row min-[420px]:items-baseline min-[420px]:gap-1.5 sm:mt-3 sm:min-h-[2.45rem] sm:gap-1">
+        <div className="mt-2 flex min-h-[2rem] flex-col items-start gap-0.5 min-[420px]:flex-row min-[420px]:items-baseline min-[420px]:gap-1.5 sm:mt-2.5 sm:min-h-[2.1rem] sm:gap-1">
           <span className="text-[1.14rem] font-semibold leading-tight tabular-nums text-foreground sm:text-[1.36rem] lg:text-[1.5rem]">
             {formatPrice(price)}
           </span>
@@ -141,13 +141,15 @@ export function ProductCard({
           )}
         </div>
 
-        <p className={cn('mt-auto pt-1.5 text-[13px] font-medium sm:pt-2 sm:text-[13px]', stockColor)}>{stockLabel}</p>
+        <p className={cn('mt-1.5 text-[13px] font-medium sm:mt-2 sm:text-[13px]', stockColor)}>{stockLabel}</p>
       </Link>
-      <ProductCardActions
-        product={actionProduct}
-        inStock={inStock}
-        layout="grid"
-      />
+      <div className="mt-auto">
+        <ProductCardActions
+          product={actionProduct}
+          inStock={inStock}
+          layout="grid"
+        />
+      </div>
     </div>
   )
 }
