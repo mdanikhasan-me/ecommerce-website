@@ -99,7 +99,7 @@ function PromoTextPanel({
           </div>
 
           <div className="mt-7">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors md:group-hover:bg-white">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#231629] transition-colors min-[1025px]:group-hover:bg-white">
               {collection.cta}
               <LocalIcon name="arrow-right" className="h-4 w-4" />
             </span>

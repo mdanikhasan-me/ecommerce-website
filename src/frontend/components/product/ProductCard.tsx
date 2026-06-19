@@ -60,7 +60,7 @@ export function ProductCard({
           )}
         </Link>
         <div className="flex min-w-0 flex-1 flex-col">
-          <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="sm:transition-colors md:hover:text-primary">
+          <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="sm:transition-colors min-[1025px]:hover:text-primary">
             <h3 className="mt-0.5 min-h-[2.55rem] line-clamp-2 text-[14.5px] font-medium leading-[1.32rem] text-foreground sm:mt-1 sm:text-[15px] sm:leading-6">{product.name}</h3>
           </Link>
           <div className="mt-1 flex min-h-[1rem] items-center gap-1" role="img" aria-label={ratingLabel}>
@@ -118,7 +118,7 @@ export function ProductCard({
       </div>
 
       <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="flex flex-col px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
-        <h3 className="min-h-[2.7rem] line-clamp-2 text-[14px] font-medium leading-[1.35rem] text-foreground sm:min-h-[3rem] sm:text-[15px] sm:leading-6 sm:transition-colors md:group-hover:text-primary">
+        <h3 className="min-h-[2.7rem] line-clamp-2 text-[14px] font-medium leading-[1.35rem] text-foreground sm:min-h-[3rem] sm:text-[15px] sm:leading-6 sm:transition-colors min-[1025px]:group-hover:text-primary">
           {product.name}
         </h3>
 

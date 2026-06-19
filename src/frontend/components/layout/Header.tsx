@@ -299,7 +299,7 @@ export function Header() {
             <Link
               href="/new-arrivals"
               className={cn(
-                'transition-colors md:hover:text-foreground',
+                'transition-colors min-[1025px]:hover:text-foreground',
                 isActive('/new-arrivals') ? 'text-foreground' : 'text-foreground/72'
               )}
             >
@@ -314,7 +314,7 @@ export function Header() {
                 aria-controls="desktop-categories-menu"
                 onClick={toggleCategoriesDropdown}
                 className={cn(
-                  'flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
+                  'flex items-center gap-1.5 transition-colors min-[1025px]:hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
                   pathname?.startsWith('/category') ? 'text-foreground' : 'text-foreground/72'
                 )}
               >
@@ -335,7 +335,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'transition-colors md:hover:text-foreground',
+                  'transition-colors min-[1025px]:hover:text-foreground',
                   isActive(item.href) ? 'text-foreground' : 'text-foreground/72'
                 )}
               >
@@ -355,7 +355,7 @@ export function Header() {
               onClick={() => {
                 setIsSearchOpen((open) => !open)
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary"
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
             >
               <LocalIcon name="search" className="h-5 w-5" />
             </AriaExpandedButton>
@@ -369,7 +369,7 @@ export function Header() {
                   aria-label="Open account menu"
                   title="Open account menu"
                   onClick={() => setIsAccountOpen((open) => !open)}
-                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors md:hover:bg-secondary"
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors min-[1025px]:hover:bg-secondary"
                 >
                   <HeaderAvatar imageUrl={activeSession.user.image} />
                 </AriaExpandedButton>
@@ -391,7 +391,7 @@ export function Header() {
                 href="/auth/login"
                 aria-label="Sign in"
                 title="Sign in"
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary"
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
               >
                 <LocalIcon name="user" className="h-5 w-5" />
               </Link>
@@ -402,7 +402,7 @@ export function Header() {
               aria-label="Cart"
               title="Cart"
               onClick={openCart}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
             >
               <LocalIcon name="cart" className="h-5 w-5" />
               {cartCount > 0 ? (
@@ -439,7 +439,7 @@ export function Header() {
                 setIsSearchOpen(false)
               }}
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary',
+                'flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary',
                 isMobileMenuOpen && 'border border-black/10 bg-card'
               )}
             >
@@ -463,7 +463,7 @@ export function Header() {
                 setIsMobileAccountOpen(false)
                 setIsSearchOpen((open) => !open)
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary"
+              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
             >
               <LocalIcon name="search" className="h-5 w-5" />
             </AriaExpandedButton>
@@ -494,7 +494,7 @@ export function Header() {
                 setIsMobileAccountOpen(false)
                 openCart()
               }}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors md:hover:bg-secondary"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
             >
               <LocalIcon name="cart" className="h-5 w-5" />
               {cartCount > 0 ? (
@@ -522,7 +522,7 @@ export function Header() {
                   'flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border transition-colors',
                   isMobileAccountOpen
                     ? 'border-foreground bg-secondary text-foreground'
-                    : 'border-transparent md:hover:bg-secondary'
+                    : 'border-transparent min-[1025px]:hover:bg-secondary'
                 )}
               >
                 {isMobileAccountOpen ? (
@@ -548,7 +548,7 @@ export function Header() {
                 data-testid="mobile-profile-link"
                 aria-label="Sign in"
                 title="Sign in"
-                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors md:hover:bg-secondary"
+                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors min-[1025px]:hover:bg-secondary"
               >
                 <HeaderAvatar />
               </Link>

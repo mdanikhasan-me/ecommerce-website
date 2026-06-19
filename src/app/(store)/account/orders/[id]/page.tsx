@@ -155,7 +155,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="mb-4 sm:mb-5">
           <Link
             href="/account/orders"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors md:hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors min-[1025px]:hover:text-foreground"
           >
             <LocalIcon name="arrow-left" className="h-4 w-4" />
             Back to orders
@@ -229,14 +229,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <a
                 href={invoicePdfPath}
                 download={invoicePdfFilename}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-colors md:hover:bg-foreground/90"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-colors min-[1025px]:hover:bg-foreground/90"
               >
                 <LocalIcon name="download" className="h-4 w-4" />
                 Download Invoice
               </a>
               <Link
                 href="/contact"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold transition-colors md:hover:bg-secondary"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold transition-colors min-[1025px]:hover:bg-secondary"
               >
                 <LocalIcon name="subcategory-headphones" className="h-4 w-4" />
                 Contact Support
@@ -320,7 +320,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                       </div>
 
                       <div className="min-w-0">
-                        <Link href={`/products/${item.product.slug}`} className="text-base font-semibold transition-colors md:hover:text-primary sm:text-lg">
+                        <Link href={`/products/${item.product.slug}`} className="text-base font-semibold transition-colors min-[1025px]:hover:text-primary sm:text-lg">
                           {displayName}
                         </Link>
                         <p className="mt-1 text-xs text-muted-foreground">SKU: {item.productSku}</p>
@@ -342,7 +342,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                             {!reviewStatusByProductId.has(item.productId) ? (
                               <Link
                                 href={`/products/${item.product.slug}#write-review`}
-                                className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition-colors md:hover:text-primary/80"
+                                className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition-colors min-[1025px]:hover:text-primary/80"
                               >
                                 <LocalIcon name="star" className="h-3.5 w-3.5" />
                                 Leave a review

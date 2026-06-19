@@ -91,7 +91,7 @@ function QuickActionCard({ action }: { action: ActionCard }) {
   return (
     <Link
       href={action.href}
-      className="group flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors md:hover:border-foreground/30 md:hover:bg-secondary/35 sm:min-h-[9.75rem] sm:min-w-0 sm:flex-col sm:items-stretch sm:justify-between sm:p-5"
+      className="group flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors min-[1025px]:hover:border-foreground/30 min-[1025px]:hover:bg-secondary/35 sm:min-h-[9.75rem] sm:min-w-0 sm:flex-col sm:items-stretch sm:justify-between sm:p-5"
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 text-foreground sm:h-11 sm:w-11 sm:rounded-xl">
         <LocalIcon name={action.icon} className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -129,7 +129,7 @@ function ReachCard({ action }: { action: ActionCard & { detail?: string } }) {
   )
 
   const className =
-    'flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card px-3 py-3 transition-colors md:hover:border-foreground/30 md:hover:bg-secondary/35 sm:min-h-[6.25rem] sm:gap-4 sm:px-5 sm:py-4'
+    'flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card px-3 py-3 transition-colors min-[1025px]:hover:border-foreground/30 min-[1025px]:hover:bg-secondary/35 sm:min-h-[6.25rem] sm:gap-4 sm:px-5 sm:py-4'
 
   if (isPlaceholder) {
     return (

@@ -306,7 +306,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 onClick={() => setSelectedImage(i)}
                 className={cn(
                   'relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-colors [scroll-snap-align:start] sm:h-16 sm:w-16',
-                  selectedImage === i ? 'border-primary' : 'border-border md:hover:border-primary/50'
+                  selectedImage === i ? 'border-primary' : 'border-border min-[1025px]:hover:border-primary/50'
                 )}
               >
                 <Image
@@ -340,7 +340,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               ))}
             </div>
             <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
-            <a href="#reviews" className="text-sm text-muted-foreground transition-colors md:hover:text-primary">
+            <a href="#reviews" className="text-sm text-muted-foreground transition-colors min-[1025px]:hover:text-primary">
               {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
             </a>
             {product.soldCount > 0 && (
@@ -383,7 +383,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                     'rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors sm:px-4 sm:py-2',
                     selectedVariant?.id === variant.id
                       ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-border md:hover:border-primary/50'
+                      : 'border-border min-[1025px]:hover:border-primary/50'
                   )}
                 >
                   {value}
@@ -402,7 +402,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 aria-label="Decrease quantity"
                 title="Decrease quantity"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2.5 transition-colors md:hover:bg-secondary"
+                className="p-2.5 transition-colors min-[1025px]:hover:bg-secondary"
               >
                 <LocalIcon name="minus" className="h-4 w-4" />
               </button>
@@ -412,7 +412,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 aria-label="Increase quantity"
                 title="Increase quantity"
                 onClick={() => setQuantity(Math.min(stock, quantity + 1))}
-                className="p-2.5 transition-colors md:hover:bg-secondary"
+                className="p-2.5 transition-colors min-[1025px]:hover:bg-secondary"
               >
                 <LocalIcon name="plus" className="h-4 w-4" />
               </button>
@@ -426,7 +426,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             type="button"
             onClick={handleAddToCart}
             disabled={!inStock}
-            className="store-add-to-cart-button flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-foreground/18 bg-transparent text-[15px] font-semibold text-foreground md:transition-colors md:hover:border-foreground/32 md:hover:bg-secondary/55 disabled:cursor-not-allowed disabled:opacity-50"
+            className="store-add-to-cart-button flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-foreground/18 bg-transparent text-[15px] font-semibold text-foreground md:transition-colors min-[1025px]:hover:border-foreground/32 min-[1025px]:hover:bg-secondary/55 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <LocalIcon name="shopping-cart" className="h-[18px] w-[18px]" />
             {isPreOrder ? 'Pre-order' : 'Add to Cart'}
@@ -435,7 +435,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             type="button"
             onClick={handleBuyNow}
             disabled={!inStock}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-[15px] font-semibold text-background transition-colors md:hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-[15px] font-semibold text-background transition-colors min-[1025px]:hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPreOrder ? 'Pre-order Now' : 'Buy Now'}
             <LocalIcon name="arrow-right" className="h-[18px] w-[18px]" />
@@ -451,7 +451,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               }}
               className={cn(
                 'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium transition-colors',
-                isWished ? 'border-red-200 bg-red-50 text-red-500' : 'border-border md:hover:border-red-200 md:hover:text-red-500'
+                isWished ? 'border-red-200 bg-red-50 text-red-500' : 'border-border min-[1025px]:hover:border-red-200 min-[1025px]:hover:text-red-500'
               )}
             >
               <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
@@ -474,7 +474,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                 toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
               }}
               className={cn(
-                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium transition-colors md:hover:border-primary/50',
+                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium transition-colors min-[1025px]:hover:border-primary/50',
                 isCompared ? 'border-primary/30 bg-primary/5 text-primary' : 'border-border'
               )}
             >
@@ -486,7 +486,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               aria-label="Share product"
               title="Share product"
               onClick={handleShare}
-              className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border text-[13px] font-medium transition-colors md:hover:border-primary/50"
+              className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border text-[13px] font-medium transition-colors min-[1025px]:hover:border-primary/50"
             >
               <LocalIcon name="share" className="h-4 w-4" />
               Share
@@ -540,7 +540,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           SKU: <span className="font-mono">{product.sku}</span>
           {product.tags.length > 0 && (
             <> Tags: {product.tags.map((t: string) => (
-              <Link key={t} href={`/search?q=${t}`} className="mr-1 transition-colors md:hover:text-primary">{t}</Link>
+              <Link key={t} href={`/search?q=${t}`} className="mr-1 transition-colors min-[1025px]:hover:text-primary">{t}</Link>
             ))}</>
           )}
         </p>

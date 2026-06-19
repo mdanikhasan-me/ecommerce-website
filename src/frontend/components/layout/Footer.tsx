@@ -117,13 +117,13 @@ export function Footer() {
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground sm:text-sm">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                  className="inline-flex items-center gap-1.5 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                 >
                   <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="inline-flex items-center gap-1.5 transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                  className="inline-flex items-center gap-1.5 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                 >
                   <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
                 </a>
@@ -140,7 +140,7 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors md:hover:bg-primary/8 md:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors min-[1025px]:hover:bg-primary/8 min-[1025px]:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
                   >
                     <LocalIcon name={item.icon} className="h-4 w-4" />
                   </a>
@@ -163,7 +163,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="text-sm leading-5 text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                          className="text-sm leading-5 text-muted-foreground transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                         >
                           {link.label}
                         </Link>
@@ -183,7 +183,7 @@ export function Footer() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={item.label}
-                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                       >
                         <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
                         {item.label}
@@ -420,7 +420,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="transition-colors md:hover:text-foreground focus-visible:text-foreground"
+                  className="transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                 >
                   {link.label}
                 </Link>

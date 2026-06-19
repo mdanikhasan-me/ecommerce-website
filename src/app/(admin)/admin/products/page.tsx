@@ -107,7 +107,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
                 </tr>
               ) : products.map((p) => (
-                <tr key={p.id} className="md:hover:bg-secondary/50 transition-colors">
+                <tr key={p.id} className="min-[1025px]:hover:bg-secondary/50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="relative h-10 w-10 rounded-md overflow-hidden bg-secondary flex-shrink-0">
@@ -141,10 +141,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-md md:hover:bg-secondary transition-colors text-muted-foreground" title="View">
+                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-md min-[1025px]:hover:bg-secondary transition-colors text-muted-foreground" title="View">
                         <Eye className="h-4 w-4" />
                       </Link>
-                      <Link href={`/admin/products/${p.id}`} className="p-1.5 rounded-md md:hover:bg-secondary transition-colors text-muted-foreground" title="Edit">
+                      <Link href={`/admin/products/${p.id}`} className="p-1.5 rounded-md min-[1025px]:hover:bg-secondary transition-colors text-muted-foreground" title="Edit">
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </div>

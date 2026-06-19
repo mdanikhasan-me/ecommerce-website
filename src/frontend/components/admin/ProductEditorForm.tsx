@@ -476,7 +476,7 @@ export function ProductEditorForm({
             <h2 className="font-display text-lg font-semibold">Images</h2>
 
             <div className="mt-4 flex flex-wrap gap-3">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground md:hover:bg-secondary/80">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground min-[1025px]:hover:bg-secondary/80">
                 <Upload className="h-4 w-4" />
                 Upload files
                 <input aria-label="Form input" title="Form input" type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />

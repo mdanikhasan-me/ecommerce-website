@@ -40,7 +40,7 @@ export function OnThisPageNav({ sections }: { sections: NavItem[] }) {
               className={`-ml-px block border-l-2 py-1.5 pl-4 text-sm transition-colors ${
                 isActive
                   ? 'border-accent font-medium text-foreground'
-                  : 'border-transparent text-muted-foreground md:hover:border-border md:hover:text-foreground'
+                  : 'border-transparent text-muted-foreground min-[1025px]:hover:border-border min-[1025px]:hover:text-foreground'
               }`}
             >
               {section.title}

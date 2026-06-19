@@ -88,7 +88,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 </td>
               </tr>
             ) : users.map((user) => (
-              <tr key={user.id} className="md:hover:bg-secondary/50">
+              <tr key={user.id} className="min-[1025px]:hover:bg-secondary/50">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
@@ -114,7 +114,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                   {formatDate(user.createdAt)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-primary md:hover:underline">
+                  <Link href={`/admin/users/${user.id}`} className="text-xs font-medium text-primary min-[1025px]:hover:underline">
                     Manage
                   </Link>
                 </td>

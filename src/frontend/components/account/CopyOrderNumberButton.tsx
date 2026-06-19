@@ -36,7 +36,7 @@ export function CopyOrderNumberButton({ orderNumber, className }: CopyOrderNumbe
       aria-label="Copy order ID"
       title="Copy order ID"
       className={cn(
-        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors md:hover:bg-secondary md:hover:text-foreground',
+        'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary min-[1025px]:hover:text-foreground',
         className,
       )}
     >

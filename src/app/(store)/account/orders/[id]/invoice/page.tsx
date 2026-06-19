@@ -40,7 +40,7 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <Link
             href={`/account/orders/${order.id}`}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors md:hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors min-[1025px]:hover:text-foreground"
           >
             <LocalIcon name="arrow-left" className="h-4 w-4" />
             Back to order details
@@ -49,7 +49,7 @@ export default async function OrderInvoicePage({ params }: { params: Promise<{ i
             <a
               href={invoicePdfPath}
               download={invoicePdfFilename}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors md:hover:bg-primary/90"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors min-[1025px]:hover:bg-primary/90"
             >
               <LocalIcon name="download" className="h-4 w-4" />
               Download PDF

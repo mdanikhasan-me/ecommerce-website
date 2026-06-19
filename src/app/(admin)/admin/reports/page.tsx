@@ -119,7 +119,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
               className={`rounded-full px-3 py-1.5 text-sm font-medium ${
                 activeTab === tab.value
                   ? 'bg-primary text-white'
-                  : 'bg-secondary text-muted-foreground md:hover:text-foreground'
+                  : 'bg-secondary text-muted-foreground min-[1025px]:hover:text-foreground'
               }`}
             >
               {tab.label}

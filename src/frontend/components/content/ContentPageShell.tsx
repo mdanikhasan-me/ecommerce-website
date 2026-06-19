@@ -25,7 +25,7 @@ type ContentPageShellProps = {
 }
 
 const proseClass =
-  'space-y-4 text-[15px] leading-7 text-muted-foreground [&_a]:font-medium [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-accent [&_li]:pl-1.5 [&_ol>li]:marker:font-semibold [&_ol>li]:marker:text-foreground/70 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-foreground [&_ul>li]:marker:text-accent [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5'
+  'space-y-4 text-[15px] leading-7 text-muted-foreground [&_a]:font-medium [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-2 min-[1025px]:[&_a:hover]:text-accent [&_li]:pl-1.5 [&_ol>li]:marker:font-semibold [&_ol>li]:marker:text-foreground/70 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-foreground [&_ul>li]:marker:text-accent [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5'
 
 export function ContentPageShell({
   eyebrow,

@@ -22,7 +22,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
           <Link
             href="/admin"
             role="menuitem"
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-primary transition-colors md:hover:bg-secondary"
+            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-primary transition-colors min-[1025px]:hover:bg-secondary"
           >
             <LocalIcon name="layout-dashboard" className="h-4 w-4" />
             Admin Panel
@@ -31,7 +31,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
         <Link
           href="/account"
           role="menuitem"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors md:hover:bg-secondary"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="user" className="h-4 w-4" />
           My Account
@@ -39,7 +39,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
         <Link
           href="/account/orders"
           role="menuitem"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors md:hover:bg-secondary"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="package" className="h-4 w-4" />
           My Orders
@@ -47,7 +47,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
         <Link
           href="/wishlist"
           role="menuitem"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors md:hover:bg-secondary"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="heart" className="h-4 w-4" />
           Wishlist
@@ -55,7 +55,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
         <Link
           href="/compare"
           role="menuitem"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors md:hover:bg-secondary"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="compare" className="h-4 w-4" />
           Compare
@@ -64,7 +64,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
           type="button"
           role="menuitem"
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors md:hover:bg-secondary"
+          className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="log-out" className="h-4 w-4" />
           Sign Out

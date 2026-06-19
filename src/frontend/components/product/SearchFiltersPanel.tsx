@@ -83,7 +83,7 @@ export function SearchFiltersPanel({
           <LocalIcon name="filter" className="h-4 w-4" /> Filters
         </h3>
         {hasFilters && (
-          <button type="button" onClick={clearAll} aria-label="Clear all product filters" className="flex items-center gap-1 text-xs text-primary md:hover:underline">
+          <button type="button" onClick={clearAll} aria-label="Clear all product filters" className="flex items-center gap-1 text-xs text-primary min-[1025px]:hover:underline">
             <LocalIcon name="close" className="h-3 w-3" /> Clear All
           </button>
         )}
@@ -103,7 +103,7 @@ export function SearchFiltersPanel({
                   aria-label={`Filter by category ${cat.name}`}
                   className="accent-primary"
                 />
-                <span className={cn('text-sm transition-colors md:group-hover:text-primary', searchParams.category === cat.slug && 'font-medium text-primary')}>
+                <span className={cn('text-sm transition-colors min-[1025px]:group-hover:text-primary', searchParams.category === cat.slug && 'font-medium text-primary')}>
                   {cat.name}
                 </span>
               </label>
@@ -161,7 +161,7 @@ export function SearchFiltersPanel({
                 setMaxPrice(max)
                 applyPriceRange(min, max)
               }}
-              className="rounded-lg border border-border px-2 py-1 text-xs transition-colors md:hover:bg-secondary"
+              className="rounded-lg border border-border px-2 py-1 text-xs transition-colors min-[1025px]:hover:bg-secondary"
             >
               Tk {min ? Number(min).toLocaleString() : '0'}
               {max ? ` to Tk ${Number(max).toLocaleString()}` : '+'}
@@ -189,7 +189,7 @@ export function SearchFiltersPanel({
                 aria-hidden="true"
                 className={cn(
                   'flex h-3.5 w-3.5 items-center justify-center rounded-full border transition-colors',
-                  selected ? 'border-primary' : 'border-muted-foreground/60 md:group-hover:border-primary'
+                  selected ? 'border-primary' : 'border-muted-foreground/60 min-[1025px]:group-hover:border-primary'
                 )}
               >
                 {selected ? <span className="h-2 w-2 rounded-full bg-primary" /> : null}

@@ -65,7 +65,7 @@ export function AdminSidebar({
                 'mb-0.5 flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors duration-150',
                 isActive
                   ? 'bg-[hsl(270_24%_24%)] text-[hsl(42_36%_96%)]'
-                  : 'text-[hsl(42_16%_76%)] md:hover:bg-[hsl(270_18%_18%)] md:hover:text-[hsl(42_36%_96%)]'
+                  : 'text-[hsl(42_16%_76%)] min-[1025px]:hover:bg-[hsl(270_18%_18%)] min-[1025px]:hover:text-[hsl(42_36%_96%)]'
               )}
             >
               <item.icon className={cn('h-4 w-4 flex-shrink-0', isActive && 'text-[hsl(var(--accent))]')} />
@@ -81,7 +81,7 @@ export function AdminSidebar({
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-xs text-[hsl(38_14%_62%)] transition-colors md:hover:bg-[hsl(270_18%_18%)] md:hover:text-[hsl(42_36%_96%)]"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-xs text-[hsl(38_14%_62%)] transition-colors min-[1025px]:hover:bg-[hsl(270_18%_18%)] min-[1025px]:hover:text-[hsl(42_36%_96%)]"
         >
           <Zap className="h-3.5 w-3.5" />
           View Store

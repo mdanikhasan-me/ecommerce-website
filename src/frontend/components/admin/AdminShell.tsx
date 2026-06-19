@@ -80,7 +80,7 @@ export function AdminShell({ user, unreadCount, children }: AdminShellProps) {
               aria-label="Close admin menu"
               title="Close admin menu"
               onClick={closeMenu}
-              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[hsl(42_32%_94%)] transition-colors md:hover:bg-white/15"
+              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/10 text-[hsl(42_32%_94%)] transition-colors min-[1025px]:hover:bg-white/15"
             >
               <X className="h-4 w-4" />
             </button>

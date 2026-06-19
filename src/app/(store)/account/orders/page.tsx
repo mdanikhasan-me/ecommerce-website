@@ -73,7 +73,7 @@ export default async function AccountOrdersPage({
               <Link
                 key={order.id}
                 href={`/account/orders/${order.id}`}
-                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-colors md:hover:border-primary/30"
+                className="group block overflow-hidden rounded-2xl border border-border bg-card transition-colors min-[1025px]:hover:border-primary/30"
               >
                 <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:p-5">
                   <div className="min-w-0">
@@ -127,7 +127,7 @@ export default async function AccountOrdersPage({
                       ))}
                       {order._count.items > 3 && <span> +{order._count.items - 3} more</span>}
                     </p>
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground transition-colors md:group-hover:bg-secondary md:group-hover:text-foreground">
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground transition-colors min-[1025px]:group-hover:bg-secondary min-[1025px]:group-hover:text-foreground">
                       <LocalIcon name="chevron-right" className="h-4 w-4" />
                     </div>
                   </div>

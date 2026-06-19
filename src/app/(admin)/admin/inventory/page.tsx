@@ -81,7 +81,7 @@ export default async function AdminInventoryPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {products.map((product) => (
-                <tr key={product.id} className="md:hover:bg-secondary/50">
+                <tr key={product.id} className="min-[1025px]:hover:bg-secondary/50">
                   <td className="max-w-[260px] px-4 py-3">
                     <div className="space-y-0.5">
                       <p className="truncate font-medium">{product.name}</p>
@@ -136,7 +136,7 @@ export default async function AdminInventoryPage() {
                       />
                       <Link
                         href={`/admin/products/${product.id}`}
-                        className="text-xs text-primary md:hover:underline"
+                        className="text-xs text-primary min-[1025px]:hover:underline"
                       >
                         Edit
                       </Link>

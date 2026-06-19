@@ -147,7 +147,7 @@ export default async function AdminReturnDetailPage({
                 <span className="text-muted-foreground">Order total</span>
                 <span>{formatPrice(request.order.total)}</span>
               </div>
-              <Link href={`/admin/orders/${request.order.id}`} className="inline-flex text-primary md:hover:underline">
+              <Link href={`/admin/orders/${request.order.id}`} className="inline-flex text-primary min-[1025px]:hover:underline">
                 Open order details
               </Link>
             </div>

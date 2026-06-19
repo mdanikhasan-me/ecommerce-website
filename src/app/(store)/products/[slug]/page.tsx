@@ -240,11 +240,11 @@ export default async function ProductPage({ params }: Props) {
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
 
       <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-5 sm:gap-2 sm:text-sm">
-        <Link href="/" className="whitespace-nowrap transition-colors md:hover:text-foreground">
+        <Link href="/" className="whitespace-nowrap transition-colors min-[1025px]:hover:text-foreground">
           Home
         </Link>
         <span>/</span>
-        <Link href={`/category/${product.category.slug}`} className="whitespace-nowrap capitalize transition-colors md:hover:text-foreground">
+        <Link href={`/category/${product.category.slug}`} className="whitespace-nowrap capitalize transition-colors min-[1025px]:hover:text-foreground">
           {product.category.name}
         </Link>
         <span className="hidden sm:inline">/</span>

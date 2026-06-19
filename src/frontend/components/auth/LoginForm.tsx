@@ -88,7 +88,7 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="login-password" className="text-sm font-medium">Password</label>
-                <Link href="/contact" className="text-xs text-accent md:hover:underline">
+                <Link href="/contact" className="text-xs text-accent min-[1025px]:hover:underline">
                   Need help?
                 </Link>
               </div>
@@ -110,7 +110,7 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   title={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground md:hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground min-[1025px]:hover:text-foreground"
                 >
                   <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
                 </button>
@@ -131,7 +131,7 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
 
           <p className="text-center text-sm text-muted-foreground mt-5">
             New to <span className="font-semibold text-foreground">Boilabin</span>?{' '}
-            <Link href={`/auth/register${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold md:hover:underline">
+            <Link href={`/auth/register${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold min-[1025px]:hover:underline">
               Create an account
             </Link>
           </p>

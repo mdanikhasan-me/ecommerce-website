@@ -74,7 +74,7 @@ export function HomepageNewsletterForm({
         className={
           isLight
             ? `${isInline ? (isSpacious ? 'h-12 w-14 px-0 md:h-[3.25rem] md:w-[4.4rem]' : isIconSubmit ? 'h-9 w-9 px-0 min-[600px]:h-10 min-[600px]:w-10' : 'h-9 w-9 px-0 min-[600px]:h-10 min-[600px]:w-auto min-[600px]:px-4') : 'px-6 shadow-[0_8px_18px_rgba(45,27,61,0.1)]'} flex-shrink-0 rounded-md bg-primary py-2 text-sm font-bold text-primary-foreground transition-colors xl:hover:bg-primary/90 disabled:opacity-60`
-            : 'flex-shrink-0 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-bold text-[#2d1b3d] transition-colors md:hover:bg-white disabled:opacity-60'
+            : 'flex-shrink-0 rounded-full bg-[hsl(var(--buttermilk))] px-6 py-3 text-sm font-bold text-[#2d1b3d] transition-colors min-[1025px]:hover:bg-white disabled:opacity-60'
         }
       >
         {submitting ? (

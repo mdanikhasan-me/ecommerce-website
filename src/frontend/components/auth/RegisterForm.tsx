@@ -86,7 +86,7 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   title={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground md:hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground min-[1025px]:hover:text-foreground"
                 >
                   <LocalIcon name={showPassword ? 'eye-off' : 'eye'} className="h-4 w-4" />
                 </button>
@@ -107,7 +107,7 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
 
           <p className="text-center text-sm text-muted-foreground mt-5">
             Already have an account?{' '}
-            <Link href={`/auth/login${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold md:hover:underline">Sign in</Link>
+            <Link href={`/auth/login${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-primary font-semibold min-[1025px]:hover:underline">Sign in</Link>
           </p>
 
           <p className="text-center text-[11px] text-muted-foreground mt-4 leading-relaxed">

@@ -142,7 +142,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={sending}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-[4px] border border-transparent bg-[hsl(270_18%_8%)] px-5 text-sm font-semibold text-primary-foreground disabled:pointer-events-none disabled:opacity-50 md:transition-colors md:hover:bg-[hsl(270_16%_12%)]"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-[4px] border border-transparent bg-[hsl(270_18%_8%)] px-5 text-sm font-semibold text-primary-foreground disabled:pointer-events-none disabled:opacity-50 md:transition-colors min-[1025px]:hover:bg-[hsl(270_16%_12%)]"
         >
           <LocalIcon name="send" className="h-4 w-4" />
           {sending ? 'Sending...' : 'Send Message'}
@@ -194,7 +194,7 @@ function ContactMethod({
       href={href}
       target={href?.startsWith('http') ? '_blank' : undefined}
       rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-      className="inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:h-10 md:min-w-[9.25rem] md:justify-center md:rounded-[4px] md:border md:border-foreground/35 md:bg-transparent md:px-5 md:transition-colors md:hover:bg-secondary md:hover:text-foreground"
+      className="inline-flex w-fit items-center gap-1.5 text-xs font-semibold text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:h-10 md:min-w-[9.25rem] md:justify-center md:rounded-[4px] md:border md:border-foreground/35 md:bg-transparent md:px-5 md:transition-colors min-[1025px]:hover:bg-secondary min-[1025px]:hover:text-foreground"
     >
       {actionLabel}
       <LocalIcon name="arrow-right" className="h-3.5 w-3.5" />

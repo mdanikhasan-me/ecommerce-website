@@ -57,7 +57,7 @@ export default async function AdminReturnsPage({
               key={tab.value || 'all'}
               href={href}
               className={`rounded-full px-3 py-1.5 text-sm font-medium ${
-                active ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground md:hover:text-foreground'
+                active ? 'bg-primary text-white' : 'bg-secondary text-muted-foreground min-[1025px]:hover:text-foreground'
               }`}
             >
               {tab.label}
@@ -88,9 +88,9 @@ export default async function AdminReturnsPage({
               </tr>
             ) : (
               requests.map((request) => (
-                <tr key={request.id} className="md:hover:bg-secondary/40">
+                <tr key={request.id} className="min-[1025px]:hover:bg-secondary/40">
                   <td className="px-4 py-3">
-                    <Link href={`/admin/orders/${request.order.id}`} className="font-mono text-primary md:hover:underline">
+                    <Link href={`/admin/orders/${request.order.id}`} className="font-mono text-primary min-[1025px]:hover:underline">
                       {request.order.orderNumber}
                     </Link>
                   </td>
@@ -110,7 +110,7 @@ export default async function AdminReturnsPage({
                     {formatDate(request.updatedAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/returns/${request.id}`} className="text-xs font-medium text-primary md:hover:underline">
+                    <Link href={`/admin/returns/${request.id}`} className="text-xs font-medium text-primary min-[1025px]:hover:underline">
                       Review
                     </Link>
                   </td>

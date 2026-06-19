@@ -164,7 +164,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <a
               key={sub.slug}
               href={`/category/${sub.slug}`}
-              className="snap-start flex-shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-medium sm:transition-colors md:hover:border-primary md:hover:text-primary sm:px-4 sm:py-2 sm:text-sm"
+              className="snap-start flex-shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-[13px] font-medium sm:transition-colors min-[1025px]:hover:border-primary min-[1025px]:hover:text-primary sm:px-4 sm:py-2 sm:text-sm"
             >
               {sub.name}
             </a>
@@ -190,11 +190,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               basePath={categoryPath}
               preserveOnClear={[]}
               label="Category"
-              sortOptions={SORT_OPTIONS}
-              currentSort={resolvedSearchParams.sort}
             />
-            <div className="ml-auto hidden items-center gap-2 lg:flex">
-              <span className="text-sm font-medium">Sort:</span>
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden text-xs font-medium min-[380px]:inline sm:text-sm">Sort:</span>
               <SortSelect current={resolvedSearchParams.sort} options={SORT_OPTIONS} />
             </div>
           </div>
@@ -224,7 +222,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                     <a
                       key={p}
                       href={buildPageUrl(categoryPath, resolvedSearchParams.queryParams, p)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium sm:transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border md:hover:bg-secondary'}`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium sm:transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border min-[1025px]:hover:bg-secondary'}`}
                     >
                       {p}
                     </a>

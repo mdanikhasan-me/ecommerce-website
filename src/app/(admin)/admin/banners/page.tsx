@@ -39,14 +39,14 @@ export default async function AdminBannersPage() {
           </thead>
           <tbody className="divide-y divide-border">
             {banners.map((banner) => (
-              <tr key={banner.id} className="md:hover:bg-secondary/40">
+              <tr key={banner.id} className="min-[1025px]:hover:bg-secondary/40">
                 <td className="px-4 py-3">
                   <p className="font-medium">{banner.title || 'Untitled banner'}</p>
                   {banner.subtitle && <p className="text-xs text-muted-foreground">{banner.subtitle}</p>}
                 </td>
                 <td className="px-4 py-3 text-xs text-muted-foreground">
                   {banner.linkUrl ? (
-                    <Link href={banner.linkUrl} target="_blank" className="text-primary md:hover:underline">
+                    <Link href={banner.linkUrl} target="_blank" className="text-primary min-[1025px]:hover:underline">
                       {banner.linkUrl}
                     </Link>
                   ) : (
@@ -62,7 +62,7 @@ export default async function AdminBannersPage() {
                   {formatDate(banner.updatedAt)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/banners/${banner.id}`} className="p-1.5 rounded-md md:hover:bg-secondary inline-flex">
+                  <Link href={`/admin/banners/${banner.id}`} className="p-1.5 rounded-md min-[1025px]:hover:bg-secondary inline-flex">
                     <Pencil className="h-4 w-4 text-muted-foreground" />
                   </Link>
                 </td>

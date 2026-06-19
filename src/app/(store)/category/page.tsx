@@ -207,7 +207,7 @@ function CategoryRail({
               href={`/category?department=${category.slug}`}
               {...ariaCurrentPage(isSelected)}
               className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left sm:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-                isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 md:hover:bg-secondary/45'
+                isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 min-[1025px]:hover:bg-secondary/45'
               }`}
             >
               {isSelected && <span className="absolute left-0 top-3 h-7 w-0.5 rounded-r-full bg-primary/70" />}
@@ -269,7 +269,7 @@ function SubcategoryCard({
       className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <SubcategoryGlyph svgIcon={customSvgIcon} fallbackIcon={iconName} alt={child.name} className="h-8 w-8 text-foreground" />
-      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors md:group-hover:text-primary">
+      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors min-[1025px]:group-hover:text-primary">
         {child.name}
       </span>
     </Link>
@@ -284,7 +284,7 @@ function ViewAllCategoryTile({ category }: { category: CategoryItem }) {
       className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <LocalIcon name="subcategory-grid" className="h-8 w-8 text-foreground" />
-      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors md:group-hover:text-primary">
+      <span className="line-clamp-2 text-[13px] font-normal leading-5 text-foreground md:font-medium md:transition-colors min-[1025px]:group-hover:text-primary">
         {getViewAllCategoryLabel(category)}
       </span>
     </Link>

@@ -1,15 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AriaExpandedButton } from '@/frontend/components/ui/AriaExpandedButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { cn } from '@/backend/utils'
-
-type SortOption = {
-  value: string
-  label: string
-}
 
 type MobileSearchFiltersProps = {
   categories: { name: string; slug: string }[]
@@ -17,8 +12,6 @@ type MobileSearchFiltersProps = {
   basePath?: string
   preserveOnClear?: string[]
   label?: string
-  sortOptions?: SortOption[]
-  currentSort?: string
 }
 
 export function MobileSearchFilters({
@@ -27,14 +20,6 @@ export function MobileSearchFilters({
   basePath,
   preserveOnClear = ['q', 'featured', 'bestSeller'],
   label = 'Search',
-  sortOptions = [
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'newest', label: 'Newest First' },
-    { value: 'price_asc', label: 'Price: Low to High' },
-    { value: 'price_desc', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Highest Rated' },
-  ],
-  currentSort = searchParams.sort ?? 'popular',
 }: MobileSearchFiltersProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -42,7 +27,6 @@ export function MobileSearchFilters({
   const [minPrice, setMinPrice] = useState(searchParams.minPrice ?? '')
   const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice ?? '')
   const [stockMode, setStockMode] = useState<'all' | 'inStock'>(searchParams.inStock === 'true' ? 'inStock' : 'all')
-  const [sortValue, setSortValue] = useState(currentSort)
   const panelId = 'mobile-search-filters-panel'
   const titleId = 'mobile-search-filters-title'
   const resolvedBasePath = basePath ?? '/search'
@@ -55,16 +39,7 @@ export function MobileSearchFilters({
     setMinPrice(searchParams.minPrice ?? '')
     setMaxPrice(searchParams.maxPrice ?? '')
     setStockMode(searchParams.inStock === 'true' ? 'inStock' : 'all')
-    setSortValue(currentSort)
-  }, [currentSort, open, searchParams.category, searchParams.inStock, searchParams.maxPrice, searchParams.minPrice])
-
-  const orderedCategories = useMemo(() => {
-    if (!selectedCategory) return categories
-    const current = categories.find((category) => category.slug === selectedCategory)
-    if (!current) return categories
-
-    return [current, ...categories.filter((category) => category.slug !== selectedCategory)]
-  }, [categories, selectedCategory])
+  }, [open, searchParams.category, searchParams.inStock, searchParams.maxPrice, searchParams.minPrice])
 
   const navigateWithParams = (sp: URLSearchParams) => {
     const query = sp.toString()
@@ -95,9 +70,6 @@ export function MobileSearchFilters({
 
     if (stockMode === 'inStock') sp.set('inStock', 'true')
     else sp.delete('inStock')
-
-    if (sortValue && sortValue !== 'popular') sp.set('sort', sortValue)
-    else sp.delete('sort')
 
     sp.delete('page')
     navigateWithParams(sp)
@@ -169,17 +141,9 @@ export function MobileSearchFilters({
                         <p className="mt-0.5 text-xs text-muted-foreground">{selectedCategoryName}</p>
                       ) : null}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCategory(undefined)}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground"
-                    >
-                      View all
-                      <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
-                    </button>
                   </div>
-                  <div className="flex max-h-[8.75rem] flex-wrap gap-2 overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {orderedCategories.map((category) => {
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => {
                       const selected = selectedCategory === category.slug
 
                       return (
@@ -203,11 +167,8 @@ export function MobileSearchFilters({
                 </section>
               )}
 
-              <details className="group border-t border-border/70 py-4" open={Boolean(minPrice || maxPrice)}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-                  Price Range
-                  <LocalIcon name="chevron-right" className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
-                </summary>
+              <section className="border-t border-border/70 py-4">
+                <h3 className="text-sm font-semibold text-foreground">Price Range</h3>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <label className="min-w-0">
                     <span className="sr-only">Minimum price</span>
@@ -236,7 +197,7 @@ export function MobileSearchFilters({
                     />
                   </label>
                 </div>
-              </details>
+              </section>
 
               <section className="border-t border-border/70 py-4">
                 <h3 className="text-sm font-semibold text-foreground">Availability</h3>
@@ -264,19 +225,6 @@ export function MobileSearchFilters({
                 </div>
               </section>
 
-              <section className="border-t border-border/70 py-4">
-                <label htmlFor="mobile-filter-sort" className="text-sm font-semibold text-foreground">Sort by</label>
-                <select
-                  id="mobile-filter-sort"
-                  value={sortValue}
-                  onChange={(event) => setSortValue(event.target.value)}
-                  className="mt-3 h-11 w-full rounded-lg border border-input bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </section>
             </div>
 
             <div className="grid grid-cols-2 gap-3 border-t border-border/70 bg-white px-5 py-4">

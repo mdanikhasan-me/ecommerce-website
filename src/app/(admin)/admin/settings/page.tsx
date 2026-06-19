@@ -105,7 +105,7 @@ export default function AdminSettingsPage() {
                 className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeGroup === group.id
                     ? 'bg-primary text-white'
-                    : 'text-muted-foreground md:hover:bg-secondary md:hover:text-foreground'
+                    : 'text-muted-foreground min-[1025px]:hover:bg-secondary min-[1025px]:hover:text-foreground'
                 }`}
               >
                 {group.label}

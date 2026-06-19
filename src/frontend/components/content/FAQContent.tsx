@@ -21,7 +21,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         expanded={open}
         className="group flex w-full items-center justify-between gap-4 py-4 text-left"
       >
-        <span className={cn('pr-4 text-[15px] font-medium transition-colors md:hover:text-accent', open && 'text-foreground')}>
+        <span className={cn('pr-4 text-[15px] font-medium transition-colors min-[1025px]:hover:text-accent', open && 'text-foreground')}>
           {q}
         </span>
         <LocalIcon

@@ -134,10 +134,23 @@
     background-clip: padding-box;
     box-shadow: none;
   }
-  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .product-card:hover {
       border-color: hsl(var(--border) / 0.66);
       box-shadow: none;
+    }
+
+    .product-card-action-button {
+      transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+    }
+
+    .product-card-action-button:hover {
+      border-color: hsl(var(--foreground) / 0.14);
+      background: hsl(var(--secondary) / 0.42);
+      color: hsl(var(--foreground));
     }
 
     .product-card-add-button:hover {
@@ -212,7 +225,7 @@
     transition-colors duration-150;
   }
 
-  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .btn-primary:hover {
       background-color: hsl(var(--primary) / 0.9);
     }
@@ -243,7 +256,7 @@
     transition-colors duration-150;
   }
 
-  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .btn-accent:hover {
       background-color: hsl(var(--accent) / 0.9);
     }
@@ -745,7 +758,7 @@
     background: hsl(var(--buttermilk) / 0.05);
   }
 
-  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .footer-link:hover {
       color: hsl(var(--buttermilk));
     }
@@ -805,7 +818,7 @@
     border: 1px solid hsl(var(--primary) / 0.08);
   }
 
-  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .editorial-link:hover {
       background: hsl(var(--secondary) / 0.92);
       border-color: hsl(var(--primary) / 0.16);
@@ -1024,9 +1037,65 @@
     }
   }
 
-  @media (hover: none) and (pointer: coarse) {
+  @media (hover: none), (pointer: coarse), (any-hover: none), (any-pointer: coarse) {
+    [class*="hover:"],
+    [class*="group-hover"],
+    [class*="transition"] {
+      transition: none !important;
+    }
+
+    [class*="hover:"]:hover,
+    [class*="group-hover"]:hover,
+    a:hover,
+    button:hover,
+    summary:hover,
+    [role="button"]:hover {
+      transform: none !important;
+      box-shadow: none !important;
+      text-decoration: none !important;
+    }
+
+    .product-card:hover {
+      border-color: hsl(var(--border) / 0.52) !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .product-card:hover h3 {
+      color: hsl(var(--foreground)) !important;
+    }
+
+    .product-card-action-button,
+    .product-card-action-button:hover,
+    .product-card-action-button:active,
+    .product-card-action-button:focus {
+      border-color: hsl(0 0% 0% / 0.06) !important;
+      background: hsl(var(--card) / 0.94) !important;
+      color: hsl(var(--foreground)) !important;
+      outline: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .product-card-action-button[data-kind="wishlist"][data-active="true"],
+    .product-card-action-button[data-kind="wishlist"][data-active="true"]:hover,
+    .product-card-action-button[data-kind="wishlist"][data-active="true"]:active,
+    .product-card-action-button[data-kind="wishlist"][data-active="true"]:focus {
+      background: rgb(254 242 242) !important;
+      color: rgb(239 68 68) !important;
+    }
+
+    .product-card-action-button[data-kind="compare"][data-active="true"],
+    .product-card-action-button[data-kind="compare"][data-active="true"]:hover,
+    .product-card-action-button[data-kind="compare"][data-active="true"]:active,
+    .product-card-action-button[data-kind="compare"][data-active="true"]:focus {
+      background: hsl(var(--primary) / 0.1) !important;
+      color: hsl(var(--primary)) !important;
+    }
+
     .product-card-add-button,
-    .store-add-to-cart-button {
+    .store-add-to-cart-button,
+    .product-card-action-button {
       -webkit-tap-highlight-color: transparent;
       appearance: none;
       transition: none !important;

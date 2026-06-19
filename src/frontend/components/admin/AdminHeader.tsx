@@ -20,19 +20,19 @@ export function AdminHeader({
         aria-label="Open admin menu"
         title="Open admin menu"
         onClick={onMenuClick}
-        className="rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70 md:hidden"
+        className="rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70 md:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
       <div className="flex items-center gap-1.5 sm:gap-3">
-        <Link href="/" target="_blank" className="rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70" title="View Store">
+        <Link href="/" target="_blank" className="rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70" title="View Store">
           <ExternalLink className="h-4 w-4" />
         </Link>
         <Link
           href="/admin/notifications"
           aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
           title={unreadCount > 0 ? `${unreadCount} unread` : 'Notifications'}
-          className="relative rounded-md p-2 text-muted-foreground transition-colors md:hover:bg-secondary/70"
+          className="relative rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70"
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -59,7 +59,7 @@ export function AdminHeader({
             aria-label="Sign out"
             title="Sign out"
             onClick={() => signOut({ callbackUrl: '/auth/login' })}
-            className="ml-1 rounded-md p-1.5 text-muted-foreground transition-colors md:hover:bg-secondary/70"
+            className="ml-1 rounded-md p-1.5 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70"
           >
             <LogOut className="h-4 w-4" />
           </button>

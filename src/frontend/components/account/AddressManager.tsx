@@ -136,7 +136,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
                   <button
                     type="button"
                     onClick={() => startEdit(addr)}
-                    className="p-1.5 rounded-lg md:hover:bg-secondary transition-colors"
+                    className="p-1.5 rounded-lg min-[1025px]:hover:bg-secondary transition-colors"
                     aria-label={`Edit address for ${addr.fullName}`}
                     title={`Edit address for ${addr.fullName}`}
                   >
@@ -146,7 +146,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
                     type="button"
                     onClick={() => handleDelete(addr.id)}
                     disabled={deletingId === addr.id}
-                    className="p-1.5 rounded-lg md:hover:bg-red-50 transition-colors"
+                    className="p-1.5 rounded-lg min-[1025px]:hover:bg-red-50 transition-colors"
                     aria-label={`Delete address for ${addr.fullName}`}
                     title={`Delete address for ${addr.fullName}`}
                   >
@@ -170,7 +170,7 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
             <button
               type="button"
               onClick={resetForm}
-              className="p-1.5 rounded-lg md:hover:bg-secondary"
+              className="p-1.5 rounded-lg min-[1025px]:hover:bg-secondary"
               aria-label="Close address form"
               title="Close address form"
             >

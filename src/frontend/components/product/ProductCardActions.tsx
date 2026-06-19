@@ -116,7 +116,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           aria-label={wishlistActionLabel}
           title={wishlistActionLabel}
           onClick={handleWishlist}
-          className={cn('rounded-lg p-1.5 sm:transition-colors md:hover:bg-secondary', isWished && 'text-red-500')}
+          className={cn('rounded-lg p-1.5 sm:transition-colors min-[1025px]:hover:bg-secondary', isWished && 'text-red-500')}
         >
           <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
         </button>
@@ -141,9 +141,11 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           title={wishlistActionLabel}
           type="button"
           onClick={handleWishlist}
+          data-kind="wishlist"
+          data-active={isWished ? 'true' : undefined}
           className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-            isWished ? 'bg-red-50 text-red-500 md:hover:bg-red-500 md:hover:text-white' : 'bg-[hsl(var(--card)/0.94)]',
+            'product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            isWished ? 'bg-red-50 text-red-500' : 'bg-[hsl(var(--card)/0.94)]',
           )}
           aria-label={wishlistActionLabel}
         >
@@ -153,8 +155,10 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           type="button"
           onClick={handleCompare}
           disabled={checkingCompare}
+          data-kind="compare"
+          data-active={storedIsCompared ? 'true' : undefined}
           className={cn(
-            'flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] sm:transition-colors md:hover:bg-primary md:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60',
+            'product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60',
             storedIsCompared && 'bg-primary/10 text-primary',
           )}
           aria-label={compareActionLabel}

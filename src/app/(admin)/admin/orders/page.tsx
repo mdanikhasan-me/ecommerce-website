@@ -114,7 +114,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                   </td>
                 </tr>
               ) : orders.map((order) => (
-                <tr key={order.id} className="md:hover:bg-secondary/50 transition-colors">
+                <tr key={order.id} className="min-[1025px]:hover:bg-secondary/50 transition-colors">
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs font-semibold tracking-[0.04em]">{order.orderNumber}</span>
                     <p className="text-xs text-muted-foreground capitalize">{order.paymentMethod.replace('_', ' ')}</p>
@@ -137,7 +137,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     {formatDate(order.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/orders/${order.id}`} className="text-xs text-primary md:hover:underline font-medium">
+                    <Link href={`/admin/orders/${order.id}`} className="text-xs text-primary min-[1025px]:hover:underline font-medium">
                       View
                     </Link>
                   </td>

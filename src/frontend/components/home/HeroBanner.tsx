@@ -183,7 +183,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                   {banner.linkUrl ? (
                     <Link
                       href={banner.linkUrl}
-                      className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-4 py-2.5 text-xs font-semibold text-[#2d1b3d] transition-colors md:hover:bg-white sm:px-5 sm:text-sm"
+                      className="inline-flex items-center gap-2 rounded-full bg-[hsl(var(--buttermilk))] px-4 py-2.5 text-xs font-semibold text-[#2d1b3d] transition-colors min-[1025px]:hover:bg-white sm:px-5 sm:text-sm"
                     >
                       Explore collection
                       <LocalIcon name="chevron-right" className="h-4 w-4" />
@@ -201,7 +201,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Previous slide"
                 title="Previous slide"
                 onClick={prev}
-                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-colors md:hover:bg-black/30 sm:flex"
+                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-colors min-[1025px]:hover:bg-black/30 sm:flex"
               >
                 <LocalIcon name="arrow-left" className="h-5 w-5" />
               </button>
@@ -210,7 +210,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 aria-label="Next slide"
                 title="Next slide"
                 onClick={next}
-                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-colors md:hover:bg-black/30 sm:flex"
+                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/16 bg-black/20 text-white transition-colors min-[1025px]:hover:bg-black/30 sm:flex"
               >
                 <LocalIcon name="chevron-right" className="h-5 w-5" />
               </button>
@@ -227,7 +227,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                       'rounded-full transition-colors duration-150',
                       i === current
                         ? 'h-1.5 w-6 bg-[hsl(var(--buttermilk))] sm:h-2 sm:w-7'
-                        : 'h-1.5 w-1.5 bg-white/45 md:hover:bg-white/74 sm:h-2 sm:w-2'
+                        : 'h-1.5 w-1.5 bg-white/45 min-[1025px]:hover:bg-white/74 sm:h-2 sm:w-2'
                     )}
                   />
                 ))}

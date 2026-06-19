@@ -259,7 +259,7 @@ export default function ComparePage() {
                       onClick={() => removeProduct(product)}
                       aria-label={`Remove ${product.name} from compare`}
                       title="Remove from compare"
-                      className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors md:hover:border-destructive/30 md:hover:text-destructive"
+                      className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition-colors min-[1025px]:hover:border-destructive/30 min-[1025px]:hover:text-destructive"
                     >
                       <LocalIcon name="trash-2" className="h-4 w-4" />
                     </button>
@@ -284,7 +284,7 @@ export default function ComparePage() {
                       <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                         {product.category.name}
                       </p>
-                      <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors md:hover:text-primary">
+                      <h2 className="mt-1 line-clamp-2 text-[15px] font-semibold leading-5 text-foreground transition-colors min-[1025px]:hover:text-primary">
                         {product.name}
                       </h2>
                     </Link>
@@ -322,14 +322,14 @@ export default function ComparePage() {
                   <button
                     type="button"
                     onClick={() => addToCart(product)}
-                    className="store-add-to-cart-button flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-foreground/18 bg-transparent text-sm font-semibold text-foreground md:transition-colors md:hover:border-foreground/32 md:hover:bg-secondary/55"
+                    className="store-add-to-cart-button flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-foreground/18 bg-transparent text-sm font-semibold text-foreground md:transition-colors min-[1025px]:hover:border-foreground/32 min-[1025px]:hover:bg-secondary/55"
                   >
                     <LocalIcon name="cart" className="h-4 w-4" />
                     Add to cart
                   </button>
                   <Link
                     href={`/products/${product.slug}`}
-                    className="flex h-10 w-full items-center justify-center rounded-lg border border-border text-sm font-medium transition-colors md:hover:border-primary/40 md:hover:text-primary"
+                    className="flex h-10 w-full items-center justify-center rounded-lg border border-border text-sm font-medium transition-colors min-[1025px]:hover:border-primary/40 min-[1025px]:hover:text-primary"
                   >
                     View product
                   </Link>
@@ -384,7 +384,7 @@ function MobileCompareCard({
           onClick={onRemove}
           aria-label={`Remove ${product.name} from compare`}
           title="Remove from compare"
-          className="flex h-8 w-8 shrink-0 items-center justify-center self-start rounded-full border border-border text-muted-foreground transition-colors md:hover:border-destructive/30 md:hover:text-destructive"
+          className="flex h-8 w-8 shrink-0 items-center justify-center self-start rounded-full border border-border text-muted-foreground transition-colors min-[1025px]:hover:border-destructive/30 min-[1025px]:hover:text-destructive"
         >
           <LocalIcon name="trash-2" className="h-4 w-4" />
         </button>
@@ -410,14 +410,14 @@ function MobileCompareCard({
         <button
           type="button"
           onClick={onAdd}
-          className="store-add-to-cart-button flex h-10 items-center justify-center gap-2 rounded-lg border border-foreground/18 bg-transparent text-sm font-semibold text-foreground md:transition-colors md:hover:border-foreground/32 md:hover:bg-secondary/55"
+          className="store-add-to-cart-button flex h-10 items-center justify-center gap-2 rounded-lg border border-foreground/18 bg-transparent text-sm font-semibold text-foreground md:transition-colors min-[1025px]:hover:border-foreground/32 min-[1025px]:hover:bg-secondary/55"
         >
           <LocalIcon name="cart" className="h-4 w-4" />
           Add to cart
         </button>
         <Link
           href={`/products/${product.slug}`}
-          className="flex h-10 items-center justify-center rounded-lg border border-border text-sm font-medium transition-colors md:hover:border-primary/40 md:hover:text-primary"
+          className="flex h-10 items-center justify-center rounded-lg border border-border text-sm font-medium transition-colors min-[1025px]:hover:border-primary/40 min-[1025px]:hover:text-primary"
         >
           View product
         </Link>

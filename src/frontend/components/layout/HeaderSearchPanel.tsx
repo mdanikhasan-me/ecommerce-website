@@ -94,7 +94,7 @@ export function HeaderSearchPanel({
             <Link
               key={`${suggestion.type}-${suggestion.slug}`}
               href={suggestion.href}
-              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors md:hover:bg-secondary"
+              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors min-[1025px]:hover:bg-secondary"
               onClick={() => {
                 setShowSuggestions(false)
                 onClose?.()

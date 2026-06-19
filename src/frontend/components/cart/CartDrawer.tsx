@@ -70,7 +70,7 @@ export function CartDrawer() {
             aria-label="Close cart"
             title="Close cart"
             onClick={closeCart}
-            className="rounded-lg p-2 transition-colors md:hover:bg-secondary"
+            className="rounded-lg p-2 transition-colors min-[1025px]:hover:bg-secondary"
           >
             <LocalIcon name="close" className="h-5 w-5" />
           </button>
@@ -118,7 +118,7 @@ export function CartDrawer() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <Link href={`/products/${item.slug}`} onClick={closeCart}>
-                      <p className="line-clamp-2 text-sm font-medium transition-colors md:hover:text-primary">
+                      <p className="line-clamp-2 text-sm font-medium transition-colors min-[1025px]:hover:text-primary">
                         {item.name}
                       </p>
                     </Link>
@@ -133,7 +133,7 @@ export function CartDrawer() {
                           aria-label="Decrease quantity"
                           title="Decrease quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
-                          className="p-1.5 transition-colors md:hover:bg-secondary"
+                          className="p-1.5 transition-colors min-[1025px]:hover:bg-secondary"
                         >
                           <LocalIcon name="minus" className="h-3 w-3" />
                         </button>
@@ -144,7 +144,7 @@ export function CartDrawer() {
                           title="Increase quantity"
                           onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
                           disabled={item.quantity >= item.stockQuantity}
-                          className="p-1.5 transition-colors disabled:opacity-40 md:hover:bg-secondary"
+                          className="p-1.5 transition-colors disabled:opacity-40 min-[1025px]:hover:bg-secondary"
                         >
                           <LocalIcon name="plus" className="h-3 w-3" />
                         </button>
@@ -165,7 +165,7 @@ export function CartDrawer() {
                     aria-label={`Remove ${item.name}`}
                     title={`Remove ${item.name}`}
                     onClick={() => removeItem(item.productId, item.variantId)}
-                    className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors md:hover:bg-destructive/10 md:hover:text-destructive"
+                    className="h-fit rounded-lg p-1.5 text-muted-foreground transition-colors min-[1025px]:hover:bg-destructive/10 min-[1025px]:hover:text-destructive"
                   >
                     <LocalIcon name="trash-2" className="h-4 w-4" />
                   </button>

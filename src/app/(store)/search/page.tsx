@@ -203,11 +203,9 @@ export default async function SearchPage({ searchParams }: Props) {
             <MobileSearchFilters
               categories={categories}
               searchParams={params.queryParams}
-              sortOptions={SORT_OPTIONS}
-              currentSort={params.sort}
             />
-            <div className="ml-auto hidden items-center gap-2 lg:flex">
-              <span className="text-sm font-medium">Sort:</span>
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden text-xs font-medium min-[380px]:inline sm:text-sm">Sort:</span>
               <SortSelect current={params.sort} options={SORT_OPTIONS} />
             </div>
           </div>
@@ -263,7 +261,7 @@ function PaginationLink({ href, active, children }: { href: string; active?: boo
     <a
       href={href}
       className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-        active ? 'bg-primary text-white' : 'border border-border md:hover:bg-secondary'
+        active ? 'bg-primary text-white' : 'border border-border min-[1025px]:hover:bg-secondary'
       }`}
     >
       {children}

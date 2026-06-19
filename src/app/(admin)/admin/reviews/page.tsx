@@ -48,7 +48,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
           <a
             key={tab.value}
             href={`/admin/reviews?status=${tab.value}`}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${statusFilter === tab.value ? 'bg-background shadow-sm' : 'text-muted-foreground md:hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${statusFilter === tab.value ? 'bg-background shadow-sm' : 'text-muted-foreground min-[1025px]:hover:text-foreground'}`}
           >
             {tab.label}
             {tab.count > 0 && (
@@ -73,7 +73,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-medium text-sm">{review.user.name ?? review.user.email}</span>
                     <span className="text-muted-foreground text-xs">on</span>
-                    <a href={`/products/${review.product.slug}`} target="_blank" className="text-primary text-sm md:hover:underline truncate max-w-[200px]">
+                    <a href={`/products/${review.product.slug}`} target="_blank" className="text-primary text-sm min-[1025px]:hover:underline truncate max-w-[200px]">
                       {review.product.name}
                     </a>
                     <span className="text-xs text-muted-foreground">{formatDateRelative(review.createdAt)}</span>

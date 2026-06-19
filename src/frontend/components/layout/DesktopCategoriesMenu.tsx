@@ -44,7 +44,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
                     'group flex min-h-[2.75rem] items-center rounded-lg px-2.5 py-1.5 text-left text-[13px] font-medium transition-colors',
                     isSelected
                       ? 'bg-secondary/80 text-foreground shadow-[0_10px_24px_rgba(20,18,16,0.06)]'
-                      : 'text-foreground/78 md:hover:bg-secondary/45 md:hover:text-foreground'
+                      : 'text-foreground/78 min-[1025px]:hover:bg-secondary/45 min-[1025px]:hover:text-foreground'
                   )}
                 >
                   <button
@@ -64,7 +64,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
                     href={getCategoryHref(category.slug)}
                     data-testid={`desktop-category-rail-link-${category.slug}`}
                     aria-label={`Open ${category.name} category`}
-                    className="ml-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-foreground/40 transition-colors md:hover:bg-[#fff] md:hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    className="ml-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-foreground/40 transition-colors min-[1025px]:hover:bg-[#fff] min-[1025px]:hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                     onClick={onClose}
                   >
                     <LocalIcon
@@ -101,7 +101,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
                 key={sub.slug}
                 href={getCategoryHref(sub.slug)}
                 data-testid={`desktop-subcategory-tile-${sub.slug}`}
-                className="group flex min-h-[7.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-[#fff] px-3 py-4 text-center text-foreground transition-colors md:hover:border-black/20 md:hover:bg-secondary/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="group flex min-h-[7.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-[#fff] px-3 py-4 text-center text-foreground transition-colors min-[1025px]:hover:border-black/20 min-[1025px]:hover:bg-secondary/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 onClick={onClose}
               >
                 <LocalIcon name={sub.icon} className="h-8 w-8 text-foreground" />
@@ -113,7 +113,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
               data-testid={`desktop-subcategory-tile-view-all-${selectedDesktopCategory.slug}`}
               data-tile-kind="view-all"
               aria-label={getViewAllCategoryLabel(selectedDesktopCategory)}
-              className="group flex min-h-[7.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-[#fff] px-3 py-4 text-center text-foreground transition-colors md:hover:border-black/20 md:hover:bg-secondary/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="group flex min-h-[7.5rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-[#fff] px-3 py-4 text-center text-foreground transition-colors min-[1025px]:hover:border-black/20 min-[1025px]:hover:bg-secondary/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               onClick={onClose}
             >
               <LocalIcon name="subcategory-grid" className="h-8 w-8 text-foreground" />

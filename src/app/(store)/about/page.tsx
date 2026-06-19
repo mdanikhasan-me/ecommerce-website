@@ -154,7 +154,7 @@ export default function AboutPage() {
           </div>
           <Link
             href="/category"
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-foreground px-5 text-[0.8rem] font-bold text-background transition-colors md:hover:bg-foreground/90"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-foreground px-5 text-[0.8rem] font-bold text-background transition-colors min-[1025px]:hover:bg-foreground/90"
           >
             Browse categories
             <LocalIcon name="chevron-right" className="h-4 w-4" />
@@ -163,7 +163,7 @@ export default function AboutPage() {
 
         <Link
           href="/category"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 text-[0.9rem] font-bold text-background transition-colors md:hover:bg-foreground/90 lg:hidden"
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 text-[0.9rem] font-bold text-background transition-colors min-[1025px]:hover:bg-foreground/90 lg:hidden"
         >
           Browse categories
           <LocalIcon name="chevron-right" className="h-4 w-4" />
