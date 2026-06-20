@@ -35,6 +35,24 @@ const DEMO_PRODUCTS = [
         isPrimary: true,
         sortOrder: 0,
       },
+      {
+        url: '/assets/products/catalog/demo-air-jordan-1-retro-high/toe-detail.webp',
+        alt: 'Close up of the red perforated toe box and black shoe overlay',
+        isPrimary: false,
+        sortOrder: 1,
+      },
+      {
+        url: '/assets/products/catalog/demo-air-jordan-1-retro-high/lace-detail.webp',
+        alt: 'Close up of the black laces and stitched high-top shoe panels',
+        isPrimary: false,
+        sortOrder: 2,
+      },
+      {
+        url: '/assets/products/catalog/demo-air-jordan-1-retro-high/collar-detail.webp',
+        alt: 'Close up of the padded collar and red ankle panel',
+        isPrimary: false,
+        sortOrder: 3,
+      },
     ],
     variants: ['US 7', 'US 7.5', 'US 8', 'US 8.5', 'US 9', 'US 9.5', 'US 10', 'US 10.5', 'US 11', 'US 12'].map(
       (size, index) => ({
@@ -86,10 +104,28 @@ const DEMO_PRODUCTS = [
     isBestSeller: true,
     images: [
       {
-        url: '/assets/products/catalog/demo-mobile-phones-1/main.webp',
+        url: '/assets/products/catalog/demo-galaxy-s24-ultra-variant/main.webp',
         alt: 'Galaxy S24 Ultra 5G demo phone front and back',
         isPrimary: true,
         sortOrder: 0,
+      },
+      {
+        url: '/assets/products/catalog/demo-galaxy-s24-ultra-variant/camera-detail.webp',
+        alt: 'Close up of the Galaxy S24 Ultra rear camera system',
+        isPrimary: false,
+        sortOrder: 1,
+      },
+      {
+        url: '/assets/products/catalog/demo-galaxy-s24-ultra-variant/display-detail.webp',
+        alt: 'Close up of the Galaxy S24 Ultra display and slim frame',
+        isPrimary: false,
+        sortOrder: 2,
+      },
+      {
+        url: '/assets/products/catalog/demo-galaxy-s24-ultra-variant/stylus-detail.webp',
+        alt: 'Close up of the Galaxy S24 Ultra S Pen stylus',
+        isPrimary: false,
+        sortOrder: 3,
       },
     ],
     variants: [
@@ -103,7 +139,7 @@ const DEMO_PRODUCTS = [
       price: variant.price,
       salePrice: variant.salePrice,
       stockQuantity: variant.stock,
-      image: '/assets/products/catalog/demo-mobile-phones-1/main.webp',
+      image: '/assets/products/catalog/demo-galaxy-s24-ultra-variant/main.webp',
       isActive: true,
       sortOrder: index,
       options: [{ name: 'Memory', value: variant.label }],
