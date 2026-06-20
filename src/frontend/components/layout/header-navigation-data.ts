@@ -75,7 +75,7 @@ export type MobileMenuLink = {
 }
 
 export const MOBILE_SUPPORT_LINKS: MobileMenuLink[] = [
-  { label: 'Help Center', href: '/help', icon: 'life-buoy' },
+  { label: 'Help Center', href: '/help', icon: 'headset' },
   { label: 'Track Order', href: '/track-order', icon: 'package' },
   { label: 'Contact Us', href: '/contact', icon: 'mail' },
   { label: 'Returns', href: '/returns', icon: 'refresh-ccw' },

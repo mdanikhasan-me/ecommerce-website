@@ -408,6 +408,11 @@
     mask-image: url('/assets/icons/ui/grid-3x3.svg');
   }
 
+  .local-icon--headset {
+    -webkit-mask-image: url('/assets/icons/ui/headset.svg');
+    mask-image: url('/assets/icons/ui/headset.svg');
+  }
+
   .local-icon--heart {
     -webkit-mask-image: url('/assets/icons/ui/heart.svg');
     mask-image: url('/assets/icons/ui/heart.svg');
@@ -426,11 +431,6 @@
   .local-icon--layout-dashboard {
     -webkit-mask-image: url('/assets/icons/ui/layout-dashboard.svg');
     mask-image: url('/assets/icons/ui/layout-dashboard.svg');
-  }
-
-  .local-icon--life-buoy {
-    -webkit-mask-image: url('/assets/icons/ui/life-buoy.svg');
-    mask-image: url('/assets/icons/ui/life-buoy.svg');
   }
 
   .local-icon--log-out {

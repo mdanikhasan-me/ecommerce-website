@@ -9,7 +9,7 @@ export default function StoreLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen w-full min-w-0 max-w-full flex-col overflow-x-clip">
+    <div id="top" className="flex min-h-screen w-full min-w-0 max-w-full flex-col overflow-x-clip">
       <Header />
       <main className="w-full min-w-0 max-w-full flex-1">{children}</main>
       <Footer />
