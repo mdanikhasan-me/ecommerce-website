@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans, DM_Mono } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
 import { BRAND_ASSETS } from '@/shared/assets'
 import { getSiteUrl } from '@/backend/seo'
+import { DeferredToaster } from '@/frontend/components/ui/DeferredToaster'
 import './globals.css'
 
 // Body + titles: a clean, professional text sans. Reads like normal standard text; titles use the
@@ -82,31 +82,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://utfs.io" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://utfs.io" />
-      </head>
       <body className="font-sans antialiased bg-background text-foreground">
         {children}
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              fontFamily: 'var(--font-sans)',
-              borderRadius: '8px',
-              background: 'hsl(270 36% 18%)',
-              color: '#fff',
-              fontSize: '13px',
-              padding: '10px 16px',
-            },
-            success: {
-              iconTheme: { primary: 'hsl(164 36% 50%)', secondary: '#fff' },
-            },
-          }}
-        />
+        <DeferredToaster />
       </body>
     </html>
   )

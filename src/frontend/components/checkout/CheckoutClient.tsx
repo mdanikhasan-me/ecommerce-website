@@ -12,7 +12,7 @@ import { useCartStore, type CartCoupon, type CartItem } from '@/frontend/stores/
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, applyCoupon, cn } from '@/backend/utils'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 const CheckoutPaymentStep = dynamic(
   () => import('@/frontend/components/checkout/CheckoutPaymentStep').then((mod) => mod.CheckoutPaymentStep),

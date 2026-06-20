@@ -134,6 +134,22 @@
     background-clip: padding-box;
     box-shadow: none;
   }
+
+  [data-product-action="wishlist"][data-active="true"] {
+    color: rgb(239 68 68);
+  }
+
+  [data-product-action="wishlist"][data-active="true"] [data-wishlist-icon="outline"] {
+    display: none;
+  }
+
+  .wishlist-filled-icon {
+    display: none;
+  }
+
+  [data-product-action="wishlist"][data-active="true"] [data-wishlist-icon="filled"] {
+    display: inline-flex;
+  }
   @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
     .product-card:hover {
       border-color: hsl(var(--border) / 0.66);
@@ -789,6 +805,13 @@
     display: grid;
     gap: clamp(0.25rem, 0.55rem + 0.5vw, 1.1rem);
     padding-block-end: clamp(0.5rem, 0.9rem + 0.8vw, 2rem);
+  }
+
+  /* Preserve the exact layout while deferring below-fold layout and paint work. */
+  .storefront-home-stack > section,
+  .storefront-footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 48rem;
   }
 
   .product-section-rhythm {

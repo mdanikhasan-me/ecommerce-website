@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react'
-import Image from 'next/image'
+import { getImageProps } from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
@@ -13,6 +13,34 @@ interface Banner {
   imageUrl: string
   mobileImageUrl?: string | null
   linkUrl?: string | null
+}
+
+function BannerImage({
+  desktopSrc,
+  mobileSrc,
+  alt,
+  className,
+}: {
+  desktopSrc: string
+  mobileSrc?: string
+  alt: string
+  className: string
+}) {
+  const common = { alt, fill: true, quality: 90 as const, priority: true, sizes: '100vw' }
+  const { props: desktopProps } = getImageProps({ ...common, src: desktopSrc })
+
+  if (!mobileSrc || mobileSrc === desktopSrc) {
+    return <img {...desktopProps} alt={alt} className={className} />
+  }
+
+  const { props: mobileProps } = getImageProps({ ...common, src: mobileSrc })
+
+  return (
+    <picture>
+      <source media="(max-width: 639px)" srcSet={mobileProps.srcSet} sizes="100vw" />
+      <img {...desktopProps} alt={alt} className={className} />
+    </picture>
+  )
 }
 
 export function HeroBanner({ banners }: { banners: Banner[] }) {
@@ -125,35 +153,16 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
             touchStartY.current = null
           }}
         >
-          {hasSeparateMobileImage ? (
-            <Image
-              key={`${banner.id}-mobile`}
-              src={mobileImageUrl}
-              alt={title || 'Promotional banner'}
-              fill
-              priority
-              quality={90}
-              className={cn(
-                'object-cover transition-opacity duration-200 motion-reduce:transition-none sm:hidden',
-                isTransitioning ? 'opacity-0' : 'opacity-100'
-              )}
-              sizes="(max-width: 639px) 100vw, 0px"
-            />
-          ) : null}
           {hasFallbackImage ? (
-            <Image
-              key={`${banner.id}-desktop`}
-              src={fallbackImageUrl}
+            <BannerImage
+              key={banner.id}
+              desktopSrc={fallbackImageUrl}
+              mobileSrc={hasSeparateMobileImage ? mobileImageUrl : undefined}
               alt={title || 'Promotional banner'}
-              fill
-              priority={!hasSeparateMobileImage}
-              quality={90}
               className={cn(
-                hasSeparateMobileImage ? 'hidden sm:block' : 'block',
                 'object-cover transition-opacity duration-200 motion-reduce:transition-none',
                 isTransitioning ? 'opacity-0' : 'opacity-100'
               )}
-              sizes={hasSeparateMobileImage ? '(max-width: 639px) 0px, 100vw' : '100vw'}
             />
           ) : null}
 

@@ -3,7 +3,7 @@
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useState } from 'react'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 type CopyOrderNumberButtonProps = {
   orderNumber: string

@@ -1,14 +1,4 @@
-'use client'
-
-import type { MouseEvent } from 'react'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { useCartStore } from '@/frontend/stores/cart'
-import { useCompareStore } from '@/frontend/stores/compare'
-import { useWishlistStore } from '@/frontend/stores/wishlist'
-import { cn } from '@/backend/utils/cn'
 
 type ProductCardActionProduct = {
   id: string
@@ -28,103 +18,55 @@ type ProductCardActionsProps = {
   layout: 'grid' | 'list'
 }
 
-async function hasSignedInSession() {
-  const res = await fetch('/api/auth/session', {
-    cache: 'no-store',
-    credentials: 'same-origin',
-  })
-  if (!res.ok) return false
-  const session = await res.json().catch(() => null)
-  return Boolean(session?.user)
-}
-
-function getCurrentCallbackUrl() {
-  if (typeof window === 'undefined') return '/'
-  return `${window.location.pathname}${window.location.search}`
+function ProductActionIcons() {
+  return (
+    <>
+      <span data-wishlist-icon="outline" className="inline-flex">
+        <LocalIcon name="heart" className="h-4 w-4" />
+      </span>
+      <span data-wishlist-icon="filled" className="wishlist-filled-icon">
+        <LocalIcon name="heart-filled" className="h-4 w-4" />
+      </span>
+    </>
+  )
 }
 
 export function ProductCardActions({ product, inStock, layout }: ProductCardActionsProps) {
-  const router = useRouter()
-  const [checkingCompare, setCheckingCompare] = useState(false)
-  const addItem = useCartStore((state) => state.addItem)
-  const toggleWishlist = useWishlistStore((state) => state.toggle)
-  const isWished = useWishlistStore((state) => state.items.includes(product.id))
-  const addCompare = useCompareStore((state) => state.add)
-  const storedIsCompared = useCompareStore((state) => state.items.includes(product.id))
   const price = product.salePrice ?? product.basePrice
   const buyLabel = product.isPreOrder ? 'Pre-order' : 'Add to Cart'
-  const wishlistActionLabel = isWished ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`
-  const compareActionLabel = storedIsCompared ? `Open compare for ${product.name}` : `Compare ${product.name}`
   const addToCartActionLabel = product.isPreOrder ? `Pre-order ${product.name}` : `Add ${product.name} to cart`
-
-  const handleAddToCart = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    if (!inStock) return
-
-    addItem({
-      id: product.id,
-      productId: product.id,
-      name: product.name,
-      slug: product.slug,
-      price,
-      originalPrice: product.basePrice,
-      image: product.primaryImage ?? '',
-      stockQuantity: product.stockQuantity,
-      sku: product.sku,
-    })
-    toast.success('Added to cart')
-  }
-
-  const handleWishlist = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    toggleWishlist(product.id)
-    toast.success(isWished ? 'Removed from wishlist' : 'Added to wishlist')
-  }
-
-  const handleCompare = async (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
-    if (checkingCompare) return
-
-    setCheckingCompare(true)
-    const signedIn = await hasSignedInSession().catch(() => false)
-    setCheckingCompare(false)
-
-    if (!signedIn) {
-      toast.error('Please sign in before comparing products')
-      router.push(`/auth/login?callbackUrl=${encodeURIComponent(getCurrentCallbackUrl())}`)
-      return
-    }
-
-    if (storedIsCompared) {
-      router.push('/compare')
-      return
-    }
-
-    const success = addCompare(product.id)
-    if (!success) toast.error('Max 4 products for comparison')
-    else toast.success('Added to compare')
-  }
+  const productData = JSON.stringify({
+    id: product.id,
+    productId: product.id,
+    name: product.name,
+    slug: product.slug,
+    price,
+    originalPrice: product.basePrice,
+    image: product.primaryImage ?? '',
+    stockQuantity: product.stockQuantity,
+    sku: product.sku,
+  })
 
   if (layout === 'list') {
     return (
-      <div className="flex flex-col items-end justify-between gap-2">
+      <div className="flex flex-col items-end justify-between gap-2" data-product-actions data-product={productData}>
         <button
           type="button"
-          aria-label={wishlistActionLabel}
-          title={wishlistActionLabel}
-          onClick={handleWishlist}
-          className={cn('rounded-lg p-1.5 sm:transition-colors min-[1025px]:hover:bg-secondary', isWished && 'text-red-500')}
+          data-product-action="wishlist"
+          data-kind="wishlist"
+          data-product-id={product.id}
+          data-product-name={product.name}
+          aria-label={`Add ${product.name} to wishlist`}
+          title={`Add ${product.name} to wishlist`}
+          className="rounded-lg p-1.5 sm:transition-colors min-[1025px]:hover:bg-secondary"
         >
-          <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+          <ProductActionIcons />
         </button>
         <button
           type="button"
+          data-product-action="cart"
           aria-label={addToCartActionLabel}
           title={addToCartActionLabel}
-          onClick={handleAddToCart}
           disabled={!inStock}
           className="product-card-add-button inline-flex items-center justify-center rounded-full border border-foreground/18 bg-transparent px-3 py-1.5 text-xs font-semibold text-foreground/85 md:transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
@@ -135,44 +77,39 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
   }
 
   return (
-    <>
+    <div data-product-actions data-product={productData}>
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1 opacity-100 sm:gap-1.5">
         <button
-          title={wishlistActionLabel}
+          title={`Add ${product.name} to wishlist`}
           type="button"
-          onClick={handleWishlist}
+          data-product-action="wishlist"
           data-kind="wishlist"
-          data-active={isWished ? 'true' : undefined}
-          className={cn(
-            'product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-            isWished ? 'bg-red-50 text-red-500' : 'bg-[hsl(var(--card)/0.94)]',
-          )}
-          aria-label={wishlistActionLabel}
+          data-product-id={product.id}
+          data-product-name={product.name}
+          className="product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label={`Add ${product.name} to wishlist`}
         >
-          <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+          <ProductActionIcons />
         </button>
         <button
           type="button"
-          onClick={handleCompare}
-          disabled={checkingCompare}
+          data-product-action="compare"
           data-kind="compare"
-          data-active={storedIsCompared ? 'true' : undefined}
-          className={cn(
-            'product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60',
-            storedIsCompared && 'bg-primary/10 text-primary',
-          )}
-          aria-label={compareActionLabel}
-          title={compareActionLabel}
+          data-product-id={product.id}
+          data-product-name={product.name}
+          className="product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+          aria-label={`Compare ${product.name}`}
+          title={`Compare ${product.name}`}
         >
           <LocalIcon name="compare" className="h-4 w-4" />
         </button>
       </div>
 
-      {inStock && (
+      {inStock ? (
         <div className="bg-white px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-2.5">
           <button
             type="button"
-            onClick={handleAddToCart}
+            data-product-action="cart"
             aria-label={addToCartActionLabel}
             className="product-card-add-button flex h-10 w-full items-center justify-center gap-1.5 rounded-lg border border-foreground/16 bg-transparent text-xs font-semibold text-foreground/88 md:transition-colors sm:h-11 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
           >
@@ -180,7 +117,7 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
             {buyLabel}
           </button>
         </div>
-      )}
-    </>
+      ) : null}
+    </div>
   )
 }

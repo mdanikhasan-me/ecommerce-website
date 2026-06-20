@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 const NOTIFICATION_TYPES = ['ORDER', 'REVIEW', 'PROMOTION', 'SYSTEM', 'SELLER'] as const
 const RECIPIENT_TYPES = ['ALL', 'CUSTOMERS', 'USER'] as const

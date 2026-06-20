@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore } from '@/frontend/stores/cart'
 import { useCompareStore } from '@/frontend/stores/compare'
 import { useWishlistStore } from '@/frontend/stores/wishlist'
 import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
 import type { ProductDetailData, VariantData } from '@/backend/types'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
+import { useClientSession } from '@/frontend/hooks/useClientSession'
 
 type ProductDetailClientData = Omit<
   ProductDetailData,
@@ -125,7 +125,7 @@ function ProductStars({ rating, className }: { rating: number; className?: strin
 
 export function ProductDetailClient({ product }: { product: ProductDetailClientData }) {
   const router = useRouter()
-  const { status: sessionStatus } = useSession()
+  const { status: sessionStatus } = useClientSession()
   const galleryTouchStartRef = useRef<{ x: number; y: number } | null>(null)
   const [isHydrated, setIsHydrated] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)

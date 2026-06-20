@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useCartStore } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, applyCoupon } from '@/backend/utils'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 export default function CartPage() {
   const {

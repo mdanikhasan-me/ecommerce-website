@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { PAYMENT_GATEWAYS } from '@/backend/config/payment'
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 const PAYMENT_LOGO_CLASSES: Record<string, string> = {
   'Cash on Delivery': 'h-4 w-auto max-w-[3.5rem]',

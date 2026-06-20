@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 import type { AdminUserDetail } from '@/backend/admin/user-editor'
 
 interface UserManagementFormProps {

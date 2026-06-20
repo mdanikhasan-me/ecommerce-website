@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { cn } from '@/backend/utils'
 import { HeaderAvatar } from '@/frontend/components/layout/HeaderAvatar'
@@ -12,6 +11,7 @@ import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { AriaExpandedButton } from '@/frontend/components/ui/AriaExpandedButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore } from '@/frontend/stores/cart'
+import { useClientSession } from '@/frontend/hooks/useClientSession'
 
 const HeaderSearchPanel = dynamic(
   () => import('@/frontend/components/layout/HeaderSearchPanel').then((mod) => mod.HeaderSearchPanel),
@@ -56,9 +56,12 @@ export function Header() {
   const [isMobileAccountVisible, setIsMobileAccountVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const { data: session, status: sessionStatus } = useSession()
+  const { data: session, status: sessionStatus } = useClientSession()
   const [lastAuthenticatedSession, setLastAuthenticatedSession] = useState<Session | null>(null)
-  const { getItemCount, openCart } = useCartStore()
+  const storedCartCount = useCartStore((state) =>
+    state.items.reduce((total, item) => total + item.quantity, 0)
+  )
+  const openCart = useCartStore((state) => state.openCart)
   const searchButtonRef = useRef<HTMLButtonElement>(null)
   const mobileSearchButtonRef = useRef<HTMLButtonElement>(null)
   const categoriesRootRef = useRef<HTMLDivElement>(null)
@@ -69,7 +72,7 @@ export function Header() {
   const mobileAccountButtonRef = useRef<HTMLButtonElement>(null)
   const mobileAccountFrameRef = useRef<number | null>(null)
   const mobileAccountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const cartCount = mounted ? getItemCount() : 0
+  const cartCount = mounted ? storedCartCount : 0
   const activeSession = session ?? (sessionStatus === 'loading' ? lastAuthenticatedSession : null)
   const isSessionLoading = sessionStatus === 'loading' && !activeSession
 

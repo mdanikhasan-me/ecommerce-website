@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatDateRelative, cn } from '@/backend/utils'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
+import { useClientSession } from '@/frontend/hooks/useClientSession'
 
 interface Review {
   id: string; rating: number; title?: string | null; body: string; images: string[];
@@ -53,7 +53,7 @@ function StarBar({ count, total, star }: { count: number; total: number; star: n
 
 export function ReviewSection({ product, reviews, distribution, reviewAccess }: Props) {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session } = useClientSession()
   const [currentReviewAccess, setCurrentReviewAccess] = useState(reviewAccess)
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)

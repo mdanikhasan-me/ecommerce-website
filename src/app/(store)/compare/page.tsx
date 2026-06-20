@@ -4,12 +4,12 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 import { useCartStore } from '@/frontend/stores/cart'
 import { useCompareStore } from '@/frontend/stores/compare'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { calculateDiscount, cn, formatPrice } from '@/backend/utils'
+import { useClientSession } from '@/frontend/hooks/useClientSession'
 
 type CompareProduct = {
   id: string
@@ -116,7 +116,7 @@ const ATTRIBUTES: Attribute[] = [
 
 export default function ComparePage() {
   const router = useRouter()
-  const { status: sessionStatus } = useSession()
+  const { status: sessionStatus } = useClientSession()
   const { items, remove, clear } = useCompareStore()
   const { addItem } = useCartStore()
   const [isHydrated, setIsHydrated] = useState(false)

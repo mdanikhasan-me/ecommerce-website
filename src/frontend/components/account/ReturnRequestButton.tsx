@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 
 type ReturnRequestButtonProps = {
   orderId: string

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Save, Loader2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import toast from '@/frontend/lib/toast'
 import { ariaPressed } from '@/frontend/components/ui/aria'
 
 const SETTINGS_GROUPS = [

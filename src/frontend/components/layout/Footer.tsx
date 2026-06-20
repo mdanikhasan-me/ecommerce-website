@@ -101,7 +101,7 @@ const BOTTOM_LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-black/8 bg-[#f6f7f9] text-foreground">
+    <footer className="storefront-footer border-t border-black/8 bg-[#f6f7f9] text-foreground">
       <div className="container-site">
         <div className="w-full pb-3.5 pt-2 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
@@ -294,7 +294,7 @@ export function Footer() {
                     alt={method.alt}
                     width={method.width}
                     height={method.height}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                     className={`${method.className} block w-auto object-contain`}
                   />
@@ -385,7 +385,7 @@ export function Footer() {
                     alt={method.alt}
                     width={method.width}
                     height={method.height}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                     className={`${method.className} block w-auto origin-left object-contain`}
                   />
@@ -409,7 +409,7 @@ export function Footer() {
                   alt={method.alt}
                   width={method.width}
                   height={method.height}
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
                   className={`${method.className} block w-auto object-contain`}
                 />

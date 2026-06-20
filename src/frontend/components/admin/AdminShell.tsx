@@ -64,14 +64,14 @@ export function AdminShell({ user, unreadCount, children }: AdminShellProps) {
             type="button"
             aria-label="Close admin menu"
             className={cn(
-              'absolute inset-0 bg-[rgba(18,15,20,0.45)] transition-opacity duration-[180ms] ease-out',
+              'absolute inset-0 bg-[rgba(18,15,20,0.45)] transition-opacity [transition-duration:180ms] ease-out',
               isMenuVisible ? 'opacity-100' : 'opacity-0',
             )}
             onClick={closeMenu}
           />
           <div
             className={cn(
-              'absolute inset-y-0 left-0 flex w-[18rem] max-w-[84vw] flex-col shadow-[24px_0_56px_rgba(18,15,20,0.30)] transition-transform duration-[190ms] ease-out will-change-transform',
+              'absolute inset-y-0 left-0 flex w-[18rem] max-w-[84vw] flex-col shadow-[24px_0_56px_rgba(18,15,20,0.30)] transition-transform [transition-duration:190ms] ease-out will-change-transform',
               isMenuVisible ? 'translate-x-0' : '-translate-x-full',
             )}
           >
