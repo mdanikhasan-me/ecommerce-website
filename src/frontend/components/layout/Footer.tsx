@@ -54,6 +54,7 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   {
     title: 'Support',
     links: [
+      { label: 'About Us', href: '/about' },
       { label: 'Help center', href: '/help' },
       { label: 'Track order', href: '/track-order' },
       { label: 'Shipping', href: '/shipping' },
@@ -83,6 +84,7 @@ const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/account': 'settings',
   '/account/orders': 'receipt-text',
   '/wishlist': 'heart',
+  '/about': 'message-circle',
   '/help': 'help-circle',
   '/track-order': 'truck',
   '/shipping': 'package',
@@ -120,7 +122,7 @@ const BOTTOM_LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="storefront-footer border-t border-black/8 bg-[#f6f7f9] text-foreground">
+    <footer className="storefront-footer border-t border-black/8 bg-[#f0eef3] text-foreground">
       <div className="container-site">
         <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
