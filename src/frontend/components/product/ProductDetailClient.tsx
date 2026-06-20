@@ -303,7 +303,12 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     <div className="min-w-0 max-w-full overflow-x-hidden pb-3 md:overflow-visible md:pb-0">
       <div className="grid min-w-0 gap-5 min-[980px]:grid-cols-[minmax(0,1.08fr)_minmax(24rem,0.92fr)] min-[1280px]:gap-7">
         <section className="min-w-0 rounded-[1.35rem] bg-background">
-          <div className="grid gap-3 rounded-[1.35rem] border border-border/70 bg-background p-2.5 sm:p-3 min-[768px]:grid-cols-[5.4rem_minmax(0,1fr)] min-[768px]:p-4">
+          <div
+            className={cn(
+              'grid gap-3 rounded-[1.35rem] border border-border/70 bg-background p-2.5 sm:p-3 min-[768px]:p-4',
+              galleryImages.length > 1 && 'min-[768px]:grid-cols-[5.4rem_minmax(0,1fr)]',
+            )}
+          >
             {galleryImages.length > 1 && (
               <div className="hidden min-[768px]:flex min-[768px]:flex-col min-[768px]:gap-3">
                 {galleryImages.map((img, index) => (
@@ -385,7 +390,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           </div>
 
           {galleryImages.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto rounded-[1.15rem] border border-border/70 bg-background p-2 [scroll-snap-type:x_mandatory] min-[768px]:hidden">
+            <div className="mt-3 flex gap-2 overflow-x-auto px-1 pb-1 [scroll-snap-type:x_mandatory] min-[768px]:hidden">
               {galleryImages.map((img, index) => (
                 <button
                   type="button"
