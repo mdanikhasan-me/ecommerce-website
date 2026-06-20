@@ -41,6 +41,7 @@
     --input: 36 18% 82%;
     --ring: 270 36% 18%;
     --buttermilk: 39 28% 92%;
+    --footer-surface: 220 10% 95%;
     --footer-heading: 38 24% 93%;
     --footer-link: 31 15% 80%;
     --footer-muted: 28 9% 70%;
@@ -809,6 +810,10 @@
     display: grid;
     gap: clamp(0.25rem, 0.55rem + 0.5vw, 1.1rem);
     padding-block-end: clamp(0.5rem, 0.9rem + 0.8vw, 2rem);
+  }
+
+  .storefront-footer {
+    background-color: hsl(var(--footer-surface));
   }
 
   /* Desktop-only paint deferral. Block-size containment avoids Safari widening the page. */

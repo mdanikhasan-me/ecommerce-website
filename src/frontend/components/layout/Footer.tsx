@@ -122,7 +122,7 @@ const BOTTOM_LEGAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="storefront-footer border-t border-black/8 bg-[#f0eef3] text-foreground">
+    <footer className="storefront-footer border-t border-black/8 text-foreground">
       <div className="container-site">
         <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
