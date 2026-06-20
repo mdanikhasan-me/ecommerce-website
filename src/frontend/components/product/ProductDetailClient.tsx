@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -126,6 +126,7 @@ function ProductStars({ rating, className }: { rating: number; className?: strin
 export function ProductDetailClient({ product }: { product: ProductDetailClientData }) {
   const router = useRouter()
   const { status: sessionStatus } = useSession()
+  const galleryTouchStartRef = useRef<{ x: number; y: number } | null>(null)
   const [isHydrated, setIsHydrated] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
@@ -262,6 +263,33 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
   }
 
+  const handleGalleryTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (galleryImages.length <= 1) return
+
+    const touch = event.touches[0]
+    galleryTouchStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handleGalleryTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (galleryImages.length <= 1 || !galleryTouchStartRef.current) return
+
+    const touch = event.changedTouches[0]
+    const deltaX = touch.clientX - galleryTouchStartRef.current.x
+    const deltaY = touch.clientY - galleryTouchStartRef.current.y
+    galleryTouchStartRef.current = null
+
+    const horizontalDistance = Math.abs(deltaX)
+    const verticalDistance = Math.abs(deltaY)
+    if (horizontalDistance < 44 || horizontalDistance < verticalDistance * 1.15) return
+
+    setSelectedImage((current) => {
+      const lastIndex = galleryImages.length - 1
+      return deltaX < 0
+        ? current >= lastIndex ? 0 : current + 1
+        : current <= 0 ? lastIndex : current - 1
+    })
+  }
+
   const variantGroups: Record<string, VariantGroupOption[]> = {}
   for (const variant of product.variants) {
     for (const opt of variant.options) {
@@ -336,7 +364,14 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               </div>
             )}
 
-            <div className="relative flex min-h-[18rem] items-center justify-center overflow-hidden rounded-[1.15rem] bg-background sm:min-h-[24rem] min-[768px]:min-h-[34rem] min-[1280px]:min-h-[42rem]">
+            <div
+              className="relative flex min-h-[18rem] touch-pan-y items-center justify-center overflow-hidden rounded-[1.15rem] bg-background sm:min-h-[24rem] min-[768px]:min-h-[34rem] min-[1280px]:min-h-[42rem]"
+              onTouchStart={handleGalleryTouchStart}
+              onTouchEnd={handleGalleryTouchEnd}
+              onTouchCancel={() => {
+                galleryTouchStartRef.current = null
+              }}
+            >
               {hasGallery && activeImage ? (
                 <Image
                   src={activeImage.url}
