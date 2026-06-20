@@ -253,22 +253,6 @@ export default async function ProductPage({ params }: Props) {
 
       <ProductDetailClient product={product} />
 
-      {product.specifications.length > 0 ? (
-        <div className="mt-8 overflow-hidden rounded-2xl border border-border sm:mt-10">
-          <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
-            <h3 className="font-display text-lg font-semibold">Specifications</h3>
-          </div>
-          <div className="divide-y divide-border">
-            {product.specifications.map((specification, index) => (
-              <div key={index} className="grid gap-1 px-4 py-3 text-sm sm:grid-cols-[minmax(8rem,0.42fr)_1fr] sm:px-6">
-                <span className="font-medium text-muted-foreground">{specification.name}</span>
-                <span>{specification.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <Suspense fallback={<ReviewsFallback />}>
         <ProductReviewsSection
           productId={product.id}

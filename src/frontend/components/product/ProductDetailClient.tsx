@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -13,7 +13,11 @@ import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/ut
 import type { ProductDetailData, VariantData } from '@/backend/types'
 import toast from 'react-hot-toast'
 
-type ProductDetailClientData = Omit<ProductDetailData, 'attributes' | 'specifications' | 'reviews'> & {
+type ProductDetailClientData = Omit<
+  ProductDetailData,
+  'attributes' | 'specifications' | 'reviews' | 'images'
+> & {
+  images: Array<{ url: string; alt?: string | null; isPrimary: boolean; sortOrder?: number }>
   attributes: Array<{ id?: string; name: string; value: string }>
   specifications: Array<{ group?: string | null; name: string; value: string; sortOrder?: number }>
 }
@@ -26,6 +30,7 @@ type VariantGroupOption = {
 const VIEW_TRACKING_STORAGE_KEY = 'boilabin_viewed_products_v1'
 const VIEW_TRACKING_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const MAX_STORED_PRODUCT_VIEWS = 120
+const STARS = [1, 2, 3, 4, 5]
 
 function getStoredProductViews(now: number) {
   try {
@@ -96,6 +101,28 @@ async function copyTextToClipboard(text: string) {
   }
 }
 
+function compactVariantLabel(value: string) {
+  return value
+    .replace(/\s+RAM\s*\/\s*/i, '/')
+    .replace(/\s+Storage/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function ProductStars({ rating, className }: { rating: number; className?: string }) {
+  return (
+    <div className={cn('flex items-center gap-0.5', className)}>
+      {STARS.map((star) => (
+        <LocalIcon
+          key={star}
+          name={star <= Math.round(rating) ? 'star-filled' : 'star'}
+          className={cn('h-4 w-4', star <= Math.round(rating) ? 'star-filled' : 'star-empty')}
+        />
+      ))}
+    </div>
+  )
+}
+
 export function ProductDetailClient({ product }: { product: ProductDetailClientData }) {
   const router = useRouter()
   const { status: sessionStatus } = useSession()
@@ -103,11 +130,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
   const [quantity, setQuantity] = useState(1)
-  const [isZoomed, setIsZoomed] = useState(false)
-  const zoomFrameRef = useRef<HTMLDivElement | null>(null)
-  const zoomOriginFrameRef = useRef<number | null>(null)
-  const pendingZoomOriginRef = useRef<string | null>(null)
-  const hasTrackedViewRef = useRef(false)
+  const hasGallery = product.images.length > 0
 
   const { addItem } = useCartStore()
   const { toggle, has } = useWishlistStore()
@@ -122,24 +145,17 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   const isWished = isHydrated && has(product.id)
   const isCompared = sessionStatus === 'authenticated' && isHydrated && hasCompare(product.id)
   const galleryImages = product.images
+  const activeImage = galleryImages[selectedImage] ?? galleryImages[0]
+  const selectedImageUrl = activeImage?.url ?? ''
+  const savings = Math.max(originalPrice - price, 0)
 
   useEffect(() => {
     setIsHydrated(true)
   }, [])
 
   useEffect(() => {
-    return () => {
-      if (zoomOriginFrameRef.current !== null) {
-        window.cancelAnimationFrame(zoomOriginFrameRef.current)
-      }
-    }
-  }, [])
+    if (hasTrackedViewRef(product.id)) return
 
-  useEffect(() => {
-    if (hasTrackedViewRef.current) return
-    if (hasRecentProductView(product.id)) return
-
-    hasTrackedViewRef.current = true
     fetch(`/api/products/${product.id}/view`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -147,7 +163,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     })
       .then(() => markProductView(product.id))
       .catch(() => {
-        hasTrackedViewRef.current = false
+        clearProductViewAttempt(product.id)
       })
   }, [product.id])
 
@@ -172,7 +188,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
       slug: product.slug,
       price,
       originalPrice,
-      image: galleryImages[selectedImage]?.url ?? galleryImages[0]?.url ?? '',
+      image: selectedImageUrl,
       stockQuantity: stock,
       sku: selectedVariant?.sku ?? product.sku,
       variantName: selectedVariant?.name,
@@ -221,38 +237,29 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     }
   }
 
-  const requireCompareSignIn = () => {
-    toast.error('Please sign in before comparing products')
-    const callbackUrl = typeof window !== 'undefined'
-      ? `${window.location.pathname}${window.location.search}`
-      : `/products/${product.slug}`
-    router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
+  const handleWishlist = () => {
+    const currentlyWished = has(product.id)
+    toggle(product.id)
+    toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
   }
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
-    pendingZoomOriginRef.current = `${x}% ${y}%`
-
-    if (zoomOriginFrameRef.current !== null) return
-
-    zoomOriginFrameRef.current = window.requestAnimationFrame(() => {
-      if (pendingZoomOriginRef.current) {
-        zoomFrameRef.current?.style.setProperty('--zoom-origin', pendingZoomOriginRef.current)
-      }
-      pendingZoomOriginRef.current = null
-      zoomOriginFrameRef.current = null
-    })
-  }
-
-  const handleMouseLeave = () => {
-    setIsZoomed(false)
-    pendingZoomOriginRef.current = null
-    if (zoomOriginFrameRef.current !== null) {
-      window.cancelAnimationFrame(zoomOriginFrameRef.current)
-      zoomOriginFrameRef.current = null
+  const handleCompare = () => {
+    if (sessionStatus !== 'authenticated') {
+      toast.error('Please sign in before comparing products')
+      const callbackUrl = typeof window !== 'undefined'
+        ? `${window.location.pathname}${window.location.search}`
+        : `/products/${product.slug}`
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
+      return
     }
+
+    if (isCompared) {
+      router.push('/compare')
+      return
+    }
+
+    const ok = addCompare(product.id)
+    toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
   }
 
   const variantGroups: Record<string, VariantGroupOption[]> = {}
@@ -263,195 +270,260 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
     }
   }
 
+  const renderActionButtons = (compact = false) => (
+    <div className={cn('grid gap-2', compact ? 'grid-cols-2' : 'grid-cols-1 min-[1160px]:grid-cols-2')}>
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        disabled={!inStock}
+        className={cn(
+          'store-add-to-cart-button flex items-center justify-center gap-2 rounded-xl border border-foreground/25 bg-background font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50',
+          compact ? 'h-12 text-sm' : 'h-12 text-[15px] min-[1025px]:hover:border-foreground/40',
+        )}
+      >
+        <LocalIcon name="shopping-bag" className="h-[18px] w-[18px]" />
+        {isPreOrder ? 'Pre-order' : 'Add to Cart'}
+      </button>
+      <button
+        type="button"
+        onClick={handleBuyNow}
+        disabled={!inStock}
+        className={cn(
+          'flex items-center justify-center gap-2 rounded-xl bg-foreground font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50',
+          compact ? 'h-12 text-sm' : 'h-12 text-[15px] min-[1025px]:hover:bg-foreground/90',
+        )}
+      >
+        {isPreOrder ? 'Pre-order Now' : 'Buy Now'}
+        {!compact && <LocalIcon name="arrow-right" className="h-[18px] w-[18px]" />}
+      </button>
+    </div>
+  )
+
   return (
-    <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(26rem,0.92fr)_minmax(30rem,1.08fr)] xl:items-start xl:gap-9">
-      <div className="mx-auto flex w-full max-w-[42rem] flex-col gap-2.5 xl:mx-0 xl:max-w-none">
-        <div
-          ref={zoomFrameRef}
-          className="relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-[1.35rem] bg-secondary md:rounded-2xl"
-          onMouseEnter={() => {
-            zoomFrameRef.current?.style.setProperty('--zoom-origin', '50% 50%')
-            setIsZoomed(true)
-          }}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
-        >
-          {galleryImages[selectedImage] && (
-            <Image
-              src={galleryImages[selectedImage].url}
-              alt={product.name}
-              fill
-              priority
-              quality={90}
-              className={cn('zoom-image object-contain', isZoomed && 'scale-[2]')}
-              sizes="(max-width: 1279px) 100vw, 50vw"
-            />
-          )}
-
-          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-            {discount > 0 && <span className="badge-sale px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">{discount}% off</span>}
-            {product.isNew && <span className="badge-new px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">New</span>}
-            {product.isBestSeller && <span className="badge-bestseller px-2 py-0.5 text-[11px] sm:px-2.5 sm:py-1 sm:text-xs">Best Seller</span>}
-          </div>
-        </div>
-
-        {galleryImages.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory]">
-            {galleryImages.map((img, i) => (
-              <button
-                type="button"
-                key={i}
-                aria-label={`View image ${i + 1}`}
-                title={`View image ${i + 1}`}
-                onClick={() => setSelectedImage(i)}
-                className={cn(
-                  'relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-colors [scroll-snap-align:start] sm:h-16 sm:w-16',
-                  selectedImage === i ? 'border-primary' : 'border-border min-[1025px]:hover:border-primary/50'
-                )}
-              >
-                <Image
-                  src={img.url}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  quality={75}
-                  sizes="64px"
-                />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-4 md:rounded-[1.35rem] md:border md:border-border/80 md:bg-card/80 md:p-4 md:shadow-[0_12px_30px_rgba(23,18,15,0.035)] lg:p-5">
-        <div>
-          <h1 className="font-display text-[1.72rem] font-bold leading-[1.08] sm:text-2xl lg:text-3xl">
-            {product.name}
-          </h1>
-
-          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <LocalIcon
-                  key={s}
-                  name={s <= Math.round(product.rating) ? 'star-filled' : 'star'}
-                  className={cn('h-4 w-4', s <= Math.round(product.rating) ? 'star-filled' : 'star-empty')}
-                />
-              ))}
-            </div>
-            <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
-            <a href="#reviews" className="text-sm text-muted-foreground transition-colors min-[1025px]:hover:text-primary">
-              {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
-            </a>
-            {product.soldCount > 0 && (
-              <span className="text-sm text-muted-foreground">{product.soldCount} sold</span>
+    <div className="min-w-0 max-w-full overflow-x-hidden pb-3 md:overflow-visible md:pb-0">
+      <div className="grid min-w-0 gap-5 min-[980px]:grid-cols-[minmax(0,1.08fr)_minmax(24rem,0.92fr)] min-[1280px]:gap-7">
+        <section className="min-w-0 rounded-[1.35rem] bg-background">
+          <div className="grid gap-3 rounded-[1.35rem] border border-border/70 bg-background p-2.5 sm:p-3 min-[768px]:grid-cols-[5.4rem_minmax(0,1fr)] min-[768px]:p-4">
+            {galleryImages.length > 1 && (
+              <div className="hidden min-[768px]:flex min-[768px]:flex-col min-[768px]:gap-3">
+                {galleryImages.map((img, index) => (
+                  <button
+                    type="button"
+                    key={img.url}
+                    aria-label={`View image ${index + 1}`}
+                    title={`View image ${index + 1}`}
+                    onClick={() => setSelectedImage(index)}
+                    className={cn(
+                      'relative aspect-square overflow-hidden rounded-xl border bg-background',
+                      selectedImage === index ? 'border-foreground' : 'border-border/65',
+                    )}
+                  >
+                    <Image
+                      src={img.url}
+                      alt=""
+                      fill
+                      className="object-contain p-1"
+                      quality={75}
+                      sizes="86px"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
-          </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border py-3.5">
-          <span className="whitespace-nowrap font-display text-[1.9rem] font-bold leading-none sm:text-3xl">{formatPrice(price)}</span>
-          {discount > 0 && (
-            <>
-              <span className="whitespace-nowrap text-base text-muted-foreground line-through sm:text-lg">{formatPrice(originalPrice)}</span>
-              <span className="badge-sale px-2.5 py-1 text-xs sm:text-sm">Save {formatPrice(originalPrice - price)}</span>
-            </>
-          )}
-        </div>
-
-        {product.shortDescription && (
-          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{product.shortDescription}</p>
-        )}
-
-        {Object.entries(variantGroups).map(([groupName, opts]) => (
-          <div key={groupName}>
-            <p className="mb-2 text-sm font-semibold">
-              {groupName}:
-              {selectedVariant && (
-                <span className="ml-1 font-normal text-muted-foreground">
-                  {selectedVariant.options.find((o) => o.name === groupName)?.value}
-                </span>
+            <div className="relative flex min-h-[18rem] items-center justify-center overflow-hidden rounded-[1.15rem] bg-background sm:min-h-[24rem] min-[768px]:min-h-[34rem] min-[1280px]:min-h-[42rem]">
+              {hasGallery && activeImage ? (
+                <Image
+                  src={activeImage.url}
+                  alt={activeImage.alt || product.name}
+                  fill
+                  priority
+                  quality={90}
+                  className="object-contain p-3 sm:p-5 min-[768px]:p-7"
+                  sizes="(max-width: 767px) 100vw, (max-width: 979px) 80vw, 50vw"
+                />
+              ) : (
+                <div className="text-sm text-muted-foreground">No product image</div>
               )}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {opts.map(({ value, variant }) => (
+
+              <div className="absolute left-3 top-3 flex flex-col gap-1.5 min-[768px]:hidden">
+                {discount > 0 && <span className="badge-sale px-2 py-0.5 text-[11px]">{discount}% off</span>}
+                {product.isNew && <span className="badge-new px-2 py-0.5 text-[11px]">New</span>}
+                {product.isBestSeller && <span className="badge-bestseller px-2 py-0.5 text-[11px]">Best Seller</span>}
+              </div>
+
+              {selectedImageUrl && (
+                <a
+                  href={selectedImageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Open product image"
+                  title="Open product image"
+                  className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background text-foreground min-[1025px]:hover:border-foreground/35"
+                >
+                  <LocalIcon name="eye" className="h-4 w-4" />
+                </a>
+              )}
+
+              {galleryImages.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 min-[768px]:hidden">
+                  {galleryImages.map((img, index) => (
+                    <button
+                      type="button"
+                      key={`dot-${img.url}`}
+                      aria-label={`View image ${index + 1}`}
+                      onClick={() => setSelectedImage(index)}
+                      className={cn(
+                        'h-2 w-2 rounded-full border border-background',
+                        selectedImage === index ? 'bg-foreground' : 'bg-border',
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {galleryImages.length > 1 && (
+            <div className="mt-3 flex gap-2 overflow-x-auto rounded-[1.15rem] border border-border/70 bg-background p-2 [scroll-snap-type:x_mandatory] min-[768px]:hidden">
+              {galleryImages.map((img, index) => (
                 <button
                   type="button"
-                  key={value}
-                  onClick={() => setSelectedVariant(variant)}
+                  key={`mobile-${img.url}`}
+                  aria-label={`View image ${index + 1}`}
+                  title={`View image ${index + 1}`}
+                  onClick={() => setSelectedImage(index)}
                   className={cn(
-                    'rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors sm:px-4 sm:py-2',
-                    selectedVariant?.id === variant.id
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-border min-[1025px]:hover:border-primary/50'
+                    'relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl border bg-background [scroll-snap-align:start]',
+                    selectedImage === index ? 'border-foreground' : 'border-border/65',
                   )}
                 >
-                  {value}
+                  <Image src={img.url} alt="" fill className="object-contain p-1" quality={75} sizes="80px" />
                 </button>
               ))}
             </div>
-          </div>
-        ))}
+          )}
+        </section>
 
-        <div>
-          <p className="mb-2 text-sm font-semibold">Quantity</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center overflow-hidden rounded-xl border border-border">
-              <button
-                type="button"
-                aria-label="Decrease quantity"
-                title="Decrease quantity"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="p-2.5 transition-colors min-[1025px]:hover:bg-secondary"
-              >
-                <LocalIcon name="minus" className="h-4 w-4" />
-              </button>
-              <span className="w-12 text-center text-sm font-semibold">{quantity}</span>
-              <button
-                type="button"
-                aria-label="Increase quantity"
-                title="Increase quantity"
-                onClick={() => setQuantity(Math.min(stock, quantity + 1))}
-                className="p-2.5 transition-colors min-[1025px]:hover:bg-secondary"
-              >
-                <LocalIcon name="plus" className="h-4 w-4" />
-              </button>
+        <section className="min-w-0 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background p-4 sm:p-5 min-[1280px]:p-6">
+          <div className="flex min-w-0 flex-col gap-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="font-display text-[1.9rem] font-bold leading-[1.08] sm:text-3xl min-[1280px]:text-[2rem]">
+                {product.name}
+              </h1>
+
+              <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <ProductStars rating={product.rating} />
+                <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
+                <a href="#reviews" className="text-sm text-muted-foreground min-[1025px]:hover:text-foreground">
+                  {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
+                </a>
+                {product.soldCount > 0 && (
+                  <span className="text-sm text-muted-foreground">{product.soldCount} sold</span>
+                )}
+              </div>
             </div>
-            <span className={cn('text-sm font-medium', stockColor)}>{stockLabel}</span>
+
+            {discount > 0 && (
+              <span className="badge-sale hidden shrink-0 px-3 py-1.5 text-xs font-bold uppercase sm:inline-flex">
+                {discount}% off
+              </span>
+            )}
           </div>
-        </div>
 
-        <div className="space-y-2.5">
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!inStock}
-            className="store-add-to-cart-button flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-foreground/18 bg-transparent text-[15px] font-semibold text-foreground md:transition-colors min-[1025px]:hover:border-foreground/32 min-[1025px]:hover:bg-secondary/55 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <LocalIcon name="shopping-cart" className="h-[18px] w-[18px]" />
-            {isPreOrder ? 'Pre-order' : 'Add to Cart'}
-          </button>
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            disabled={!inStock}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-foreground text-[15px] font-semibold text-background transition-colors min-[1025px]:hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isPreOrder ? 'Pre-order Now' : 'Buy Now'}
-            <LocalIcon name="arrow-right" className="h-[18px] w-[18px]" />
-          </button>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border py-3.5">
+            <span className="whitespace-nowrap font-display text-[2rem] font-bold leading-none sm:text-3xl">
+              {formatPrice(price)}
+            </span>
+            {discount > 0 && (
+              <>
+                <span className="whitespace-nowrap text-base text-muted-foreground line-through">
+                  {formatPrice(originalPrice)}
+                </span>
+                <span className="badge-sale px-2.5 py-1 text-xs">Save {formatPrice(savings)}</span>
+              </>
+            )}
+          </div>
 
-          <div className="grid grid-cols-3 gap-2 pt-0.5">
+          {product.shortDescription && (
+            <p className="min-w-0 break-words text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {product.shortDescription}
+            </p>
+          )}
+
+          {Object.entries(variantGroups).map(([groupName, opts]) => (
+            <div key={groupName}>
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+                <p className="font-semibold">
+                  {groupName}:
+                  {selectedVariant && (
+                    <span className="ml-1 font-normal text-muted-foreground">
+                      {selectedVariant.options.find((option) => option.name === groupName)?.value}
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div className="flex max-w-full flex-wrap gap-2">
+                {opts.map(({ value, variant }) => (
+                  <button
+                    type="button"
+                    key={variant.id}
+                    onClick={() => setSelectedVariant(variant)}
+                    className={cn(
+                      'min-h-10 rounded-lg border px-3 py-2 text-sm font-semibold leading-tight sm:px-4',
+                      selectedVariant?.id === variant.id
+                        ? 'border-foreground bg-foreground text-background'
+                        : 'border-border bg-background text-foreground min-[1025px]:hover:border-foreground/35',
+                    )}
+                  >
+                    <span className="sm:hidden">{compactVariantLabel(value)}</span>
+                    <span className="hidden sm:inline">{value}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <p className="mb-2 text-sm font-semibold">Quantity</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex h-11 items-center overflow-hidden rounded-xl border border-border bg-background">
+                <button
+                  type="button"
+                  aria-label="Decrease quantity"
+                  title="Decrease quantity"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="flex h-full w-11 items-center justify-center min-[1025px]:hover:bg-secondary"
+                >
+                  <LocalIcon name="minus" className="h-4 w-4" />
+                </button>
+                <span className="w-12 text-center text-sm font-semibold">{quantity}</span>
+                <button
+                  type="button"
+                  aria-label="Increase quantity"
+                  title="Increase quantity"
+                  onClick={() => setQuantity(Math.min(stock, quantity + 1))}
+                  className="flex h-full w-11 items-center justify-center min-[1025px]:hover:bg-secondary"
+                >
+                  <LocalIcon name="plus" className="h-4 w-4" />
+                </button>
+              </div>
+              <span className={cn('text-sm font-semibold', stockColor)}>{stockLabel}</span>
+            </div>
+          </div>
+
+          <div className="hidden md:block">{renderActionButtons()}</div>
+
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
-              onClick={() => {
-                const currentlyWished = has(product.id)
-                toggle(product.id)
-                toast.success(currentlyWished ? 'Removed from wishlist' : 'Added to wishlist')
-              }}
+              onClick={handleWishlist}
               className={cn(
-                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium transition-colors',
-                isWished ? 'border-red-200 bg-red-50 text-red-500' : 'border-border min-[1025px]:hover:border-red-200 min-[1025px]:hover:text-red-500'
+                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium',
+                isWished
+                  ? 'border-red-200 bg-red-50 text-red-500'
+                  : 'border-border bg-background min-[1025px]:hover:border-red-200 min-[1025px]:hover:text-red-500',
               )}
             >
               <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
@@ -459,23 +531,12 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (sessionStatus !== 'authenticated') {
-                  requireCompareSignIn()
-                  return
-                }
-
-                if (isCompared) {
-                  router.push('/compare')
-                  return
-                }
-
-                const ok = addCompare(product.id)
-                toast[ok ? 'success' : 'error'](ok ? 'Added to compare' : 'Max 4 products')
-              }}
+              onClick={handleCompare}
               className={cn(
-                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium transition-colors min-[1025px]:hover:border-primary/50',
-                isCompared ? 'border-primary/30 bg-primary/5 text-primary' : 'border-border'
+                'hidden h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium sm:flex',
+                isCompared
+                  ? 'border-primary/30 bg-primary/5 text-primary'
+                  : 'border-border bg-background min-[1025px]:hover:border-foreground/35',
               )}
             >
               <LocalIcon name="bar-chart-2" className="h-4 w-4" />
@@ -486,78 +547,93 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               aria-label="Share product"
               title="Share product"
               onClick={handleShare}
-              className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border text-[13px] font-medium transition-colors min-[1025px]:hover:border-primary/50"
+              className="col-span-2 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-background text-[13px] font-medium sm:col-span-1 min-[1025px]:hover:border-foreground/35"
             >
               <LocalIcon name="share" className="h-4 w-4" />
               Share
             </button>
           </div>
-        </div>
 
-        <div className="divide-y divide-border/60 rounded-2xl border border-border/70 bg-secondary/40">
-          <div className="flex items-start gap-3 p-3 text-sm sm:p-3.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary shadow-[0_1px_2px_rgba(23,18,15,0.05)]">
-              <LocalIcon name="truck" className="h-4 w-4" />
-            </span>
-            <div>
-              <span className="font-medium">Free delivery</span>
-              <span className="text-muted-foreground"> on orders over Tk 2,000</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Delivery timing varies by address and availability</p>
+          {product.attributes.length > 0 && (
+            <div className="grid grid-cols-2 gap-x-5 gap-y-2 text-sm">
+              {product.attributes.slice(0, 6).map((attr) => (
+                <div key={attr.id ?? `${attr.name}-${attr.value}`} className="min-w-0 break-words">
+                  <span className="text-muted-foreground">{attr.name}: </span>
+                  <span className="font-semibold">{attr.value}</span>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="flex items-start gap-3 p-3 text-sm sm:p-3.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary shadow-[0_1px_2px_rgba(23,18,15,0.05)]">
-              <LocalIcon name="refresh-ccw" className="h-4 w-4" />
-            </span>
-            <div>
-              <span className="font-medium">Seven day return policy</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Return eligibility is reviewed against the policy</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3 p-3 text-sm sm:p-3.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary shadow-[0_1px_2px_rgba(23,18,15,0.05)]">
-              <LocalIcon name="credit-card" className="h-4 w-4" />
-            </span>
-            <div>
-              <span className="font-medium">Checkout and payment</span>
-              <p className="mt-0.5 text-xs text-muted-foreground">Cash on delivery is available for eligible orders.</p>
-            </div>
-          </div>
-        </div>
-
-        {product.attributes.length > 0 && (
-          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 sm:gap-2">
-            {product.attributes.map((attr) => (
-              <div key={attr.id ?? `${attr.name}-${attr.value}`} className="flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">{attr.name}:</span>
-                <span className="font-medium">{attr.value}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <p className="text-xs text-muted-foreground">
-          SKU: <span className="font-mono">{product.sku}</span>
-          {product.tags.length > 0 && (
-            <> Tags: {product.tags.map((t: string) => (
-              <Link key={t} href={`/search?q=${t}`} className="mr-1 transition-colors min-[1025px]:hover:text-primary">{t}</Link>
-            ))}</>
           )}
-        </p>
+
+          <p className="break-words text-xs leading-relaxed text-muted-foreground">
+            SKU: <span className="font-mono">{selectedVariant?.sku ?? product.sku}</span>
+            {product.tags.length > 0 && (
+              <>
+                {' '}Tags:{' '}
+                {product.tags.map((tag) => (
+                  <Link key={tag} href={`/search?q=${tag}`} className="mr-1 min-[1025px]:hover:text-foreground">
+                    {tag}
+                  </Link>
+                ))}
+              </>
+            )}
+          </p>
+          </div>
+        </section>
       </div>
 
-      {product.description && (
-        <div className="overflow-hidden rounded-2xl border border-border xl:col-span-2">
-          <div className="border-b border-border bg-secondary px-4 py-3 sm:px-6 sm:py-4">
-            <h3 className="font-display text-lg font-semibold">Product Description</h3>
-          </div>
-          <div className="prose prose-sm max-w-none px-4 py-4 leading-relaxed text-muted-foreground sm:px-6 sm:py-5">
-            {product.description.split('\n').map((line: string, i: number) => (
-              <p key={i}>{line}</p>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="mt-5 grid min-w-0 gap-5 xl:grid-cols-2">
+        {product.description && (
+          <section className="overflow-hidden rounded-2xl border border-border bg-background">
+            <div className="border-b border-border px-4 py-3 sm:px-5">
+              <h2 className="font-display text-base font-semibold">Product Description</h2>
+            </div>
+            <div className="space-y-3 px-4 py-4 text-sm leading-relaxed text-muted-foreground sm:px-5">
+              {product.description.split('\n').map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {product.specifications.length > 0 && (
+          <section className="overflow-hidden rounded-2xl border border-border bg-background">
+            <div className="border-b border-border px-4 py-3 sm:px-5">
+              <h2 className="font-display text-base font-semibold">Specifications</h2>
+            </div>
+            <div className="divide-y divide-border">
+              {product.specifications.slice(0, 10).map((specification, index) => (
+                <div
+                  key={`${specification.name}-${index}`}
+                  className="grid grid-cols-[minmax(6rem,0.42fr)_1fr] gap-3 px-4 py-2.5 text-sm sm:px-5"
+                >
+                  <span className="font-medium text-muted-foreground">{specification.name}</span>
+                  <span className="font-medium">{specification.value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+      </div>
+
+      <div className="sticky bottom-0 z-30 -mx-4 mt-5 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+        {renderActionButtons(true)}
+      </div>
     </div>
   )
+}
+
+const attemptedProductViews = new Set<string>()
+
+function hasTrackedViewRef(productId: string) {
+  if (attemptedProductViews.has(productId)) return true
+  if (hasRecentProductView(productId)) return true
+
+  attemptedProductViews.add(productId)
+  return false
+}
+
+function clearProductViewAttempt(productId: string) {
+  attemptedProductViews.delete(productId)
 }

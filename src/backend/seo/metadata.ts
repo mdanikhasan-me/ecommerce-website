@@ -40,7 +40,7 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   const desc =
     product.shortDescription ??
     product.description?.slice(0, 155) ??
-    `Buy ${product.name} at Tk ${price.toLocaleString('en-BD')} in Bangladesh. Free delivery on orders over Tk 2,000. Cash on delivery available.`
+    `Buy ${product.name} at Tk ${price.toLocaleString('en-BD')} in Bangladesh. View product details, availability, and checkout options on Boilabin.`
 
   const keywords = [
     product.name,
