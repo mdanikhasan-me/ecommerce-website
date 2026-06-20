@@ -4,6 +4,7 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
+import { getPaginationPages } from '@/frontend/components/search/pagination'
 import {
   buildEffectivePriceOrderBy,
   buildEffectivePriceWhere,
@@ -234,14 +235,11 @@ export default async function SearchPage({ searchParams }: Props) {
                   {page > 1 && (
                     <PaginationLink href={buildPageUrl(params.queryParams, page - 1)}>Prev</PaginationLink>
                   )}
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const p = Math.max(1, Math.min(page - 2 + i, totalPages - 4 + i))
-                    return (
-                      <PaginationLink key={p} href={buildPageUrl(params.queryParams, p)} active={p === page}>
-                        {p}
-                      </PaginationLink>
-                    )
-                  })}
+                  {getPaginationPages(page, totalPages).map((p) => (
+                    <PaginationLink key={p} href={buildPageUrl(params.queryParams, p)} active={p === page}>
+                      {p}
+                    </PaginationLink>
+                  ))}
                   {page < totalPages && (
                     <PaginationLink href={buildPageUrl(params.queryParams, page + 1)}>Next</PaginationLink>
                   )}

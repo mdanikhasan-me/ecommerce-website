@@ -5,6 +5,7 @@ import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
 import { SortSelect } from '@/frontend/components/search/SortSelect'
+import { getPaginationPages } from '@/frontend/components/search/pagination'
 import {
   buildEffectivePriceOrderBy,
   buildEffectivePriceWhere,
@@ -218,7 +219,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-10">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  {getPaginationPages(page, totalPages).map((p) => (
                     <a
                       key={p}
                       href={buildPageUrl(categoryPath, resolvedSearchParams.queryParams, p)}

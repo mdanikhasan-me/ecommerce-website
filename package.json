@@ -11,6 +11,7 @@
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
+    "seed:demo-variants": "node prisma/seed-demo-variant-products.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -18,6 +18,7 @@ node_modules
 desktop.ini
 *.pem
 .maintenance-output/
+.codex/
 expanded-folders.txt
 project-folders.txt
 docs/
