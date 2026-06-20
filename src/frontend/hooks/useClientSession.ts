@@ -48,6 +48,11 @@ function loadSession() {
   return sessionRequest
 }
 
+export async function getClientSession() {
+  if (snapshot.status === 'loading') await loadSession()
+  return snapshot.data
+}
+
 /** A single cached session request for public storefront islands. */
 export function useClientSession() {
   const [state, setState] = useState<SessionSnapshot>(snapshot)

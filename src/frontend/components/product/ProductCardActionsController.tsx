@@ -6,19 +6,10 @@ import toast from '@/frontend/lib/toast'
 import { useCartStore, type CartItem } from '@/frontend/stores/cart'
 import { useCompareStore } from '@/frontend/stores/compare'
 import { useWishlistStore } from '@/frontend/stores/wishlist'
+import { getClientSession } from '@/frontend/hooks/useClientSession'
 
 type ProductAction = 'cart' | 'wishlist' | 'compare'
 type ActionButton = HTMLButtonElement & { dataset: { productAction?: ProductAction } }
-
-async function hasSignedInSession() {
-  const response = await fetch('/api/auth/session', {
-    cache: 'no-store',
-    credentials: 'same-origin',
-  })
-  if (!response.ok) return false
-  const session = await response.json().catch(() => null)
-  return Boolean(session?.user)
-}
 
 function getCurrentCallbackUrl() {
   return `${window.location.pathname}${window.location.search}`
@@ -75,7 +66,8 @@ export function ProductCardActionsController() {
     const unsubscribeWishlist = useWishlistStore.subscribe(scheduleSync)
     const unsubscribeCompare = useCompareStore.subscribe(scheduleSync)
     const observer = new MutationObserver(scheduleSync)
-    observer.observe(document.body, { childList: true, subtree: true })
+    const storefrontMain = document.querySelector('main')
+    if (storefrontMain) observer.observe(storefrontMain, { childList: true, subtree: true })
     scheduleSync()
 
     const handleClick = async (event: MouseEvent) => {
@@ -107,7 +99,7 @@ export function ProductCardActionsController() {
       if (button.dataset.checking === 'true') return
       button.dataset.checking = 'true'
       button.disabled = true
-      const signedIn = await hasSignedInSession().catch(() => false)
+      const signedIn = Boolean(await getClientSession().catch(() => null))
       delete button.dataset.checking
       button.disabled = false
 

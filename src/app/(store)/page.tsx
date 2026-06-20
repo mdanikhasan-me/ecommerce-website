@@ -37,10 +37,32 @@ const getHomeData = unstable_cache(async () => {
     where: { isActive: true, parentId: null },
     orderBy: { sortOrder: 'asc' },
     take: 10,
-    include: { children: { where: { isActive: true }, take: 5, orderBy: { sortOrder: 'asc' } } },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      image: true,
+      children: {
+        where: { isActive: true },
+        take: 5,
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true, name: true, slug: true },
+      },
+    },
   })
 
-  const bannersPromise = db.banner.findMany({ where: { isActive: true, position: 'hero' }, orderBy: { sortOrder: 'asc' } })
+  const bannersPromise = db.banner.findMany({
+    where: { isActive: true, position: 'hero' },
+    orderBy: { sortOrder: 'asc' },
+    select: {
+      id: true,
+      title: true,
+      subtitle: true,
+      imageUrl: true,
+      mobileImageUrl: true,
+      linkUrl: true,
+    },
+  })
   const featuredPromise = db.product.findMany({
     where: getBuyerVisibleProductWhere({ isFeatured: true }),
     take: 8,
@@ -81,7 +103,7 @@ const getHomeData = unstable_cache(async () => {
     bestSellers,
     newArrivals,
   }
-}, ['storefront-home-data-v2'], {
+}, ['storefront-home-data-v3'], {
   revalidate: 300,
   tags: [
     STOREFRONT_CACHE_TAGS.banners,

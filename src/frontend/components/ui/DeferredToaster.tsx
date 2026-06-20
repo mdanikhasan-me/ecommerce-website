@@ -15,17 +15,8 @@ export function DeferredToaster() {
     const show = () => setIsReady(true)
     window.addEventListener('boilabin:toast-needed', show, { once: true })
 
-    const browserWindow = window as typeof window & {
-      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
-      cancelIdleCallback?: (id: number) => void
-    }
-    const idleId = browserWindow.requestIdleCallback?.(show, { timeout: 2500 })
-    const timerId = idleId === undefined ? window.setTimeout(show, 1500) : undefined
-
     return () => {
       window.removeEventListener('boilabin:toast-needed', show)
-      if (idleId !== undefined) browserWindow.cancelIdleCallback?.(idleId)
-      if (timerId !== undefined) window.clearTimeout(timerId)
     }
   }, [])
 

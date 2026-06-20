@@ -295,7 +295,7 @@ export function Header() {
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <BoilabinLogo variant="wordmark" size={34} priority className="h-[34px] w-auto" />
+            <BoilabinLogo variant="wordmark" size={34} className="h-[34px] w-auto" />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
@@ -481,7 +481,6 @@ export function Header() {
             <BoilabinLogo
               variant="wordmark"
               size={24}
-              priority
               className="h-auto w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
             />
           </Link>

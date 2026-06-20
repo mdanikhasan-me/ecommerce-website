@@ -79,6 +79,10 @@
   html,
   body {
     @apply bg-background text-foreground;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
     background-image: none;
   }
@@ -807,11 +811,13 @@
     padding-block-end: clamp(0.5rem, 0.9rem + 0.8vw, 2rem);
   }
 
-  /* Preserve the exact layout while deferring below-fold layout and paint work. */
-  .storefront-home-stack > section,
-  .storefront-footer {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 48rem;
+  /* Desktop-only paint deferral. Block-size containment avoids Safari widening the page. */
+  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+    .storefront-home-stack > section,
+    .storefront-footer {
+      content-visibility: auto;
+      contain-intrinsic-block-size: auto 48rem;
+    }
   }
 
   .product-section-rhythm {

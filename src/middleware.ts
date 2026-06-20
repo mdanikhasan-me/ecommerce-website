@@ -39,18 +39,10 @@ function buildLoginRedirectUrl(req: NextRequest) {
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const hasSessionCookie = req.cookies.getAll().some((cookie) => isSessionCookieName(cookie.name))
+  const isProtectedRoute = matchesPathSegment(pathname, '/admin') || matchesPathSegment(pathname, '/account')
 
-  if (matchesPathSegment(pathname, '/admin')) {
-    if (!hasSessionCookie) {
-      return withOptionalCspReportOnly(
-        req,
-        NextResponse.redirect(buildLoginRedirectUrl(req)),
-      )
-    }
-  }
-
-  if (matchesPathSegment(pathname, '/account')) {
+  if (isProtectedRoute) {
+    const hasSessionCookie = req.cookies.getAll().some((cookie) => isSessionCookieName(cookie.name))
     if (!hasSessionCookie) {
       return withOptionalCspReportOnly(
         req,
