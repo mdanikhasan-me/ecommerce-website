@@ -30,6 +30,7 @@ export const UI_ICON_ASSETS = {
   mail: '/assets/icons/ui/mail.svg',
   'map-pin': '/assets/icons/ui/map-pin.svg',
   menu: '/assets/icons/ui/menu.svg',
+  'more-horizontal': '/assets/icons/ui/more-horizontal.svg',
   'message-circle': '/assets/icons/ui/message-circle.svg',
   minus: '/assets/icons/ui/minus.svg',
   package: '/assets/icons/ui/package.svg',

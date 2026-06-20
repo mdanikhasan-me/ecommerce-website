@@ -41,7 +41,7 @@
     --input: 36 18% 82%;
     --ring: 270 36% 18%;
     --buttermilk: 39 28% 92%;
-    --footer-surface: 220 10% 95%;
+    --footer-surface: 60 11% 96.5%;
     --footer-heading: 38 24% 93%;
     --footer-link: 31 15% 80%;
     --footer-muted: 28 9% 70%;
@@ -451,6 +451,11 @@
   .local-icon--menu {
     -webkit-mask-image: url('/assets/icons/ui/menu.svg');
     mask-image: url('/assets/icons/ui/menu.svg');
+  }
+
+  .local-icon--more-horizontal {
+    -webkit-mask-image: url('/assets/icons/ui/more-horizontal.svg');
+    mask-image: url('/assets/icons/ui/more-horizontal.svg');
   }
 
   .local-icon--minus {
