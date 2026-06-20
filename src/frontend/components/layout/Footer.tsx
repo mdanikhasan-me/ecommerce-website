@@ -78,6 +78,21 @@ const MOBILE_FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   FOOTER_LINK_SECTIONS[0],
 ]
 
+const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
+  '/auth/login': 'user',
+  '/account': 'settings',
+  '/account/orders': 'receipt-text',
+  '/wishlist': 'heart',
+  '/help': 'help-circle',
+  '/track-order': 'truck',
+  '/shipping': 'package',
+  '/returns': 'refresh-ccw',
+  '/contact': 'mail',
+  '/category': 'grid-3x3',
+  '/new-arrivals': 'sparkles',
+  '/search?bestSeller=true': 'star',
+}
+
 const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS.map((section) => {
   if (section.title !== 'Support') return section
 
@@ -101,7 +116,7 @@ export function Footer() {
   return (
     <footer className="storefront-footer border-t border-black/8 bg-[#f6f7f9] text-foreground">
       <div className="container-site">
-        <div className="w-full pb-3.5 pt-2 min-[560px]:py-3 xl:py-8">
+        <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
@@ -327,7 +342,7 @@ export function Footer() {
                   ))}
                 </div>
               </div>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-sm text-muted-foreground">
+              <div className="mt-3 flex flex-wrap items-center gap-x-3.5 gap-y-1.5 text-sm text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="inline-flex items-center gap-1.5 transition-colors focus-visible:text-foreground"
@@ -343,21 +358,25 @@ export function Footer() {
               </div>
             </section>
 
-            <nav aria-label="Footer sections" className="mt-2.5">
+            <nav aria-label="Footer sections" className="mt-4">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-normal text-foreground [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-2.5 text-sm font-normal text-foreground [&::-webkit-details-marker]:hidden">
                     {section.title}
                     <LocalIcon name="chevron-down" className="h-[1.05rem] w-[1.05rem] shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
                   </summary>
-                  <ul className="space-y-0.5 pb-2">
+                  <ul className="divide-y divide-black/8 pb-3">
                     {section.links.map((link) => (
                       <li key={link.href}>
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="block rounded-lg py-1 text-sm text-muted-foreground transition-colors focus-visible:text-foreground"
+                          className="flex items-center gap-2.5 py-2 text-sm text-muted-foreground transition-colors focus-visible:text-foreground"
                         >
+                          <LocalIcon
+                            name={MOBILE_FOOTER_LINK_ICONS[link.href]}
+                            className="h-3.5 w-3.5 text-primary/65"
+                          />
                           {link.label}
                         </Link>
                       </li>
@@ -367,14 +386,14 @@ export function Footer() {
               ))}
             </nav>
 
-            <section className="pt-2.5">
+            <section className="pt-4">
               <h2 className="text-sm font-medium text-foreground">Stay in the loop</h2>
-              <div className="mt-1.5 [&_button]:h-10 [&_button]:w-10 [&_input]:h-10 [&_input]:text-[13px]">
+              <div className="mt-2 [&_button]:h-10 [&_button]:w-10 [&_input]:h-10 [&_input]:text-[13px]">
                 <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
               </div>
             </section>
 
-            <section className="pt-2.5">
+            <section className="pb-1 pt-4">
               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -393,7 +412,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="w-full border-t border-black/6 py-2 text-xs text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block xl:text-[11px]">
+        <div className="w-full border-t border-black/6 py-3 text-xs text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block xl:text-[11px]">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             <p className="flex flex-wrap items-center justify-center gap-2 lg:justify-start">
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
