@@ -284,7 +284,7 @@ export function Footer() {
                   <div key={section.title} className="min-w-0">
                     <LocalIcon
                       name={MOBILE_FOOTER_SECTION_ICONS[section.title]}
-                      className="h-5 w-5 text-primary/70"
+                      className="h-5 w-5 text-foreground"
                     />
                     <h2 className="mt-2 text-sm font-semibold leading-5 text-foreground">
                       {section.title}
@@ -372,37 +372,37 @@ export function Footer() {
                   ))}
                 </div>
               </div>
-              <div className="mt-4 flex min-w-0 items-center gap-3 text-[12px] text-muted-foreground">
+              <div className="mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 text-[11px] leading-none text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="flex min-w-0 items-center gap-1.5 transition-colors focus-visible:text-foreground"
+                  className="flex min-w-0 items-center gap-2 focus-visible:text-foreground"
                 >
-                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" />
+                  <LocalIcon name="mail" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
-                <span aria-hidden="true" className="h-4 w-px shrink-0 bg-black/10" />
+                <span aria-hidden="true" className="h-5 w-px bg-black/10" />
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="flex shrink-0 items-center gap-1.5 whitespace-nowrap transition-colors focus-visible:text-foreground"
+                  className="flex min-w-0 justify-self-end items-center gap-2 whitespace-nowrap focus-visible:text-foreground"
                 >
-                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" />
+                  <LocalIcon name="phone" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span>{CONTACT_PHONE}</span>
                 </a>
               </div>
             </section>
 
-            <nav aria-label="Footer sections" className="mt-5 border-t border-black/8">
+            <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
-                <details key={section.title} className="group border-b border-black/8">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[13px] font-medium text-foreground/88 focus:outline-none focus-visible:bg-black/[0.02] [&::-webkit-details-marker]:hidden">
+                <details key={section.title} className="group border-b border-black/10">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[13px] font-medium text-foreground/90 focus:outline-none focus-visible:bg-black/[0.02] [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center gap-3">
                       <LocalIcon
                         name={MOBILE_FOOTER_SECTION_ICONS[section.title]}
-                        className="h-[1.1rem] w-[1.1rem] text-foreground/75"
+                        className="h-[1.1rem] w-[1.1rem] text-foreground/90"
                       />
                       {section.title}
                     </span>
-                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-foreground/75 transition-transform group-open:rotate-180" />
+                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-foreground/90 transition-transform group-open:rotate-180" />
                   </summary>
                   <ul className="ml-9 divide-y divide-black/8 pb-3">
                     {section.links.map((link) => (
@@ -414,7 +414,7 @@ export function Footer() {
                         >
                           <LocalIcon
                             name={MOBILE_FOOTER_LINK_ICONS[link.href]}
-                            className="h-3.5 w-3.5 text-primary/65"
+                            className="h-3.5 w-3.5 text-muted-foreground"
                           />
                           {link.label}
                         </Link>
@@ -457,16 +457,6 @@ export function Footer() {
               </div>
             </section>
 
-            <div className="flex justify-center pt-5">
-              <a
-                href="#top"
-                aria-label="Back to top"
-                title="Back to top"
-                className="flex h-[2.125rem] w-[2.125rem] items-center justify-center rounded-full border border-black/10 bg-white text-foreground focus-visible:border-primary/20 focus-visible:text-primary"
-              >
-                <LocalIcon name="chevron-up" className="h-4 w-4" />
-              </a>
-            </div>
           </div>
         </div>
 
