@@ -821,12 +821,19 @@
     background-color: hsl(var(--footer-surface));
   }
 
-  /* Desktop-only paint deferral. Block-size containment avoids Safari widening the page. */
-  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  /* Defer offscreen storefront paint while preserving each section's measured size. */
+  @supports (content-visibility: auto) {
     .storefront-home-stack > section,
     .storefront-footer {
       content-visibility: auto;
-      contain-intrinsic-block-size: auto 48rem;
+    }
+
+    .storefront-home-stack > section {
+      contain-intrinsic-block-size: auto 72rem;
+    }
+
+    .storefront-footer {
+      contain-intrinsic-block-size: auto 36rem;
     }
   }
 
@@ -1077,14 +1084,12 @@
   }
 
   @media (hover: none), (pointer: coarse), (any-hover: none), (any-pointer: coarse) {
-    [class*="hover:"],
-    [class*="group-hover"],
-    [class*="transition"] {
+    *,
+    *::before,
+    *::after {
       transition: none !important;
     }
 
-    [class*="hover:"]:hover,
-    [class*="group-hover"]:hover,
     a:hover,
     button:hover,
     summary:hover,

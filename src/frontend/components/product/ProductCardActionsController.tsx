@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import toast from '@/frontend/lib/toast'
 import { useCartStore, type CartItem } from '@/frontend/stores/cart'
 import { useCompareStore } from '@/frontend/stores/compare'
@@ -27,11 +27,11 @@ function getActionProduct(button: ActionButton) {
   }
 }
 
-function syncActionState() {
+function syncActionState(root: ParentNode) {
   const wishlist = new Set(useWishlistStore.getState().items)
   const compare = new Set(useCompareStore.getState().items)
 
-  document.querySelectorAll<ActionButton>('[data-product-action="wishlist"]').forEach((button) => {
+  root.querySelectorAll<ActionButton>('[data-product-action="wishlist"]').forEach((button) => {
     const productId = button.dataset.productId ?? ''
     const productName = button.dataset.productName ?? 'product'
     const isActive = wishlist.has(productId)
@@ -40,7 +40,7 @@ function syncActionState() {
     button.title = button.getAttribute('aria-label') ?? ''
   })
 
-  document.querySelectorAll<ActionButton>('[data-product-action="compare"]').forEach((button) => {
+  root.querySelectorAll<ActionButton>('[data-product-action="compare"]').forEach((button) => {
     const productId = button.dataset.productId ?? ''
     const productName = button.dataset.productName ?? 'product'
     const isActive = compare.has(productId)
@@ -52,22 +52,25 @@ function syncActionState() {
 
 export function ProductCardActionsController() {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const routeSignature = `${pathname}?${searchParams.toString()}`
 
   useEffect(() => {
+    const storefrontMain = document.querySelector('main')
+    if (!storefrontMain) return
+
     let syncFrame: number | null = null
     const scheduleSync = () => {
       if (syncFrame !== null) return
       syncFrame = window.requestAnimationFrame(() => {
         syncFrame = null
-        syncActionState()
+        syncActionState(storefrontMain)
       })
     }
 
     const unsubscribeWishlist = useWishlistStore.subscribe(scheduleSync)
     const unsubscribeCompare = useCompareStore.subscribe(scheduleSync)
-    const observer = new MutationObserver(scheduleSync)
-    const storefrontMain = document.querySelector('main')
-    if (storefrontMain) observer.observe(storefrontMain, { childList: true, subtree: true })
     scheduleSync()
 
     const handleClick = async (event: MouseEvent) => {
@@ -122,12 +125,11 @@ export function ProductCardActionsController() {
     document.addEventListener('click', handleClick)
     return () => {
       document.removeEventListener('click', handleClick)
-      observer.disconnect()
       unsubscribeWishlist()
       unsubscribeCompare()
       if (syncFrame !== null) window.cancelAnimationFrame(syncFrame)
     }
-  }, [router])
+  }, [routeSignature, router])
 
   return null
 }

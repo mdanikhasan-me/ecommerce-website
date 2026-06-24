@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { unstable_cache } from 'next/cache'
 import { db } from '@/backend/database'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
@@ -14,6 +15,7 @@ import {
 import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseCategorySearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import {
   JsonLd,
   generateBreadcrumbJsonLd,
@@ -44,80 +46,126 @@ const SORT_OPTIONS = [
 ]
 const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 699px) 50vw, (max-width: 1499px) 33vw, 25vw'
 
+const getCategoryMetadataData = unstable_cache(
+  async (slug: string) => {
+    const category = await db.category.findUnique({
+      where: { slug, isActive: true },
+      select: { id: true, name: true, slug: true, description: true },
+    })
+    if (!category) return null
+
+    const productCount = await db.product.count({
+      where: getBuyerVisibleProductWhere({ categoryId: category.id }),
+    })
+
+    return { category, productCount }
+  },
+  ['storefront-category-metadata-v1'],
+  {
+    revalidate: 300,
+    tags: [STOREFRONT_CACHE_TAGS.categories, STOREFRONT_CACHE_TAGS.products],
+  },
+)
+
+function getCategorySearchCacheKey(rawSearchParams: RawSearchParams) {
+  return JSON.stringify(parseCategorySearchParams(rawSearchParams).queryParams)
+}
+
+const getCategoryPageData = unstable_cache(
+  async (slug: string, normalizedSearchParams: string) => {
+    const resolvedSearchParams = parseCategorySearchParams(JSON.parse(normalizedSearchParams) as RawSearchParams)
+    const category = await db.category.findUnique({
+      where: { slug, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        children: {
+          where: { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true, name: true, slug: true },
+        },
+      },
+    })
+
+    if (!category) return null
+
+    const page = resolvedSearchParams.page
+    const limit = 24
+    const skip = (page - 1) * limit
+    const selectedChild = resolvedSearchParams.category
+      ? category.children.find((child) => child.slug === resolvedSearchParams.category)
+      : null
+    const categoryIds = selectedChild ? [selectedChild.id] : [category.id, ...category.children.map((c) => c.id)]
+    const andClauses: Prisma.ProductWhereInput[] = [
+      getBuyerVisibleProductWhere({ categoryId: { in: categoryIds } }),
+    ]
+    const effectivePriceWhere = buildEffectivePriceWhere(
+      resolvedSearchParams.minPrice,
+      resolvedSearchParams.maxPrice,
+    )
+
+    if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
+    if (resolvedSearchParams.inStock) andClauses.push({ stockQuantity: { gt: 0 } })
+    if (resolvedSearchParams.rating !== null) andClauses.push({ rating: { gte: resolvedSearchParams.rating } })
+
+    const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
+    const effectivePriceSort = getEffectivePriceSortDirection(resolvedSearchParams.sort)
+    const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
+    if (resolvedSearchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
+    else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
+
+    const [products, total] = await Promise.all([
+      db.product.findMany({
+        where,
+        orderBy: effectivePriceOrderBy ?? orderBy,
+        skip,
+        take: limit,
+        select: productCardSelect,
+      }),
+      db.product.count({ where }),
+    ])
+
+    return {
+      category,
+      products,
+      resolvedSearchParams,
+      skip,
+      totalPages: Math.ceil(total / limit),
+    }
+  },
+  ['storefront-category-page-data-v1'],
+  {
+    revalidate: 300,
+    tags: [STOREFRONT_CACHE_TAGS.categories, STOREFRONT_CACHE_TAGS.products],
+  },
+)
+
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
   const rawSearchParams = (await searchParams) ?? {}
-  const category = await db.category.findUnique({
-    where: { slug, isActive: true },
-    select: { id: true, name: true, slug: true, description: true },
-  })
-  if (!category) return { title: 'Category Not Found', robots: { index: false, follow: false } }
-
-  const productCount = await db.product.count({
-    where: getBuyerVisibleProductWhere({ categoryId: category.id }),
-  })
+  const data = await getCategoryMetadataData(slug)
+  if (!data) return { title: 'Category Not Found', robots: { index: false, follow: false } }
 
   return generateCategoryMetadata({
-    name: category.name,
-    slug: category.slug,
-    description: category.description,
-    productCount,
+    name: data.category.name,
+    slug: data.category.slug,
+    description: data.category.description,
+    productCount: data.productCount,
     indexable: !hasFacetedCategoryParams(rawSearchParams),
   })
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const resolvedSearchParams = parseCategorySearchParams((await searchParams) ?? {})
-  const category = await db.category.findUnique({
-    where: { slug, isActive: true },
-    include: { children: { where: { isActive: true }, orderBy: { sortOrder: 'asc' } } },
-  })
+  const rawSearchParams = (await searchParams) ?? {}
+  const data = await getCategoryPageData(slug, getCategorySearchCacheKey(rawSearchParams))
+  if (!data) notFound()
 
-  if (!category) notFound()
-
+  const { category, products, resolvedSearchParams, skip, totalPages } = data
   const page = resolvedSearchParams.page
-  const limit = 24
-  const skip = (page - 1) * limit
-
-  const selectedChild = resolvedSearchParams.category
-    ? category.children.find((child) => child.slug === resolvedSearchParams.category)
-    : null
-
-  // Include all direct child categories unless a child category filter is selected.
-  const categoryIds = selectedChild ? [selectedChild.id] : [category.id, ...category.children.map((c) => c.id)]
-
-  const andClauses: Prisma.ProductWhereInput[] = [
-    getBuyerVisibleProductWhere({ categoryId: { in: categoryIds } }),
-  ]
-  const minPrice = resolvedSearchParams.minPrice
-  const maxPrice = resolvedSearchParams.maxPrice
-  const rating = resolvedSearchParams.rating
-  const effectivePriceWhere = buildEffectivePriceWhere(minPrice, maxPrice)
-
-  if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
-  if (resolvedSearchParams.inStock) andClauses.push({ stockQuantity: { gt: 0 } })
-  if (rating !== null) andClauses.push({ rating: { gte: rating } })
-  const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
-  const effectivePriceSort = getEffectivePriceSortDirection(resolvedSearchParams.sort)
-  const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
-
-  let orderBy: Prisma.ProductOrderByWithRelationInput = { soldCount: 'desc' }
-  if (resolvedSearchParams.sort === 'newest') orderBy = { createdAt: 'desc' }
-  else if (resolvedSearchParams.sort === 'rating') orderBy = { rating: 'desc' }
-
-  const [products, total] = await Promise.all([
-    db.product.findMany({
-      where,
-      orderBy: effectivePriceOrderBy ?? orderBy,
-      skip,
-      take: limit,
-      select: productCardSelect,
-    }),
-    db.product.count({ where }),
-  ])
-
-  const totalPages = Math.ceil(total / limit)
   const filterCategories = category.children.map((child) => ({ name: child.name, slug: child.slug }))
   const categoryPath = `/category/${slug}`
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([

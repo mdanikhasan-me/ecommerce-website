@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Header } from '@/frontend/components/layout/Header'
 import { Footer } from '@/frontend/components/layout/Footer'
 import { LazyCartDrawer } from '@/frontend/components/cart/LazyCartDrawer'
@@ -14,7 +15,9 @@ export default function StoreLayout({
       <main className="w-full min-w-0 max-w-full flex-1">{children}</main>
       <Footer />
       <LazyCartDrawer />
-      <ProductCardActionsController />
+      <Suspense fallback={null}>
+        <ProductCardActionsController />
+      </Suspense>
     </div>
   )
 }

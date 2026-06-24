@@ -51,13 +51,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/assets/payments/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
-      {
-        source: '/assets/branding/icons/:path*',
+        source: '/assets/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
@@ -82,7 +76,7 @@ const nextConfig = {
     // Keep image optimizer variants tight to avoid repeated paid transforms.
     formats: ['image/webp'],
     qualities: [75, 90],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    deviceSizes: [480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Optimize caching
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for static images

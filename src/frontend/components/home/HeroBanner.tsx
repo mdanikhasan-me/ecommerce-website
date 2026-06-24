@@ -92,21 +92,24 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   }, [banners.length, next, prev])
 
   useEffect(() => {
+    if (banners.length <= 1) return
     const updateVisibility = () => setIsPageVisible(document.visibilityState === 'visible')
     updateVisibility()
     document.addEventListener('visibilitychange', updateVisibility)
     return () => document.removeEventListener('visibilitychange', updateVisibility)
-  }, [])
+  }, [banners.length])
 
   useEffect(() => {
+    if (banners.length <= 1) return
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     const updateMotionPreference = () => setPrefersReducedMotion(mediaQuery.matches)
     updateMotionPreference()
     mediaQuery.addEventListener('change', updateMotionPreference)
     return () => mediaQuery.removeEventListener('change', updateMotionPreference)
-  }, [])
+  }, [banners.length])
 
   useEffect(() => {
+    if (banners.length <= 1) return
     if (!bannerRootRef.current || !('IntersectionObserver' in window)) return
 
     const observer = new IntersectionObserver(
@@ -116,7 +119,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
     observer.observe(bannerRootRef.current)
     return () => observer.disconnect()
-  }, [])
+  }, [banners.length])
 
   useEffect(() => {
     if (banners.length <= 1 || !isPageVisible || !isInView || prefersReducedMotion) return

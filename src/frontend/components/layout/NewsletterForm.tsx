@@ -23,16 +23,18 @@ export function HomepageNewsletterForm({
   density = 'compact',
   submitDisplay = 'responsive',
 }: HomepageNewsletterFormProps) {
-  const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const isLight = variant === 'light'
   const isInline = layout === 'inline'
   const isSpacious = density === 'spacious'
   const isIconSubmit = submitDisplay === 'icon'
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (submitting) return
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const email = String(formData.get('email') ?? '').trim()
     setSubmitting(true)
     try {
       const res = await fetch('/api/newsletter', {
@@ -43,7 +45,7 @@ export function HomepageNewsletterForm({
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Could not subscribe')
       toast.success('Subscribed! Thanks for joining the list.')
-      setEmail('')
+      form.reset()
     } catch (err) {
       toast.error(getErrorMessage(err, 'Could not subscribe'))
     } finally {
@@ -55,11 +57,10 @@ export function HomepageNewsletterForm({
     <form onSubmit={onSubmit} className={isInline ? 'flex gap-2' : 'flex flex-col gap-3 sm:flex-row'}>
       <input
         type="email"
+        name="email"
         required
         aria-label="Email address"
         placeholder={isInline ? 'Email address' : 'Enter your email address'}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
         className={
           isLight
             ? `${isInline ? (isSpacious ? 'h-12 rounded-lg px-4 py-3 text-sm shadow-none md:h-[3.25rem] md:px-5 md:text-base' : 'h-9 rounded-md px-3 py-2 text-xs shadow-none min-[600px]:h-10 min-[600px]:text-sm') : 'rounded-lg px-4 py-3 text-sm shadow-[0_6px_16px_rgba(23,18,15,0.035)] sm:rounded-xl sm:px-5'} min-w-0 flex-1 border border-black/10 bg-white text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary/25 focus:outline-none focus:ring-2 focus:ring-primary/10`

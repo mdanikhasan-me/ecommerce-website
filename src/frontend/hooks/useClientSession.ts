@@ -12,6 +12,7 @@ type SessionSnapshot = {
 
 let snapshot: SessionSnapshot = { data: null, status: 'loading' }
 let sessionRequest: Promise<void> | null = null
+let sessionLoadScheduled = false
 const listeners = new Set<(value: SessionSnapshot) => void>()
 
 function publish(value: SessionSnapshot) {
@@ -48,6 +49,23 @@ function loadSession() {
   return sessionRequest
 }
 
+function scheduleSessionLoad() {
+  if (sessionLoadScheduled || sessionRequest || snapshot.status !== 'loading') return
+  sessionLoadScheduled = true
+
+  const run = () => {
+    sessionLoadScheduled = false
+    if (snapshot.status === 'loading') void loadSession()
+  }
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(run, { timeout: 1200 })
+    return
+  }
+
+  setTimeout(run, 150)
+}
+
 export async function getClientSession() {
   if (snapshot.status === 'loading') await loadSession()
   return snapshot.data
@@ -59,7 +77,7 @@ export function useClientSession() {
 
   useEffect(() => {
     listeners.add(setState)
-    if (snapshot.status === 'loading') void loadSession()
+    scheduleSessionLoad()
     return () => {
       listeners.delete(setState)
     }

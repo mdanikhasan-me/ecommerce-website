@@ -46,7 +46,7 @@ export function ProductCard({
   if (layout === 'list') {
     return (
       <div className={cn('product-card flex gap-2.5 p-2.5 sm:gap-4 sm:p-4 md:p-5', className)}>
-        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[1rem] bg-white sm:h-28 sm:w-28">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[1rem] bg-white sm:h-28 sm:w-28">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -60,7 +60,7 @@ export function ProductCard({
           )}
         </Link>
         <div className="flex min-w-0 flex-1 flex-col">
-          <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="sm:transition-colors min-[1025px]:hover:text-primary">
+          <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="sm:transition-colors min-[1025px]:hover:text-primary">
             <h3 className="mt-0.5 min-h-[2.55rem] line-clamp-2 text-[14.5px] font-medium leading-[1.32rem] text-foreground sm:mt-1 sm:text-[15px] sm:leading-6">{product.name}</h3>
           </Link>
           <div className="mt-1 flex min-h-[1rem] items-center gap-1" role="img" aria-label={ratingLabel}>
@@ -89,7 +89,7 @@ export function ProductCard({
   return (
     <div className={cn('product-card group relative flex h-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[1.05rem] bg-white sm:rounded-t-[1.35rem]">
-        <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="relative block aspect-[4/3] sm:aspect-[3/2]">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[4/3] sm:aspect-[3/2]">
           {primaryImage ? (
             <Image
               src={primaryImage}
@@ -117,7 +117,7 @@ export function ProductCard({
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} aria-label={productLinkLabel} className="flex flex-col px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
+      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex flex-col px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
         <h3 className="min-h-[2.7rem] line-clamp-2 text-[14px] font-medium leading-[1.35rem] text-foreground sm:min-h-[3rem] sm:text-[15px] sm:leading-6 sm:transition-colors min-[1025px]:group-hover:text-primary">
           {product.name}
         </h3>

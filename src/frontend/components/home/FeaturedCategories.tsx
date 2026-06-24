@@ -39,7 +39,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
             <p className="mt-2 max-w-[40rem] text-sm leading-6 text-muted-foreground">Browse departments and collections</p>
           </div>
 
-          <Link href="/category" className="editorial-link group shrink-0">
+          <Link href="/category" prefetch={false} className="editorial-link group shrink-0">
             All categories
             <LocalIcon name="arrow-right" className="h-4 w-4" />
           </Link>
@@ -61,6 +61,7 @@ function CategoryCard({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug}`}
+      prefetch={false}
       aria-label={`Shop ${category.name}`}
       title={category.name}
       className="group relative block aspect-square overflow-hidden rounded-2xl bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

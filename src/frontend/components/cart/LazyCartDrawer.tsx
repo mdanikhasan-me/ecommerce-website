@@ -11,14 +11,13 @@ const CartDrawer = dynamic(
 
 export function LazyCartDrawer() {
   const isOpen = useCartStore((state) => state.isOpen)
-  const itemCount = useCartStore((state) => state.items.length)
   const [shouldLoadDrawer, setShouldLoadDrawer] = useState(false)
 
   useEffect(() => {
-    if (isOpen || itemCount > 0) {
+    if (isOpen) {
       setShouldLoadDrawer(true)
     }
-  }, [isOpen, itemCount])
+  }, [isOpen])
 
   if (!shouldLoadDrawer) return null
 

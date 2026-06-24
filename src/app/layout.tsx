@@ -11,7 +11,7 @@ const fontSans = IBM_Plex_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
+  weight: 'variable',
 })
 
 const fontMono = DM_Mono({
@@ -19,6 +19,7 @@ const fontMono = DM_Mono({
   variable: '--font-mono',
   display: 'swap',
   weight: ['400', '500'],
+  preload: false,
 })
 
 export const metadata: Metadata = {

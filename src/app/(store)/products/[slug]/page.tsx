@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { Suspense, cache } from 'react'
+import { Suspense } from 'react'
 
 import { db } from '@/backend/database'
 import { productCardSelect } from '@/backend/catalog/product-card-select'
@@ -9,6 +10,7 @@ import {
   getBuyerVisibleProductWhere,
   getPublicProductDetailWhere,
 } from '@/backend/catalog/product-visibility'
+import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { type ReviewAccessState } from '@/backend/reviews'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
 import { ProductDetailClient } from '@/frontend/components/product/ProductDetailClient'
@@ -31,7 +33,7 @@ export async function generateStaticParams() {
   return []
 }
 
-const getProduct = cache(async (slug: string) => {
+const getProduct = unstable_cache(async (slug: string) => {
   return db.product.findFirst({
     where: getPublicProductDetailWhere(slug),
     include: {
@@ -55,18 +57,24 @@ const getProduct = cache(async (slug: string) => {
       },
     },
   })
+}, ['storefront-product-detail-v1'], {
+  revalidate: 600,
+  tags: [STOREFRONT_CACHE_TAGS.products],
 })
 
-const getApprovedReviews = cache(async (productId: string) => {
+const getApprovedReviews = unstable_cache(async (productId: string) => {
   return db.review.findMany({
     where: { productId, status: 'APPROVED' },
     include: { user: { select: { name: true, image: true } } },
     orderBy: { createdAt: 'desc' },
     take: 10,
   })
+}, ['storefront-product-reviews-v1'], {
+  revalidate: 600,
+  tags: [STOREFRONT_CACHE_TAGS.products],
 })
 
-const getReviewDistribution = cache(async (productId: string) => {
+const getReviewDistribution = unstable_cache(async (productId: string) => {
   const grouped = await db.review.groupBy({
     by: ['rating'],
     where: { productId, status: 'APPROVED' },
@@ -77,9 +85,12 @@ const getReviewDistribution = cache(async (productId: string) => {
     star,
     count: grouped.find((entry) => entry.rating === star)?._count._all ?? 0,
   }))
+}, ['storefront-product-review-distribution-v1'], {
+  revalidate: 600,
+  tags: [STOREFRONT_CACHE_TAGS.products],
 })
 
-const getRelatedProducts = cache(async (categoryId: string, productId: string) => {
+const getRelatedProducts = unstable_cache(async (categoryId: string, productId: string) => {
   return db.product.findMany({
     where: getBuyerVisibleProductWhere({
       categoryId,
@@ -88,6 +99,9 @@ const getRelatedProducts = cache(async (categoryId: string, productId: string) =
     take: 4,
     select: productCardSelect,
   })
+}, ['storefront-related-products-v1'], {
+  revalidate: 600,
+  tags: [STOREFRONT_CACHE_TAGS.products],
 })
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

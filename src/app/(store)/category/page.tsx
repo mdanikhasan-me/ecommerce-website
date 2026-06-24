@@ -205,6 +205,7 @@ function CategoryRail({
             <Link
               key={category.id}
               href={`/category?department=${category.slug}`}
+              prefetch={false}
               {...ariaCurrentPage(isSelected)}
               className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left sm:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                 isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 min-[1025px]:hover:bg-secondary/45'
@@ -266,6 +267,7 @@ function SubcategoryCard({
   return (
     <Link
       href={`/category/${child.slug}`}
+      prefetch={false}
       className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <SubcategoryGlyph svgIcon={customSvgIcon} fallbackIcon={iconName} alt={child.name} className="h-8 w-8 text-foreground" />
@@ -280,6 +282,7 @@ function ViewAllCategoryTile({ category }: { category: CategoryItem }) {
   return (
     <Link
       href={`/category/${category.slug}`}
+      prefetch={false}
       aria-label={getViewAllCategoryLabel(category)}
       className="group flex aspect-square w-[7.25rem] flex-col items-center justify-center gap-3 rounded-lg border border-black/10 bg-card px-3 py-4 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
@@ -344,6 +347,7 @@ function MobileSubcategoryRow({
   return (
     <Link
       href={`/category/${child.slug}`}
+      prefetch={false}
       className="flex aspect-square w-[7rem] flex-col items-center justify-center gap-2.5 rounded-lg border border-black/10 bg-card px-2.5 py-3 text-center text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <SubcategoryGlyph svgIcon={customSvgIcon} fallbackIcon={iconName} alt={child.name} className="h-7 w-7 text-foreground" />
