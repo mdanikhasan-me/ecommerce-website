@@ -21,7 +21,7 @@ export const metadata: Metadata = generatePageMetadata(
   '/new-arrivals',
 )
 export const revalidate = 300
-const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 699px) 50vw, (max-width: 1279px) 33vw, 25vw'
+const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 389px) 100vw, (max-width: 699px) 50vw, (max-width: 1279px) 33vw, 25vw'
 
 const getNewArrivalProducts = unstable_cache(async () => db.product.findMany({
     where: getBuyerVisibleProductWhere({ isNew: true }),
@@ -86,7 +86,7 @@ export default async function NewArrivalsPage() {
       {products.length === 0 ? (
         <div className="text-center py-20 text-muted-foreground">No new arrivals yet. Check back soon!</div>
       ) : (
-        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-4 gap-y-7 min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
           {products.map((p, index) => (
             <ProductCard
               key={p.id}

@@ -44,13 +44,13 @@ export default function WishlistPage() {
           <Link href="/" className="btn-primary mt-5 inline-flex">Discover Products</Link>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-4 gap-y-7 min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
           {visibleItems.map((_, i) => (
             <div key={i} className="aspect-square bg-secondary animate-pulse rounded-2xl" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-4 gap-y-7 min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
+        <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
           {products.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>
       )}

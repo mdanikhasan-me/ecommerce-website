@@ -13,7 +13,7 @@ interface ProductCardProps {
   imageSizes?: string
 }
 
-const DEFAULT_GRID_IMAGE_SIZES = '(max-width: 699px) 50vw, (max-width: 1279px) 33vw, 25vw'
+const DEFAULT_GRID_IMAGE_SIZES = '(max-width: 389px) 100vw, (max-width: 699px) 50vw, (max-width: 1279px) 33vw, 25vw'
 
 export function ProductCard({
   product,
