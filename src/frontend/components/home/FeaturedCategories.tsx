@@ -45,7 +45,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           </Link>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2.5 min-[560px]:grid-cols-3 sm:mt-5 sm:gap-3 md:grid-cols-4 lg:gap-3.5 min-[1120px]:grid-cols-5 min-[1400px]:grid-cols-6">
+        <div className="category-tile-grid mt-4 sm:mt-5">
           {visibleCategories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
@@ -71,7 +71,7 @@ function CategoryCard({ category }: { category: Category }) {
         alt={category.name}
         fill
         className="object-cover"
-        sizes="(max-width: 559px) 46vw, (max-width: 767px) 31vw, (max-width: 1119px) 24vw, (max-width: 1279px) 20vw, (max-width: 1535px) 16vw, 13vw"
+        sizes="(max-width: 559px) 50vw, (max-width: 819px) 33vw, (max-width: 1279px) 25vw, (max-width: 1535px) 20vw, 16vw"
         quality={75}
       />
 

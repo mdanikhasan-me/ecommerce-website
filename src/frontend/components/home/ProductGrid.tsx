@@ -14,7 +14,7 @@ interface ProductGridProps {
   gridClassName?: string
 }
 
-const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 389px) 100vw, (max-width: 699px) 50vw, (max-width: 1279px) 33vw, 25vw'
+const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw'
 
 export function ProductGrid({
   title,
@@ -47,7 +47,7 @@ export function ProductGrid({
       </div>
 
       <div className={cn(
-        'product-grid-rhythm grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10',
+        'product-grid-rhythm product-list-grid',
         gridClassName,
       )}>
         {products.map((product) => (

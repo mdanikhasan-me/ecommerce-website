@@ -44,7 +44,7 @@ const SORT_OPTIONS = [
   { value: 'price_desc', label: 'Price: High to Low' },
   { value: 'rating', label: 'Highest Rated' },
 ]
-const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 389px) 100vw, (max-width: 699px) 50vw, (max-width: 1499px) 33vw, 25vw'
+const CATEGORY_PRODUCT_IMAGE_SIZES = '(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw'
 
 const getCategoryMetadataData = unstable_cache(
   async (slug: string) => {
@@ -254,7 +254,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 lg:grid-cols-[repeat(3,minmax(0,1fr))] lg:gap-x-6 lg:gap-y-9 min-[1500px]:grid-cols-[repeat(4,minmax(0,1fr))] min-[1500px]:gap-x-8 min-[1500px]:gap-y-10">
+              <div className="product-list-grid">
                 {products.map((p, index) => (
                   <ProductCard
                     key={p.id}

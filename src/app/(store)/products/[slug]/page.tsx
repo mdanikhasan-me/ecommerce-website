@@ -147,7 +147,7 @@ function RelatedProductsFallback() {
   return (
     <section className="mt-10 sm:mt-12">
       <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
-      <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
+      <div className="product-list-grid">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
             <div className="skeleton aspect-[4/3] w-full" />
@@ -210,12 +210,12 @@ async function RelatedProductsSection({
   return (
     <section className="mt-10 sm:mt-12">
       <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
-      <div className="grid grid-cols-1 gap-x-4 gap-y-7 min-[390px]:grid-cols-[repeat(2,minmax(0,1fr))] min-[700px]:grid-cols-[repeat(3,minmax(0,1fr))] min-[700px]:gap-x-5 min-[700px]:gap-y-8 xl:grid-cols-[repeat(4,minmax(0,1fr))] xl:gap-x-8 xl:gap-y-10">
+      <div className="product-list-grid">
         {related.map((relatedProduct) => (
           <ProductCard
             key={relatedProduct.id}
             product={relatedProduct}
-            imageSizes="(max-width: 559px) 50vw, (max-width: 1023px) 33vw, (max-width: 1120px) 25vw, (max-width: 1536px) 20vw, 16vw"
+            imageSizes="(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw"
           />
         ))}
       </div>
