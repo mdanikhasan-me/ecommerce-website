@@ -180,11 +180,40 @@ export function Header() {
   useEffect(() => {
     if (!isMobileMenuPresent && !isMobileAccountPresent) return
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    const scrollY = window.scrollY
+    const root = document.documentElement
+    const { body } = document
+    const previousRootOverflow = root.style.overflow
+    const previousRootOverscrollBehavior = root.style.overscrollBehavior
+    const previousBodyOverflow = body.style.overflow
+    const previousBodyPosition = body.style.position
+    const previousBodyTop = body.style.top
+    const previousBodyLeft = body.style.left
+    const previousBodyRight = body.style.right
+    const previousBodyWidth = body.style.width
+    const previousBodyOverscrollBehavior = body.style.overscrollBehavior
+
+    root.style.overflow = 'hidden'
+    root.style.overscrollBehavior = 'none'
+    body.style.overflow = 'hidden'
+    body.style.position = 'fixed'
+    body.style.top = `-${scrollY}px`
+    body.style.left = '0'
+    body.style.right = '0'
+    body.style.width = '100%'
+    body.style.overscrollBehavior = 'none'
 
     return () => {
-      document.body.style.overflow = previousOverflow
+      root.style.overflow = previousRootOverflow
+      root.style.overscrollBehavior = previousRootOverscrollBehavior
+      body.style.overflow = previousBodyOverflow
+      body.style.position = previousBodyPosition
+      body.style.top = previousBodyTop
+      body.style.left = previousBodyLeft
+      body.style.right = previousBodyRight
+      body.style.width = previousBodyWidth
+      body.style.overscrollBehavior = previousBodyOverscrollBehavior
+      window.scrollTo(0, scrollY)
     }
   }, [isMobileMenuPresent, isMobileAccountPresent])
 
