@@ -32,7 +32,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 
   return (
     <section className="w-full bg-white py-7 sm:py-9 lg:py-10">
-      <div className="container-site">
+      <div className="category-tile-scope container-site">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="section-title">Category</h2>

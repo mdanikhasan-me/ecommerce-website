@@ -145,7 +145,7 @@ function ReviewsFallback() {
 
 function RelatedProductsFallback() {
   return (
-    <section className="mt-10 sm:mt-12">
+    <section className="product-list-scope mt-10 sm:mt-12">
       <div className="skeleton mb-4 h-7 w-52 rounded sm:mb-5" />
       <div className="product-list-grid">
         {Array.from({ length: 4 }).map((_, index) => (
@@ -208,7 +208,7 @@ async function RelatedProductsSection({
   if (related.length === 0) return null
 
   return (
-    <section className="mt-10 sm:mt-12">
+    <section className="product-list-scope mt-10 sm:mt-12">
       <h2 className="section-title mb-4 sm:mb-5">You Might Also Like</h2>
       <div className="product-list-grid">
         {related.map((relatedProduct) => (

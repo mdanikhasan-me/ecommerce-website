@@ -30,7 +30,7 @@ export default function WishlistPage() {
   }, [isHydrated, items])
 
   return (
-    <div className="container-site py-8">
+    <div className="product-list-scope container-site py-8">
       <h1 className="font-display text-2xl font-bold mb-6 flex items-center gap-2">
         <LocalIcon name="heart" className="h-6 w-6 text-primary" /> My Wishlist
         <span className="text-muted-foreground font-normal text-base">({visibleItems.length} items)</span>

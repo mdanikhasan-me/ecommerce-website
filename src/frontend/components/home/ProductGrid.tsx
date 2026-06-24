@@ -28,7 +28,7 @@ export function ProductGrid({
   const viewAllLabel = `View all ${title.toLowerCase()}`
 
   return (
-    <div className={cn('product-section-rhythm w-full', className)}>
+    <div className={cn('product-list-scope product-section-rhythm w-full', className)}>
       <div className="product-section-header">
         <div className="min-w-0">
           {eyebrow ? <p className="section-kicker">{eyebrow}</p> : null}

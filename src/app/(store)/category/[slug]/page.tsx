@@ -231,7 +231,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           />
         </aside>
 
-        <div className="flex-1 min-w-0">
+        <div className="product-list-scope flex-1 min-w-0">
           <div className="mb-4 flex w-full flex-wrap items-center gap-1.5 sm:mb-6 sm:justify-end sm:gap-2">
             <MobileSearchFilters
               categories={filterCategories}

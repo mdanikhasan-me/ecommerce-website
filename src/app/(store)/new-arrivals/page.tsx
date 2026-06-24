@@ -71,7 +71,7 @@ export default async function NewArrivalsPage() {
   )
 
   return (
-    <div className="container-site py-8">
+    <div className="product-list-scope container-site py-8">
       <JsonLd data={[pageJsonLd, breadcrumbJsonLd, itemListJsonLd]} />
       <div className="flex items-center gap-3 mb-8">
         <div className="p-2.5 rounded-xl bg-green-100">
