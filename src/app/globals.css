@@ -134,6 +134,8 @@
 
   .product-card {
     @apply bg-card overflow-hidden;
+    min-width: 0;
+    max-width: 100%;
     border-radius: 1.15rem;
     border: 1px solid hsl(var(--border) / 0.52);
     background-clip: padding-box;

@@ -87,9 +87,9 @@ export function ProductCard({
   }
 
   return (
-    <div className={cn('product-card group relative flex h-full flex-col', className)}>
+    <div className={cn('product-card group relative flex h-full min-w-0 max-w-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[1.05rem] bg-white sm:rounded-t-[1.35rem]">
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[4/3] sm:aspect-[3/2]">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-square min-w-0">
           {primaryImage ? (
             <Image
               src={primaryImage}
@@ -117,7 +117,7 @@ export function ProductCard({
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex flex-col px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
+      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
         <h3 className="min-h-[2.7rem] line-clamp-2 text-[14px] font-medium leading-[1.35rem] text-foreground sm:min-h-[3rem] sm:text-[15px] sm:leading-6 sm:transition-colors min-[1025px]:group-hover:text-primary">
           {product.name}
         </h3>
@@ -143,7 +143,7 @@ export function ProductCard({
 
         <p className={cn('mt-3 text-[13px] font-medium sm:mt-3.5 sm:text-[13px]', stockColor)}>{stockLabel}</p>
       </Link>
-      <div className="mt-auto">
+      <div className="mt-auto min-w-0">
         <ProductCardActions
           product={actionProduct}
           inStock={inStock}
