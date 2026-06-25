@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
-import { AriaExpandedButton } from '@/frontend/components/ui/AriaExpandedButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { MOBILE_SUPPORT_LINKS, NAV_CATEGORIES } from './header-navigation-data'
 
@@ -16,7 +15,6 @@ export function MobileNavigationDrawer({
   isVisible: boolean
   onClose: () => void
 }) {
-  const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null)
   const panelRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -25,14 +23,9 @@ export function MobileNavigationDrawer({
     }
   }, [isVisible])
 
-  useEffect(() => {
-    if (!isOpen) {
-      setExpandedMobileCategory(null)
-    }
-  }, [isOpen])
-
   return (
     <div
+      aria-hidden={!isOpen}
       className={cn(
         'fixed inset-x-0 bottom-0 top-16 z-50 lg:hidden',
         isVisible ? 'pointer-events-auto' : 'pointer-events-none'
@@ -55,89 +48,69 @@ export function MobileNavigationDrawer({
         aria-label="Mobile navigation"
         tabIndex={-1}
         className={cn(
-          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] transform-gpu overflow-hidden border-r border-black/10 bg-white transition-transform duration-150 ease-out will-change-transform motion-reduce:transition-none',
+          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.625rem] transform-gpu overflow-hidden border-r border-[#e5dfd6] bg-white outline-none transition-transform duration-150 ease-out will-change-transform focus:outline-none motion-reduce:transition-none',
           isVisible ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="h-full overflow-y-auto overscroll-contain px-3.5 py-4">
+        <div className="h-full overflow-y-auto overscroll-contain px-[1.375rem] py-[1.35rem]">
           <section>
-            <p className="mb-2.5 px-1.5 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              Categories
-            </p>
-            <div className="overflow-hidden rounded-lg border border-black/10 bg-card">
-              {NAV_CATEGORIES.map((category) => {
-                const isExpanded = expandedMobileCategory === `category-${category.slug}`
-
-                return (
-                  <div key={category.slug} className="border-b border-border/70 last:border-b-0">
-                    <div className="flex items-center">
-                      <Link
-                        href={`/category/${category.slug}`}
-                        className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3 text-[14px] font-normal leading-none text-foreground"
-                        onClick={onClose}
-                      >
-                        <LocalIcon name={category.icon} className="h-[1.125rem] w-[1.125rem] shrink-0" />
-                        <span className="truncate">{category.name}</span>
-                      </Link>
-                      {category.sub.length > 0 ? (
-                        <AriaExpandedButton
-                          type="button"
-                          aria-label={`Expand ${category.name}`}
-                          title={`Expand ${category.name}`}
-                          expanded={isExpanded}
-                          className="mr-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground"
-                          onClick={() =>
-                            setExpandedMobileCategory(isExpanded ? null : `category-${category.slug}`)
-                          }
-                        >
-                          <LocalIcon
-                            name="chevron-down"
-                            className={cn('h-3.5 w-3.5 transition-transform', isExpanded && 'rotate-180')}
-                          />
-                        </AriaExpandedButton>
-                      ) : null}
-                    </div>
-
-                    {isExpanded ? (
-                      <div className="border-t border-border/60 bg-secondary/35 py-1">
-                        {category.sub.map((sub) => (
-                          <Link
-                            key={sub.slug}
-                            href={`/category/${sub.slug}`}
-                            className="flex items-center gap-2.5 py-2 pl-12 pr-3 text-[12px] font-normal text-muted-foreground"
-                            onClick={onClose}
-                          >
-                            <LocalIcon name={sub.icon} className="h-3.5 w-3.5 shrink-0" />
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                )
-              })}
+            <h2 className="mb-3.5 text-[14.5px] font-semibold leading-none text-[#111018]">
+              Shop by Category
+            </h2>
+            <div className="overflow-hidden rounded-[0.72rem] border border-[#e8e2da] bg-white">
+              {NAV_CATEGORIES.map((category) => (
+                <Link
+                  key={category.slug}
+                  href={`/category/${category.slug}`}
+                  className="flex min-w-0 items-center justify-between gap-3 border-b border-[#eee8df] px-3.5 py-[0.92rem] text-[13px] font-[450] leading-none text-[#242129] last:border-b-0"
+                  onClick={onClose}
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <LocalIcon name={category.icon} className="h-[1.18rem] w-[1.18rem] shrink-0 text-[#292630]" />
+                    <span className="truncate">{category.name}</span>
+                  </span>
+                  <LocalIcon name="chevron-right" className="h-3.5 w-3.5 shrink-0 text-[#5f5a64]" />
+                </Link>
+              ))}
             </div>
           </section>
 
-          <section className="mt-6">
-            <p className="mb-2.5 px-1.5 text-[10px] font-normal uppercase tracking-[0.22em] text-muted-foreground">
+          <section className="mt-4">
+            <h2 className="mb-2.5 text-[13px] font-semibold leading-none text-[#111018]">
               Support
-            </p>
-            <div className="overflow-hidden rounded-lg border border-black/10 bg-card">
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
               {MOBILE_SUPPORT_LINKS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center justify-between gap-3 border-b border-border/70 px-3.5 py-3 text-[13.5px] font-light leading-none text-foreground/90 last:border-b-0"
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-[0.58rem] border border-[#ebe5dc] bg-white px-3 py-[0.82rem] text-[11.5px] font-[450] leading-none text-[#242129]"
                   onClick={onClose}
                 >
-                  <span className="flex min-w-0 items-center gap-4">
-                    <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-foreground/75" />
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <LocalIcon name={item.icon} className="h-[1.05rem] w-[1.05rem] shrink-0 text-[#292630]" />
                     <span className="truncate">{item.label}</span>
                   </span>
-                  <LocalIcon name="arrow-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground/75" />
+                  <LocalIcon name="chevron-right" className="h-3 w-3 shrink-0 text-[#5f5a64]" />
                 </Link>
               ))}
+            </div>
+          </section>
+
+          <section
+            aria-label="Authenticity promise"
+            className="relative mt-4 h-[6.45rem] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(ellipse_at_82%_42%,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.08)_20%,transparent_42%),linear-gradient(135deg,#0a0a0d_0%,#15151a_48%,#050506_100%)] px-4 py-4 text-white"
+          >
+            <div className="absolute inset-y-0 right-0 w-28 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]" />
+            <div className="relative z-10 max-w-[9.5rem] pt-0.5">
+              <p className="text-[15px] font-semibold leading-none tracking-[-0.01em]">100% Authentic</p>
+              <p className="mt-2 text-[10.8px] font-normal leading-[1.05rem] text-white/82">
+                Original products. Quality you can rely on.
+              </p>
+            </div>
+            <div className="absolute bottom-2.5 right-4 flex h-[4.55rem] w-[4.55rem] items-center justify-center rounded-full bg-white/[0.07] text-white/95 ring-1 ring-white/10">
+              <LocalIcon name="shield" className="h-[3.35rem] w-[3.35rem]" />
+              <LocalIcon name="check" className="absolute h-5 w-5" />
             </div>
           </section>
         </div>
