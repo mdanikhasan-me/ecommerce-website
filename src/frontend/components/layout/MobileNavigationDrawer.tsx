@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
@@ -15,14 +15,6 @@ export function MobileNavigationDrawer({
   isVisible: boolean
   onClose: () => void
 }) {
-  const panelRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    if (isVisible) {
-      panelRef.current?.focus()
-    }
-  }, [isVisible])
-
   return (
     <div
       aria-hidden={!isOpen}
@@ -42,27 +34,25 @@ export function MobileNavigationDrawer({
       />
       <aside
         id="mobile-navigation-drawer"
-        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
-        tabIndex={-1}
         className={cn(
-          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.625rem] transform-gpu overflow-hidden border-r border-[#e5dfd6] bg-white outline-none transition-transform duration-150 ease-out will-change-transform focus:outline-none motion-reduce:transition-none',
+          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.625rem] transform-gpu overflow-hidden bg-white outline-none transition-transform duration-150 ease-out will-change-transform focus:outline-none motion-reduce:transition-none',
           isVisible ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="h-full overflow-y-auto overscroll-contain px-[1.375rem] py-[1.35rem]">
+        <div className="h-full overflow-y-auto overscroll-contain px-[1.375rem] pb-5 pt-8">
           <section>
-            <h2 className="mb-3.5 text-[14.5px] font-semibold leading-none text-[#111018]">
+            <h2 className="mb-3.5 text-[14.5px] font-semibold leading-[1.2rem] text-[#111018]">
               Shop by Category
             </h2>
-            <div className="overflow-hidden rounded-[0.72rem] border border-[#e8e2da] bg-white">
+            <div className="overflow-hidden rounded-[0.72rem] border border-[#eeeeee] bg-white">
               {NAV_CATEGORIES.map((category) => (
                 <Link
                   key={category.slug}
                   href={`/category/${category.slug}`}
-                  className="flex min-w-0 items-center justify-between gap-3 border-b border-[#eee8df] px-3.5 py-[0.92rem] text-[13px] font-[450] leading-none text-[#242129] last:border-b-0"
+                  className="flex min-w-0 items-center justify-between gap-3 border-b border-[#f1f1f1] px-3.5 py-[0.96rem] text-[13px] font-[450] leading-[1.2rem] text-[#242129] last:border-b-0"
                   onClick={onClose}
                 >
                   <span className="flex min-w-0 items-center gap-3">
@@ -76,7 +66,7 @@ export function MobileNavigationDrawer({
           </section>
 
           <section className="mt-4">
-            <h2 className="mb-2.5 text-[13px] font-semibold leading-none text-[#111018]">
+            <h2 className="mb-2.5 text-[13px] font-semibold leading-[1.1rem] text-[#111018]">
               Support
             </h2>
             <div className="grid grid-cols-2 gap-2">
@@ -84,7 +74,7 @@ export function MobileNavigationDrawer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex min-w-0 items-center justify-between gap-2 rounded-[0.58rem] border border-[#ebe5dc] bg-white px-3 py-[0.82rem] text-[11.5px] font-[450] leading-none text-[#242129]"
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-[0.58rem] border border-[#eeeeee] bg-white px-3 py-[0.74rem] text-[11.5px] font-[450] leading-[1.05rem] text-[#242129]"
                   onClick={onClose}
                 >
                   <span className="flex min-w-0 items-center gap-2.5">
@@ -99,19 +89,15 @@ export function MobileNavigationDrawer({
 
           <section
             aria-label="Authenticity promise"
-            className="relative mt-4 h-[6.45rem] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(ellipse_at_82%_42%,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.08)_20%,transparent_42%),linear-gradient(135deg,#0a0a0d_0%,#15151a_48%,#050506_100%)] px-4 py-4 text-white"
+            className="relative mt-4 aspect-[2.86/1] overflow-hidden rounded-[0.72rem] bg-black"
           >
-            <div className="absolute inset-y-0 right-0 w-28 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08))]" />
-            <div className="relative z-10 max-w-[9.5rem] pt-0.5">
-              <p className="text-[15px] font-semibold leading-none tracking-[-0.01em]">100% Authentic</p>
-              <p className="mt-2 text-[10.8px] font-normal leading-[1.05rem] text-white/82">
-                Original products. Quality you can rely on.
-              </p>
-            </div>
-            <div className="absolute bottom-2.5 right-4 flex h-[4.55rem] w-[4.55rem] items-center justify-center rounded-full bg-white/[0.07] text-white/95 ring-1 ring-white/10">
-              <LocalIcon name="shield" className="h-[3.35rem] w-[3.35rem]" />
-              <LocalIcon name="check" className="absolute h-5 w-5" />
-            </div>
+            <Image
+              src="/assets/banners/mobile-menu-authentic.webp"
+              alt="100% Authentic. Original products. Quality you can rely on."
+              fill
+              sizes="(max-width: 640px) 18rem, 20rem"
+              className="object-cover"
+            />
           </section>
         </div>
       </aside>
