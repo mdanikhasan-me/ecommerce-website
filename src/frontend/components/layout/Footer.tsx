@@ -151,22 +151,31 @@ export function Footer() {
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground sm:text-sm">
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="inline-flex items-center gap-1.5 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
-                >
-                  <LocalIcon name="mail" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_EMAIL}
-                </a>
+              <div className="mt-5 grid gap-3 text-sm font-semibold leading-5 text-foreground">
+                <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
+                    <LocalIcon name="location" className="h-4 w-4" />
+                  </span>
+                  <span className="max-w-[13.5rem] text-balance">{CONTACT_ADDRESS}</span>
+                </div>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="inline-flex items-center gap-1.5 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-primary focus-visible:text-primary"
                 >
-                  <LocalIcon name="phone" className="h-3.5 w-3.5 text-primary/70" /> {CONTACT_PHONE}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
+                    <LocalIcon name="phone" className="h-4 w-4" />
+                  </span>
+                  <span>{CONTACT_PHONE}</span>
                 </a>
-                <span className="hidden items-center gap-1.5 min-[600px]:inline-flex">
-                  <LocalIcon name="location" className="h-3.5 w-3.5 shrink-0 text-primary/70" /> {CONTACT_ADDRESS}
-                </span>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-primary focus-visible:text-primary"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
+                    <LocalIcon name="mail" className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
+                </a>
               </div>
               {/* Mobile only: social icons stay under the address. On desktop they move to the Social column. */}
               <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
