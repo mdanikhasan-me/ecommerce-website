@@ -316,19 +316,24 @@ export function Footer() {
             </div>
 
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 border-t border-black/8 py-4 min-[820px]:gap-8">
-              <div className="flex items-center gap-x-4 min-[820px]:gap-x-5">
-                {FOOTER_PAYMENT_LOGOS.map((method) => (
-                  <img
-                    key={method.alt}
-                    src={method.src}
-                    alt={method.alt}
-                    width={method.width}
-                    height={method.height}
-                    loading="lazy"
-                    decoding="async"
-                    className={`${method.className} block w-auto object-contain`}
-                  />
-                ))}
+              <div className="flex items-center gap-x-3 min-[820px]:gap-x-4">
+                <span className="whitespace-nowrap text-xs font-medium text-foreground/82 min-[820px]:text-sm">
+                  We accept
+                </span>
+                <div className="flex items-center gap-x-4 min-[820px]:gap-x-5">
+                  {FOOTER_PAYMENT_LOGOS.map((method) => (
+                    <img
+                      key={method.alt}
+                      src={method.src}
+                      alt={method.alt}
+                      width={method.width}
+                      height={method.height}
+                      loading="lazy"
+                      decoding="async"
+                      className={`${method.className} block w-auto object-contain`}
+                    />
+                  ))}
+                </div>
               </div>
               <p className="flex items-center justify-end text-right text-xs text-muted-foreground min-[820px]:text-sm">
                 <span className="whitespace-nowrap">&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
@@ -413,7 +418,7 @@ export function Footer() {
             </nav>
 
             <section className="pb-1 pt-5 text-center">
-              <h2 className="text-[12px] font-medium leading-4 text-foreground/82">Payment methods</h2>
+              <h2 className="text-[12px] font-medium leading-4 text-foreground/82">We accept</h2>
               <div className="mt-2 flex items-center justify-center gap-x-4 py-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -439,19 +444,22 @@ export function Footer() {
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
               <span>All rights reserved.</span>
             </p>
-            <div className="hidden items-center justify-center gap-x-4 xl:flex">
-              {FOOTER_PAYMENT_LOGOS.map((method) => (
-                <img
-                  key={method.alt}
-                  src={method.src}
-                  alt={method.alt}
-                  width={method.width}
-                  height={method.height}
-                  loading="lazy"
-                  decoding="async"
-                  className={`${method.className} block w-auto object-contain`}
-                />
-              ))}
+            <div className="hidden items-center justify-center gap-x-3 xl:flex">
+              <span className="whitespace-nowrap text-[11px] font-medium text-foreground/82">We accept</span>
+              <div className="flex items-center gap-x-4">
+                {FOOTER_PAYMENT_LOGOS.map((method) => (
+                  <img
+                    key={method.alt}
+                    src={method.src}
+                    alt={method.alt}
+                    width={method.width}
+                    height={method.height}
+                    loading="lazy"
+                    decoding="async"
+                    className={`${method.className} block w-auto object-contain`}
+                  />
+                ))}
+              </div>
             </div>
             <div className="hidden flex-wrap items-center justify-center gap-x-5 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
               {BOTTOM_LEGAL_LINKS.map((link) => (
