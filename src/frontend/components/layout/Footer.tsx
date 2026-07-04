@@ -148,24 +148,23 @@ const BOTTOM_LEGAL_LINKS = [
 
 function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   return (
-    <p className={`flex items-center gap-1.5 text-sm leading-5 text-muted-foreground ${className}`}>
-      <span>See our reviews on</span>
+    <p className={`whitespace-nowrap text-sm leading-5 text-muted-foreground ${className}`}>
+      <span>See our reviews on</span>{' '}
       <a
         href={TRUSTPILOT_REVIEW_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-5 items-center gap-1 font-semibold text-foreground focus:outline-none"
+        className="inline-block align-[-0.22em] focus:outline-none"
       >
         <img
           src={TRUSTPILOT_ICON_SRC}
-          alt=""
-          width={16}
-          height={16}
+          alt="Trustpilot"
+          width={86}
+          height={21}
           loading="eager"
           decoding="async"
-          className="block h-4 w-4 object-contain"
+          className="block h-auto w-[7.35rem] max-w-none object-contain"
         />
-        <span>Trustpilot</span>
       </a>
     </p>
   )
@@ -277,10 +276,10 @@ export function Footer() {
           </div>
 
           <div className="hidden min-[560px]:block xl:hidden">
-            <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] min-[820px]:gap-8 min-[1024px]:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.28fr)] min-[1024px]:gap-12">
+            <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(18rem,0.82fr)_minmax(0,1.18fr)] min-[820px]:gap-8 min-[1024px]:grid-cols-[minmax(18.5rem,0.8fr)_minmax(0,1.2fr)] min-[1024px]:gap-12">
               <section
                 aria-label="Boilabin contact"
-                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-5 min-[820px]:pr-6"
+                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-4 min-[820px]:pr-5"
               >
                 <div className="min-w-0">
                   <Link href="/" className="inline-flex" aria-label="Boilabin home">
@@ -325,7 +324,6 @@ export function Footer() {
                         </a>
                       ))}
                     </div>
-                    <TrustpilotReviewLine className="mt-2.5 whitespace-nowrap" />
                   </div>
                   <div>
                     <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
@@ -339,6 +337,7 @@ export function Footer() {
                       <LocalIcon name={WHATSAPP_LINK.icon} className="h-4 w-4" />
                     </a>
                   </div>
+                  <TrustpilotReviewLine className="col-span-2 mt-2.5" />
                 </div>
               </section>
 
