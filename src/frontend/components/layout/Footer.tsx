@@ -253,33 +253,35 @@ export function Footer() {
             <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(12.5rem,0.65fr)_minmax(0,1.35fr)] min-[820px]:gap-8 min-[1024px]:gap-12">
               <section
                 aria-label="Boilabin contact"
-                className="min-w-0 min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-6 min-[820px]:pr-8"
+                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-6 min-[820px]:pr-8"
               >
-                <Link href="/" className="inline-flex" aria-label="Boilabin home">
-                  <span className="font-display text-[1.35rem] font-bold leading-none tracking-normal text-foreground">
-                    Boilabin
-                  </span>
-                </Link>
-                <p className="mt-3 max-w-[13rem] text-xs leading-5 text-muted-foreground min-[820px]:text-sm">
-                  Everyday finds. Best deals. Delivered across Bangladesh.
-                </p>
-                <div className="mt-5 space-y-3 text-xs text-muted-foreground min-[820px]:text-sm">
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="flex min-w-0 items-center gap-2 focus:outline-none"
-                  >
-                    <LocalIcon name="mail" className="h-4 w-4 text-primary/70" />
-                    <span className="truncate">{CONTACT_EMAIL}</span>
-                  </a>
-                  <a
-                    href={`tel:${CONTACT_PHONE}`}
-                    className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
-                  >
-                    <LocalIcon name="phone" className="h-4 w-4 text-primary/70" />
-                    {CONTACT_PHONE}
-                  </a>
+                <div className="min-w-0">
+                  <Link href="/" className="inline-flex" aria-label="Boilabin home">
+                    <span className="font-display text-[1.35rem] font-bold leading-none tracking-normal text-foreground">
+                      Boilabin
+                    </span>
+                  </Link>
+                  <p className="mt-3 max-w-[13rem] text-xs leading-5 text-muted-foreground min-[820px]:text-sm">
+                    Everyday finds. Best deals. Delivered across Bangladesh.
+                  </p>
+                  <div className="mt-5 space-y-3 text-xs text-muted-foreground min-[820px]:text-sm">
+                    <a
+                      href={`mailto:${CONTACT_EMAIL}`}
+                      className="flex min-w-0 items-center gap-2 focus:outline-none"
+                    >
+                      <LocalIcon name="mail" className="h-4 w-4 text-primary/70" />
+                      <span className="truncate">{CONTACT_EMAIL}</span>
+                    </a>
+                    <a
+                      href={`tel:${CONTACT_PHONE}`}
+                      className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
+                    >
+                      <LocalIcon name="phone" className="h-4 w-4 text-primary/70" />
+                      {CONTACT_PHONE}
+                    </a>
+                  </div>
                 </div>
-                <div className="mt-5 grid grid-cols-2 gap-4">
+                <div className="mt-5 grid grid-cols-[auto_auto] justify-start gap-6 min-[560px]:mt-0 min-[700px]:mt-5 min-[820px]:gap-8">
                   <div>
                     <h2 className="text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
                     <div className="mt-2.5 flex items-center gap-2.5">
@@ -290,9 +292,9 @@ export function Footer() {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={item.label}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                         >
-                          <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                          <LocalIcon name={item.icon} className="h-4 w-4" />
                         </a>
                       ))}
                     </div>
@@ -304,9 +306,9 @@ export function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={WHATSAPP_LINK.label}
-                      className="mt-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
+                      className="mt-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                     >
-                      <LocalIcon name={WHATSAPP_LINK.icon} className="h-3.5 w-3.5" />
+                      <LocalIcon name={WHATSAPP_LINK.icon} className="h-4 w-4" />
                     </a>
                   </div>
                 </div>
