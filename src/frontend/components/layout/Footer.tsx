@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -344,30 +345,28 @@ export function Footer() {
           <div className="min-[560px]:hidden">
             <section aria-label="Boilabin contact" className="text-center">
               <Link href="/" className="inline-flex justify-center" aria-label="Boilabin home">
-                <span className="font-display text-[1.14rem] font-semibold leading-none tracking-normal text-foreground">
-                  Boilabin
-                </span>
+                <BrandWordmark variant="art" className="h-[23px] w-[6.4rem] text-foreground" />
               </Link>
-              <p className="mx-auto mt-2 max-w-[15.5rem] text-xs leading-5 text-muted-foreground">
+              <p className="mx-auto mt-2.5 max-w-[16.75rem] text-[13px] leading-5 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
-              <div className="mx-auto mt-4 grid min-w-0 justify-items-center gap-2 text-[11px] leading-none text-muted-foreground">
+              <div className="mx-auto mt-4 grid min-w-0 justify-items-center gap-2.5 text-xs leading-none text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="flex min-w-0 items-center justify-center gap-2 focus:outline-none"
                 >
-                  <LocalIcon name="mail" className="h-4 w-4 shrink-0 text-foreground/55" />
+                  <LocalIcon name="mail" className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55" />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="flex min-w-0 items-center justify-center gap-2 whitespace-nowrap focus:outline-none"
                 >
-                  <LocalIcon name="phone" className="h-4 w-4 shrink-0 text-foreground/55" />
+                  <LocalIcon name="phone" className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55" />
                   <span>{CONTACT_PHONE}</span>
                 </a>
               </div>
-              <div className="mt-4 flex items-center justify-center gap-2">
+              <div className="mt-4 flex items-center justify-center gap-2.5">
                 {SOCIAL_LINKS.map((item) => (
                   <a
                     key={item.label}
@@ -375,7 +374,7 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                   >
                     <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
                   </a>
@@ -386,11 +385,11 @@ export function Footer() {
             <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group border-b border-black/10">
-                  <summary className="relative flex cursor-pointer list-none items-center justify-center py-4 text-center text-[13px] font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
+                  <summary className="relative flex cursor-pointer list-none items-center justify-center py-4 text-center text-sm font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-center gap-3">
                       <LocalIcon
                         name={MOBILE_FOOTER_SECTION_ICONS[section.title]}
-                        className="h-[1.1rem] w-[1.1rem] text-foreground/90"
+                        className="h-[1.15rem] w-[1.15rem] text-foreground/90"
                       />
                       {section.title}
                     </span>
@@ -402,7 +401,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="flex items-center gap-2.5 py-2 text-sm text-muted-foreground focus:outline-none"
+                          className="flex items-center gap-2.5 py-2.5 text-[15px] text-muted-foreground focus:outline-none"
                         >
                           <LocalIcon
                             name={MOBILE_FOOTER_LINK_ICONS[link.href]}
@@ -418,7 +417,7 @@ export function Footer() {
             </nav>
 
             <section className="pb-1 pt-5 text-center">
-              <h2 className="text-[12px] font-medium leading-4 text-foreground/82">We accept</h2>
+              <h2 className="text-[13px] font-medium leading-4 text-foreground/82">We accept</h2>
               <div className="mt-2 flex items-center justify-center gap-x-4 py-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -438,7 +437,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="w-full border-t border-black/8 py-3 text-[10px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block xl:text-[11px]">
+        <div className="w-full border-t border-black/8 py-3 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             <p className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap lg:justify-start">
               <span>&copy; {new Date().getFullYear()} Boilabin</span>
