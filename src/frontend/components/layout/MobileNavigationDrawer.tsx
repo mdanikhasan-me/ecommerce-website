@@ -89,27 +89,27 @@ export function MobileNavigationDrawer({
 
           <section
             aria-label="Authenticity promise"
-            className="relative mt-4 aspect-[2.86/1] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(circle_at_78%_44%,rgba(72,92,126,0.26),transparent_34%),linear-gradient(135deg,#080b11_0%,#121722_56%,#07080c_100%)]"
+            className="relative mt-4 h-[6.35rem] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(circle_at_78%_45%,rgba(82,106,145,0.28),transparent_34%),linear-gradient(135deg,#070a10_0%,#111824_58%,#06070b_100%)]"
           >
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04),transparent_56%)]" />
-            <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4">
-              <div className="min-w-0 text-white">
-                <p className="text-[20px] font-semibold leading-[1.05] tracking-normal">
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.045),transparent_58%)]" />
+            <div className="relative z-10 flex h-full items-center px-4 pr-[4.35rem] text-white min-[390px]:pr-[5.45rem]">
+              <div className="min-w-0">
+                <p className="whitespace-nowrap text-[16px] font-semibold leading-[1.05] tracking-normal min-[390px]:text-[20px]">
                   100% Authentic
                 </p>
                 <p className="mt-1.5 text-[10.5px] font-normal leading-[0.95rem] text-white/82">
                   Quality you can rely on.
                 </p>
               </div>
-              <div className="relative h-[4.85rem] w-[4.85rem] shrink-0">
-                <Image
-                  src="/assets/banners/mobile-menu-authentic-shield.webp"
-                  alt=""
-                  fill
-                  sizes="5rem"
-                  className="object-contain"
-                />
-              </div>
+            </div>
+            <div className="absolute right-3 top-1/2 h-[3.85rem] w-[3.85rem] -translate-y-1/2 min-[390px]:h-[4.65rem] min-[390px]:w-[4.65rem]">
+              <Image
+                src="/assets/banners/mobile-menu-authentic-shield.webp"
+                alt=""
+                fill
+                sizes="5rem"
+                className="object-contain"
+              />
             </div>
           </section>
         </div>
