@@ -6,6 +6,7 @@ import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
+const TRUSTPILOT_REVIEW_URL = 'https://www.trustpilot.com/review/boilabin.com'
 
 const WHATSAPP_LINK = { icon: 'whatsapp', href: WHATSAPP_URL, label: 'WhatsApp' } as const satisfies {
   icon: StorefrontIconName
@@ -143,6 +144,23 @@ const BOTTOM_LEGAL_LINKS = [
   { label: 'Terms of Use', href: '/terms' },
   { label: 'Sitemap', href: '/sitemap.xml' },
 ]
+
+function TrustpilotReviewLine({ className = '' }: { className?: string }) {
+  return (
+    <p className={`flex items-center gap-1.5 text-xs leading-4 text-muted-foreground ${className}`}>
+      <span>See our reviews on</span>
+      <LocalIcon name="star-filled" className="h-3.5 w-3.5 text-[#00b67a]" />
+      <a
+        href={TRUSTPILOT_REVIEW_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-semibold text-foreground focus:outline-none"
+      >
+        Trustpilot
+      </a>
+    </p>
+  )
+}
 
 export function Footer() {
   return (
@@ -298,6 +316,7 @@ export function Footer() {
                         </a>
                       ))}
                     </div>
+                    <TrustpilotReviewLine className="mt-2.5 whitespace-nowrap" />
                   </div>
                   <div>
                     <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
@@ -406,6 +425,7 @@ export function Footer() {
                   </a>
                 ))}
               </div>
+              <TrustpilotReviewLine className="mt-2.5 justify-center whitespace-nowrap" />
             </section>
 
             <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
