@@ -74,14 +74,14 @@ export function MobileNavigationDrawer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex min-w-0 items-center justify-between gap-2 rounded-[0.58rem] border border-[#eeeeee] bg-white px-3 py-[0.74rem] text-[11.5px] font-[450] leading-[1.05rem] text-[#242129]"
+                  className="flex min-w-0 items-center gap-1.5 rounded-[0.58rem] border border-[#eeeeee] bg-white px-2.5 py-[0.74rem] text-left text-[11px] font-[450] leading-[1.05rem] text-[#242129]"
                   onClick={onClose}
                 >
-                  <span className="flex min-w-0 items-center gap-2.5">
-                    <LocalIcon name={item.icon} className="h-[1.05rem] w-[1.05rem] shrink-0 text-[#292630]" />
-                    <span className="truncate">{item.label}</span>
+                  <span className="flex min-w-0 flex-1 items-center gap-2">
+                    <LocalIcon name={item.icon} className="h-4 w-4 shrink-0 text-[#292630]" />
+                    <span className="min-w-0 whitespace-nowrap">{item.label}</span>
                   </span>
-                  <LocalIcon name="chevron-right" className="h-3 w-3 shrink-0 text-[#5f5a64]" />
+                  <LocalIcon name="chevron-right" className="ml-auto h-2.5 w-2.5 shrink-0 text-[#5f5a64]" />
                 </Link>
               ))}
             </div>
