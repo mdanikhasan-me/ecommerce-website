@@ -10,11 +10,10 @@ type ExtraDelegate<T> = {
   delete: (args: any) => Promise<any>
 }
 
-// Temporary shim: `contactMessage` and `newsletterSubscriber` exist in schema.prisma
+// Temporary shim: `contactMessage` exists in schema.prisma
 // but the Prisma client types may lag until `prisma generate` is re-run (dev server can lock the DLL on Windows).
 type ExtendedPrisma = PrismaClient & {
   contactMessage: ExtraDelegate<{ name: string; email: string; subject: string; message: string; isHandled?: boolean }>
-  newsletterSubscriber: ExtraDelegate<{ email: string; source?: string | null; isActive?: boolean }>
 }
 
 const globalForPrisma = globalThis as unknown as {

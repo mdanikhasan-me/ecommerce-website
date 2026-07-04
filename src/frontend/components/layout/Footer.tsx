@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
-import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -316,28 +315,7 @@ export function Footer() {
               </nav>
             </div>
 
-            <section className="grid items-center gap-4 border-y border-black/8 py-5 min-[700px]:grid-cols-[minmax(0,0.9fr)_minmax(19rem,1.1fr)] min-[820px]:gap-7">
-              <div className="flex min-w-0 items-center gap-3 text-muted-foreground">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/[0.06] text-primary">
-                  <LocalIcon name="mail" className="h-5 w-5" />
-                </span>
-                <div className="min-w-0">
-                  <h2 className="text-sm font-semibold text-foreground">Stay in the loop</h2>
-                  <p className="mt-1 text-xs leading-5">Get updates on new arrivals and offers.</p>
-                </div>
-              </div>
-              <div className="w-full min-[700px]:ml-auto min-[700px]:max-w-[28rem]">
-                <HomepageNewsletterForm
-                  variant="light"
-                  source="footer"
-                  layout="inline"
-                  density="spacious"
-                  submitDisplay="icon"
-                />
-              </div>
-            </section>
-
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 py-4 min-[820px]:gap-8">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 border-t border-black/8 py-4 min-[820px]:gap-8">
               <div className="flex items-center gap-x-4 min-[820px]:gap-x-5">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -359,59 +337,59 @@ export function Footer() {
           </div>
 
           <div className="min-[560px]:hidden">
-            <section aria-label="Boilabin contact">
-              <div className="flex items-center justify-between gap-4">
-                <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                  <span className="font-display text-[1.08rem] font-semibold leading-none tracking-normal text-foreground">
-                    Boilabin
-                  </span>
-                </Link>
-                <div className="flex items-center gap-1.5">
-                  {SOCIAL_LINKS.map((item) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      target={item.href.startsWith('http') ? '_blank' : undefined}
-                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      aria-label={item.label}
-                      className="flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
-                    >
-                      <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-              <div className="mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 text-[11px] leading-none text-muted-foreground">
+            <section aria-label="Boilabin contact" className="text-center">
+              <Link href="/" className="inline-flex justify-center" aria-label="Boilabin home">
+                <span className="font-display text-[1.14rem] font-semibold leading-none tracking-normal text-foreground">
+                  Boilabin
+                </span>
+              </Link>
+              <p className="mx-auto mt-2 max-w-[15.5rem] text-xs leading-5 text-muted-foreground">
+                Everyday finds. Best deals. Delivered across Bangladesh.
+              </p>
+              <div className="mx-auto mt-4 grid min-w-0 justify-items-center gap-2 text-[11px] leading-none text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="flex min-w-0 items-center gap-2 focus:outline-none"
+                  className="flex min-w-0 items-center justify-center gap-2 focus:outline-none"
                 >
                   <LocalIcon name="mail" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
-                <span aria-hidden="true" className="h-5 w-px bg-black/10" />
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="flex min-w-0 justify-self-end items-center gap-2 whitespace-nowrap focus:outline-none"
+                  className="flex min-w-0 items-center justify-center gap-2 whitespace-nowrap focus:outline-none"
                 >
                   <LocalIcon name="phone" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span>{CONTACT_PHONE}</span>
                 </a>
+              </div>
+              <div className="mt-4 flex items-center justify-center gap-2">
+                {SOCIAL_LINKS.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={item.label}
+                    className="flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
+                  >
+                    <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                  </a>
+                ))}
               </div>
             </section>
 
             <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group border-b border-black/10">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[13px] font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
-                    <span className="flex items-center gap-3">
+                  <summary className="relative flex cursor-pointer list-none items-center justify-center py-4 text-center text-[13px] font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
+                    <span className="flex items-center justify-center gap-3">
                       <LocalIcon
                         name={MOBILE_FOOTER_SECTION_ICONS[section.title]}
                         className="h-[1.1rem] w-[1.1rem] text-foreground/90"
                       />
                       {section.title}
                     </span>
-                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
+                    <LocalIcon name="chevron-down" className="absolute right-0 h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
                   </summary>
                   <ul className="ml-9 divide-y divide-black/8 pb-3">
                     {section.links.map((link) => (
@@ -434,23 +412,9 @@ export function Footer() {
               ))}
             </nav>
 
-            <section className="pt-5">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/[0.07] text-primary">
-                  <LocalIcon name="mail" className="h-[1.1rem] w-[1.1rem]" />
-                </span>
-                <div className="min-w-0">
-                  <h2 className="text-[13px] font-semibold text-foreground/90">Stay in the loop</h2>
-                  <p className="mt-0.5 text-[10px] leading-4 text-muted-foreground">Get updates on new arrivals and offers.</p>
-                </div>
-              </div>
-              <div className="mt-3 [&_button]:h-9 [&_button]:w-9 [&_input]:h-9 [&_input]:text-[11px]">
-                <HomepageNewsletterForm variant="light" source="footer" layout="inline" />
-              </div>
-            </section>
-
-            <section className="pb-1 pt-5">
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 py-1">
+            <section className="pb-1 pt-5 text-center">
+              <h2 className="text-[12px] font-medium leading-4 text-foreground/82">Payment methods</h2>
+              <div className="mt-2 flex items-center justify-center gap-x-4 py-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
                     key={method.alt}

@@ -4,14 +4,12 @@ import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 import { ProductCardData } from '@/backend/types/product'
 import { calculateDiscount, formatPrice } from '@/backend/utils'
-import { HomepageNewsletterForm } from '@/frontend/components/layout/NewsletterForm'
 import { FeaturedProductRotator } from '@/frontend/components/home/FeaturedProductRotator'
 
 interface PromoSectionProps {
   newArrivalProducts: ProductCardData[]
   newArrivalRotatorProducts?: ProductCardData[]
 }
-
 type PromoCollection = {
   href: string
   label: string
@@ -23,7 +21,6 @@ type PromoCollection = {
   products: ProductCardData[]
   rotatorProducts: ProductCardData[]
 }
-
 export function PromoSection({
   newArrivalProducts,
   newArrivalRotatorProducts,
@@ -72,7 +69,6 @@ export function PromoSection({
     </section>
   )
 }
-
 function PromoTextPanel({
   collection,
 }: {
@@ -204,32 +200,5 @@ function PromoProductPreview({
         </div>
       </div>
     </div>
-  )
-}
-
-export function NewsletterSection() {
-  return (
-    <section>
-      <div className="container-site pt-4 pb-8 sm:pt-6 sm:pb-10 lg:pb-12">
-        <div className="w-full overflow-hidden rounded-[1.45rem] border border-black/6 bg-[linear-gradient(135deg,#2f1f42_0%,#5b3c7a_52%,#cbb7a3_170%)] px-5 py-8 shadow-[0_12px_28px_rgba(27,20,18,0.08)] sm:rounded-[1.8rem] sm:px-8 lg:px-10 xl:flex xl:items-center xl:justify-between xl:gap-12 xl:px-14 xl:py-10 2xl:px-16">
-          <div className="mx-auto max-w-2xl text-center xl:mx-0 xl:max-w-[33rem] xl:text-left">
-            <div className="mb-3 flex items-center justify-center gap-2 xl:justify-start">
-              <LocalIcon name="mail" className="h-4 w-4 text-[hsl(var(--buttermilk))]" />
-              <span className="text-[hsl(var(--buttermilk))] text-xs font-semibold uppercase tracking-[0.26em]">Newsletter</span>
-            </div>
-            <h2 className="font-display text-[1.8rem] font-bold leading-[0.96] text-white sm:text-[2.2rem] xl:text-[2.5rem]">
-              Get new arrivals and selected offers first.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-white/76">
-              Receive launch alerts, selected offers, and useful updates without the clutter.
-            </p>
-          </div>
-          <div className="mx-auto mt-6 w-full max-w-[42rem] xl:mx-0 xl:mt-0 xl:flex-1 2xl:max-w-[48rem]">
-            <HomepageNewsletterForm />
-            <p className="mt-2.5 text-center text-xs text-white/52 xl:text-left">No spam. Unsubscribe anytime.</p>
-          </div>
-        </div>
-      </div>
-    </section>
   )
 }

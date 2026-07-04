@@ -777,11 +777,3 @@ model ContactMessage {
   @@index([createdAt])
   @@index([isHandled])
 }
-
-model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  source    String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-}
