@@ -163,7 +163,7 @@ function TrustpilotReviewLine({ className = '' }: { className?: string }) {
           height={21}
           loading="eager"
           decoding="async"
-          className="block h-auto w-[7.35rem] max-w-none object-contain"
+          className="block h-auto w-[5.45rem] max-w-none object-contain"
         />
       </a>
     </p>
