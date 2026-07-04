@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import type { Session } from 'next-auth'
 import { cn } from '@/backend/utils'
 import { HeaderAvatar } from '@/frontend/components/layout/HeaderAvatar'
-import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
+import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { AriaExpandedButton } from '@/frontend/components/ui/AriaExpandedButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore } from '@/frontend/stores/cart'
@@ -324,7 +324,7 @@ export function Header() {
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <BoilabinLogo variant="wordmark" size={34} className="h-[34px] w-auto" />
+            <BrandWordmark variant="art" className="h-[34px] w-[150px] text-foreground" />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
@@ -507,10 +507,9 @@ export function Header() {
             aria-label="Boilabin home"
             className="flex min-w-0 justify-self-center"
           >
-            <BoilabinLogo
-              variant="wordmark"
-              size={24}
-              className="h-auto w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
+            <BrandWordmark
+              variant="art"
+              className="h-[19px] w-[5.25rem] text-foreground min-[375px]:h-[22px] min-[375px]:w-24 min-[390px]:h-6 min-[390px]:w-[6.625rem]"
             />
           </Link>
 

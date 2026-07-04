@@ -297,7 +297,7 @@
 
   .brand-wordmark-art {
     display: inline-block;
-    aspect-ratio: 420 / 105;
+    aspect-ratio: 1248 / 282;
     background-color: currentColor;
     vertical-align: middle;
     -webkit-mask-image: url('/assets/branding/boilabin-logo-wordmark.png');
