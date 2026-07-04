@@ -16,7 +16,7 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function ContactPage() {
   return (
-    <div className="container-site py-8 sm:py-10 lg:py-16">
+    <div className="bg-white">
       <JsonLd
         data={[
           generateWebPageJsonLd({
@@ -32,18 +32,16 @@ export default function ContactPage() {
           generateOrganizationJsonLd(),
         ]}
       />
-      <header className="max-w-[48rem]">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground sm:text-[11px]">Contact</p>
-        <h1 className="mt-3 font-display text-[1.75rem] font-semibold leading-[1.12] tracking-tight text-foreground sm:text-[2.5rem]">
-          Talk to us.
-        </h1>
-        <p className="mt-5 max-w-[22rem] text-[13px] leading-7 text-muted-foreground sm:mt-4 sm:max-w-[49rem] sm:text-[17px] sm:leading-8">
-          Question about an order, a return, a product, or your account? Message us on WhatsApp, call during business
-          hours, or send the form below.
-        </p>
-      </header>
+      <div className="container-site py-10 sm:py-12 lg:py-16">
+        <header className="mx-auto max-w-[42rem] text-center">
+          <h1 className="font-display text-[2rem] font-medium leading-tight tracking-normal text-[#20232d] sm:text-[2.55rem]">
+            Get In Touch
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-[#4b5563] sm:text-[15px]">
+            Whether it is a question about products, shipping, returns, or anything else, our team is happy to help.
+          </p>
+        </header>
 
-      <div className="mt-9 lg:mt-12">
         <ContactForm />
       </div>
     </div>
