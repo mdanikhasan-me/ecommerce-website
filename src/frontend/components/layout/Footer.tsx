@@ -7,6 +7,7 @@ import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
 const TRUSTPILOT_REVIEW_URL = 'https://www.trustpilot.com/review/boilabin.com'
+const TRUSTPILOT_ICON_SRC = '/assets/icons/social/trustpilot.svg'
 
 const WHATSAPP_LINK = { icon: 'whatsapp', href: WHATSAPP_URL, label: 'WhatsApp' } as const satisfies {
   icon: StorefrontIconName
@@ -149,14 +150,21 @@ function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   return (
     <p className={`flex items-center gap-1.5 text-xs leading-4 text-muted-foreground ${className}`}>
       <span>See our reviews on</span>
-      <LocalIcon name="star-filled" className="h-3.5 w-3.5 text-[#00b67a]" />
       <a
         href={TRUSTPILOT_REVIEW_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-semibold text-foreground focus:outline-none"
+        className="inline-flex items-center focus:outline-none"
       >
-        Trustpilot
+        <img
+          src={TRUSTPILOT_ICON_SRC}
+          alt="Trustpilot"
+          width={82}
+          height={20}
+          loading="lazy"
+          decoding="async"
+          className="h-4 w-auto object-contain"
+        />
       </a>
     </p>
   )
