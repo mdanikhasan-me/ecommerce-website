@@ -42,10 +42,6 @@
     --ring: 270 36% 18%;
     --buttermilk: 39 28% 92%;
     --footer-surface: 60 11% 96.5%;
-    --footer-heading: 38 24% 93%;
-    --footer-link: 31 15% 80%;
-    --footer-muted: 28 9% 70%;
-
     --radius: 0.5rem;
   }
 
@@ -751,53 +747,6 @@
   }
 
 @layer components {
-  .footer-heading {
-    color: hsl(var(--footer-heading));
-  }
-
-  .footer-muted {
-    color: hsl(var(--footer-muted));
-  }
-
-  .footer-link {
-    color: hsl(var(--footer-link));
-    transition:
-      color 180ms ease,
-      border-color 180ms ease,
-      background-color 180ms ease;
-  }
-
-  .footer-link:focus-visible {
-    color: hsl(var(--buttermilk));
-  }
-
-  .footer-social {
-    color: hsl(var(--footer-link));
-    border-color: hsl(var(--border) / 0.18);
-    transition:
-      color 180ms ease,
-      border-color 180ms ease,
-      background-color 180ms ease;
-  }
-
-  .footer-social:focus-visible {
-    color: hsl(var(--buttermilk));
-    border-color: hsl(var(--buttermilk) / 0.26);
-    background: hsl(var(--buttermilk) / 0.05);
-  }
-
-  @media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
-    .footer-link:hover {
-      color: hsl(var(--buttermilk));
-    }
-
-    .footer-social:hover {
-      color: hsl(var(--buttermilk));
-      border-color: hsl(var(--buttermilk) / 0.26);
-      background: hsl(var(--buttermilk) / 0.05);
-    }
-  }
-
   .section-kicker {
     color: hsl(var(--primary) / 0.72);
     font-size: 0.74rem;

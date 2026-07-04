@@ -186,7 +186,7 @@ export function Footer() {
                     target={item.href.startsWith('http') ? '_blank' : undefined}
                     rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     aria-label={item.label}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors min-[1025px]:hover:bg-primary/8 min-[1025px]:hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                   >
                     <LocalIcon name={item.icon} className="h-4 w-4" />
                   </a>
@@ -209,7 +209,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="text-sm leading-5 text-muted-foreground transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                          className="text-sm leading-5 text-muted-foreground focus:outline-none"
                         >
                           {link.label}
                         </Link>
@@ -229,7 +229,7 @@ export function Footer() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={item.label}
-                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground focus:outline-none min-[1025px]:hover:text-foreground"
                       >
                         <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
                         {item.label}
@@ -258,14 +258,14 @@ export function Footer() {
                 <div className="mt-5 space-y-3 text-xs text-muted-foreground min-[820px]:text-sm">
                   <a
                     href={`mailto:${CONTACT_EMAIL}`}
-                    className="flex min-w-0 items-center gap-2 transition-colors focus-visible:text-foreground"
+                    className="flex min-w-0 items-center gap-2 focus:outline-none"
                   >
                     <LocalIcon name="mail" className="h-4 w-4 text-primary/70" />
                     <span className="truncate">{CONTACT_EMAIL}</span>
                   </a>
                   <a
                     href={`tel:${CONTACT_PHONE}`}
-                    className="flex items-center gap-2 whitespace-nowrap transition-colors focus-visible:text-foreground"
+                    className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
                   >
                     <LocalIcon name="phone" className="h-4 w-4 text-primary/70" />
                     {CONTACT_PHONE}
@@ -280,7 +280,7 @@ export function Footer() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={item.label}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground transition-colors focus-visible:text-primary min-[820px]:h-9 min-[820px]:w-9"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
                     >
                       <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
                     </a>
@@ -304,7 +304,7 @@ export function Footer() {
                           <Link
                             href={link.href}
                             prefetch={link.prefetch}
-                            className="transition-colors focus-visible:text-foreground"
+                            className="focus:outline-none"
                           >
                             {link.label}
                           </Link>
@@ -374,7 +374,7 @@ export function Footer() {
                       target={item.href.startsWith('http') ? '_blank' : undefined}
                       rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       aria-label={item.label}
-                      className="flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full bg-black/5 text-foreground focus-visible:text-primary"
+                      className="flex h-[1.875rem] w-[1.875rem] items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                     >
                       <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
                     </a>
@@ -384,7 +384,7 @@ export function Footer() {
               <div className="mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 text-[11px] leading-none text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="flex min-w-0 items-center gap-2 focus-visible:text-foreground"
+                  className="flex min-w-0 items-center gap-2 focus:outline-none"
                 >
                   <LocalIcon name="mail" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
@@ -392,7 +392,7 @@ export function Footer() {
                 <span aria-hidden="true" className="h-5 w-px bg-black/10" />
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="flex min-w-0 justify-self-end items-center gap-2 whitespace-nowrap focus-visible:text-foreground"
+                  className="flex min-w-0 justify-self-end items-center gap-2 whitespace-nowrap focus:outline-none"
                 >
                   <LocalIcon name="phone" className="h-4 w-4 shrink-0 text-foreground/55" />
                   <span>{CONTACT_PHONE}</span>
@@ -403,7 +403,7 @@ export function Footer() {
             <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
                 <details key={section.title} className="group border-b border-black/10">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[13px] font-medium text-foreground/90 focus:outline-none focus-visible:bg-black/[0.02] [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-[13px] font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center gap-3">
                       <LocalIcon
                         name={MOBILE_FOOTER_SECTION_ICONS[section.title]}
@@ -411,7 +411,7 @@ export function Footer() {
                       />
                       {section.title}
                     </span>
-                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-foreground/90 transition-transform group-open:rotate-180" />
+                    <LocalIcon name="chevron-down" className="h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
                   </summary>
                   <ul className="ml-9 divide-y divide-black/8 pb-3">
                     {section.links.map((link) => (
@@ -419,7 +419,7 @@ export function Footer() {
                         <Link
                           href={link.href}
                           prefetch={link.prefetch}
-                          className="flex items-center gap-2.5 py-2 text-sm text-muted-foreground transition-colors focus-visible:text-foreground"
+                          className="flex items-center gap-2.5 py-2 text-sm text-muted-foreground focus:outline-none"
                         >
                           <LocalIcon
                             name={MOBILE_FOOTER_LINK_ICONS[link.href]}
@@ -494,7 +494,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                  className="focus:outline-none"
                 >
                   {link.label}
                 </Link>
