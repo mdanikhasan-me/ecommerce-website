@@ -148,23 +148,24 @@ const BOTTOM_LEGAL_LINKS = [
 
 function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   return (
-    <p className={`flex items-center gap-1.5 text-xs leading-4 text-muted-foreground ${className}`}>
+    <p className={`flex items-center gap-1.5 text-sm leading-5 text-muted-foreground ${className}`}>
       <span>See our reviews on</span>
       <a
         href={TRUSTPILOT_REVIEW_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center focus:outline-none"
+        className="inline-flex h-5 items-center gap-1 font-semibold text-foreground focus:outline-none"
       >
         <img
           src={TRUSTPILOT_ICON_SRC}
-          alt="Trustpilot"
-          width={82}
-          height={20}
-          loading="lazy"
+          alt=""
+          width={16}
+          height={16}
+          loading="eager"
           decoding="async"
-          className="h-4 w-auto object-contain"
+          className="block h-4 w-4 object-contain"
         />
+        <span>Trustpilot</span>
       </a>
     </p>
   )
@@ -400,10 +401,10 @@ export function Footer() {
               <Link href="/" className="inline-flex justify-center" aria-label="Boilabin home">
                 <BrandWordmark variant="art" className="h-[23px] w-[6.4rem] text-foreground" />
               </Link>
-              <p className="mx-auto mt-2.5 max-w-[16.75rem] text-[13px] leading-5 text-muted-foreground">
+              <p className="mx-auto mt-2.5 max-w-[17.5rem] text-[15px] leading-6 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
-              <div className="mx-auto mt-4 grid min-w-0 justify-items-center gap-2.5 text-xs leading-none text-muted-foreground">
+              <div className="mx-auto mt-4 grid min-w-0 justify-items-center gap-2.5 text-sm leading-none text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="flex min-w-0 items-center justify-center gap-2 focus:outline-none"
