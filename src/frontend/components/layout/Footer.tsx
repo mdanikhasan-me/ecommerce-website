@@ -160,7 +160,7 @@ export function Footer() {
                 </div>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
                 >
                   <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
                     <LocalIcon name="phone" className="h-3.5 w-3.5" />
@@ -169,7 +169,7 @@ export function Footer() {
                 </a>
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
                 >
                   <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
                     <LocalIcon name="mail" className="h-3.5 w-3.5" />
