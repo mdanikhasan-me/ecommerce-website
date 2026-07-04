@@ -89,15 +89,28 @@ export function MobileNavigationDrawer({
 
           <section
             aria-label="Authenticity promise"
-            className="relative mt-4 aspect-[2.86/1] overflow-hidden rounded-[0.72rem] bg-black"
+            className="relative mt-4 aspect-[2.86/1] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(circle_at_78%_44%,rgba(72,92,126,0.26),transparent_34%),linear-gradient(135deg,#080b11_0%,#121722_56%,#07080c_100%)]"
           >
-            <Image
-              src="/assets/banners/mobile-menu-authentic.webp"
-              alt="100% Authentic. Original products. Quality you can rely on."
-              fill
-              sizes="(max-width: 640px) 18rem, 20rem"
-              className="object-cover"
-            />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04),transparent_56%)]" />
+            <div className="relative z-10 flex h-full items-center justify-between gap-3 px-4">
+              <div className="min-w-0 text-white">
+                <p className="text-[20px] font-semibold leading-[1.05] tracking-normal">
+                  100% Authentic
+                </p>
+                <p className="mt-1.5 text-[10.5px] font-normal leading-[0.95rem] text-white/82">
+                  Quality you can rely on.
+                </p>
+              </div>
+              <div className="relative h-[4.85rem] w-[4.85rem] shrink-0">
+                <Image
+                  src="/assets/banners/mobile-menu-authentic-shield.webp"
+                  alt=""
+                  fill
+                  sizes="5rem"
+                  className="object-contain"
+                />
+              </div>
+            </div>
           </section>
         </div>
       </aside>
