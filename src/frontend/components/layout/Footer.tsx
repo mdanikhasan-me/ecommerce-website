@@ -1,17 +1,25 @@
 import Link from 'next/link'
 import { PAYMENT_ASSETS } from '@/shared/assets'
-import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL } from '@/shared/contact'
+import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/shared/contact'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
 
+const WHATSAPP_LINK = { icon: 'whatsapp', href: WHATSAPP_URL, label: 'WhatsApp' } as const satisfies {
+  icon: StorefrontIconName
+  href: string
+  label: string
+}
+
 const SOCIAL_LINKS = [
   { icon: 'facebook', href: FACEBOOK_URL, label: 'Facebook' },
   { icon: 'instagram', href: INSTAGRAM_URL, label: 'Instagram' },
   { icon: 'youtube', href: YOUTUBE_URL, label: 'YouTube' },
 ] as const satisfies ReadonlyArray<{ icon: StorefrontIconName; href: string; label: string }>
+
+const SOCIAL_AND_CONTACT_LINKS = [...SOCIAL_LINKS, WHATSAPP_LINK] as const
 
 // Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
@@ -179,7 +187,7 @@ export function Footer() {
               </div>
               {/* Mobile only: social icons stay under the address. On desktop they move to the Social column. */}
               <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
-                {SOCIAL_LINKS.map((item) => (
+                {SOCIAL_AND_CONTACT_LINKS.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
@@ -222,7 +230,7 @@ export function Footer() {
               <div>
                 <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">Social</h2>
                 <ul className="mt-2 space-y-2.5">
-                  {SOCIAL_LINKS.map((item) => (
+                  {SOCIAL_AND_CONTACT_LINKS.map((item) => (
                     <li key={item.label}>
                       <a
                         href={item.href}
@@ -271,20 +279,36 @@ export function Footer() {
                     {CONTACT_PHONE}
                   </a>
                 </div>
-                <h2 className="mt-5 text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
-                <div className="mt-2.5 flex items-center gap-2.5">
-                  {SOCIAL_LINKS.map((item) => (
+                <div className="mt-5 grid grid-cols-2 gap-4">
+                  <div>
+                    <h2 className="text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
+                    <div className="mt-2.5 flex items-center gap-2.5">
+                      {SOCIAL_LINKS.map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={item.label}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
+                        >
+                          <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
                     <a
-                      key={item.label}
-                      href={item.href}
+                      href={WHATSAPP_LINK.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={item.label}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
+                      aria-label={WHATSAPP_LINK.label}
+                      className="mt-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none min-[820px]:h-9 min-[820px]:w-9"
                     >
-                      <LocalIcon name={item.icon} className="h-3.5 w-3.5" />
+                      <LocalIcon name={WHATSAPP_LINK.icon} className="h-3.5 w-3.5" />
                     </a>
-                  ))}
+                  </div>
                 </div>
               </section>
 
@@ -367,7 +391,7 @@ export function Footer() {
                 </a>
               </div>
               <div className="mt-4 flex items-center justify-center gap-2.5">
-                {SOCIAL_LINKS.map((item) => (
+                {SOCIAL_AND_CONTACT_LINKS.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
