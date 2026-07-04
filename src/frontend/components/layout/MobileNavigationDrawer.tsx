@@ -38,7 +38,7 @@ export function MobileNavigationDrawer({
         aria-modal="true"
         aria-label="Mobile navigation"
         className={cn(
-          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.625rem] transform-gpu overflow-hidden bg-white outline-none transition-transform duration-150 ease-out will-change-transform focus:outline-none motion-reduce:transition-none',
+          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.625rem] overflow-hidden bg-white outline-none transition-transform duration-150 ease-out focus:outline-none motion-reduce:transition-none',
           isVisible ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -74,7 +74,7 @@ export function MobileNavigationDrawer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex min-w-0 items-center gap-1.5 rounded-[0.58rem] border border-[#eeeeee] bg-white px-2.5 py-[0.74rem] text-left text-[11px] font-[450] leading-[1.05rem] text-[#242129]"
+                  className="flex min-w-0 items-center gap-1.5 rounded-[0.58rem] border border-[#eeeeee] bg-white px-2.5 py-[0.7rem] text-left text-[12px] font-medium leading-[1.1rem] text-[#201e26]"
                   onClick={onClose}
                 >
                   <span className="flex min-w-0 flex-1 items-center gap-2">
