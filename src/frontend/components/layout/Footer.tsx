@@ -250,10 +250,10 @@ export function Footer() {
           </div>
 
           <div className="hidden min-[560px]:block xl:hidden">
-            <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(12.5rem,0.65fr)_minmax(0,1.35fr)] min-[820px]:gap-8 min-[1024px]:gap-12">
+            <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] min-[820px]:gap-8 min-[1024px]:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.28fr)] min-[1024px]:gap-12">
               <section
                 aria-label="Boilabin contact"
-                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-6 min-[820px]:pr-8"
+                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-5 min-[820px]:pr-6"
               >
                 <div className="min-w-0">
                   <Link href="/" className="inline-flex" aria-label="Boilabin home">
@@ -281,9 +281,9 @@ export function Footer() {
                     </a>
                   </div>
                 </div>
-                <div className="mt-5 grid grid-cols-[auto_auto] justify-start gap-6 min-[560px]:mt-0 min-[700px]:mt-5 min-[820px]:gap-8">
+                <div className="mt-5 grid grid-cols-[auto_auto] justify-start gap-4 min-[560px]:mt-0 min-[700px]:mt-5 min-[820px]:gap-5 min-[1024px]:gap-6">
                   <div>
-                    <h2 className="text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
+                    <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
                     <div className="mt-2.5 flex items-center gap-2.5">
                       {SOCIAL_LINKS.map((item) => (
                         <a
@@ -300,7 +300,7 @@ export function Footer() {
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
+                    <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
                     <a
                       href={WHATSAPP_LINK.href}
                       target="_blank"
