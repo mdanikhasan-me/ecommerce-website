@@ -151,28 +151,28 @@ export function Footer() {
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
-              <div className="mt-5 grid gap-3 text-sm font-semibold leading-5 text-foreground">
+              <div className="mt-4 grid gap-2.5 text-sm font-normal leading-5 text-muted-foreground">
                 <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
-                    <LocalIcon name="location" className="h-4 w-4" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
+                    <LocalIcon name="location" className="h-3.5 w-3.5" />
                   </span>
                   <span className="max-w-[13.5rem] text-balance">{CONTACT_ADDRESS}</span>
                 </div>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-primary focus-visible:text-primary"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
-                    <LocalIcon name="phone" className="h-4 w-4" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
+                    <LocalIcon name="phone" className="h-3.5 w-3.5" />
                   </span>
                   <span>{CONTACT_PHONE}</span>
                 </a>
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-primary focus-visible:text-primary"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 transition-colors min-[1025px]:hover:text-foreground focus-visible:text-foreground"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background">
-                    <LocalIcon name="mail" className="h-4 w-4" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
+                    <LocalIcon name="mail" className="h-3.5 w-3.5" />
                   </span>
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
