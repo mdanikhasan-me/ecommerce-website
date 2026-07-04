@@ -32,12 +32,12 @@ export default function ContactPage() {
           generateOrganizationJsonLd(),
         ]}
       />
-      <div className="container-site py-10 sm:py-12 lg:py-16">
-        <header className="mx-auto max-w-[42rem] text-center">
-          <h1 className="font-display text-[2rem] font-medium leading-tight tracking-normal text-[#20232d] sm:text-[2.55rem]">
+      <div className="container-site py-12 sm:py-14 lg:py-20">
+        <header className="mx-auto max-w-[48rem] text-center">
+          <h1 className="font-display text-[2.2rem] font-medium leading-tight tracking-normal text-[#20232d] sm:text-[2.85rem]">
             Get In Touch
           </h1>
-          <p className="mt-3 text-sm leading-6 text-[#4b5563] sm:text-[15px]">
+          <p className="mt-4 text-[15px] leading-7 text-[#4b5563] sm:text-base">
             Whether it is a question about products, shipping, returns, or anything else, our team is happy to help.
           </p>
         </header>

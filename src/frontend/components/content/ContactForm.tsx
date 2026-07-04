@@ -75,8 +75,8 @@ export function ContactForm() {
   }
 
   return (
-    <div className="mt-8 space-y-10 sm:mt-10 lg:mt-12 lg:space-y-14">
-      <section aria-label="Contact options" className="grid gap-5 sm:grid-cols-3">
+    <div className="mt-10 space-y-12 sm:mt-12 lg:mt-14 lg:space-y-16">
+      <section aria-label="Contact options" className="grid gap-6 sm:grid-cols-3">
         {CONTACT_ACTIONS.map((item) => (
           <ContactActionCard key={item.actionLabel} {...item} />
         ))}
@@ -84,50 +84,50 @@ export function ContactForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-[0.45rem] border border-[#e5e7eb] bg-white px-5 py-10 sm:px-8 lg:px-14 lg:py-[4.25rem]"
+        className="rounded-[0.45rem] border border-[#e5e7eb] bg-white px-6 py-12 sm:px-10 lg:px-16 lg:py-20"
       >
-        <div className="mx-auto max-w-[44rem] text-center">
-          <h2 className="font-display text-[1.8rem] font-medium leading-tight text-[#20232d] sm:text-[2.15rem]">
+        <div className="mx-auto max-w-[49rem] text-center">
+          <h2 className="font-display text-[2rem] font-medium leading-tight text-[#20232d] sm:text-[2.4rem]">
             Send Us
           </h2>
-          <p className="mt-3 text-xs leading-5 text-[#4b5563] sm:text-sm">
+          <p className="mt-3 text-sm leading-6 text-[#4b5563] sm:text-[15px]">
             Have a question or need help? We are just a message away.
           </p>
-          <div className="mx-auto mt-9 h-px max-w-[38rem] bg-[#e5e7eb]" />
+          <div className="mx-auto mt-10 h-px max-w-[42rem] bg-[#e5e7eb]" />
         </div>
 
-        <div className="mx-auto mt-8 grid max-w-[44rem] gap-4 sm:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-[49rem] gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="contact-name" className="mb-2 block text-xs font-medium text-[#374151]">Your name *</label>
+            <label htmlFor="contact-name" className="mb-2.5 block text-sm font-medium text-[#374151]">Your name *</label>
             <input
               id="contact-name"
               value={form.name}
               onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
               required
-              className="h-11 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-3 text-sm text-[#111827] outline-none focus:border-[#cfd4dc]"
+              className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
             />
           </div>
           <div>
-            <label htmlFor="contact-email" className="mb-2 block text-xs font-medium text-[#374151]">Your email *</label>
+            <label htmlFor="contact-email" className="mb-2.5 block text-sm font-medium text-[#374151]">Your email *</label>
             <input
               id="contact-email"
               type="email"
               value={form.email}
               onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
               required
-              className="h-11 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-3 text-sm text-[#111827] outline-none focus:border-[#cfd4dc]"
+              className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
             />
           </div>
         </div>
 
-        <div className="mx-auto mt-4 max-w-[44rem]">
-          <label htmlFor="contact-subject" className="mb-2 block text-xs font-medium text-[#374151]">Subject *</label>
+        <div className="mx-auto mt-5 max-w-[49rem]">
+          <label htmlFor="contact-subject" className="mb-2.5 block text-sm font-medium text-[#374151]">Subject *</label>
           <select
             id="contact-subject"
             value={form.subject}
             onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))}
             required
-            className="h-11 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-3 text-sm text-[#111827] outline-none focus:border-[#cfd4dc]"
+            className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
           >
             <option value="">Select a subject</option>
             <option>Order Issue</option>
@@ -138,23 +138,23 @@ export function ContactForm() {
           </select>
         </div>
 
-        <div className="mx-auto mt-4 max-w-[44rem]">
-          <label htmlFor="contact-message" className="mb-2 block text-xs font-medium text-[#374151]">Your message</label>
+        <div className="mx-auto mt-5 max-w-[49rem]">
+          <label htmlFor="contact-message" className="mb-2.5 block text-sm font-medium text-[#374151]">Your message</label>
           <textarea
             id="contact-message"
             value={form.message}
             onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
             rows={5}
             required
-            className="min-h-[8.75rem] w-full resize-none rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-3 py-3 text-sm text-[#111827] outline-none focus:border-[#cfd4dc]"
+            className="min-h-[10.5rem] w-full resize-none rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 py-3.5 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
           />
         </div>
 
-        <div className="mx-auto max-w-[44rem]">
+        <div className="mx-auto max-w-[49rem]">
           <button
             type="submit"
             disabled={sending}
-            className="mt-5 inline-flex h-11 min-w-[9.5rem] items-center justify-center gap-2 rounded-[0.18rem] bg-[#064e3b] px-5 text-sm font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
+            className="mt-6 inline-flex h-12 min-w-[10.5rem] items-center justify-center gap-2 rounded-[0.18rem] bg-[#064e3b] px-6 text-[15px] font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
           >
             <LocalIcon name="send" className="h-4 w-4" />
             {sending ? 'Sending...' : 'Send Message'}
@@ -162,7 +162,7 @@ export function ContactForm() {
         </div>
       </form>
 
-      <section aria-label="Support information" className="grid gap-5 sm:grid-cols-2">
+      <section aria-label="Support information" className="grid gap-6 sm:grid-cols-2">
         <ContactInfoBlock
           icon="clock"
           title="Support Hours"
@@ -196,17 +196,17 @@ function ContactActionCard({
   actionLabel: string
 }) {
   return (
-    <article className="grid min-h-[16.1rem] grid-rows-[auto_auto_auto_auto_1fr_auto] justify-items-center rounded-[0.35rem] border border-[#e5e7eb] bg-[#f4f5f8] px-5 py-7 text-center">
-      <LocalIcon name={icon} className="h-8 w-8 text-[#111827]" />
-      <h2 className="mt-5 text-sm font-semibold leading-5 text-[#111827]">{title}</h2>
-      <p className="mt-2 text-xs leading-5 text-[#111827]">{value}</p>
-      <p className="mt-1 max-w-[13rem] text-xs leading-5 text-[#4b5563]">{detail}</p>
+    <article className="grid min-h-[17.5rem] grid-rows-[auto_auto_auto_auto_1fr_auto] justify-items-center rounded-[0.35rem] border border-[#e5e7eb] bg-[#f4f5f8] px-6 py-8 text-center">
+      <LocalIcon name={icon} className="h-9 w-9 text-[#111827]" />
+      <h2 className="mt-6 text-base font-semibold leading-6 text-[#111827]">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-[#111827]">{value}</p>
+      <p className="mt-1 max-w-[14.5rem] text-sm leading-6 text-[#4b5563]">{detail}</p>
       <span aria-hidden="true" />
       <a
         href={href}
         target={href.startsWith('http') ? '_blank' : undefined}
         rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className="mt-5 inline-flex h-9 min-w-[8.5rem] items-center justify-center rounded-[0.18rem] border border-[#064e3b] px-4 text-xs font-semibold text-[#064e3b] outline-none"
+        className="mt-6 inline-flex h-10 min-w-[9.5rem] items-center justify-center rounded-[0.18rem] border border-[#064e3b] px-5 text-sm font-semibold text-[#064e3b] outline-none"
       >
         {actionLabel}
       </a>
@@ -226,14 +226,14 @@ function ContactInfoBlock({
   secondary: string
 }) {
   return (
-    <article className="flex items-start gap-4 bg-white py-2">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4f5f8] text-[#111827]">
+    <article className="flex items-start gap-5 bg-white py-3">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f4f5f8] text-[#111827]">
         <LocalIcon name={icon} className="h-5 w-5" />
       </span>
       <div className="min-w-0">
-        <h2 className="text-sm font-semibold text-[#111827]">{title}</h2>
-        <p className="mt-1 text-sm leading-6 text-[#374151]">{primary}</p>
-        <p className="text-xs leading-5 text-[#6b7280]">{secondary}</p>
+        <h2 className="text-base font-semibold text-[#111827]">{title}</h2>
+        <p className="mt-1.5 text-[15px] leading-6 text-[#374151]">{primary}</p>
+        <p className="text-sm leading-6 text-[#6b7280]">{secondary}</p>
       </div>
     </article>
   )
