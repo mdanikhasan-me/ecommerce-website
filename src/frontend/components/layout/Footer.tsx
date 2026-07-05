@@ -487,11 +487,7 @@ export async function Footer() {
 
         <div className="w-full border-t border-black/8 py-3 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-            <p className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap lg:justify-start">
-              <span>&copy; {new Date().getFullYear()} Boilabin</span>
-              <span>All rights reserved.</span>
-            </p>
-            <div className="hidden items-center justify-center gap-x-3 xl:flex">
+            <div className="hidden items-center justify-center gap-x-3 xl:col-start-2 xl:row-start-1 xl:flex">
               <span className="whitespace-nowrap text-[11px] font-medium text-foreground/82">We accept</span>
               <div className="flex items-center gap-x-4">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
@@ -508,7 +504,10 @@ export async function Footer() {
                 ))}
               </div>
             </div>
-            <div className="hidden min-[700px]:block" aria-hidden="true" />
+            <p className="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap xl:col-start-3 xl:row-start-1 xl:justify-end">
+              <span>&copy; {new Date().getFullYear()} Boilabin</span>
+              <span>All rights reserved.</span>
+            </p>
           </div>
         </div>
       </div>
