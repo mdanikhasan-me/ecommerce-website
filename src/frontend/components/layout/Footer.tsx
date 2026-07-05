@@ -183,7 +183,7 @@ function TrustpilotReviewLine({
 
 function FooterAppBadges({
   className = '',
-  imageClassName = 'h-9',
+  imageClassName = 'h-auto w-[7.5rem]',
   badgesClassName = 'mt-2.5 grid justify-start gap-2',
 }: {
   className?: string
@@ -208,7 +208,7 @@ function FooterAppBadges({
               height={badge.height}
               loading="lazy"
               decoding="async"
-              className={`${imageClassName} block w-auto object-contain`}
+              className={`${imageClassName} block max-w-none object-contain`}
             />
           </a>
         ))}
@@ -373,7 +373,6 @@ export async function Footer() {
                 </aside>
                 <FooterAppBadges
                   className="min-w-0 justify-self-end"
-                  imageClassName="h-8 min-[820px]:h-9"
                   badgesClassName="mt-2.5 grid justify-items-end gap-2"
                 />
               </div>
