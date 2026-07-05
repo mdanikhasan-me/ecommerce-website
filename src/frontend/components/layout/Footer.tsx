@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/shared/contact'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
@@ -23,6 +24,13 @@ const SOCIAL_LINKS = [
 ] as const satisfies ReadonlyArray<{ icon: StorefrontIconName; href: string; label: string }>
 
 const SOCIAL_AND_CONTACT_LINKS = [...SOCIAL_LINKS, WHATSAPP_LINK] as const
+
+const SESSION_COOKIE_PREFIXES = [
+  'authjs.session-token',
+  '__Secure-authjs.session-token',
+  'next-auth.session-token',
+  '__Secure-next-auth.session-token',
+] as const
 
 // Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
@@ -53,23 +61,34 @@ type FooterLinkSection = {
   }>
 }
 
+function isSessionCookieName(cookieName: string) {
+  return SESSION_COOKIE_PREFIXES.some((prefix) => {
+    if (cookieName === prefix) return true
+    const suffix = cookieName.slice(prefix.length)
+    return /^\.\d+$/.test(suffix)
+  })
+}
+
+async function hasAuthSessionCookie() {
+  const cookieStore = await cookies()
+  return cookieStore.getAll().some((cookie) => isSessionCookieName(cookie.name))
+}
+
 const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   {
     title: 'Shop',
     links: [
       { label: 'All categories', href: '/category' },
       { label: 'Featured Products', href: '/search?featured=true' },
-      { label: 'Best Sellers', href: '/search?bestSeller=true' },
       { label: 'New arrivals', href: '/new-arrivals' },
+      { label: 'Best Sellers', href: '/search?bestSeller=true' },
     ],
   },
   {
     title: 'Support',
     links: [
-      { label: 'About Us', href: '/about' },
       { label: 'Help center', href: '/help' },
       { label: 'Track order', href: '/track-order' },
-      { label: 'Shipping', href: '/shipping' },
       { label: 'Returns', href: '/returns' },
       { label: 'Contact', href: '/contact' },
     ],
@@ -84,6 +103,15 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
       { label: 'Wishlist', href: '/wishlist' },
     ],
   },
+  {
+    title: 'More',
+    links: [
+      { label: 'About Us', href: '/about' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Use', href: '/terms' },
+      { label: 'Sitemap', href: '/sitemap.xml' },
+    ],
+  },
 ]
 
 const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
@@ -95,9 +123,9 @@ const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/about': 'message-circle',
   '/privacy': 'shield',
   '/terms': 'receipt-text',
+  '/sitemap.xml': 'grid',
   '/help': 'help-circle',
   '/track-order': 'truck',
-  '/shipping': 'package',
   '/returns': 'refresh-ccw',
   '/contact': 'mail',
   '/category': 'grid-3x3',
@@ -113,44 +141,9 @@ const MOBILE_FOOTER_SECTION_ICONS: Record<string, StorefrontIconName> = {
   More: 'more-horizontal',
 }
 
-const TABLET_FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
-  FOOTER_LINK_SECTIONS[0],
-  {
-    ...FOOTER_LINK_SECTIONS[1],
-    links: FOOTER_LINK_SECTIONS[1].links.filter((link) => link.href !== '/about'),
-  },
-  FOOTER_LINK_SECTIONS[2],
-  {
-    title: 'More',
-    links: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Use', href: '/terms' },
-    ],
-  },
-]
-
-const MOBILE_FOOTER_LINK_SECTIONS: FooterLinkSection[] = TABLET_FOOTER_LINK_SECTIONS
-
-const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS.map((section) => {
-  if (section.title !== 'Support') return section
-
-  return {
-    ...section,
-    links: [
-      { label: 'About Us', href: '/about' },
-      { label: 'Help center', href: '/help' },
-      { label: 'Contact', href: '/contact' },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Refund Policy', href: '/returns#refund' },
-    ],
-  }
-})
-
-const BOTTOM_LEGAL_LINKS = [
-  { label: 'Terms of Use', href: '/terms' },
-  { label: 'Sitemap', href: '/sitemap.xml' },
-]
+const TABLET_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
+const MOBILE_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
+const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
 
 function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   return (
@@ -176,7 +169,9 @@ function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   )
 }
 
-export function Footer() {
+export async function Footer() {
+  const isInitiallyAuthenticated = await hasAuthSessionCookie()
+
   return (
     <footer className="storefront-footer border-t border-black/8 text-foreground">
       <div className="container-site">
@@ -217,7 +212,7 @@ export function Footer() {
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
               </div>
-              {/* Mobile only: social icons stay under the address. On desktop they move to the Social column. */}
+              {/* Mobile only: social icons stay under the address. Desktop uses More instead of a Social column. */}
               <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
                 {SOCIAL_AND_CONTACT_LINKS.map((item) => (
                   <a
@@ -244,7 +239,7 @@ export function Footer() {
                     {section.title}
                   </h2>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks variant="desktop" />
+                    <FooterAccountLinks variant="desktop" isInitiallyAuthenticated={isInitiallyAuthenticated} />
                   ) : (
                     <ul className="mt-2 space-y-1.5">
                       {section.links.map((link) => (
@@ -263,25 +258,6 @@ export function Footer() {
                 </div>
               ))}
 
-              <div>
-                <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">Social</h2>
-                <ul className="mt-2 space-y-2.5">
-                  {SOCIAL_AND_CONTACT_LINKS.map((item) => (
-                    <li key={item.label}>
-                      <a
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={item.label}
-                        className="inline-flex items-center gap-2.5 text-sm leading-5 text-muted-foreground focus:outline-none min-[1025px]:hover:text-foreground"
-                      >
-                        <LocalIcon name={item.icon} className="h-4 w-4 shrink-0" />
-                        {item.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </nav>
           </div>
 
@@ -362,7 +338,7 @@ export function Footer() {
                       {section.title}
                     </h2>
                     {section.title === 'Account' ? (
-                      <FooterAccountLinks variant="tablet" />
+                      <FooterAccountLinks variant="tablet" isInitiallyAuthenticated={isInitiallyAuthenticated} />
                     ) : (
                       <ul className="mt-3 space-y-2 text-xs leading-5 min-[820px]:text-sm">
                         {section.links.map((link) => (
@@ -464,7 +440,7 @@ export function Footer() {
                     <LocalIcon name="chevron-down" className="absolute right-0 h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
                   </summary>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks variant="mobile" />
+                    <FooterAccountLinks variant="mobile" isInitiallyAuthenticated={isInitiallyAuthenticated} />
                   ) : (
                     <ul className="ml-9 divide-y divide-black/8 pb-3">
                       {section.links.map((link) => (
@@ -532,17 +508,7 @@ export function Footer() {
                 ))}
               </div>
             </div>
-            <div className="hidden flex-wrap items-center justify-center gap-x-5 gap-y-2 min-[700px]:flex min-[700px]:justify-end">
-              {BOTTOM_LEGAL_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="focus:outline-none"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+            <div className="hidden min-[700px]:block" aria-hidden="true" />
           </div>
         </div>
       </div>

@@ -23,9 +23,16 @@ const ACCOUNT_LINKS: FooterAccountLink[] = [
   { label: 'Wishlist', href: '/wishlist', icon: 'heart' },
 ]
 
-export function FooterAccountLinks({ variant }: { variant: FooterAccountLinksVariant }) {
+export function FooterAccountLinks({
+  variant,
+  isInitiallyAuthenticated = false,
+}: {
+  variant: FooterAccountLinksVariant
+  isInitiallyAuthenticated?: boolean
+}) {
   const { status } = useClientSession()
-  const links = ACCOUNT_LINKS.filter((link) => !link.signedOutOnly || status === 'unauthenticated')
+  const isSignedIn = isInitiallyAuthenticated || status === 'authenticated'
+  const links = ACCOUNT_LINKS.filter((link) => !link.signedOutOnly || (!isSignedIn && status === 'unauthenticated'))
 
   if (variant === 'mobile') {
     return (
