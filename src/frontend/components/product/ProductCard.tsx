@@ -88,7 +88,7 @@ export function ProductCard({
 
   return (
     <div className={cn('product-card group relative flex h-full min-w-0 max-w-full flex-col', className)}>
-      <div className="relative overflow-hidden rounded-t-[0.85rem] bg-white">
+      <div className="relative overflow-hidden rounded-t-[0.7rem] bg-white">
         <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[3/2] min-w-0">
           {primaryImage ? (
             <Image
@@ -117,12 +117,12 @@ export function ProductCard({
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-3.5 pb-2.5 pt-3 sm:px-4 sm:pb-2.5 sm:pt-3">
-        <h3 className="min-h-[2.55rem] line-clamp-2 text-[14px] font-medium leading-[1.28rem] text-foreground sm:min-h-[2.75rem] sm:text-[14.5px] sm:leading-[1.38rem] sm:transition-colors min-[1025px]:group-hover:text-primary">
+      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-3 pb-2 pt-2.5 sm:px-3.5 sm:pb-2 sm:pt-2.5">
+        <h3 className="min-h-[2.35rem] line-clamp-2 text-[13.5px] font-semibold leading-[1.18rem] text-foreground sm:min-h-[2.5rem] sm:text-[14px] sm:leading-5 sm:transition-colors min-[1025px]:group-hover:text-primary">
           {product.name}
         </h3>
 
-        <div className="mt-2.5 flex min-h-[0.95rem] items-center gap-1 sm:gap-1.5" role="img" aria-label={ratingLabel}>
+        <div className="mt-2 flex min-h-[0.9rem] items-center gap-1 sm:gap-1.5" role="img" aria-label={ratingLabel}>
           <LocalIcon name="star-filled" className="h-2.5 w-2.5 star-filled sm:h-3 sm:w-3" />
           <span className="text-[12px] font-semibold text-foreground/75 sm:text-[12px]" aria-hidden="true">
             {product.rating.toFixed(1)}
@@ -132,10 +132,10 @@ export function ProductCard({
           </span>
         </div>
 
-        <div className="mt-2.5 h-px w-full bg-border/55" aria-hidden="true" />
+        <div className="mt-2 h-px w-full bg-border/55" aria-hidden="true" />
 
-        <div className="mt-2.5 flex min-h-[1.8rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-          <span className="text-[1.2rem] font-semibold leading-tight tabular-nums text-foreground sm:text-[1.35rem] lg:text-[1.45rem]">
+        <div className="mt-2 flex min-h-[1.65rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+          <span className="text-[1.15rem] font-semibold leading-tight tabular-nums text-foreground sm:text-[1.25rem] lg:text-[1.34rem]">
             {formatPrice(price)}
           </span>
           {product.salePrice && (
@@ -143,7 +143,7 @@ export function ProductCard({
           )}
         </div>
 
-        <p className={cn('mt-2 flex items-center gap-1.5 text-[13px] font-medium sm:text-[13px]', stockColor)}>
+        <p className={cn('mt-1.5 flex items-center gap-1.5 text-[12.5px] font-medium sm:text-[13px]', stockColor)}>
           <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
           {stockLabel}
         </p>

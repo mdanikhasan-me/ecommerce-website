@@ -106,12 +106,12 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
       </div>
 
       {inStock ? (
-        <div className="min-w-0 bg-white px-3.5 pb-3.5 pt-2 sm:px-4 sm:pb-4 sm:pt-2.5">
+        <div className="min-w-0 bg-white px-3 pb-3 pt-2 sm:px-3.5 sm:pb-3.5 sm:pt-2">
           <button
             type="button"
             data-product-action="cart"
             aria-label={addToCartActionLabel}
-            className="product-card-add-button flex h-10 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border border-[hsl(270_18%_8%)] bg-[hsl(270_18%_8%)] text-xs font-semibold text-primary-foreground md:transition-colors sm:h-11 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
+            className="product-card-add-button flex h-9 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border border-[hsl(270_18%_8%)] bg-[hsl(270_18%_8%)] text-xs font-semibold text-primary-foreground md:transition-colors sm:h-10 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
           >
             <LocalIcon name="cart" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {buyLabel}
