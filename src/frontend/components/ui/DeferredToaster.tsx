@@ -24,19 +24,34 @@ export function DeferredToaster() {
 
   return (
     <Toaster
-      position="top-center"
+      position="top-right"
+      gutter={6}
+      containerStyle={{
+        top: 'calc(env(safe-area-inset-top) + 76px)',
+        right: '16px',
+      }}
       toastOptions={{
-        duration: 3000,
+        duration: 1800,
+        className: 'boilabin-toast',
         style: {
           fontFamily: 'var(--font-sans)',
-          borderRadius: '8px',
-          background: 'hsl(270 36% 18%)',
-          color: '#fff',
+          borderRadius: '10px',
+          border: '1px solid hsl(var(--border) / 0.9)',
+          background: 'hsl(var(--card))',
+          color: 'hsl(var(--foreground))',
+          boxShadow: 'none',
           fontSize: '13px',
-          padding: '10px 16px',
+          fontWeight: 600,
+          lineHeight: 1.25,
+          minWidth: '0',
+          maxWidth: 'min(300px, calc(100vw - 32px))',
+          padding: '8px 10px',
         },
         success: {
-          iconTheme: { primary: 'hsl(164 36% 50%)', secondary: '#fff' },
+          iconTheme: { primary: 'hsl(154 58% 38%)', secondary: '#fff' },
+        },
+        error: {
+          iconTheme: { primary: 'hsl(var(--destructive))', secondary: '#fff' },
         },
       }}
     />
