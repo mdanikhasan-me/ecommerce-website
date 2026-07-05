@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/shared/contact'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { FooterAccountLinks } from '@/frontend/components/layout/FooterAccountLinks'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -57,8 +58,9 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
     title: 'Shop',
     links: [
       { label: 'All categories', href: '/category' },
-      { label: 'New arrivals', href: '/new-arrivals' },
+      { label: 'Featured Products', href: '/search?featured=true' },
       { label: 'Best Sellers', href: '/search?bestSeller=true' },
+      { label: 'New arrivals', href: '/new-arrivals' },
     ],
   },
   {
@@ -78,6 +80,7 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
       { label: 'Sign in', href: '/auth/login' },
       { label: 'My account', href: '/account', prefetch: false },
       { label: 'Orders', href: '/account/orders', prefetch: false },
+      { label: 'Add address', href: '/account/addresses', prefetch: false },
       { label: 'Wishlist', href: '/wishlist' },
     ],
   },
@@ -87,6 +90,7 @@ const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/auth/login': 'user',
   '/account': 'settings',
   '/account/orders': 'receipt-text',
+  '/account/addresses': 'map-pin',
   '/wishlist': 'heart',
   '/about': 'message-circle',
   '/privacy': 'shield',
@@ -97,6 +101,7 @@ const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/returns': 'refresh-ccw',
   '/contact': 'mail',
   '/category': 'grid-3x3',
+  '/search?featured=true': 'tag',
   '/new-arrivals': 'sparkles',
   '/search?bestSeller=true': 'star',
 }
@@ -136,12 +141,13 @@ const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS.m
       { label: 'About Us', href: '/about' },
       { label: 'Help center', href: '/help' },
       { label: 'Contact', href: '/contact' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Refund Policy', href: '/returns#refund' },
     ],
   }
 })
 
 const BOTTOM_LEGAL_LINKS = [
-  { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Terms of Use', href: '/terms' },
   { label: 'Sitemap', href: '/sitemap.xml' },
 ]
@@ -237,19 +243,23 @@ export function Footer() {
                   <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">
                     {section.title}
                   </h2>
-                  <ul className="mt-2 space-y-1.5">
-                    {section.links.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          prefetch={link.prefetch}
-                          className="text-sm leading-5 text-muted-foreground focus:outline-none"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {section.title === 'Account' ? (
+                    <FooterAccountLinks variant="desktop" />
+                  ) : (
+                    <ul className="mt-2 space-y-1.5">
+                      {section.links.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            prefetch={link.prefetch}
+                            className="text-sm leading-5 text-muted-foreground focus:outline-none"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
 
@@ -351,19 +361,23 @@ export function Footer() {
                     <h2 className="mt-2 text-sm font-semibold leading-5 text-foreground">
                       {section.title}
                     </h2>
-                    <ul className="mt-3 space-y-2 text-xs leading-5 min-[820px]:text-sm">
-                      {section.links.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            prefetch={link.prefetch}
-                            className="focus:outline-none"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    {section.title === 'Account' ? (
+                      <FooterAccountLinks variant="tablet" />
+                    ) : (
+                      <ul className="mt-3 space-y-2 text-xs leading-5 min-[820px]:text-sm">
+                        {section.links.map((link) => (
+                          <li key={link.href}>
+                            <Link
+                              href={link.href}
+                              prefetch={link.prefetch}
+                              className="focus:outline-none"
+                            >
+                              {link.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </nav>
@@ -449,23 +463,27 @@ export function Footer() {
                     </span>
                     <LocalIcon name="chevron-down" className="absolute right-0 h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
                   </summary>
-                  <ul className="ml-9 divide-y divide-black/8 pb-3">
-                    {section.links.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          prefetch={link.prefetch}
-                          className="flex items-center gap-2.5 py-2.5 text-[15px] text-muted-foreground focus:outline-none"
-                        >
-                          <LocalIcon
-                            name={MOBILE_FOOTER_LINK_ICONS[link.href]}
-                            className="h-3.5 w-3.5 text-muted-foreground"
-                          />
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  {section.title === 'Account' ? (
+                    <FooterAccountLinks variant="mobile" />
+                  ) : (
+                    <ul className="ml-9 divide-y divide-black/8 pb-3">
+                      {section.links.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            prefetch={link.prefetch}
+                            className="flex items-center gap-2.5 py-2.5 text-[15px] text-muted-foreground focus:outline-none"
+                          >
+                            <LocalIcon
+                              name={MOBILE_FOOTER_LINK_ICONS[link.href]}
+                              className="h-3.5 w-3.5 text-muted-foreground"
+                            />
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </details>
               ))}
             </nav>
