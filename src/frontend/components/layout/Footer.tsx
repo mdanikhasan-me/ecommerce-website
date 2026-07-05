@@ -151,10 +151,16 @@ const TABLET_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
 const MOBILE_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
 const DESKTOP_FOOTER_LINK_SECTIONS: FooterLinkSection[] = FOOTER_LINK_SECTIONS
 
-function TrustpilotReviewLine({ className = '' }: { className?: string }) {
+function TrustpilotReviewLine({
+  className = '',
+  canWrap = false,
+}: {
+  className?: string
+  canWrap?: boolean
+}) {
   return (
-    <p className={`whitespace-nowrap text-sm leading-5 text-muted-foreground ${className}`}>
-      <span>See our reviews on</span>{' '}
+    <p className={`${canWrap ? '' : 'whitespace-nowrap'} text-sm leading-5 text-muted-foreground ${className}`}>
+      <span className={canWrap ? 'block min-[1024px]:inline' : ''}>See our reviews on</span>{' '}
       <a
         href={TRUSTPILOT_REVIEW_URL}
         target="_blank"
@@ -335,6 +341,11 @@ export async function Footer() {
                       {CONTACT_PHONE}
                     </a>
                   </div>
+                  <FooterAppBadges
+                    className="mt-6"
+                    imageClassName="h-8 min-[820px]:h-9"
+                    badgesClassName="mt-2.5 grid justify-start gap-2"
+                  />
                 </div>
               </section>
 
@@ -385,11 +396,9 @@ export async function Footer() {
                     </a>
                   ))}
                 </div>
-                <TrustpilotReviewLine className="mt-5 text-xs min-[1024px]:text-sm [&_img]:!w-[4.75rem] min-[1024px]:[&_img]:!w-[5.45rem]" />
-                <FooterAppBadges
-                  className="mt-5 border-t border-black/8 pt-4"
-                  imageClassName="h-8 min-[820px]:h-9"
-                  badgesClassName="mt-2.5 grid gap-2"
+                <TrustpilotReviewLine
+                  canWrap
+                  className="mt-5 text-xs min-[1024px]:text-sm [&_img]:!w-[4.75rem] min-[1024px]:[&_img]:!w-[5.45rem]"
                 />
               </aside>
             </div>
