@@ -178,14 +178,16 @@ function TrustpilotReviewLine({ className = '' }: { className?: string }) {
 function FooterAppBadges({
   className = '',
   imageClassName = 'h-8',
+  badgesClassName = 'mt-2 flex flex-wrap items-center gap-2.5',
 }: {
   className?: string
   imageClassName?: string
+  badgesClassName?: string
 }) {
   return (
     <div className={className}>
       <p className="text-xs font-medium leading-4 text-foreground/82">Apps launching soon</p>
-      <div className="mt-2 flex flex-wrap items-center gap-2.5">
+      <div className={badgesClassName}>
         {FOOTER_APP_BADGES.map((badge) => (
           <a
             key={badge.alt}
@@ -303,73 +305,40 @@ export async function Footer() {
           </div>
 
           <div className="hidden min-[560px]:block xl:hidden">
-            <div className="grid gap-6 py-5 min-[700px]:grid-cols-[minmax(18rem,0.82fr)_minmax(0,1.18fr)] min-[820px]:gap-8 min-[1024px]:grid-cols-[minmax(18.5rem,0.8fr)_minmax(0,1.2fr)] min-[1024px]:gap-12">
+            <div className="grid gap-5 py-6 min-[768px]:grid-cols-[minmax(12.6rem,0.78fr)_minmax(0,1.62fr)_minmax(10.8rem,0.62fr)] min-[820px]:grid-cols-[minmax(14rem,0.82fr)_minmax(0,1.58fr)_minmax(11.8rem,0.66fr)] min-[1024px]:grid-cols-[minmax(15rem,0.82fr)_minmax(0,1.62fr)_minmax(12.4rem,0.62fr)] min-[768px]:gap-0">
               <section
                 aria-label="Boilabin contact"
-                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[700px]:block min-[700px]:border-r min-[700px]:border-black/8 min-[700px]:pr-4 min-[820px]:pr-5"
+                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[768px]:block min-[768px]:border-r min-[768px]:border-black/8 min-[768px]:pr-5 min-[820px]:pr-6"
               >
                 <div className="min-w-0">
                   <Link href="/" className="inline-flex" aria-label="Boilabin home">
-                    <span className="font-display text-[1.35rem] font-bold leading-none tracking-normal text-foreground">
+                    <span className="font-display text-[1.45rem] font-bold leading-none tracking-normal text-foreground min-[820px]:text-[1.58rem]">
                       Boilabin
                     </span>
                   </Link>
-                  <p className="mt-3 max-w-[13rem] text-xs leading-5 text-muted-foreground min-[820px]:text-sm">
+                  <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
                     Everyday finds. Best deals. Delivered across Bangladesh.
                   </p>
-                  <div className="mt-5 space-y-3 text-xs text-muted-foreground min-[820px]:text-sm">
+                  <div className="mt-5 space-y-3 text-sm text-muted-foreground">
                     <a
                       href={`mailto:${CONTACT_EMAIL}`}
                       className="flex min-w-0 items-center gap-2 focus:outline-none"
                     >
-                      <LocalIcon name="mail" className="h-4 w-4 text-primary/70" />
+                      <LocalIcon name="mail" className="h-4 w-4 text-foreground/55" />
                       <span className="truncate">{CONTACT_EMAIL}</span>
                     </a>
                     <a
                       href={`tel:${CONTACT_PHONE}`}
                       className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
                     >
-                      <LocalIcon name="phone" className="h-4 w-4 text-primary/70" />
+                      <LocalIcon name="phone" className="h-4 w-4 text-foreground/55" />
                       {CONTACT_PHONE}
                     </a>
                   </div>
                 </div>
-                <div className="mt-5 grid grid-cols-[auto_auto] justify-start gap-4 min-[560px]:mt-0 min-[700px]:mt-5 min-[820px]:gap-5 min-[1024px]:gap-6">
-                  <div>
-                    <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Follow us</h2>
-                    <div className="mt-2.5 flex items-center gap-2.5">
-                      {SOCIAL_LINKS.map((item) => (
-                        <a
-                          key={item.label}
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={item.label}
-                          className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
-                        >
-                          <LocalIcon name={item.icon} className="h-4 w-4" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="whitespace-nowrap text-xs font-semibold text-foreground/88 min-[820px]:text-sm">Reach us</h2>
-                    <a
-                      href={WHATSAPP_LINK.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={WHATSAPP_LINK.label}
-                      className="mt-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
-                    >
-                      <LocalIcon name={WHATSAPP_LINK.icon} className="h-4 w-4" />
-                    </a>
-                  </div>
-                  <TrustpilotReviewLine className="col-span-2 mt-2.5" />
-                  <FooterAppBadges className="col-span-2 mt-2" imageClassName="h-7" />
-                </div>
               </section>
 
-              <nav aria-label="Footer sections" className="grid grid-cols-4 gap-x-3 text-muted-foreground min-[820px]:gap-x-5 min-[1024px]:gap-x-7">
+              <nav aria-label="Footer sections" className="grid min-w-0 grid-cols-4 gap-x-3 text-muted-foreground min-[768px]:px-5 min-[820px]:gap-x-5 min-[820px]:px-6 min-[1024px]:gap-x-7 min-[1024px]:px-8">
                 {TABLET_FOOTER_LINK_SECTIONS.map((section) => (
                   <div key={section.title} className="min-w-0">
                     <LocalIcon
@@ -399,6 +368,30 @@ export async function Footer() {
                   </div>
                 ))}
               </nav>
+
+              <aside className="min-w-0 border-t border-black/8 pt-5 min-[768px]:border-l min-[768px]:border-t-0 min-[768px]:border-black/8 min-[768px]:pl-5 min-[820px]:pl-6" aria-label="Boilabin social and apps">
+                <h2 className="text-sm font-semibold leading-5 text-foreground">Stay connected</h2>
+                <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                  {SOCIAL_AND_CONTACT_LINKS.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      aria-label={item.label}
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
+                    >
+                      <LocalIcon name={item.icon} className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
+                <TrustpilotReviewLine className="mt-5 text-xs min-[1024px]:text-sm [&_img]:!w-[4.75rem] min-[1024px]:[&_img]:!w-[5.45rem]" />
+                <FooterAppBadges
+                  className="mt-5 border-t border-black/8 pt-4"
+                  imageClassName="h-8 min-[820px]:h-9"
+                  badgesClassName="mt-2.5 grid gap-2"
+                />
+              </aside>
             </div>
 
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 border-t border-black/8 py-4 min-[820px]:gap-8">
