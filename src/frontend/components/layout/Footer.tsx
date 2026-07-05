@@ -311,45 +311,74 @@ export async function Footer() {
           </div>
 
           <div className="hidden min-[560px]:block xl:hidden">
-            <div className="grid gap-5 py-6 min-[768px]:grid-cols-[minmax(12.6rem,0.78fr)_minmax(0,1.62fr)_minmax(10.8rem,0.62fr)] min-[820px]:grid-cols-[minmax(14rem,0.82fr)_minmax(0,1.58fr)_minmax(11.8rem,0.66fr)] min-[1024px]:grid-cols-[minmax(15rem,0.82fr)_minmax(0,1.62fr)_minmax(12.4rem,0.62fr)] min-[768px]:gap-0">
-              <section
-                aria-label="Boilabin contact"
-                className="min-w-0 min-[560px]:grid min-[560px]:grid-cols-[minmax(0,1fr)_auto] min-[560px]:items-start min-[560px]:gap-x-8 min-[768px]:block min-[768px]:border-r min-[768px]:border-black/8 min-[768px]:pr-5 min-[820px]:pr-6"
-              >
-                <div className="min-w-0">
-                  <Link href="/" className="inline-flex" aria-label="Boilabin home">
-                    <span className="font-display text-[1.45rem] font-bold leading-none tracking-normal text-foreground min-[820px]:text-[1.58rem]">
-                      Boilabin
-                    </span>
-                  </Link>
-                  <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
-                    Everyday finds. Best deals. Delivered across Bangladesh.
-                  </p>
-                  <div className="mt-5 space-y-3 text-sm text-muted-foreground">
-                    <a
-                      href={`mailto:${CONTACT_EMAIL}`}
-                      className="flex min-w-0 items-center gap-2 focus:outline-none"
-                    >
-                      <LocalIcon name="mail" className="h-4 w-4 text-foreground/55" />
-                      <span className="truncate">{CONTACT_EMAIL}</span>
-                    </a>
-                    <a
-                      href={`tel:${CONTACT_PHONE}`}
-                      className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
-                    >
-                      <LocalIcon name="phone" className="h-4 w-4 text-foreground/55" />
-                      {CONTACT_PHONE}
-                    </a>
+            <div className="grid gap-6 py-6 min-[820px]:gap-7">
+              <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto] items-start gap-x-4 gap-y-5 min-[700px]:grid-cols-[minmax(13.5rem,1fr)_minmax(10.5rem,0.9fr)_auto] min-[700px]:gap-x-6 min-[820px]:grid-cols-[minmax(14.5rem,1fr)_minmax(12rem,0.9fr)_auto] min-[820px]:gap-x-8 min-[1024px]:grid-cols-[minmax(15.5rem,1fr)_minmax(13rem,0.9fr)_auto] min-[1024px]:gap-x-10">
+                <section
+                  aria-label="Boilabin contact"
+                  className="min-w-0"
+                >
+                  <div className="min-w-0">
+                    <Link href="/" className="inline-flex" aria-label="Boilabin home">
+                      <span className="font-display text-[1.45rem] font-bold leading-none tracking-normal text-foreground min-[820px]:text-[1.58rem]">
+                        Boilabin
+                      </span>
+                    </Link>
+                    <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
+                      Everyday finds. Best deals. Delivered across Bangladesh.
+                    </p>
+                    <div className="mt-5 space-y-3 text-sm text-muted-foreground">
+                      <a
+                        href={`mailto:${CONTACT_EMAIL}`}
+                        className="flex min-w-0 items-center gap-2 focus:outline-none"
+                      >
+                        <LocalIcon name="mail" className="h-4 w-4 text-foreground/55" />
+                        <span className="truncate">{CONTACT_EMAIL}</span>
+                      </a>
+                      <a
+                        href={`tel:${CONTACT_PHONE}`}
+                        className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
+                      >
+                        <LocalIcon name="phone" className="h-4 w-4 text-foreground/55" />
+                        {CONTACT_PHONE}
+                      </a>
+                    </div>
                   </div>
-                  <FooterAppBadges
-                    className="mt-6"
-                    imageClassName="h-8 min-[820px]:h-9"
-                    badgesClassName="mt-2.5 grid justify-start gap-2"
-                  />
-                </div>
-              </section>
+                </section>
 
-              <nav aria-label="Footer sections" className="grid min-w-0 grid-cols-4 gap-x-3 text-muted-foreground min-[768px]:px-5 min-[820px]:gap-x-5 min-[820px]:px-6 min-[1024px]:gap-x-7 min-[1024px]:px-8">
+                <aside
+                  className="min-w-0"
+                  aria-label="Boilabin social and apps"
+                >
+                  <div className="min-w-0">
+                    <h2 className="text-sm font-semibold leading-5 text-foreground">Stay connected</h2>
+                    <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                      {SOCIAL_AND_CONTACT_LINKS.map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target={item.href.startsWith('http') ? '_blank' : undefined}
+                          rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          aria-label={item.label}
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
+                        >
+                          <LocalIcon name={item.icon} className="h-4 w-4" />
+                        </a>
+                      ))}
+                    </div>
+                    <TrustpilotReviewLine
+                      canWrap
+                      className="mt-5 text-xs min-[1024px]:text-sm [&_img]:!w-[5.1rem] min-[1024px]:[&_img]:!w-[5.45rem]"
+                    />
+                  </div>
+                </aside>
+                <FooterAppBadges
+                  className="min-w-0 justify-self-end"
+                  imageClassName="h-8 min-[820px]:h-9"
+                  badgesClassName="mt-2.5 grid justify-items-end gap-2"
+                />
+              </div>
+
+              <nav aria-label="Footer sections" className="grid min-w-0 grid-cols-4 gap-x-3 border-t border-black/8 pt-6 text-muted-foreground min-[700px]:gap-x-6 min-[820px]:gap-x-10 min-[1024px]:gap-x-14">
                 {TABLET_FOOTER_LINK_SECTIONS.map((section) => (
                   <div key={section.title} className="min-w-0">
                     <LocalIcon
@@ -379,28 +408,6 @@ export async function Footer() {
                   </div>
                 ))}
               </nav>
-
-              <aside className="min-w-0 border-t border-black/8 pt-5 min-[768px]:border-l min-[768px]:border-t-0 min-[768px]:border-black/8 min-[768px]:pl-5 min-[820px]:pl-6" aria-label="Boilabin social and apps">
-                <h2 className="text-sm font-semibold leading-5 text-foreground">Stay connected</h2>
-                <div className="mt-4 flex flex-wrap items-center gap-2.5">
-                  {SOCIAL_AND_CONTACT_LINKS.map((item) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      target={item.href.startsWith('http') ? '_blank' : undefined}
-                      rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      aria-label={item.label}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
-                    >
-                      <LocalIcon name={item.icon} className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
-                <TrustpilotReviewLine
-                  canWrap
-                  className="mt-5 text-xs min-[1024px]:text-sm [&_img]:!w-[4.75rem] min-[1024px]:[&_img]:!w-[5.45rem]"
-                />
-              </aside>
             </div>
 
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 border-t border-black/8 py-4 min-[820px]:gap-8">
