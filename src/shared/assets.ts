@@ -43,3 +43,18 @@ export const PAYMENT_ASSETS = {
     height: 618,
   },
 } as const
+
+export const APP_BADGE_ASSETS = {
+  APP_STORE: {
+    src: '/assets/app-badges/app-store-badge.webp',
+    alt: 'Download on the App Store',
+    width: 350,
+    height: 105,
+  },
+  GOOGLE_PLAY: {
+    src: '/assets/app-badges/google-play-badge.webp',
+    alt: 'Get it on Google Play',
+    width: 350,
+    height: 105,
+  },
+} as const

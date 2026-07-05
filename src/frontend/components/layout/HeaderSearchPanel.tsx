@@ -83,13 +83,13 @@ export function HeaderSearchPanel({
               setShowSuggestions(true)
             }}
             onFocus={() => setShowSuggestions(true)}
-            className="h-11 w-full rounded-full border border-black/10 bg-[#fff] pl-11 pr-4 text-sm text-foreground shadow-[0_12px_32px_rgba(20,18,16,0.08)] transition-colors placeholder:text-foreground/45 focus:border-foreground/35 focus:outline-none"
+            className="h-11 w-full rounded-full border border-black/10 bg-[#fff] pl-11 pr-4 text-sm text-foreground transition-colors placeholder:text-foreground/45 focus:border-foreground/35 focus:outline-none"
           />
         </div>
       </form>
 
       {showSuggestions && suggestions.length > 0 ? (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-black/10 bg-[#fff] shadow-[0_18px_38px_rgba(20,18,16,0.14)]">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-black/10 bg-[#fff]">
           {suggestions.map((suggestion) => (
             <Link
               key={`${suggestion.type}-${suggestion.slug}`}

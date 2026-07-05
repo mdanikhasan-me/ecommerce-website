@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
-import { PAYMENT_ASSETS } from '@/shared/assets'
+import { APP_BADGE_ASSETS, PAYMENT_ASSETS } from '@/shared/assets'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/shared/contact'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { FooterAccountLinks } from '@/frontend/components/layout/FooterAccountLinks'
@@ -10,6 +10,7 @@ import type { StorefrontIconName } from '@/shared/storefront-icons'
 const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
 const TRUSTPILOT_REVIEW_URL = 'https://www.trustpilot.com/review/boilabin.com'
 const TRUSTPILOT_ICON_SRC = '/assets/icons/social/trustpilot.svg'
+const APP_BADGE_PLACEHOLDER_HREF = '#'
 
 const WHATSAPP_LINK = { icon: 'whatsapp', href: WHATSAPP_URL, label: 'WhatsApp' } as const satisfies {
   icon: StorefrontIconName
@@ -114,6 +115,11 @@ const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
   },
 ]
 
+const FOOTER_APP_BADGES = [
+  APP_BADGE_ASSETS.APP_STORE,
+  APP_BADGE_ASSETS.GOOGLE_PLAY,
+] as const
+
 const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/auth/login': 'user',
   '/account': 'settings',
@@ -169,6 +175,40 @@ function TrustpilotReviewLine({ className = '' }: { className?: string }) {
   )
 }
 
+function FooterAppBadges({
+  className = '',
+  imageClassName = 'h-8',
+}: {
+  className?: string
+  imageClassName?: string
+}) {
+  return (
+    <div className={className}>
+      <p className="text-xs font-medium leading-4 text-foreground/82">Apps launching soon</p>
+      <div className="mt-2 flex flex-wrap items-center gap-2.5">
+        {FOOTER_APP_BADGES.map((badge) => (
+          <a
+            key={badge.alt}
+            href={APP_BADGE_PLACEHOLDER_HREF}
+            aria-label={`${badge.alt} coming soon`}
+            className="inline-flex focus:outline-none"
+          >
+            <img
+              src={badge.src}
+              alt={badge.alt}
+              width={badge.width}
+              height={badge.height}
+              loading="lazy"
+              decoding="async"
+              className={`${imageClassName} block w-auto object-contain`}
+            />
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export async function Footer() {
   const isInitiallyAuthenticated = await hasAuthSessionCookie()
 
@@ -212,6 +252,7 @@ export async function Footer() {
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
               </div>
+              <FooterAppBadges className="mt-5" imageClassName="h-8" />
               {/* Mobile only: social icons stay under the address. Desktop uses More instead of a Social column. */}
               <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
                 {SOCIAL_AND_CONTACT_LINKS.map((item) => (
@@ -324,6 +365,7 @@ export async function Footer() {
                     </a>
                   </div>
                   <TrustpilotReviewLine className="col-span-2 mt-2.5" />
+                  <FooterAppBadges className="col-span-2 mt-2" imageClassName="h-7" />
                 </div>
               </section>
 

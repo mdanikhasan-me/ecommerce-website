@@ -11,6 +11,7 @@ import {
   getEffectivePriceSortDirection,
 } from '@/backend/catalog/product-price-filter'
 import { productCardSelect } from '@/backend/catalog/product-card-select'
+import { sortByProductSearchRelevance } from '@/backend/catalog/search-relevance'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseSearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
@@ -137,17 +138,33 @@ async function getUncachedSearchResults(rawParams: RawSearchParams) {
   if (params.sort === 'newest') orderBy = { createdAt: 'desc' }
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
-  const [products, total, categories] = await Promise.all([
-    db.product.findMany({
-      where,
-      orderBy: effectivePriceOrderBy ?? orderBy,
-      skip,
-      take: limit,
-      select: productCardSelect,
-    }),
+  const [total, categories] = await Promise.all([
     db.product.count({ where }),
     getSearchFilterCategories(),
   ])
+
+  const shouldRankByRelevance = Boolean(params.q && params.sort === 'popular')
+  const products = shouldRankByRelevance
+    ? sortByProductSearchRelevance(
+        params.q ?? '',
+        await db.product.findMany({
+          where,
+          orderBy: [{ soldCount: 'desc' }, { reviewCount: 'desc' }],
+          take: Math.min(Math.max(skip + limit, 120), Math.max(total, limit), 360),
+          select: {
+            ...productCardSelect,
+            tags: true,
+            shortDescription: true,
+          },
+        }),
+      ).slice(skip, skip + limit)
+    : await db.product.findMany({
+        where,
+        orderBy: effectivePriceOrderBy ?? orderBy,
+        skip,
+        take: limit,
+        select: productCardSelect,
+      })
 
   return { products, total, categories, page, totalPages: Math.ceil(total / limit), params }
 }
@@ -157,7 +174,7 @@ const getCachedSearchResults = unstable_cache(
     const rawParams = JSON.parse(cacheKey) as RawSearchParams
     return getUncachedSearchResults(rawParams)
   },
-  ['storefront-search-results-v1'],
+  ['storefront-search-results-v3'],
   {
     revalidate: 120,
     tags: [STOREFRONT_CACHE_TAGS.products, STOREFRONT_CACHE_TAGS.categories],

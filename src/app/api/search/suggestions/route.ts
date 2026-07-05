@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache'
 import type { Prisma } from '@prisma/client'
 import { db } from '@/backend/database'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { sortByProductSearchRelevance } from '@/backend/catalog/search-relevance'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { getPublicSearchWords, parsePublicSearchQuery } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
@@ -27,15 +28,25 @@ const getCachedSuggestions = unstable_cache(async (q: string) => {
   productOR.push({ name: { contains: q, mode: 'insensitive' } })
   for (const w of words) productOR.push({ name: { contains: w, mode: 'insensitive' } })
   if (words.length > 0) productOR.push({ tags: { hasSome: words } })
+  productOR.push({ shortDescription: { contains: q, mode: 'insensitive' } })
 
   const products = await db.product.findMany({
     where: getBuyerVisibleProductWhere({ OR: productOR }),
-    select: { name: true, slug: true },
-    take: 6,
-    orderBy: { soldCount: 'desc' },
+    select: {
+      name: true,
+      slug: true,
+      soldCount: true,
+      rating: true,
+      reviewCount: true,
+      tags: true,
+      shortDescription: true,
+      category: { select: { name: true } },
+    },
+    take: 80,
+    orderBy: [{ soldCount: 'desc' }, { reviewCount: 'desc' }],
   })
 
-  const productSuggestions = products.map((p) => ({
+  const productSuggestions = sortByProductSearchRelevance(q, products).slice(0, 8).map((p) => ({
     type: 'product' as const,
     name: p.name,
     slug: p.slug,
@@ -43,7 +54,7 @@ const getCachedSuggestions = unstable_cache(async (q: string) => {
   }))
 
   return productSuggestions
-}, ['search-suggestions-v1'], {
+}, ['search-suggestions-v3'], {
   revalidate: 60,
   tags: [STOREFRONT_CACHE_TAGS.products, STOREFRONT_CACHE_TAGS.categories],
 })
