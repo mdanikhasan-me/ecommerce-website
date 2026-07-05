@@ -185,14 +185,16 @@ function FooterAppBadges({
   className = '',
   imageClassName = 'h-auto w-[7.5rem]',
   badgesClassName = 'mt-2.5 grid justify-start gap-2',
+  titleClassName = 'text-xs font-medium leading-4 text-foreground/82',
 }: {
   className?: string
   imageClassName?: string
   badgesClassName?: string
+  titleClassName?: string
 }) {
   return (
     <div className={className}>
-      <p className="text-xs font-medium leading-4 text-foreground/82">Apps launching soon</p>
+      <p className={titleClassName}>Apps launching soon</p>
       <div className={badgesClassName}>
         {FOOTER_APP_BADGES.map((badge) => (
           <a
@@ -224,7 +226,7 @@ export async function Footer() {
     <footer className="storefront-footer border-t border-black/8 text-foreground">
       <div className="container-site">
         <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
-          <div className="hidden gap-3 xl:grid xl:grid-cols-[minmax(14rem,0.62fr)_minmax(0,1.38fr)] xl:gap-11">
+          <div className="hidden gap-10 xl:grid xl:grid-cols-[minmax(15rem,0.9fr)_minmax(0,2.3fr)_minmax(16rem,0.85fr)] xl:items-start">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
                 <span className="font-display text-[1.28rem] font-bold leading-none tracking-normal text-foreground sm:text-[1.42rem]">
@@ -234,53 +236,31 @@ export async function Footer() {
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
               </p>
-              <div className="mt-4 grid gap-2.5 text-sm font-normal leading-5 text-muted-foreground">
-                <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
-                    <LocalIcon name="location" className="h-3.5 w-3.5" />
-                  </span>
-                  <span className="max-w-[13.5rem] text-balance">{CONTACT_ADDRESS}</span>
-                </div>
-                <a
-                  href={`tel:${CONTACT_PHONE}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
-                    <LocalIcon name="phone" className="h-3.5 w-3.5" />
-                  </span>
-                  <span>{CONTACT_PHONE}</span>
-                </a>
+              <div className="mt-4 grid gap-3 text-sm font-normal leading-5 text-muted-foreground">
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
+                  className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-black/8 bg-black/[0.03] text-foreground/70">
-                    <LocalIcon name="mail" className="h-3.5 w-3.5" />
-                  </span>
+                  <LocalIcon name="mail" className="h-4 w-4 text-foreground" />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
-              </div>
-              <FooterAppBadges className="mt-5" />
-              {/* Mobile only: social icons stay under the address. Desktop uses More instead of a Social column. */}
-              <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
-                {SOCIAL_AND_CONTACT_LINKS.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target={item.href.startsWith('http') ? '_blank' : undefined}
-                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    aria-label={item.label}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
-                  >
-                    <LocalIcon name={item.icon} className="h-4 w-4" />
-                  </a>
-                ))}
+                <a
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-3 focus:outline-none"
+                >
+                  <LocalIcon name="phone" className="h-4 w-4 text-foreground" />
+                  <span>{CONTACT_PHONE}</span>
+                </a>
+                <div className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-start gap-3">
+                  <LocalIcon name="location" className="mt-0.5 h-4 w-4 text-foreground" />
+                  <span className="max-w-[13.5rem] text-balance">{CONTACT_ADDRESS}</span>
+                </div>
               </div>
             </section>
 
             <nav
               aria-label="Footer"
-              className="grid grid-cols-4 gap-x-9 gap-y-5"
+              className="grid min-w-0 grid-cols-4 gap-x-8 gap-y-5"
             >
               {DESKTOP_FOOTER_LINK_SECTIONS.map((section) => (
                 <div key={section.title}>
@@ -308,6 +288,33 @@ export async function Footer() {
               ))}
 
             </nav>
+
+            <aside aria-label="Boilabin social and apps" className="min-w-0">
+              <h2 className="text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-foreground/88">
+                Stay connected
+              </h2>
+              <div className="mt-4 flex items-center gap-3">
+                {SOCIAL_AND_CONTACT_LINKS.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={item.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
+                  >
+                    <LocalIcon name={item.icon} className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+              <TrustpilotReviewLine className="mt-5" />
+              <div className="mt-4 border-t border-black/8 pt-4">
+                <FooterAppBadges
+                  titleClassName="text-[0.82rem] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/88"
+                  badgesClassName="mt-3 flex items-center gap-3"
+                />
+              </div>
+            </aside>
           </div>
 
           <div className="hidden min-[560px]:block xl:hidden">
