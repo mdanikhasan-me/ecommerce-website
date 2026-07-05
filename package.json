@@ -12,6 +12,7 @@
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
     "seed:demo-variants": "node prisma/seed-demo-variant-products.mjs",
+    "seed:demo-stock-states": "node prisma/seed-demo-stock-states.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

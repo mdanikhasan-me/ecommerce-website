@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client'
 import nextEnv from '@next/env'
 
 const { loadEnvConfig } = nextEnv
 loadEnvConfig(process.cwd())
 
+const { PrismaClient } = await import('@prisma/client')
 const db = new PrismaClient()
 
 const DEMO_PRODUCTS = [
@@ -18,7 +18,7 @@ const DEMO_PRODUCTS = [
     basePrice: 18900,
     salePrice: 17490,
     effectivePrice: 17490,
-    stockQuantity: 72,
+    stockQuantity: 4,
     tags: ['sneaker', 'basketball shoes', 'high top shoes', 'air jordan', 'mens footwear'],
     metaTitle: 'Air Jordan 1 Retro High Demo with Size Variants',
     metaDescription:
@@ -60,7 +60,7 @@ const DEMO_PRODUCTS = [
         sku: `DEMO-AJ1-${size.replace(/\s|\./g, '').toUpperCase()}`,
         price: 18900,
         salePrice: 17490,
-        stockQuantity: [5, 6, 9, 10, 12, 10, 8, 5, 4, 3][index],
+        stockQuantity: [1, 2, 3, 4, 5, 1, 2, 3, 4, 5][index],
         image: '/assets/products/catalog/demo-air-jordan-1-retro-high/main.webp',
         isActive: true,
         sortOrder: index,
@@ -92,7 +92,8 @@ const DEMO_PRODUCTS = [
     basePrice: 109900,
     salePrice: 99900,
     effectivePrice: 99900,
-    stockQuantity: 35,
+    stockQuantity: 12,
+    isPreOrder: true,
     tags: ['smartphone', 'android phone', '5g phone', 'galaxy s24 ultra', 'mobile phone'],
     metaTitle: 'Galaxy S24 Ultra 5G Demo with RAM and Storage Variants',
     metaDescription:
@@ -189,7 +190,7 @@ async function replaceProduct(product, categoryId, sellerId) {
     isFeatured: product.isFeatured,
     isNew: true,
     isBestSeller: product.isBestSeller,
-    isPreOrder: false,
+    isPreOrder: product.isPreOrder ?? false,
     tags: product.tags,
     metaTitle: product.metaTitle,
     metaDescription: product.metaDescription,
