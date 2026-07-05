@@ -183,8 +183,8 @@ function TrustpilotReviewLine({
 
 function FooterAppBadges({
   className = '',
-  imageClassName = 'h-8',
-  badgesClassName = 'mt-2 flex flex-wrap items-center gap-2.5',
+  imageClassName = 'h-9',
+  badgesClassName = 'mt-2.5 grid justify-start gap-2',
 }: {
   className?: string
   imageClassName?: string
@@ -260,7 +260,7 @@ export async function Footer() {
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
               </div>
-              <FooterAppBadges className="mt-5" imageClassName="h-8" />
+              <FooterAppBadges className="mt-5" />
               {/* Mobile only: social icons stay under the address. Desktop uses More instead of a Social column. */}
               <div className="mt-3 flex items-center gap-2 min-[600px]:hidden">
                 {SOCIAL_AND_CONTACT_LINKS.map((item) => (
