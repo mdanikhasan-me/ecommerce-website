@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/utils'
+import { formatPrice, getStockStatus, cn } from '@/backend/utils'
 import { ProductCardData } from '@/backend/types'
 import { ProductCardActions } from '@/frontend/components/product/ProductCardActions'
 
@@ -23,7 +23,6 @@ export function ProductCard({
   imageSizes = DEFAULT_GRID_IMAGE_SIZES,
 }: ProductCardProps) {
   const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
-  const discount = calculateDiscount(product.basePrice, product.salePrice ?? 0)
   const isPreOrder = product.isPreOrder ?? false
   const { label: stockLabel, color: stockColor, inStock } = getStockStatus(product.stockQuantity, isPreOrder)
   const price = product.salePrice ?? product.basePrice
@@ -73,7 +72,6 @@ export function ProductCard({
           <div className="mt-2 flex min-h-[1.65rem] flex-wrap items-center gap-1.5 sm:mt-3 sm:gap-2">
             <span className="text-[1.14rem] font-semibold tabular-nums text-foreground sm:text-[1.2rem]">{formatPrice(price)}</span>
             {product.salePrice && <span className="text-[12.5px] text-muted-foreground line-through sm:text-xs">{formatPrice(product.basePrice)}</span>}
-            {discount > 0 && <span className="badge-sale px-2 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]">{discount}% off</span>}
           </div>
           <p className={cn('mt-auto pt-2 text-[13px] font-medium', stockColor)}>{stockLabel}</p>
         </div>
@@ -88,6 +86,11 @@ export function ProductCard({
 
   return (
     <div className={cn('product-card group relative flex h-full min-w-0 max-w-full flex-col', className)}>
+      {product.isNew ? (
+        <span className="product-card-new-ribbon" aria-label="New product">
+          New
+        </span>
+      ) : null}
       <div className="relative overflow-hidden rounded-t-[0.7rem] bg-white">
         <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[3/2] min-w-0">
           {primaryImage ? (
@@ -105,13 +108,6 @@ export function ProductCard({
               <LocalIcon name="eye" className="h-8 w-8" />
             </div>
           )}
-
-          <div className="absolute left-2 top-2 flex max-w-[calc(100%-3.25rem)] flex-col gap-1 sm:left-3 sm:top-3 sm:max-w-[calc(100%-4rem)] sm:gap-1.5">
-            {discount > 0 && <span className="badge-sale max-w-full truncate px-2 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]" aria-label={`${discount}% discount`}>{discount}% off</span>}
-            {isPreOrder && <span className="badge-preorder max-w-full truncate px-2 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]">Pre-order</span>}
-            {product.isNew && <span className="badge-new max-w-full truncate px-2 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]">New</span>}
-            {product.isBestSeller && <span className="badge-bestseller max-w-full truncate px-2 py-0.5 text-[10px] sm:px-2.5 sm:py-1 sm:text-[11px]">Best Seller</span>}
-          </div>
 
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.06)_100%)] opacity-0" />
         </Link>
@@ -143,8 +139,7 @@ export function ProductCard({
           )}
         </div>
 
-        <p className={cn('mt-1.5 flex items-center gap-1.5 text-[12.5px] font-medium sm:text-[13px]', stockColor)}>
-          <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+        <p className={cn('mt-1.5 text-[12.5px] font-medium sm:text-[13px]', stockColor)}>
           {stockLabel}
         </p>
       </Link>

@@ -49,7 +49,7 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
           role="menuitem"
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
-          <LocalIcon name="heart" className="h-4 w-4" />
+          <LocalIcon name="bookmark-plus" className="h-4 w-4" />
           Wishlist
         </Link>
         <Link

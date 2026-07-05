@@ -566,7 +566,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                   : 'border-border bg-background min-[1025px]:hover:border-red-200 min-[1025px]:hover:text-red-500',
               )}
             >
-              <LocalIcon name={isWished ? 'heart-filled' : 'heart'} className="h-4 w-4" />
+              <LocalIcon name={isWished ? 'bookmark-check' : 'bookmark-plus'} className="h-4 w-4" />
               {isWished ? 'Saved' : 'Wishlist'}
             </button>
             <button

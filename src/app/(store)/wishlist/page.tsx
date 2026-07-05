@@ -32,15 +32,15 @@ export default function WishlistPage() {
   return (
     <div className="product-list-scope container-site py-8">
       <h1 className="font-display text-2xl font-bold mb-6 flex items-center gap-2">
-        <LocalIcon name="heart" className="h-6 w-6 text-primary" /> My Wishlist
+        <LocalIcon name="bookmark-plus" className="h-6 w-6 text-primary" /> My Wishlist
         <span className="text-muted-foreground font-normal text-base">({visibleItems.length} items)</span>
       </h1>
 
       {visibleItems.length === 0 ? (
         <div className="text-center py-20">
-          <LocalIcon name="heart" className="mx-auto mb-4 h-16 w-16 text-muted-foreground opacity-30" />
+          <LocalIcon name="bookmark-plus" className="mx-auto mb-4 h-16 w-16 text-muted-foreground opacity-30" />
           <h2 className="font-display text-xl font-semibold">Your wishlist is empty</h2>
-          <p className="text-muted-foreground mt-2">Save products you love by clicking the heart icon.</p>
+          <p className="text-muted-foreground mt-2">Save products by using the wishlist button.</p>
           <Link href="/" className="btn-primary mt-5 inline-flex">Discover Products</Link>
         </div>
       ) : loading ? (

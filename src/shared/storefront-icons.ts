@@ -2,6 +2,8 @@ export const UI_ICON_ASSETS = {
   'arrow-left': '/assets/icons/ui/arrow-left.svg',
   'arrow-right': '/assets/icons/ui/arrow-right.svg',
   'bar-chart-2': '/assets/icons/ui/bar-chart-2.svg',
+  'bookmark-check': '/assets/icons/ui/bookmark-check.svg',
+  'bookmark-plus': '/assets/icons/ui/bookmark-plus.svg',
   'calendar-days': '/assets/icons/ui/calendar-days.svg',
   cart: '/assets/icons/ui/cart.svg',
   clock: '/assets/icons/ui/clock.svg',

@@ -125,7 +125,7 @@ const MOBILE_FOOTER_LINK_ICONS: Record<string, StorefrontIconName> = {
   '/account': 'settings',
   '/account/orders': 'receipt-text',
   '/account/addresses': 'map-pin',
-  '/wishlist': 'heart',
+  '/wishlist': 'bookmark-plus',
   '/about': 'message-circle',
   '/privacy': 'shield',
   '/terms': 'receipt-text',

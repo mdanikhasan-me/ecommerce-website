@@ -20,7 +20,7 @@ const ACCOUNT_LINKS: FooterAccountLink[] = [
   { label: 'My account', href: '/account', icon: 'settings', prefetch: false },
   { label: 'Orders', href: '/account/orders', icon: 'receipt-text', prefetch: false },
   { label: 'Add address', href: '/account/addresses', icon: 'map-pin', prefetch: false },
-  { label: 'Wishlist', href: '/wishlist', icon: 'heart' },
+  { label: 'Wishlist', href: '/wishlist', icon: 'bookmark-plus' },
 ]
 
 export function FooterAccountLinks({
