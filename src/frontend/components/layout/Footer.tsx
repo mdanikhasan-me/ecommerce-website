@@ -486,8 +486,8 @@ export async function Footer() {
         </div>
 
         <div className="w-full border-t border-black/8 py-3 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block">
-          <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-            <div className="hidden items-center justify-center gap-x-3 xl:col-start-2 xl:row-start-1 xl:flex">
+          <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[auto_minmax(0,1fr)_auto]">
+            <div className="hidden items-center justify-start gap-x-3 xl:col-start-1 xl:row-start-1 xl:flex">
               <span className="whitespace-nowrap text-[11px] font-medium text-foreground/82">We accept</span>
               <div className="flex items-center gap-x-4">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (

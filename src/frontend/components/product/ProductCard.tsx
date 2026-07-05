@@ -89,14 +89,14 @@ export function ProductCard({
   return (
     <div className={cn('product-card group relative flex h-full min-w-0 max-w-full flex-col', className)}>
       <div className="relative overflow-hidden rounded-t-[0.85rem] bg-white">
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[4/3] min-w-0">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[3/2] min-w-0">
           {primaryImage ? (
             <Image
               src={primaryImage}
               alt={product.name}
               fill
               priority={priority}
-              className="object-contain p-2.5 sm:p-3"
+              className="object-contain p-2.5"
               quality={75}
               sizes={imageSizes}
             />
@@ -117,7 +117,7 @@ export function ProductCard({
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-3.5 pb-2.5 pt-3 sm:px-4 sm:pb-3 sm:pt-3.5">
+      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-3.5 pb-2.5 pt-3 sm:px-4 sm:pb-2.5 sm:pt-3">
         <h3 className="min-h-[2.55rem] line-clamp-2 text-[14px] font-medium leading-[1.28rem] text-foreground sm:min-h-[2.75rem] sm:text-[14.5px] sm:leading-[1.38rem] sm:transition-colors min-[1025px]:group-hover:text-primary">
           {product.name}
         </h3>
@@ -132,9 +132,9 @@ export function ProductCard({
           </span>
         </div>
 
-        <div className="mt-3 h-px w-full bg-border/55" aria-hidden="true" />
+        <div className="mt-2.5 h-px w-full bg-border/55" aria-hidden="true" />
 
-        <div className="mt-2.5 flex min-h-[1.8rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5 sm:min-h-[2rem]">
+        <div className="mt-2.5 flex min-h-[1.8rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
           <span className="text-[1.2rem] font-semibold leading-tight tabular-nums text-foreground sm:text-[1.35rem] lg:text-[1.45rem]">
             {formatPrice(price)}
           </span>
