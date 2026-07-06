@@ -1,7 +1,13 @@
 import { db } from '@/backend/database'
 import { unstable_cache } from 'next/cache'
 import { productCardSelect } from '@/backend/catalog/product-card-select'
+import {
+  buildEffectivePriceOrderBy,
+  buildEffectivePriceWhere,
+  getEffectivePriceSortDirection,
+} from '@/backend/catalog/product-price-filter'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { parseSearchParams, type RawSearchParams, type SearchSort } from '@/backend/catalog/search-params'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import {
   JsonLd,
@@ -11,9 +17,17 @@ import {
   generateWebPageJsonLd,
 } from '@/backend/seo'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { MobileSearchFilters } from '@/frontend/components/product/MobileSearchFilters'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
-import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { SearchFiltersPanel } from '@/frontend/components/product/SearchFiltersPanel'
+import { SortSelect } from '@/frontend/components/search/SortSelect'
+import { getPaginationPages } from '@/frontend/components/search/pagination'
 import type { Metadata } from 'next'
+import { Prisma } from '@prisma/client'
+
+interface Props {
+  searchParams?: Promise<RawSearchParams>
+}
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin New Arrivals',
@@ -22,13 +36,77 @@ export const metadata: Metadata = generatePageMetadata(
 )
 export const revalidate = 300
 const NEW_ARRIVAL_IMAGE_SIZES = '(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw'
+const NEW_ARRIVALS_BASE_PATH = '/new-arrivals'
+const NEW_ARRIVALS_LIMIT = 24
+const SORT_OPTIONS: { value: SearchSort; label: string }[] = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'popular', label: 'Most Popular' },
+  { value: 'price_asc', label: 'Price: Low to High' },
+  { value: 'price_desc', label: 'Price: High to Low' },
+  { value: 'rating', label: 'Highest Rated' },
+]
 
-const getNewArrivalProducts = unstable_cache(async () => db.product.findMany({
-    where: getBuyerVisibleProductWhere({ isNew: true }),
-    orderBy: { createdAt: 'desc' },
-    take: 32,
-    select: productCardSelect,
-  }).catch(() => {
+const getNewArrivalFilterCategories = unstable_cache(
+  async () => db.category.findMany({
+    where: { isActive: true },
+    select: { name: true, slug: true },
+    orderBy: { name: 'asc' },
+  }),
+  ['new-arrival-filter-categories-v1'],
+  { revalidate: 300, tags: [STOREFRONT_CACHE_TAGS.categories] },
+)
+
+function getNewArrivalsCacheKey(rawParams: RawSearchParams) {
+  return JSON.stringify(rawParams)
+}
+
+function hasExplicitSort(rawParams: RawSearchParams) {
+  const rawSort = rawParams.sort
+  return Array.isArray(rawSort) ? Boolean(rawSort[0]) : Boolean(rawSort)
+}
+
+const getNewArrivalPageData = unstable_cache(async (cacheKey: string) => {
+  const rawParams = JSON.parse(cacheKey) as RawSearchParams
+  const parsedParams = parseSearchParams(rawParams)
+  const sort = hasExplicitSort(rawParams) ? parsedParams.sort : 'newest'
+  const queryParams = { ...parsedParams.queryParams }
+  if (hasExplicitSort(rawParams)) queryParams.sort = sort
+  const page = parsedParams.page
+  const skip = (page - 1) * NEW_ARRIVALS_LIMIT
+  const andClauses: Prisma.ProductWhereInput[] = [getBuyerVisibleProductWhere({ isNew: true })]
+  const effectivePriceWhere = buildEffectivePriceWhere(parsedParams.minPrice, parsedParams.maxPrice)
+
+  if (parsedParams.category) andClauses.push({ category: { slug: parsedParams.category } })
+  if (effectivePriceWhere) andClauses.push(effectivePriceWhere)
+  if (parsedParams.inStock) andClauses.push({ stockQuantity: { gt: 0 } })
+  if (parsedParams.rating !== null) andClauses.push({ rating: { gte: parsedParams.rating } })
+
+  const where: Prisma.ProductWhereInput = andClauses.length === 1 ? andClauses[0] : { AND: andClauses }
+  const effectivePriceSort = getEffectivePriceSortDirection(sort)
+  const effectivePriceOrderBy = buildEffectivePriceOrderBy(effectivePriceSort)
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' }
+  if (sort === 'popular') orderBy = { soldCount: 'desc' }
+  else if (sort === 'rating') orderBy = { rating: 'desc' }
+
+  return Promise.all([
+    db.product.findMany({
+      where,
+      orderBy: effectivePriceOrderBy ?? orderBy,
+      skip,
+      take: NEW_ARRIVALS_LIMIT,
+      select: productCardSelect,
+    }),
+    db.product.count({ where }),
+    getNewArrivalFilterCategories(),
+  ]).then(([products, total, categories]) => ({
+    products,
+    total,
+    categories,
+    page,
+    sort,
+    totalPages: Math.ceil(total / NEW_ARRIVALS_LIMIT),
+    queryParams,
+  })).catch(() => {
     logSecurityEvent({
       type: 'server_page_data_load_failed',
       severity: 'error',
@@ -40,14 +118,24 @@ const getNewArrivalProducts = unstable_cache(async () => db.product.findMany({
         fallback: 'empty_products',
       },
     })
-    return []
-  }), ['storefront-new-arrivals-v1'], {
+    return {
+      products: [],
+      total: 0,
+      categories: [],
+      page: 1,
+      sort: 'newest' as SearchSort,
+      totalPages: 0,
+      queryParams: {},
+    }
+  })
+}, ['storefront-new-arrivals-v2'], {
     revalidate: 300,
-    tags: [STOREFRONT_CACHE_TAGS.products],
+    tags: [STOREFRONT_CACHE_TAGS.products, STOREFRONT_CACHE_TAGS.categories],
   })
 
-export default async function NewArrivalsPage() {
-  const products = await getNewArrivalProducts()
+export default async function NewArrivalsPage({ searchParams }: Props) {
+  const rawSearchParams = (await searchParams) ?? {}
+  const { products, categories, page, sort, totalPages, queryParams } = await getNewArrivalPageData(getNewArrivalsCacheKey(rawSearchParams))
   const pageJsonLd = generateWebPageJsonLd({
     type: 'CollectionPage',
     name: 'Boilabin New Arrivals',
@@ -71,32 +159,82 @@ export default async function NewArrivalsPage() {
   )
 
   return (
-    <div className="product-list-scope container-site py-8">
+    <div className="container-site py-5 sm:py-7 lg:py-8">
       <JsonLd data={[pageJsonLd, breadcrumbJsonLd, itemListJsonLd]} />
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-2.5 rounded-xl bg-green-100">
-          <LocalIcon name="sparkles" className="h-5 w-5 text-green-600" />
-        </div>
-        <div>
-          <h1 className="font-display text-2xl font-bold">New Arrivals</h1>
-          <p className="text-muted-foreground text-sm">Fresh products, just landed</p>
-        </div>
+      <div className="mb-4 max-w-[48rem] sm:mb-5">
+        <h1 className="font-display text-[1.68rem] font-bold leading-[1.08] sm:text-3xl sm:leading-tight">New Arrivals</h1>
       </div>
 
-      {products.length === 0 ? (
-        <div className="text-center py-20 text-muted-foreground">No new arrivals yet. Check back soon!</div>
-      ) : (
-        <div className="product-list-grid">
-          {products.map((p, index) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              priority={index === 0}
-              imageSizes={NEW_ARRIVAL_IMAGE_SIZES}
+      <div className="flex gap-6 xl:gap-8">
+        <aside className="hidden w-64 flex-shrink-0 lg:block">
+          <SearchFiltersPanel
+            categories={categories}
+            searchParams={queryParams}
+            basePath={NEW_ARRIVALS_BASE_PATH}
+            preserveOnClear={[]}
+          />
+        </aside>
+
+        <div className="product-list-scope flex-1 min-w-0">
+          <div className="mb-4 flex w-full flex-wrap items-center gap-1.5 sm:mb-6 sm:justify-end sm:gap-2">
+            <MobileSearchFilters
+              categories={categories}
+              searchParams={queryParams}
+              basePath={NEW_ARRIVALS_BASE_PATH}
+              preserveOnClear={[]}
+              label="New arrivals"
             />
-          ))}
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden text-xs font-medium min-[380px]:inline sm:text-sm">Sort:</span>
+              <SortSelect current={sort} options={SORT_OPTIONS} />
+            </div>
+          </div>
+
+          {products.length === 0 ? (
+            <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center sm:px-8 sm:py-16">
+              <p className="section-kicker">Empty shelf</p>
+              <h2 className="mt-3 font-display text-xl font-semibold">No new arrivals found</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try adjusting your filters.</p>
+            </div>
+          ) : (
+            <>
+              <div className="product-list-grid">
+                {products.map((p, index) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    priority={index === 0}
+                    imageSizes={NEW_ARRIVAL_IMAGE_SIZES}
+                  />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex justify-center gap-2 mt-10">
+                  {getPaginationPages(page, totalPages).map((p) => (
+                    <a
+                      key={p}
+                      href={buildPageUrl(queryParams, p)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium sm:transition-colors ${p === page ? 'bg-primary text-white' : 'border border-border min-[1025px]:hover:bg-secondary'}`}
+                    >
+                      {p}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
+}
+
+function buildPageUrl(params: Record<string, string | undefined>, page: number): string {
+  const sp = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (value) sp.set(key, value)
+  }
+  sp.set('page', String(page))
+  return `${NEW_ARRIVALS_BASE_PATH}?${sp.toString()}`
 }
