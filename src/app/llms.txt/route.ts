@@ -8,11 +8,11 @@ const PUBLIC_SECTIONS = [
   ['Categories', '/category', 'Browse active shopping departments and subcategories.'],
   ['New Arrivals', '/new-arrivals', 'Recently added public products.'],
   ['Help Center', '/help', 'Customer support entry point for orders, returns, shipping, payments, and account help.'],
+  ['Help Articles', '/articles', 'Detailed help articles for orders, delivery, returns, payments, account support, and products.'],
   ['Contact', '/contact', 'Customer support contact form, email, phone, and office information.'],
   ['About', '/about', 'About Boilabin and how the store works.'],
   ['Shipping', '/shipping', 'Delivery fees, timing, and Bangladesh coverage.'],
   ['Returns', '/returns', 'Return and refund policy.'],
-  ['FAQ', '/faq', 'Common questions and answers.'],
 ] as const
 
 const PRIVATE_OR_LOW_VALUE_SECTIONS = [
@@ -63,8 +63,7 @@ Public pages use JSON-LD where relevant:
 - Home: Organization, OnlineStore, and WebSite with SearchAction.
 - Product pages: Product, Offer, shipping details, return policy, aggregate rating when available, and breadcrumb data.
 - Category and collection pages: CollectionPage, ItemList, and breadcrumb data.
-- FAQ page: FAQPage data.
-- Contact/About/Help pages: WebPage or ContactPage data plus breadcrumb data.
+- Contact/About/Help/Articles pages: WebPage or ContactPage data plus breadcrumb data.
 
 ## Do Not Treat As Public Catalog Content
 

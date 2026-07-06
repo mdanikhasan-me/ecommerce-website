@@ -23,89 +23,82 @@ type HelpTopic = {
   icon: StorefrontIconName
 }
 
+type PopularQuestion = {
+  question: string
+  answer: string
+}
+
 const POPULAR_SEARCHES = [
   { label: 'track order', href: '/track-order' },
   { label: 'returns', href: '/returns' },
   { label: 'shipping', href: '/shipping' },
-  { label: 'payment', href: '/faq' },
+  { label: 'payment', href: '/articles#payments-cod' },
   { label: 'account', href: '/account' },
 ]
 
 const HELP_TOPICS: HelpTopic[] = [
   {
-    title: 'Orders & Tracking',
-    description: 'Track, view or manage your orders',
+    title: 'Tracking',
+    description: 'Track order status',
     href: '/track-order',
     icon: 'package',
   },
   {
-    title: 'Shipping & Delivery',
-    description: 'Delivery times, costs and locations',
+    title: 'Delivery',
+    description: 'Fees, timing and coverage',
     href: '/shipping',
     icon: 'truck',
   },
   {
-    title: 'Returns & Refunds',
-    description: 'Return items and refund process',
+    title: 'Returns',
+    description: 'Return and refund policy',
     href: '/returns',
     icon: 'refresh-ccw',
   },
   {
     title: 'Payments',
-    description: 'Payment methods and billing',
-    href: '/faq',
+    description: 'COD and payment help',
+    href: '/articles#payments-cod',
     icon: 'credit-card',
   },
   {
-    title: 'Account & Profile',
-    description: 'Login, update and account settings',
+    title: 'Account',
+    description: 'Profile and address',
     href: '/account',
     icon: 'user',
   },
   {
     title: 'Products',
-    description: 'Product info, stock and care guides',
+    description: 'Catalog and stock',
     href: '/category',
     icon: 'shopping-bag',
   },
 ]
 
-const POPULAR_ARTICLES: HelpTopic[] = [
+const POPULAR_QUESTIONS: PopularQuestion[] = [
   {
-    title: 'How do I track my order?',
-    description: '',
-    href: '/track-order',
-    icon: 'package',
+    question: 'How do I track my order?',
+    answer: 'Open Track Order with your order number, or sign in and go to My Account, then Orders, to see the latest status.',
   },
   {
-    title: 'What is your return policy?',
-    description: '',
-    href: '/returns',
-    icon: 'refresh-ccw',
+    question: 'What payment methods do you accept?',
+    answer: 'Boilabin currently supports cash on delivery. If online payment becomes available, it will appear during checkout.',
   },
   {
-    title: 'How long does delivery take?',
-    description: '',
-    href: '/shipping',
-    icon: 'truck',
+    question: 'Can I change or cancel my order?',
+    answer: 'Contact support as soon as possible with your order number. We can usually help before the order is packed for delivery.',
   },
   {
-    title: 'Which payment methods do you accept?',
-    description: '',
-    href: '/faq',
-    icon: 'credit-card',
+    question: 'What should I do if my order is delayed or missing?',
+    answer: 'Check your order status first. If the delivery looks delayed, contact support so we can review the order and delivery update.',
   },
   {
-    title: 'How can I update my account information?',
-    description: '',
-    href: '/account/profile',
-    icon: 'user',
+    question: 'What is your return policy?',
+    answer: 'Return requests are reviewed against the return policy. Report damaged, defective, or wrong items quickly with clear proof.',
   },
   {
-    title: 'How do I use a discount code?',
-    description: '',
-    href: '/faq',
-    icon: 'tag',
+    question: 'How do I add or change my delivery address?',
+    answer: 'Go to My Account and update your address details, or contact support before the order is packed if the address needs correction.',
   },
 ]
 
@@ -130,16 +123,21 @@ function TopicCard({ topic }: { topic: HelpTopic }) {
   )
 }
 
-function ArticleLink({ article }: { article: HelpTopic }) {
+function PopularQuestionItem({ item, defaultOpen }: { item: PopularQuestion; defaultOpen?: boolean }) {
   return (
-    <Link
-      href={article.href}
-      className="grid min-h-[4.15rem] grid-cols-[1.5rem_minmax(0,1fr)_1rem] items-center gap-4 border-b border-border px-5 text-sm font-medium text-foreground last:border-b-0 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring sm:px-6"
+    <details
+      open={defaultOpen}
+      className="group border-b border-border last:border-b-0"
     >
-      <LocalIcon name={article.icon} className="h-5 w-5 text-foreground" />
-      <span className="min-w-0">{article.title}</span>
-      <LocalIcon name="chevron-right" className="h-4 w-4 text-foreground" />
-    </Link>
+      <summary className="grid min-h-[3.75rem] cursor-pointer list-none grid-cols-[minmax(0,1fr)_1.25rem] items-center gap-4 px-5 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring [&::-webkit-details-marker]:hidden sm:px-6">
+        <span className="min-w-0">{item.question}</span>
+        <span className="text-center text-lg leading-none text-foreground/70 group-open:hidden">+</span>
+        <span className="hidden text-center text-lg leading-none text-foreground/70 group-open:block">-</span>
+      </summary>
+      <p className="px-5 pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:px-6 sm:pr-14">
+        {item.answer}
+      </p>
+    </details>
   )
 }
 
@@ -204,7 +202,7 @@ export default function HelpPage() {
 
       <main className="container-site py-10 sm:py-12 lg:py-16">
         <section>
-          <h2 className="font-display text-2xl font-semibold leading-8">Browse by topic</h2>
+          <h2 className="font-display text-2xl font-semibold leading-8">Quick nav links</h2>
           <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 md:grid-cols-3 min-[1180px]:grid-cols-6 min-[1180px]:gap-4">
             {HELP_TOPICS.map((topic) => (
               <TopicCard key={topic.title} topic={topic} />
@@ -215,14 +213,14 @@ export default function HelpPage() {
         <section className="mt-14">
           <h2 className="font-display text-2xl font-semibold leading-8">Popular articles</h2>
           <div className="mt-6 overflow-hidden rounded-lg border border-border bg-white">
-            {POPULAR_ARTICLES.map((article) => (
-              <ArticleLink key={article.title} article={article} />
+            {POPULAR_QUESTIONS.map((item, index) => (
+              <PopularQuestionItem key={item.question} item={item} defaultOpen={index === 0} />
             ))}
           </div>
 
           <div className="mt-7 flex justify-center">
             <Link
-              href="/faq"
+              href="/articles"
               className="inline-flex h-11 items-center justify-center gap-3 rounded-lg border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               View all articles
