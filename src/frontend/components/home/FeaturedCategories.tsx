@@ -37,17 +37,6 @@ const CATEGORY_ICON_NAMES: Record<string, StorefrontIconName> = {
   'toys-collectibles': 'category-toys-collectibles',
 }
 
-const CATEGORY_FEATURES: Array<{
-  icon: StorefrontIconName
-  title: string
-  text: string
-}> = [
-  { icon: 'shield', title: 'Top Quality', text: 'Premium products' },
-  { icon: 'tag', title: 'Best Prices', text: 'Affordable for everyone' },
-  { icon: 'credit-card', title: 'Secure Shopping', text: 'Safe & trusted' },
-  { icon: 'headset', title: '24/7 Support', text: "We're here to help" },
-]
-
 export function FeaturedCategories({ categories }: { categories: Category[] }) {
   const visibleCategories = categories.slice(0, 8)
 
@@ -91,24 +80,6 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           View all categories
           <LocalIcon name="arrow-right" className="h-4 w-4" />
         </Link>
-
-        <div className="mt-6 grid overflow-hidden rounded-lg border border-border/70 bg-white min-[560px]:grid-cols-2 lg:mt-7 lg:grid-cols-4">
-          {CATEGORY_FEATURES.map((feature, index) => (
-            <div
-              key={feature.title}
-              className="flex items-center gap-4 px-5 py-4 lg:px-7 lg:py-5"
-            >
-              <LocalIcon name={feature.icon} className="h-8 w-8 text-foreground" />
-              <div className="min-w-0">
-                <p className="text-sm font-semibold leading-5 text-foreground lg:text-base">{feature.title}</p>
-                <p className="mt-0.5 text-xs leading-5 text-muted-foreground lg:text-sm">{feature.text}</p>
-              </div>
-              {index < CATEGORY_FEATURES.length - 1 ? (
-                <span className="ml-auto hidden h-9 w-px bg-border lg:block" aria-hidden="true" />
-              ) : null}
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   )
