@@ -17,6 +17,7 @@ export const productCardSelect = {
   isPreOrder: true,
   images: {
     where: { isPrimary: true },
+    orderBy: { sortOrder: 'asc' },
     take: 1,
     select: { url: true, isPrimary: true },
   },

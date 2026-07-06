@@ -146,6 +146,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -155,6 +156,8 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -246,6 +249,7 @@ model Category {
 
   @@index([slug])
   @@index([parentId])
+  @@index([isActive, parentId, sortOrder])
 }
 
 model Brand {
@@ -362,6 +366,8 @@ model ProductImage {
   sortOrder Int     @default(0)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder, isPrimary])
 }
 
 model ProductVariant {
@@ -382,7 +388,7 @@ model ProductVariant {
   cartItems  CartItem[]
   orderItems OrderItem[]
 
-  @@index([productId])
+  @@index([productId, isActive, sortOrder])
 }
 
 model VariantOption {
@@ -392,6 +398,8 @@ model VariantOption {
   value     String
 
   variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
 }
 
 model ProductAttribute {
@@ -402,6 +410,8 @@ model ProductAttribute {
   sortOrder Int    @default(0)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
 }
 
 model ProductSpec {
@@ -413,6 +423,8 @@ model ProductSpec {
   sortOrder Int    @default(0)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
 }
 
 // CART
@@ -524,9 +536,9 @@ model Order {
   returnRequest  ReturnRequest?
   emailOutbox    EmailOutbox[]
 
-  @@index([userId])
+  @@index([userId, createdAt])
   @@index([orderNumber])
-  @@index([status])
+  @@index([status, createdAt])
 }
 
 // TRANSACTIONAL EMAIL OUTBOX
@@ -577,6 +589,9 @@ model OrderItem {
   order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product         @relation(fields: [productId], references: [id])
   variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model OrderStatusHistory {
@@ -587,6 +602,8 @@ model OrderStatusHistory {
   createdAt DateTime    @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
 }
 
 // PAYMENT
@@ -646,7 +663,8 @@ model Review {
   user    User    @relation(fields: [userId], references: [id])
 
   @@unique([productId, userId])
-  @@index([productId])
+  @@index([productId, status, createdAt])
+  @@index([userId, productId])
   @@index([status])
 }
 
@@ -691,6 +709,8 @@ model Banner {
   endsAt      DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isActive, position, sortOrder])
 }
 
 model HomepageSection {
