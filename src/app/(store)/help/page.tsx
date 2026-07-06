@@ -113,12 +113,16 @@ function TopicCard({ topic }: { topic: HelpTopic }) {
   return (
     <Link
       href={topic.href}
-      className="flex min-h-[10.7rem] flex-col rounded-lg border border-border bg-white p-5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="grid min-h-[5.8rem] grid-cols-[1.75rem_minmax(0,1fr)_1rem] items-center gap-3 rounded-lg border border-border bg-white px-4 py-3.5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:flex sm:min-h-[10.35rem] sm:flex-col sm:items-stretch sm:p-5"
     >
-      <LocalIcon name={topic.icon} className="h-6 w-6 text-foreground" />
-      <h3 className="mt-8 text-sm font-semibold leading-5 text-foreground">{topic.title}</h3>
-      <p className="mt-2 max-w-[10rem] text-sm leading-6 text-muted-foreground">{topic.description}</p>
-      <LocalIcon name="arrow-right" className="mt-auto h-4 w-4 self-end text-foreground" />
+      <LocalIcon name={topic.icon} className="h-5 w-5 text-foreground sm:h-6 sm:w-6" />
+      <div className="min-w-0 sm:mt-7">
+        <h3 className="text-sm font-semibold leading-5 text-foreground">{topic.title}</h3>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground sm:mt-2 sm:max-w-[10rem] sm:text-sm sm:leading-6">
+          {topic.description}
+        </p>
+      </div>
+      <LocalIcon name="arrow-right" className="h-4 w-4 justify-self-end text-foreground sm:mt-auto sm:self-end" />
     </Link>
   )
 }
@@ -195,7 +199,7 @@ export default function HelpPage() {
       <main className="container-site py-12 sm:py-16">
         <section>
           <h2 className="font-display text-2xl font-semibold leading-8">Browse by topic</h2>
-          <div className="mt-7 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 min-[900px]:grid-cols-3 min-[1180px]:grid-cols-6 min-[1180px]:gap-4">
             {HELP_TOPICS.map((topic) => (
               <TopicCard key={topic.title} topic={topic} />
             ))}
@@ -221,28 +225,28 @@ export default function HelpPage() {
           </div>
         </section>
 
-        <section className="mt-14 grid overflow-hidden rounded-lg border border-border bg-white md:grid-cols-2">
-          <div className="border-b border-border p-7 md:border-b-0 md:border-r md:p-9">
+        <section className="mt-14 grid gap-4 md:grid-cols-2">
+          <div className="flex min-h-[11.5rem] flex-col items-start rounded-lg border border-border bg-white p-6 sm:p-7 lg:p-8">
             <h2 className="text-lg font-semibold leading-6">Need more help?</h2>
             <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
               Can&rsquo;t find what you&rsquo;re looking for? We&rsquo;re here for you.
             </p>
             <Link
               href="/contact"
-              className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-auto inline-flex h-11 items-center justify-center rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               Contact Support
             </Link>
           </div>
 
-          <div className="p-7 md:p-9">
+          <div className="flex min-h-[11.5rem] flex-col items-start rounded-lg border border-border bg-white p-6 sm:p-7 lg:p-8">
             <h2 className="text-lg font-semibold leading-6">Email us</h2>
             <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
               Send us an email and we&rsquo;ll get back to you soon.
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <LocalIcon name="mail" className="h-4 w-4" />
               {CONTACT_EMAIL}
