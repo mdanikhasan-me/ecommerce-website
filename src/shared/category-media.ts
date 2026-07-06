@@ -5,39 +5,39 @@ import path from 'node:path'
 export const CATEGORY_PHOTO_ASSETS: Record<string, { path: string; version: string }> = {
   electronics: {
     path: '/assets/categories/electronics.webp',
-    version: '404e06c61469',
+    version: '1bd06628d7f6',
   },
   fashion: {
     path: '/assets/categories/fashion.webp',
-    version: '5c5991576c93',
+    version: '7a4ba5886b6e',
   },
   'home-appliances': {
     path: '/assets/categories/home-appliances.webp',
-    version: '01df0856fa33',
+    version: 'aa9469941538',
   },
   'beauty-health': {
     path: '/assets/categories/beauty-health.webp',
-    version: '4037645778c1',
+    version: 'b9a8fb67cb2d',
   },
   'sports-fitness': {
     path: '/assets/categories/sports-fitness.webp',
-    version: '7fe543ae929a',
+    version: '4112447960d0',
   },
   'books-stationery': {
     path: '/assets/categories/books-stationery.webp',
-    version: 'fc9bee703c9a',
+    version: '4962fc77503c',
   },
   gaming: {
     path: '/assets/categories/gaming.webp',
-    version: 'f42cd45bb1d8',
+    version: '6b405ed8f8d0',
   },
   'toys-collectibles': {
     path: '/assets/categories/toys-collectibles.webp',
-    version: '933e0e26cd70',
+    version: '4bad5e4a2897',
   },
   'baby-kids': {
     path: '/assets/categories/gaming.webp',
-    version: 'f42cd45bb1d8',
+    version: '6b405ed8f8d0',
   },
 }
 
