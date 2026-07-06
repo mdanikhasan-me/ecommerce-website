@@ -7,7 +7,7 @@ import {
   generateWebPageJsonLd,
 } from '@/backend/seo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { CONTACT_EMAIL, CONTACT_PHONE, WHATSAPP_URL } from '@/shared/contact'
+import { CONTACT_EMAIL } from '@/shared/contact'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -16,155 +16,129 @@ export const metadata: Metadata = generatePageMetadata(
   '/help',
 )
 
-type ActionCard = {
+type HelpTopic = {
   title: string
   description: string
   href: string
   icon: StorefrontIconName
 }
 
-const QUICK_ACTIONS: ActionCard[] = [
+const POPULAR_SEARCHES = [
+  { label: 'track order', href: '/track-order' },
+  { label: 'returns', href: '/returns' },
+  { label: 'shipping', href: '/shipping' },
+  { label: 'payment', href: '/faq' },
+  { label: 'account', href: '/account' },
+]
+
+const HELP_TOPICS: HelpTopic[] = [
   {
-    title: 'Track order',
-    description: 'Check your order status anytime',
+    title: 'Orders & Tracking',
+    description: 'Track, view or manage your orders',
     href: '/track-order',
     icon: 'package',
   },
   {
-    title: 'Returns',
-    description: 'Start or check a return',
-    href: '/returns',
-    icon: 'refresh-ccw',
-  },
-  {
-    title: 'Shipping',
-    description: 'Delivery info and timelines',
+    title: 'Shipping & Delivery',
+    description: 'Delivery times, costs and locations',
     href: '/shipping',
     icon: 'truck',
   },
   {
+    title: 'Returns & Refunds',
+    description: 'Return items and refund process',
+    href: '/returns',
+    icon: 'refresh-ccw',
+  },
+  {
     title: 'Payments',
-    description: 'Payment methods and issues',
+    description: 'Payment methods and billing',
     href: '/faq',
     icon: 'credit-card',
   },
   {
-    title: 'Account help',
-    description: 'Login, profile and account support',
+    title: 'Account & Profile',
+    description: 'Login, update and account settings',
     href: '/account',
     icon: 'user',
   },
-]
-
-const REACH_CARDS: Array<ActionCard & { detail?: string }> = [
   {
-    title: 'WhatsApp message',
-    description: 'Recommended option',
-    detail: 'Open WhatsApp',
-    href: WHATSAPP_URL,
-    icon: 'message-circle',
-  },
-  {
-    title: 'Call us',
-    description: 'Talk to our team',
-    detail: CONTACT_PHONE,
-    href: `tel:${CONTACT_PHONE.replace(/[^\d+]/g, '')}`,
-    icon: 'phone',
-  },
-  {
-    title: 'Email us',
-    description: "We'll reply soon",
-    detail: CONTACT_EMAIL,
-    href: `mailto:${CONTACT_EMAIL}`,
-    icon: 'mail',
-  },
-  {
-    title: 'Contact form',
-    description: 'Best for detailed issues',
-    detail: 'Slowest reply option',
-    href: '/contact',
-    icon: 'mail',
+    title: 'Products',
+    description: 'Product info, stock and care guides',
+    href: '/category',
+    icon: 'shopping-bag',
   },
 ]
 
-function QuickActionCard({ action }: { action: ActionCard }) {
+const POPULAR_ARTICLES: HelpTopic[] = [
+  {
+    title: 'How do I track my order?',
+    description: '',
+    href: '/track-order',
+    icon: 'package',
+  },
+  {
+    title: 'What is your return policy?',
+    description: '',
+    href: '/returns',
+    icon: 'refresh-ccw',
+  },
+  {
+    title: 'How long does delivery take?',
+    description: '',
+    href: '/shipping',
+    icon: 'truck',
+  },
+  {
+    title: 'Which payment methods do you accept?',
+    description: '',
+    href: '/faq',
+    icon: 'credit-card',
+  },
+  {
+    title: 'How can I update my account information?',
+    description: '',
+    href: '/account/profile',
+    icon: 'user',
+  },
+  {
+    title: 'How do I use a discount code?',
+    description: '',
+    href: '/faq',
+    icon: 'tag',
+  },
+]
+
+function TopicCard({ topic }: { topic: HelpTopic }) {
   return (
     <Link
-      href={action.href}
-      className="group flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors min-[1025px]:hover:border-foreground/30 min-[1025px]:hover:bg-secondary/35 sm:min-h-[9.75rem] sm:min-w-0 sm:flex-col sm:items-stretch sm:justify-between sm:p-5"
+      href={topic.href}
+      className="flex min-h-[10.7rem] flex-col rounded-lg border border-border bg-white p-5 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 text-foreground sm:h-11 sm:w-11 sm:rounded-xl">
-        <LocalIcon name={action.icon} className="h-4 w-4 sm:h-5 sm:w-5" />
-      </span>
-      <span className="min-w-0 flex-1 sm:flex-none">
-        <span className="block truncate text-sm font-semibold text-foreground sm:text-[0.95rem]">{action.title}</span>
-        <span className="mt-0.5 block text-xs leading-5 text-muted-foreground sm:mt-1 sm:text-sm">
-          {action.description}
-        </span>
-      </span>
-      <LocalIcon
-        name="chevron-right"
-        className="h-4 w-4 shrink-0 text-foreground/70 sm:self-end"
-      />
+      <LocalIcon name={topic.icon} className="h-6 w-6 text-foreground" />
+      <h3 className="mt-8 text-sm font-semibold leading-5 text-foreground">{topic.title}</h3>
+      <p className="mt-2 max-w-[10rem] text-sm leading-6 text-muted-foreground">{topic.description}</p>
+      <LocalIcon name="arrow-right" className="mt-auto h-4 w-4 self-end text-foreground" />
     </Link>
   )
 }
 
-function ReachCard({ action }: { action: ActionCard & { detail?: string } }) {
-  const isPlaceholder = action.href === '#'
-  const content = (
-    <>
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary/80 text-foreground sm:h-11 sm:w-11">
-        <LocalIcon name={action.icon} className="h-4 w-4 sm:h-5 sm:w-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold leading-5 text-foreground sm:text-base sm:leading-6">{action.title}</span>
-        <span className="mt-0.5 block text-xs leading-5 text-muted-foreground sm:mt-1 sm:text-sm">{action.description}</span>
-        {action.detail ? (
-          <span className="mt-0.5 block break-words text-xs font-medium text-primary sm:mt-1 sm:text-sm">{action.detail}</span>
-        ) : null}
-      </span>
-      {isPlaceholder ? null : <LocalIcon name="chevron-right" className="h-5 w-5 shrink-0 text-foreground/70" />}
-    </>
-  )
-
-  const className =
-    'flex min-h-0 items-center gap-3 rounded-lg border border-border bg-card px-3 py-3 transition-colors min-[1025px]:hover:border-foreground/30 min-[1025px]:hover:bg-secondary/35 sm:min-h-[6.25rem] sm:gap-4 sm:px-5 sm:py-4'
-
-  if (isPlaceholder) {
-    return (
-      <div className={`${className} cursor-default`} aria-disabled="true">
-        {content}
-      </div>
-    )
-  }
-
-  if (action.href.startsWith('tel:') || action.href.startsWith('mailto:')) {
-    return (
-      <a href={action.href} className={className}>
-        {content}
-      </a>
-    )
-  }
-
-  if (action.href.startsWith('http')) {
-    return (
-      <a href={action.href} target="_blank" rel="noopener noreferrer" className={className}>
-        {content}
-      </a>
-    )
-  }
-
+function ArticleLink({ article }: { article: HelpTopic }) {
   return (
-    <Link href={action.href} className={className}>
-      {content}
+    <Link
+      href={article.href}
+      className="grid min-h-[4.15rem] grid-cols-[1.5rem_minmax(0,1fr)_1rem] items-center gap-4 border-b border-border px-5 text-sm font-medium text-foreground last:border-b-0 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring sm:px-6"
+    >
+      <LocalIcon name={article.icon} className="h-5 w-5 text-foreground" />
+      <span className="min-w-0">{article.title}</span>
+      <LocalIcon name="chevron-right" className="h-4 w-4 text-foreground" />
     </Link>
   )
 }
 
 export default function HelpPage() {
   return (
-    <div className="text-foreground">
+    <div className="bg-white text-foreground">
       <JsonLd
         data={[
           generateWebPageJsonLd({
@@ -178,44 +152,104 @@ export default function HelpPage() {
           ]),
         ]}
       />
-      <section className="bg-foreground text-background">
-        <div className="container-site flex min-h-[13rem] flex-col items-center justify-center py-8 text-center sm:min-h-[17rem] sm:py-14">
-          <h1 className="text-[2rem] font-semibold leading-tight sm:text-5xl">We&rsquo;re here to help</h1>
-          <p className="mt-3 max-w-[20rem] text-sm leading-6 text-background/72 sm:mt-4 sm:max-w-[32rem] sm:text-lg sm:leading-8">
-            Questions, confusion, or anything else?
-            <br />
-            Hit support and we&rsquo;ll help you sort it out.
+
+      <section className="bg-[#111118] text-white">
+        <div className="container-site flex min-h-[20rem] flex-col items-center justify-center py-12 text-center sm:min-h-[25rem]">
+          <h1 className="font-display text-[2.6rem] font-bold leading-none tracking-normal sm:text-5xl">
+            Help Center
+          </h1>
+          <p className="mt-5 max-w-[28rem] text-base leading-7 text-white/82 sm:text-lg">
+            Find answers, guides and support for a smooth shopping experience.
+          </p>
+
+          <form action="/help" className="mt-9 grid w-full max-w-[36rem] grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-white/25 bg-white text-foreground">
+            <label className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-3 px-5" htmlFor="help-search">
+              <LocalIcon name="search" className="h-5 w-5 text-muted-foreground" />
+              <input
+                id="help-search"
+                name="q"
+                type="search"
+                placeholder="Search for help articles..."
+                className="h-14 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+            <button type="submit" className="m-1.5 rounded-md bg-foreground px-6 text-sm font-semibold text-background">
+              Search
+            </button>
+          </form>
+
+          <p className="mt-5 text-sm leading-6 text-white/55">
+            Popular searches:{' '}
+            {POPULAR_SEARCHES.map((search, index) => (
+              <span key={search.href}>
+                <Link href={search.href} className="text-white/68">
+                  {search.label}
+                </Link>
+                {index < POPULAR_SEARCHES.length - 1 ? ', ' : null}
+              </span>
+            ))}
           </p>
         </div>
       </section>
 
-      <section className="container-site py-6 sm:py-10">
-        <h2 className="text-lg font-semibold leading-7 sm:text-[1.05rem]">Quick actions</h2>
-        <div className="mt-3 grid gap-2 sm:mt-5 sm:grid-cols-2 lg:grid-cols-5">
-          {QUICK_ACTIONS.map((action) => (
-            <QuickActionCard key={action.href} action={action} />
-          ))}
-        </div>
-
-        <h2 className="mt-7 text-lg font-semibold leading-7 sm:mt-10 sm:text-[1.05rem]">Reach us</h2>
-        <div className="mt-3 grid gap-2 sm:mt-5 sm:grid-cols-2 sm:gap-3 xl:grid-cols-4">
-          {REACH_CARDS.map((action) => (
-            <ReachCard key={`${action.title}-${action.href}`} action={action} />
-          ))}
-        </div>
-
-        <div className="mt-8 sm:mt-12">
-          <div className="mx-auto flex max-w-[38rem] flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-3 sm:text-left">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary/80 text-foreground sm:h-10 sm:w-10">
-              <LocalIcon name="shield" className="h-4 w-4 sm:h-5 sm:w-5" />
-            </span>
-            <div>
-              <p className="text-sm font-semibold text-foreground sm:text-[0.95rem]">Your privacy matters.</p>
-              <p className="text-xs text-muted-foreground sm:text-sm">We&rsquo;ll never share your details.</p>
-            </div>
+      <main className="container-site py-12 sm:py-16">
+        <section>
+          <h2 className="font-display text-2xl font-semibold leading-8">Browse by topic</h2>
+          <div className="mt-7 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {HELP_TOPICS.map((topic) => (
+              <TopicCard key={topic.title} topic={topic} />
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section className="mt-14">
+          <h2 className="font-display text-2xl font-semibold leading-8">Popular articles</h2>
+          <div className="mt-6 overflow-hidden rounded-lg border border-border bg-white">
+            {POPULAR_ARTICLES.map((article) => (
+              <ArticleLink key={article.title} article={article} />
+            ))}
+          </div>
+
+          <div className="mt-7 flex justify-center">
+            <Link
+              href="/faq"
+              className="inline-flex h-11 items-center justify-center gap-3 rounded-lg border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              View all articles
+              <LocalIcon name="arrow-right" className="h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+
+        <section className="mt-14 grid overflow-hidden rounded-lg border border-border bg-white md:grid-cols-2">
+          <div className="border-b border-border p-7 md:border-b-0 md:border-r md:p-9">
+            <h2 className="text-lg font-semibold leading-6">Need more help?</h2>
+            <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
+              Can&rsquo;t find what you&rsquo;re looking for? We&rsquo;re here for you.
+            </p>
+            <Link
+              href="/contact"
+              className="mt-6 inline-flex h-11 items-center justify-center rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              Contact Support
+            </Link>
+          </div>
+
+          <div className="p-7 md:p-9">
+            <h2 className="text-lg font-semibold leading-6">Email us</h2>
+            <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
+              Send us an email and we&rsquo;ll get back to you soon.
+            </p>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              <LocalIcon name="mail" className="h-4 w-4" />
+              {CONTACT_EMAIL}
+            </a>
+          </div>
+        </section>
+      </main>
     </div>
   )
 }
