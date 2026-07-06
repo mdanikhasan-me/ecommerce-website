@@ -169,7 +169,7 @@ export default function HelpPage() {
             Find answers, guides and support for a smooth shopping experience.
           </p>
 
-          <form action="/help" className="mt-9 grid w-full max-w-[36rem] grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-white/25 bg-white text-foreground">
+          <form action="/help" className="mt-9 grid w-full max-w-[36rem] grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-white/25 bg-white text-foreground focus-within:border-white/45">
             <label className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-3 px-5" htmlFor="help-search">
               <LocalIcon name="search" className="h-5 w-5 text-muted-foreground" />
               <input
@@ -177,10 +177,13 @@ export default function HelpPage() {
                 name="q"
                 type="search"
                 placeholder="Search for help articles..."
-                className="h-14 min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                className="h-14 min-w-0 appearance-none border-0 bg-transparent text-sm outline-none shadow-none ring-0 ring-offset-0 placeholder:text-muted-foreground focus:border-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </label>
-            <button type="submit" className="m-1.5 rounded-md bg-foreground px-6 text-sm font-semibold text-background">
+            <button
+              type="submit"
+              className="m-1.5 rounded-md bg-foreground px-6 text-sm font-semibold text-background outline-none ring-0 ring-offset-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            >
               Search
             </button>
           </form>
