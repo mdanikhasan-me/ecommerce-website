@@ -365,7 +365,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             )}
 
             <div
-              className="relative flex min-h-[18rem] touch-pan-y items-center justify-center overflow-hidden rounded-[1.15rem] bg-background sm:min-h-[24rem] min-[768px]:min-h-[34rem] min-[1280px]:min-h-[42rem]"
+              className="relative flex aspect-[5/4] w-full touch-pan-y items-center justify-center overflow-hidden rounded-[1.15rem] bg-background"
               onTouchStart={handleGalleryTouchStart}
               onTouchEnd={handleGalleryTouchEnd}
               onTouchCancel={() => {
