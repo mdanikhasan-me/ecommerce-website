@@ -568,7 +568,7 @@ function ArticleTextLink({ href, children }: { href: string; children: ReactNode
   return (
     <Link
       href={href}
-      className="rounded-[0.25rem] border border-primary/15 bg-primary/[0.04] px-1 py-0.5 font-medium text-primary underline underline-offset-2 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="font-semibold text-[#0f766e] underline decoration-[#0f766e]/35 decoration-1 underline-offset-[3px] focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       {children}
     </Link>
