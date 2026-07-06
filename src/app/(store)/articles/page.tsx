@@ -8,149 +8,174 @@ import {
 } from '@/backend/seo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { CONTACT_EMAIL } from '@/shared/contact'
-import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 export const metadata: Metadata = generatePageMetadata(
   'Boilabin Help Articles',
-  'Browse Boilabin help articles for orders, delivery, returns, payments, account support, products, and discount codes.',
+  'Browse detailed Boilabin help articles for orders, delivery, returns, payments, account support, products, and discount codes.',
   '/articles',
 )
 
-type ArticleItem = {
-  title: string
-  summary: string
+type ArticleQuestion = {
+  question: string
+  answer: string
 }
 
-type ArticleGroup = {
+type ArticleCategory = {
   id: string
   title: string
   description: string
-  icon: StorefrontIconName
-  articles: ArticleItem[]
+  questions: ArticleQuestion[]
 }
 
-const ARTICLE_GROUPS: ArticleGroup[] = [
+const ARTICLE_CATEGORIES: ArticleCategory[] = [
   {
     id: 'orders-tracking',
     title: 'Orders & Tracking',
-    description: 'Order status, tracking, changes and cancellations.',
-    icon: 'package',
-    articles: [
+    description: 'Order status, order changes, cancellations, and delivery tracking.',
+    questions: [
       {
-        title: 'How do I track my order?',
-        summary: 'Open Track Order with your order number, or sign in and go to My Account, then Orders, to see the latest status.',
+        question: 'How do I track my order?',
+        answer:
+          'Use the Track Order page with your order number, or sign in and open My Account, then Orders. The order page shows the latest status we have, such as confirmed, processing, packed, shipped, or delivered. If the status has not changed for a while, contact support with your order number so we can check the delivery update.',
       },
       {
-        title: 'Can I change or cancel my order?',
-        summary: 'Contact support as soon as possible with your order number. We can usually help before the order is packed for delivery.',
+        question: 'Can I change or cancel my order?',
+        answer:
+          'Contact support as soon as possible after placing the order. We can usually change or cancel an order before it is packed for delivery. Once an order is packed or already handed to delivery, changes may not be possible, so send the order number and the exact change you need early.',
       },
       {
-        title: 'What should I do if my order is delayed or missing?',
-        summary: 'Check your order status first. If the delivery looks delayed, contact support so we can review the order and delivery update.',
+        question: 'What should I do if my order is delayed?',
+        answer:
+          'First check the order status from Track Order or My Account. Delivery can be delayed by address availability, holidays, high order volume, or item availability. If the expected delivery window has passed, send support your order number and phone number so we can review it and share the next update.',
       },
     ],
   },
   {
     id: 'delivery-fees',
     title: 'Delivery & Fees',
-    description: 'Delivery timing, coverage, fees and delivery expectations.',
-    icon: 'truck',
-    articles: [
+    description: 'Delivery time, location coverage, delivery charges, and free delivery.',
+    questions: [
       {
-        title: 'How long does delivery take?',
-        summary: 'Delivery timing depends on your address and product availability. Orders inside Dhaka usually arrive faster than outside Dhaka.',
+        question: 'How long does delivery take?',
+        answer:
+          'Delivery timing depends on your address, product availability, and order volume. Dhaka orders are usually faster than outside-Dhaka orders. The final delivery estimate can vary during holidays, traffic disruptions, or high-volume periods. If an item has a special stock state such as pre-order or low stock, timing may also be different.',
       },
       {
-        title: 'How much is the delivery fee?',
-        summary: 'Delivery fees are shown before checkout confirmation. Orders over the free-delivery threshold can qualify for free delivery.',
+        question: 'How much is the delivery fee?',
+        answer:
+          'The delivery fee is shown before checkout confirmation. Fees can vary based on the delivery area and order type. Orders above the free-delivery threshold may qualify for free standard delivery, but express delivery or special delivery handling may still have a separate charge where available.',
       },
       {
-        title: 'Where do you deliver?',
-        summary: 'Boilabin is built for customers in Bangladesh. Delivery availability and timing can vary by address and product availability.',
+        question: 'Where does Boilabin deliver?',
+        answer:
+          'Boilabin is built for customers in Bangladesh. Delivery coverage includes Dhaka and outside-Dhaka areas where courier service is available. Some remote areas may need additional time, and support may contact you if the address needs clarification before dispatch.',
       },
     ],
   },
   {
     id: 'returns-refunds',
     title: 'Returns & Refunds',
-    description: 'Return eligibility, return requests and refund steps.',
-    icon: 'refresh-ccw',
-    articles: [
+    description: 'Return eligibility, proof requirements, refunds, and replacements.',
+    questions: [
       {
-        title: 'What is your return policy?',
-        summary: 'Return requests are reviewed against the return policy. Report damaged, defective, or wrong items quickly with clear proof.',
+        question: 'What is your return policy?',
+        answer:
+          'Return requests are reviewed against the return policy. If a product arrives defective, damaged during delivery, or different from what was ordered, contact support quickly with clear photos or video. Change-of-mind returns, used items, or requests without proof may not be accepted.',
       },
       {
-        title: 'How do I request a return?',
-        summary: 'Open your order details when available, or contact support with your order number and clear photos or video of the issue.',
+        question: 'How do I request a return?',
+        answer:
+          'Open your order details if the return option is available, or contact support with your order number. Include photos or a short video that clearly shows the issue, the product, and the packaging. Support will review the request and explain whether the item is eligible for refund or replacement.',
       },
       {
-        title: 'When will I get my refund?',
-        summary: 'After the return is reviewed and approved, support will confirm the refund or replacement process for your order.',
+        question: 'When will I get my refund?',
+        answer:
+          'Refund timing depends on return review and item inspection. After the request is approved and the returned item is checked, support will confirm the refund method or replacement. For cash-on-delivery orders, the refund method is arranged directly with you.',
       },
     ],
   },
   {
-    id: 'payments-cod',
-    title: 'Payments & COD',
-    description: 'Cash on delivery, order confirmation and payment questions.',
-    icon: 'credit-card',
-    articles: [
+    id: 'payments',
+    title: 'Payments',
+    description: 'Cash on delivery, payment confirmation, failed orders, and future payment methods.',
+    questions: [
       {
-        title: 'What payment methods do you accept?',
-        summary: 'Boilabin currently supports cash on delivery. If online payment becomes available, it will appear during checkout.',
+        question: 'What payment methods do you accept?',
+        answer:
+          'Boilabin currently supports cash on delivery. You place the order online and pay in cash when the order reaches you. If online payment is added later, it will appear as a checkout option only when it is fully ready and supported by the store.',
       },
       {
-        title: 'Do I get an order confirmation?',
-        summary: 'Yes. After checkout, Boilabin creates a confirmation with the order items, delivery address, and total amount.',
+        question: 'Do I get an order confirmation?',
+        answer:
+          'Yes. After checkout, Boilabin creates an order confirmation with your items, delivery address, phone number, and total amount. Keep the order number because it helps support find the order quickly if you need tracking, cancellation, or delivery help.',
       },
       {
-        title: 'Will you add online payment?',
-        summary: 'Online payment will be added only when it is ready. Until then, cash on delivery is the active checkout payment method.',
+        question: 'Why is there no online payment option?',
+        answer:
+          'Online payment is not active yet. This keeps checkout simple while the store validates ordering, delivery, and support workflows. When online payment is ready, it will be added carefully so order confirmation, refunds, and payment verification stay reliable.',
       },
     ],
   },
   {
     id: 'account-address',
     title: 'Account & Address',
-    description: 'Profile, address, sign-in and account support.',
-    icon: 'user',
-    articles: [
+    description: 'Sign-in, profile details, delivery address, and account information.',
+    questions: [
       {
-        title: 'How do I add or change my delivery address?',
-        summary: 'Go to My Account and update your address details, or contact support before the order is packed if the address needs correction.',
+        question: 'How do I add or change my delivery address?',
+        answer:
+          'Open My Account and update your address details. If you already placed an order, contact support before the order is packed. Once an order is packed or shipped, address changes may not be possible because the delivery information is already handed to the delivery process.',
       },
       {
-        title: 'How can I update my account information?',
-        summary: 'Go to My Account to review profile details, orders, wishlist, and address information linked to your account.',
+        question: 'Can I shop without an account?',
+        answer:
+          'You can browse products without an account, but checkout requires an account so your orders, address, wishlist, and support history can be connected properly. This also helps us verify order details and provide support faster.',
       },
       {
-        title: 'Can I shop without an account?',
-        summary: 'You can browse products freely, but checkout requires an account so orders, addresses, and support requests can be tracked.',
+        question: 'How can I update my account information?',
+        answer:
+          'Go to My Account to review your profile, order history, wishlist, and address information. If a detail cannot be changed from the account area, contact support from the email or phone number linked to your account so we can verify the request.',
       },
     ],
   },
   {
     id: 'products-stock',
     title: 'Products & Stock',
-    description: 'Product details, variants, stock status and product care.',
-    icon: 'shopping-bag',
-    articles: [
+    description: 'Product details, variants, stock status, preorder, and wishlist behavior.',
+    questions: [
       {
-        title: 'Where can I check product details?',
-        summary: 'Each product page includes images, price, stock status, variants when available, and the current product information.',
+        question: 'Where can I check product details?',
+        answer:
+          'Each product page includes the product images, price, stock status, available variants, and details that are currently available. Check the product page before ordering, especially for items with sizes, storage variants, pre-order status, or low stock.',
       },
       {
-        title: 'How do I know if an item is in stock?',
-        summary: 'The product card and product page show the current stock state, including in stock, low stock, pre-order, or out of stock.',
+        question: 'How do I know if an item is in stock?',
+        answer:
+          'Product cards and product pages show the current stock state. In Stock means the item can be added to cart. Low stock means only a few units are left. Pre-order means the product can be reserved before normal availability. Out of Stock means it cannot be added to cart right now.',
       },
       {
-        title: 'How do I use a discount code?',
-        summary: 'Enter a valid discount code during checkout. If the code is eligible, the discount will apply before you place the order.',
+        question: 'How do I use a discount code?',
+        answer:
+          'Enter a valid discount code during checkout. If the code is active and your order meets its conditions, the discount will apply before you place the order. Some codes may be limited by product, category, date, order value, or usage count.',
       },
     ],
   },
 ]
+
+function QuestionItem({ item }: { item: ArticleQuestion }) {
+  return (
+    <details className="group border-b border-border last:border-b-0">
+      <summary className="grid min-h-[3.9rem] cursor-pointer list-none grid-cols-[minmax(0,1fr)_1.25rem] items-center gap-4 px-5 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring [&::-webkit-details-marker]:hidden sm:px-6">
+        <span className="min-w-0">{item.question}</span>
+        <span className="text-center text-lg leading-none text-foreground/70 group-open:hidden">+</span>
+        <span className="hidden text-center text-lg leading-none text-foreground/70 group-open:block">-</span>
+      </summary>
+      <p className="px-5 pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:px-6 sm:pr-14">
+        {item.answer}
+      </p>
+    </details>
+  )
+}
 
 export default function ArticlesPage() {
   return (
@@ -159,7 +184,7 @@ export default function ArticlesPage() {
         data={[
           generateWebPageJsonLd({
             name: 'Boilabin Help Articles',
-            description: 'Browse Boilabin help articles for orders, delivery, returns, payments, account support, products, and discount codes.',
+            description: 'Browse detailed Boilabin help articles for orders, delivery, returns, payments, account support, products, and discount codes.',
             path: '/articles',
           }),
           generateBreadcrumbJsonLd([
@@ -171,53 +196,33 @@ export default function ArticlesPage() {
       />
 
       <div className="container-site py-10 sm:py-12 lg:py-16">
-        <div className="max-w-3xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Help Articles</p>
+        <header className="max-w-3xl">
           <h1 className="mt-3 font-display text-[2.4rem] font-bold leading-none tracking-normal sm:text-5xl">
-            All help articles
+            Support articles
           </h1>
           <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-[17px] sm:leading-8">
-            Clear answers for orders, delivery, returns, payments, account settings, and product questions.
+            Detailed answers grouped by the common questions customers ask before and after ordering.
           </p>
-        </div>
+        </header>
 
-        <div className="mt-9 grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12">
-          <aside className="hidden lg:block">
-            <nav className="sticky top-24 space-y-2" aria-label="Help article topics">
-              {ARTICLE_GROUPS.map((group) => (
-                <a
-                  key={group.id}
-                  href={`#${group.id}`}
-                  className="block rounded-md px-3 py-2 text-sm font-medium text-muted-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                >
-                  {group.title}
-                </a>
-              ))}
-            </nav>
-          </aside>
+        <div className="mt-10 space-y-12">
+          {ARTICLE_CATEGORIES.map((category) => (
+            <section key={category.id} id={category.id} className="scroll-mt-24">
+              <div className="max-w-3xl">
+                <h2 className="font-display text-2xl font-semibold leading-8">{category.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{category.description}</p>
+              </div>
 
-          <div className="space-y-10">
-            {ARTICLE_GROUPS.map((group) => (
-              <section key={group.id} id={group.id} className="scroll-mt-24">
-                <div className="grid gap-3 sm:grid-cols-[2rem_minmax(0,1fr)]">
-                  <LocalIcon name={group.icon} className="h-6 w-6 text-foreground" />
-                  <div>
-                    <h2 className="font-display text-2xl font-semibold leading-8">{group.title}</h2>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">{group.description}</p>
-                  </div>
-                </div>
-
-                <div className="mt-4 overflow-hidden rounded-lg border border-border bg-white">
-                  {group.articles.map((article) => (
-                    <article key={article.title} className="border-b border-border px-5 py-5 last:border-b-0 sm:px-6">
-                      <h3 className="text-base font-semibold leading-6 text-foreground">{article.title}</h3>
-                      <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{article.summary}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
+              <div className="mt-5 overflow-hidden rounded-lg border border-border bg-white">
+                {category.questions.map((question) => (
+                  <QuestionItem
+                    key={question.question}
+                    item={question}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
 
         <section className="mt-12 rounded-lg bg-[#f5f5f2] p-6 sm:p-7 lg:p-8">

@@ -22,6 +22,7 @@ type ContentPageShellProps = {
   sections: PageSection[]
   supportTitle?: string
   supportCopy?: string
+  showOnThisPageNav?: boolean
 }
 
 const proseClass =
@@ -36,6 +37,7 @@ export function ContentPageShell({
   sections,
   supportTitle = 'Need a hand?',
   supportCopy = 'Talk to our team before or after you order, and we will help you sort it out.',
+  showOnThisPageNav = true,
 }: ContentPageShellProps) {
   return (
     <div className="container-site py-10 lg:py-16">
@@ -49,12 +51,18 @@ export function ContentPageShell({
         {updatedAt ? <p className="mt-5 text-sm text-muted-foreground">Last updated {updatedAt}</p> : null}
       </header>
 
-      <div className="mt-10 grid gap-10 lg:mt-14 lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:gap-14 xl:gap-16">
-        {/* On this page */}
-        <OnThisPageNav sections={sections.map((section) => ({ id: section.id, title: section.title }))} />
+      <div
+        className={
+          showOnThisPageNav
+            ? 'mt-10 grid gap-10 lg:mt-14 lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:gap-14 xl:gap-16'
+            : 'mt-10 max-w-3xl lg:mt-14'
+        }
+      >
+        {showOnThisPageNav ? (
+          <OnThisPageNav sections={sections.map((section) => ({ id: section.id, title: section.title }))} />
+        ) : null}
 
-        {/* Content */}
-        <div className="min-w-0 max-w-2xl">
+        <div className={showOnThisPageNav ? 'min-w-0 max-w-2xl' : 'min-w-0'}>
           {highlights.length ? (
             <div className="mb-10 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
               {highlights.map((item) => (

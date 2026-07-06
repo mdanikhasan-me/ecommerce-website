@@ -114,6 +114,7 @@ export default function ReturnsPage() {
       ]}
       supportTitle="Need help with a return?"
       supportCopy="If anything is unclear, our support team can guide you through the request, proof, and refund or replacement steps."
+      showOnThisPageNav={false}
     />
     </>
   )

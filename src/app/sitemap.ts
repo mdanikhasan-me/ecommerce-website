@@ -25,6 +25,7 @@ export function getStaticSitemapEntries(siteUrl = getSiteUrl()): MetadataRoute.S
     { url: canonicalUrl('/contact', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.4 },
     { url: canonicalUrl('/help', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.4 },
     { url: canonicalUrl('/articles', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.4 },
+    { url: canonicalUrl('/payments', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.4 },
     { url: canonicalUrl('/shipping', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'monthly', priority: 0.4 },
     { url: canonicalUrl('/terms', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'yearly', priority: 0.2 },
     { url: canonicalUrl('/privacy', siteUrl), lastModified: STATIC_PAGE_LAST_MODIFIED, changeFrequency: 'yearly', priority: 0.2 },

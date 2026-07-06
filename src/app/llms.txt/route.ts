@@ -11,6 +11,7 @@ const PUBLIC_SECTIONS = [
   ['Help Articles', '/articles', 'Detailed help articles for orders, delivery, returns, payments, account support, and products.'],
   ['Contact', '/contact', 'Customer support contact form, email, phone, and office information.'],
   ['About', '/about', 'About Boilabin and how the store works.'],
+  ['Payments', '/payments', 'Cash on delivery payment information and order total guidance.'],
   ['Shipping', '/shipping', 'Delivery fees, timing, and Bangladesh coverage.'],
   ['Returns', '/returns', 'Return and refund policy.'],
 ] as const

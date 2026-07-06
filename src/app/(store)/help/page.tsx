@@ -32,7 +32,7 @@ const POPULAR_SEARCHES = [
   { label: 'track order', href: '/track-order' },
   { label: 'returns', href: '/returns' },
   { label: 'shipping', href: '/shipping' },
-  { label: 'payment', href: '/articles#payments-cod' },
+  { label: 'payment', href: '/payments' },
   { label: 'account', href: '/account' },
 ]
 
@@ -58,7 +58,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     title: 'Payments',
     description: 'COD and payment help',
-    href: '/articles#payments-cod',
+    href: '/payments',
     icon: 'credit-card',
   },
   {
@@ -202,7 +202,7 @@ export default function HelpPage() {
 
       <main className="container-site py-10 sm:py-12 lg:py-16">
         <section>
-          <h2 className="font-display text-2xl font-semibold leading-8">Quick nav links</h2>
+          <h2 className="font-display text-2xl font-semibold leading-8">Support shortcuts</h2>
           <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 md:grid-cols-3 min-[1180px]:grid-cols-6 min-[1180px]:gap-4">
             {HELP_TOPICS.map((topic) => (
               <TopicCard key={topic.title} topic={topic} />
