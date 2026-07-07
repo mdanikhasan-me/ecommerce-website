@@ -206,6 +206,7 @@ function PolicyCard({ list }: { list: PolicyList }) {
 
 function MobilePolicyDetails({ list }: { list: PolicyList }) {
   const isPositive = list.tone === 'positive'
+  const HeaderIcon = list.icon
 
   return (
     <details
@@ -215,11 +216,20 @@ function MobilePolicyDetails({ list }: { list: PolicyList }) {
           : 'group rounded-lg border border-[#f2dcdd] bg-[#fff7f7]'
       }
     >
-      <summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_1rem] items-center gap-3 px-4 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+      <summary className="grid min-h-14 cursor-pointer list-none grid-cols-[2.25rem_minmax(0,1fr)_1rem] items-center gap-3 px-4 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+        <span
+          className={
+            isPositive
+              ? 'flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#24724d]'
+              : 'flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#db444b]'
+          }
+        >
+          <HeaderIcon aria-hidden="true" className="h-4 w-4" strokeWidth={1.85} />
+        </span>
         <span>{list.title}</span>
         <ChevronDown aria-hidden="true" className="h-4 w-4 justify-self-end text-muted-foreground" strokeWidth={1.85} />
       </summary>
-      <ul className="space-y-3 px-4 pb-4">
+      <ul className="space-y-3 px-4 pb-4 pl-[4.5rem]">
         {list.items.map((item) => (
           <li key={item.text} className="text-sm leading-6 text-muted-foreground">
             {item.text}
@@ -300,7 +310,7 @@ export default function ReturnsPage() {
                   <>
                     <ArrowDown
                       aria-hidden="true"
-                      className="ml-[3.65rem] h-5 w-5 text-muted-foreground lg:hidden"
+                      className="h-5 w-5 justify-self-center text-muted-foreground lg:hidden"
                       strokeWidth={1.7}
                     />
                     <ArrowRight
@@ -366,15 +376,15 @@ export default function ReturnsPage() {
               </div>
             </div>
 
-            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
-              <article className="min-w-0 rounded-md border border-border bg-white p-4">
+            <div className="grid min-w-0 gap-5 sm:grid-cols-2 sm:gap-6">
+              <article className="min-w-0">
                 <h3 className="text-sm font-semibold leading-5 text-foreground">Cash on delivery</h3>
                 <p className="mt-2 text-sm leading-7 text-muted-foreground">
                   COD refunds are sent to your bank account or mobile financial service wallet
                   within 1-3 business days after approval.
                 </p>
               </article>
-              <article className="min-w-0 rounded-md border border-border bg-white p-4">
+              <article className="min-w-0 border-t border-border pt-5 sm:border-t-0 sm:border-l sm:pl-6 sm:pt-0">
                 <h3 className="text-sm font-semibold leading-5 text-foreground">
                   Online and card payments
                 </h3>
