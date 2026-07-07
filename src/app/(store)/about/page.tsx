@@ -34,7 +34,7 @@ export default function AboutPage() {
       />
 
       <div className="container-site py-8 sm:py-10 lg:py-14">
-        <article className="max-w-[72rem] text-[#111827]">
+        <article className="w-full max-w-none text-[#111827]">
           <h1 className="font-display text-[2.4rem] font-semibold leading-tight tracking-normal sm:text-[3rem]">
             About
           </h1>
