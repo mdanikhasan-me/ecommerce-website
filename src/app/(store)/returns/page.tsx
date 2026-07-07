@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Fragment } from 'react'
 import {
+  ArrowDown,
   ArrowRight,
   CalendarDays,
   Check,
@@ -216,7 +217,7 @@ function MobilePolicyDetails({ list }: { list: PolicyList }) {
     >
       <summary className="grid min-h-14 cursor-pointer list-none grid-cols-[minmax(0,1fr)_1rem] items-center gap-3 px-4 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
         <span>{list.title}</span>
-        <ChevronDown aria-hidden="true" className="h-4 w-4 text-muted-foreground group-open:rotate-180" strokeWidth={1.85} />
+        <ChevronDown aria-hidden="true" className="h-4 w-4 justify-self-end text-muted-foreground" strokeWidth={1.85} />
       </summary>
       <ul className="space-y-3 px-4 pb-4">
         {list.items.map((item) => (
@@ -291,16 +292,23 @@ export default function ReturnsPage() {
             <span className="hidden h-px flex-1 bg-border sm:block" />
           </div>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)] lg:items-start lg:gap-4">
+          <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)_1.25rem_minmax(0,1fr)] lg:items-start lg:gap-4">
             {PROCESS_STEPS.map((step, index) => (
               <Fragment key={step.title}>
                 <ProcessStepCard step={step} index={index} />
                 {index < PROCESS_STEPS.length - 1 ? (
-                  <ArrowRight
-                    aria-hidden="true"
-                    className="mt-[4.1rem] hidden h-5 w-5 self-start justify-self-center text-muted-foreground lg:block"
-                    strokeWidth={1.7}
-                  />
+                  <>
+                    <ArrowDown
+                      aria-hidden="true"
+                      className="ml-[3.65rem] h-5 w-5 text-muted-foreground lg:hidden"
+                      strokeWidth={1.7}
+                    />
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="mt-[4.1rem] hidden h-5 w-5 self-start justify-self-center text-muted-foreground lg:block"
+                      strokeWidth={1.7}
+                    />
+                  </>
                 ) : null}
               </Fragment>
             ))}
@@ -319,7 +327,7 @@ export default function ReturnsPage() {
           ))}
         </section>
 
-        <section className="mt-6 grid overflow-hidden rounded-lg border border-border bg-[#f7f7f4] md:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)] md:items-center">
+        <section className="mt-6 grid w-full min-w-0 max-w-[22rem] overflow-hidden rounded-lg border border-border bg-[#f7f7f4] sm:max-w-full md:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)] md:items-center">
           <div className="relative min-h-[13rem] overflow-hidden bg-[#ece9e3] sm:min-h-[16rem] md:min-h-[14rem]">
             <Image
               src="/assets/returns/refund-replacement.webp"
@@ -338,7 +346,49 @@ export default function ReturnsPage() {
           </div>
         </section>
 
-        <section className="mt-6 grid gap-5 rounded-lg border border-border bg-white p-6 sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:p-8">
+        <section className="mt-6 w-full min-w-0 max-w-[22rem] rounded-lg border border-border bg-[#f5f5f2] p-5 sm:max-w-full sm:p-6 lg:p-7">
+          <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1fr)] lg:items-start">
+            <div className="grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] gap-4">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-foreground">
+                <RefreshCcw aria-hidden="true" className="h-5 w-5" strokeWidth={1.85} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Important note
+                </p>
+                <h2 className="mt-2 text-lg font-semibold leading-7 text-foreground">
+                  Refund processing time
+                </h2>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  The refund timeline starts after your return is approved and the returned item
+                  passes inspection.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid min-w-0 gap-3 sm:grid-cols-2">
+              <article className="min-w-0 rounded-md border border-border bg-white p-4">
+                <h3 className="text-sm font-semibold leading-5 text-foreground">Cash on delivery</h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  COD refunds are sent to your bank account or mobile financial service wallet
+                  within 1-3 business days after approval.
+                </p>
+              </article>
+              <article className="min-w-0 rounded-md border border-border bg-white p-4">
+                <h3 className="text-sm font-semibold leading-5 text-foreground">
+                  Online and card payments
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                  Visa, Mastercard, bank and online payment refunds are submitted through our
+                  partner payment gateway. Posting to the original payment method usually takes
+                  7-12 business days, depending on the issuer and payment network.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 grid w-full min-w-0 max-w-[22rem] gap-5 rounded-lg border border-border bg-white p-6 sm:max-w-full sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:p-8">
           <div className="grid grid-cols-[3rem_minmax(0,1fr)] gap-4">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eef5f1] text-foreground">
               <Headphones aria-hidden="true" className="h-6 w-6" strokeWidth={1.85} />
@@ -352,7 +402,7 @@ export default function ReturnsPage() {
           </div>
           <Link
             href="/contact"
-            className="inline-flex h-11 items-center justify-center gap-3 rounded-md bg-[#214f3e] px-6 text-sm font-semibold text-white focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="inline-flex h-11 items-center justify-center gap-3 rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Contact Us
             <ArrowRight aria-hidden="true" className="h-4 w-4" strokeWidth={1.85} />
