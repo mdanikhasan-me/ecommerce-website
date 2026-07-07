@@ -366,45 +366,16 @@ export default function ReturnsPage() {
           </div>
         </section>
 
-        <section className="mt-6 w-full min-w-0 max-w-full rounded-lg border border-border bg-[#f5f5f2] p-5 sm:p-6 lg:p-7">
-          <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1fr)] lg:items-start">
-            <div className="grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] gap-4">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-foreground">
-                <RefreshCcw aria-hidden="true" className="h-5 w-5" strokeWidth={1.85} />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Important note
-                </p>
-                <h2 className="mt-2 text-lg font-semibold leading-7 text-foreground">
-                  Refund processing time
-                </h2>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  The refund timeline starts after your return is approved and the returned item
-                  passes inspection.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid min-w-0 gap-5 sm:grid-cols-2 sm:gap-6">
-              <article className="min-w-0">
-                <h3 className="text-sm font-semibold leading-5 text-foreground">Cash on delivery</h3>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  COD refunds are sent to your bank account or mobile financial service wallet
-                  within 1-3 business days after approval.
-                </p>
-              </article>
-              <article className="min-w-0 border-t border-border pt-5 sm:border-t-0 sm:border-l sm:pl-6 sm:pt-0">
-                <h3 className="text-sm font-semibold leading-5 text-foreground">
-                  Online and card payments
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  Visa, Mastercard, bank and online payment refunds are submitted through our
-                  partner payment gateway. Posting to the original payment method usually takes
-                  7-12 business days, depending on the issuer and payment network.
-                </p>
-              </article>
-            </div>
+        <section className="mt-6 w-full min-w-0 max-w-full rounded-md border border-[#252128] bg-[#141218] px-5 py-4 text-white sm:px-6">
+          <div className="border-l-2 border-[#c89d4a] pl-4">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#c89d4a]">
+              Please note
+            </p>
+            <p className="mt-1 max-w-4xl text-sm leading-6 text-white/88">
+              Refunds start after return inspection. COD refunds take 1-3 business days to bank or
+              MFS; online and card refunds usually take 7-12 business days through the payment
+              gateway.
+            </p>
           </div>
         </section>
 
