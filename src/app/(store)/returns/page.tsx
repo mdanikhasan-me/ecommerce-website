@@ -145,7 +145,7 @@ function ProcessStepCard({ step, index }: { step: ProcessStep; index: number }) 
   const Icon = step.icon
 
   return (
-    <div className="grid w-full min-w-0 max-w-[22rem] grid-cols-[1.5rem_minmax(0,1fr)] gap-3 sm:max-w-full lg:block lg:text-center">
+    <div className="grid w-full min-w-0 max-w-full grid-cols-[1.5rem_minmax(0,1fr)] gap-3 max-[479px]:max-w-[22rem] lg:block lg:text-center">
       <span className="mt-2 flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-background lg:mx-auto lg:mt-0">
         {index + 1}
       </span>
@@ -231,8 +231,18 @@ function MobilePolicyDetails({ list }: { list: PolicyList }) {
       </summary>
       <ul className="space-y-3 px-4 pb-4 pl-[4.5rem]">
         {list.items.map((item) => (
-          <li key={item.text} className="text-sm leading-6 text-muted-foreground">
-            {item.text}
+          <li
+            key={item.text}
+            className="grid grid-cols-[1rem_minmax(0,1fr)] gap-3 text-sm leading-6 text-muted-foreground"
+          >
+            <item.icon
+              aria-hidden="true"
+              className={
+                isPositive ? 'mt-1 h-4 w-4 text-[#24724d]' : 'mt-1 h-4 w-4 text-[#db444b]'
+              }
+              strokeWidth={1.85}
+            />
+            <span>{item.text}</span>
           </li>
         ))}
       </ul>
@@ -337,7 +347,7 @@ export default function ReturnsPage() {
           ))}
         </section>
 
-        <section className="mt-6 grid w-full min-w-0 max-w-[22rem] overflow-hidden rounded-lg border border-border bg-[#f7f7f4] sm:max-w-full md:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)] md:items-center">
+        <section className="mt-6 grid w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-[#f7f7f4] max-[479px]:max-w-[22rem] md:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)] md:items-center">
           <div className="relative min-h-[13rem] overflow-hidden bg-[#ece9e3] sm:min-h-[16rem] md:min-h-[14rem]">
             <Image
               src="/assets/returns/refund-replacement.webp"
@@ -356,7 +366,7 @@ export default function ReturnsPage() {
           </div>
         </section>
 
-        <section className="mt-6 w-full min-w-0 max-w-[22rem] rounded-lg border border-border bg-[#f5f5f2] p-5 sm:max-w-full sm:p-6 lg:p-7">
+        <section className="mt-6 w-full min-w-0 max-w-full rounded-lg border border-border bg-[#f5f5f2] p-5 max-[479px]:max-w-[22rem] sm:p-6 lg:p-7">
           <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1fr)] lg:items-start">
             <div className="grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] gap-4">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-foreground">
@@ -398,7 +408,7 @@ export default function ReturnsPage() {
           </div>
         </section>
 
-        <section className="mt-6 grid w-full min-w-0 max-w-[22rem] gap-5 rounded-lg border border-border bg-white p-6 sm:max-w-full sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:p-8">
+        <section className="mt-6 grid w-full min-w-0 max-w-full gap-5 rounded-lg border border-border bg-white p-6 max-[479px]:max-w-[22rem] sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-center lg:p-8">
           <div className="grid grid-cols-[3rem_minmax(0,1fr)] gap-4">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eef5f1] text-foreground">
               <Headphones aria-hidden="true" className="h-6 w-6" strokeWidth={1.85} />
