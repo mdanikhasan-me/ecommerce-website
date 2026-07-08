@@ -24,7 +24,7 @@ export const SEO = {
   defaultTitle: 'Boilabin, Online Shopping in Bangladesh',
   titleTemplate: '%s, Boilabin',
   defaultDescription:
-    'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 2,000 qualify for free delivery, and cash on delivery is available.',
+    'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 5,000 qualify for free delivery, and cash on delivery is available.',
 
   baseKeywords: [
     'online shopping bangladesh',

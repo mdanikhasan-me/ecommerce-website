@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useCartStore } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, cn } from '@/backend/utils'
+import { siteConfig } from '@/backend/config/site'
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, getSubtotal } = useCartStore()
@@ -30,7 +31,8 @@ export function CartDrawer() {
   }, [isOpen])
 
   const subtotal = getSubtotal()
-  const shipping = calculateShipping(subtotal)
+  const freeShippingMin = siteConfig.shipping.freeShippingMin
+  const shipping = calculateShipping(subtotal, freeShippingMin, siteConfig.shipping.baseFee)
 
   // Don't render until client-side hydration is complete (Zustand persist reads localStorage)
   if (!mounted) return null
@@ -194,7 +196,7 @@ export function CartDrawer() {
               </div>
               {shipping > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Add {formatPrice(2000 - subtotal)} more for free shipping
+                  Add {formatPrice(freeShippingMin - subtotal)} more for free shipping
                 </p>
               )}
               <div className="flex justify-between font-semibold text-base pt-2 border-t border-border">

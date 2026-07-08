@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     template: '%s, Boilabin',
   },
   description:
-    'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 2,000 qualify for free delivery, and cash on delivery is available.',
+    'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 5,000 qualify for free delivery, and cash on delivery is available.',
   keywords: ['online shopping bangladesh', 'buy online bd', 'product price bangladesh', 'price in bd', 'boilabin'],
   authors: [{ name: 'Boilabin' }],
   creator: 'Boilabin',

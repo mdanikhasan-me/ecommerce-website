@@ -26,7 +26,7 @@ export function generateOrderNumber(): string {
 }
 
 // SHIPPING
-export function calculateShipping(subtotal: number, freeShippingMin = 2000, baseFee = 60): number {
+export function calculateShipping(subtotal: number, freeShippingMin = 5000, baseFee = 100): number {
   return subtotal >= freeShippingMin ? 0 : baseFee
 }
 
