@@ -346,10 +346,10 @@ export function Header() {
                 aria-controls="desktop-categories-menu"
                 onClick={toggleCategoriesDropdown}
                 className={cn(
-                  'relative flex h-[76px] items-center gap-1.5 transition-colors after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-[7rem] after:-translate-x-1/2 after:rounded-full after:bg-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
+                  'flex h-[76px] items-center gap-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
                   isCategoriesOpen || pathname?.startsWith('/category')
-                    ? 'text-foreground after:block'
-                    : 'text-foreground/72 after:hidden min-[1025px]:hover:text-foreground'
+                    ? 'text-foreground'
+                    : 'text-foreground/72 min-[1025px]:hover:text-foreground'
                 )}
               >
                 Categories
