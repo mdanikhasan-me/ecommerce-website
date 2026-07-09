@@ -36,7 +36,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
         <div className="flex items-end justify-between gap-4">
           <div className="min-w-0">
             <p className="section-kicker">Shop by</p>
-            <h2 className="mt-2 font-display text-[2.65rem] font-bold leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-[3.75rem]">
+            <h2 className="section-title mt-2">
               Category
             </h2>
             <p className="mt-4 max-w-[42rem] text-[0.98rem] leading-6 text-muted-foreground sm:text-base">
