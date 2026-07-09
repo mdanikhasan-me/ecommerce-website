@@ -23,14 +23,23 @@ const DESKTOP_CATEGORY_LINKS = NAV_CATEGORIES.map((category) => ({
   description: CATEGORY_MENU_DESCRIPTIONS[category.slug],
 }))
 
-export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
+export function DesktopCategoriesMenu({
+  isVisible,
+  onClose,
+}: {
+  isVisible: boolean
+  onClose: () => void
+}) {
   return (
     <div
       id="desktop-categories-menu"
+      data-desktop-categories-menu="true"
       data-testid="desktop-categories-menu"
       role="region"
       aria-label="Categories menu"
-      className="fixed left-1/2 top-[76px] z-50 w-[min(72rem,calc(100vw-3rem))] -translate-x-1/2 rounded-b-xl border-x border-b border-border/80 bg-white p-4"
+      className={`fixed left-1/2 top-[76px] z-50 w-[min(72rem,calc(100vw-3rem))] -translate-x-1/2 rounded-b-xl border-x border-b border-border/80 bg-white p-4 transition-opacity duration-75 ease-out motion-reduce:transition-none ${
+        isVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       <nav
         aria-label="Main categories"

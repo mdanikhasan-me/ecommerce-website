@@ -47,6 +47,8 @@ const DESKTOP_NAV_LINKS = [
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
+  const [isCategoriesPresent, setIsCategoriesPresent] = useState(false)
+  const [isCategoriesVisible, setIsCategoriesVisible] = useState(false)
   const [isAccountOpen, setIsAccountOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMobileMenuPresent, setIsMobileMenuPresent] = useState(false)
@@ -65,6 +67,8 @@ export function Header() {
   const searchButtonRef = useRef<HTMLButtonElement>(null)
   const mobileSearchButtonRef = useRef<HTMLButtonElement>(null)
   const categoriesRootRef = useRef<HTMLDivElement>(null)
+  const categoriesFrameRef = useRef<number | null>(null)
+  const categoriesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const accountRootRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
   const mobileMenuFrameRef = useRef<number | null>(null)
@@ -92,6 +96,50 @@ export function Header() {
       setIsMobileAccountOpen(false)
     }
   }, [session, sessionStatus])
+
+  useEffect(() => {
+    if (categoriesTimerRef.current !== null) {
+      clearTimeout(categoriesTimerRef.current)
+      categoriesTimerRef.current = null
+    }
+
+    if (isCategoriesOpen) {
+      setIsCategoriesPresent(true)
+      setIsCategoriesVisible(false)
+
+      if (categoriesFrameRef.current !== null) {
+        window.cancelAnimationFrame(categoriesFrameRef.current)
+      }
+
+      categoriesFrameRef.current = window.requestAnimationFrame(() => {
+        setIsCategoriesVisible(true)
+        categoriesFrameRef.current = null
+      })
+      return
+    }
+
+    if (categoriesFrameRef.current !== null) {
+      window.cancelAnimationFrame(categoriesFrameRef.current)
+      categoriesFrameRef.current = null
+    }
+
+    setIsCategoriesVisible(false)
+    categoriesTimerRef.current = setTimeout(() => {
+      setIsCategoriesPresent(false)
+      categoriesTimerRef.current = null
+    }, 90)
+  }, [isCategoriesOpen])
+
+  useEffect(() => {
+    if (!isCategoriesOpen) return
+
+    const closeCategoriesOnScroll = () => {
+      setIsCategoriesOpen(false)
+    }
+
+    window.addEventListener('scroll', closeCategoriesOnScroll, { passive: true })
+    return () => window.removeEventListener('scroll', closeCategoriesOnScroll)
+  }, [isCategoriesOpen])
 
   useEffect(() => {
     if (mobileMenuTimerRef.current !== null) {
@@ -219,6 +267,12 @@ export function Header() {
 
   useEffect(() => {
     return () => {
+      if (categoriesFrameRef.current !== null) {
+        window.cancelAnimationFrame(categoriesFrameRef.current)
+      }
+      if (categoriesTimerRef.current !== null) {
+        clearTimeout(categoriesTimerRef.current)
+      }
       if (mobileMenuFrameRef.current !== null) {
         window.cancelAnimationFrame(mobileMenuFrameRef.current)
       }
@@ -245,7 +299,11 @@ export function Header() {
         setIsSearchOpen(false)
       }
 
-      if (categoriesRootRef.current && !categoriesRootRef.current.contains(target)) {
+      if (
+        categoriesRootRef.current &&
+        !categoriesRootRef.current.contains(target) &&
+        !target.closest('[data-desktop-categories-menu="true"]')
+      ) {
         setIsCategoriesOpen(false)
       }
 
@@ -359,8 +417,11 @@ export function Header() {
                 />
               </AriaExpandedButton>
 
-              {isCategoriesOpen ? (
-                <DesktopCategoriesMenu onClose={() => setIsCategoriesOpen(false)} />
+              {isCategoriesPresent ? (
+                <DesktopCategoriesMenu
+                  isVisible={isCategoriesVisible}
+                  onClose={() => setIsCategoriesOpen(false)}
+                />
               ) : null}
             </div>
 
