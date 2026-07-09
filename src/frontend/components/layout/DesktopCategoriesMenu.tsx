@@ -30,7 +30,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
       data-testid="desktop-categories-menu"
       role="region"
       aria-label="Categories menu"
-      className="fixed left-1/2 top-[76px] z-50 w-[min(72rem,calc(100vw-3rem))] -translate-x-1/2 rounded-xl border border-border/80 bg-white p-4"
+      className="fixed left-1/2 top-[76px] z-50 w-[min(72rem,calc(100vw-3rem))] -translate-x-1/2 rounded-b-xl border-x border-b border-border/80 bg-white p-4"
     >
       <nav
         aria-label="Main categories"
@@ -43,7 +43,7 @@ export function DesktopCategoriesMenu({ onClose }: { onClose: () => void }) {
             href={category.href}
             data-testid={`desktop-category-link-${category.slug}`}
             aria-label={`Open ${category.name} category`}
-            className="flex min-h-[8.75rem] min-w-0 flex-col items-start rounded-lg border border-border/80 bg-white px-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="flex min-h-[8.75rem] min-w-0 flex-col items-start rounded-lg bg-white px-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             onClick={onClose}
           >
             <span className="inline-flex h-7 w-7 items-center justify-center text-foreground">
