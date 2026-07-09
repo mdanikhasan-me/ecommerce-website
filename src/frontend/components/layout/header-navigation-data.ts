@@ -13,8 +13,6 @@ export type NavCategory = {
   sub: NavSubcategory[]
 }
 
-export const DEFAULT_DESKTOP_CATEGORY_SLUG = 'electronics'
-
 export const NAV_CATEGORIES = [
   {
     name: 'Electronics',
