@@ -118,7 +118,7 @@ export default function ShippingPage() {
 
           <div className="pointer-events-none absolute right-[-2.25rem] top-1/2 aspect-square w-[12.25rem] -translate-y-1/2 opacity-70 sm:right-7 sm:w-[17.5rem] sm:opacity-85 lg:right-14 lg:w-[24rem]">
             <Image
-              src="/assets/shipping/bangladesh-delivery-map.webp"
+              src="/assets/shipping/bangladesh-delivery-map-fixed-pins.webp"
               alt="Delivery route map across Bangladesh"
               fill
               priority
