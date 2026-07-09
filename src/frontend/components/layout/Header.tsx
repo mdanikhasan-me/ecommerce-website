@@ -360,8 +360,15 @@ export function Header() {
     closeMobileAccount()
   }
 
+  const keepMobileHeaderVisible = isMobileMenuPresent || isMobileAccountPresent
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-white">
+    <header
+      className={cn(
+        'top-0 w-full bg-white',
+        keepMobileHeaderVisible ? 'fixed inset-x-0 z-[60] lg:sticky lg:z-40' : 'sticky z-40'
+      )}
+    >
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
