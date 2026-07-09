@@ -14,18 +14,6 @@ interface Category {
   children: { id: string; name: string; slug: string }[]
 }
 
-const COMPACT_CATEGORY_LABELS: Record<string, string> = {
-  'home-appliances': 'Home',
-  'beauty-health': 'Beauty',
-  'sports-fitness': 'Fitness',
-  'books-stationery': 'Books',
-  'toys-collectibles': 'Toys',
-}
-
-function getCategoryCardLabel(category: Category) {
-  return COMPACT_CATEGORY_LABELS[category.slug] ?? category.name.replace(/\s+/g, ' ').trim()
-}
-
 const CATEGORY_ICON_NAMES: Record<string, StorefrontIconName> = {
   electronics: 'category-electronics',
   fashion: 'category-fashion',
@@ -86,7 +74,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 }
 
 function CategoryCard({ category }: { category: Category }) {
-  const displayName = getCategoryCardLabel(category)
+  const displayName = category.name.replace(/\s+/g, ' ').trim()
 
   return (
     <Link
@@ -113,7 +101,7 @@ function CategoryCard({ category }: { category: Category }) {
             name={CATEGORY_ICON_NAMES[category.slug] ?? 'category-view-all'}
             className="h-5 w-5 text-foreground sm:h-6 sm:w-6"
           />
-          <span className="truncate text-sm font-semibold text-foreground sm:text-base">{displayName}</span>
+          <span className="line-clamp-2 min-w-0 text-sm font-semibold leading-tight text-foreground sm:text-base">{displayName}</span>
         </span>
 
         <LocalIcon name="arrow-right" className="h-4 w-4 text-foreground sm:h-5 sm:w-5" />
