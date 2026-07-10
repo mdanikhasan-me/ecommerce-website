@@ -1,7 +1,14 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { APP_BADGE_ASSETS, PAYMENT_ASSETS } from '@/shared/assets'
-import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, FACEBOOK_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/shared/contact'
+import {
+  CONTACT_ADDRESS,
+  CONTACT_EMAIL,
+  CONTACT_PHONE,
+  FACEBOOK_URL,
+  INSTAGRAM_URL,
+  WHATSAPP_URL,
+} from '@/shared/contact'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { FooterAccountLinks } from '@/frontend/components/layout/FooterAccountLinks'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
@@ -12,7 +19,11 @@ const TRUSTPILOT_REVIEW_URL = 'https://www.trustpilot.com/review/boilabin.com'
 const TRUSTPILOT_ICON_SRC = '/assets/icons/social/trustpilot.svg'
 const APP_BADGE_PLACEHOLDER_HREF = '#'
 
-const WHATSAPP_LINK = { icon: 'whatsapp', href: WHATSAPP_URL, label: 'WhatsApp' } as const satisfies {
+const WHATSAPP_LINK = {
+  icon: 'whatsapp',
+  href: WHATSAPP_URL,
+  label: 'WhatsApp',
+} as const satisfies {
   icon: StorefrontIconName
   href: string
   label: string
@@ -22,7 +33,11 @@ const SOCIAL_LINKS = [
   { icon: 'facebook', href: FACEBOOK_URL, label: 'Facebook' },
   { icon: 'instagram', href: INSTAGRAM_URL, label: 'Instagram' },
   { icon: 'youtube', href: YOUTUBE_URL, label: 'YouTube' },
-] as const satisfies ReadonlyArray<{ icon: StorefrontIconName; href: string; label: string }>
+] as const satisfies ReadonlyArray<{
+  icon: StorefrontIconName
+  href: string
+  label: string
+}>
 
 const SOCIAL_AND_CONTACT_LINKS = [...SOCIAL_LINKS, WHATSAPP_LINK] as const
 
@@ -159,8 +174,12 @@ function TrustpilotReviewLine({
   canWrap?: boolean
 }) {
   return (
-    <p className={`${canWrap ? '' : 'whitespace-nowrap'} text-sm leading-5 text-muted-foreground ${className}`}>
-      <span className={canWrap ? 'block min-[1024px]:inline' : ''}>See our reviews on</span>{' '}
+    <p
+      className={`${canWrap ? '' : 'whitespace-nowrap'} text-sm leading-5 text-muted-foreground ${className}`}
+    >
+      <span className={canWrap ? 'block min-[1024px]:inline' : ''}>
+        See our reviews on
+      </span>{' '}
       <a
         href={TRUSTPILOT_REVIEW_URL}
         target="_blank"
@@ -228,8 +247,12 @@ export async function Footer() {
         <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-10 xl:grid xl:grid-cols-[minmax(15rem,0.9fr)_minmax(0,2.3fr)_minmax(16rem,0.85fr)] xl:items-start">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
-              <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                <BrandWordmark variant="art" className="w-[9rem]" />
+              <Link
+                href="/"
+                className="inline-flex items-center gap-3"
+                aria-label="Boilabin home"
+              >
+                <BrandWordmark variant="art" className="w-[11.25rem]" />
               </Link>
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -250,8 +273,13 @@ export async function Footer() {
                   <span>{CONTACT_PHONE}</span>
                 </a>
                 <div className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-start gap-3">
-                  <LocalIcon name="location" className="mt-0.5 h-4 w-4 text-foreground" />
-                  <span className="max-w-[13.5rem] text-balance">{CONTACT_ADDRESS}</span>
+                  <LocalIcon
+                    name="location"
+                    className="mt-0.5 h-4 w-4 text-foreground"
+                  />
+                  <span className="max-w-[13.5rem] text-balance">
+                    {CONTACT_ADDRESS}
+                  </span>
                 </div>
               </div>
             </section>
@@ -266,7 +294,10 @@ export async function Footer() {
                     {section.title}
                   </h2>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks variant="desktop" isInitiallyAuthenticated={isInitiallyAuthenticated} />
+                    <FooterAccountLinks
+                      variant="desktop"
+                      isInitiallyAuthenticated={isInitiallyAuthenticated}
+                    />
                   ) : (
                     <ul className="mt-2 space-y-1.5">
                       {section.links.map((link) => (
@@ -284,7 +315,6 @@ export async function Footer() {
                   )}
                 </div>
               ))}
-
             </nav>
 
             <aside aria-label="Boilabin social and apps" className="min-w-0">
@@ -297,7 +327,11 @@ export async function Footer() {
                     key={item.label}
                     href={item.href}
                     target={item.href.startsWith('http') ? '_blank' : undefined}
-                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    rel={
+                      item.href.startsWith('http')
+                        ? 'noopener noreferrer'
+                        : undefined
+                    }
                     aria-label={item.label}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                   >
@@ -318,13 +352,14 @@ export async function Footer() {
           <div className="hidden min-[560px]:block xl:hidden">
             <div className="grid gap-6 py-6 min-[820px]:gap-7">
               <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)_auto] items-start gap-x-4 gap-y-5 min-[700px]:grid-cols-[minmax(13.5rem,1fr)_minmax(10.5rem,0.9fr)_auto] min-[700px]:gap-x-6 min-[820px]:grid-cols-[minmax(14.5rem,1fr)_minmax(12rem,0.9fr)_auto] min-[820px]:gap-x-8 min-[1024px]:grid-cols-[minmax(15.5rem,1fr)_minmax(13rem,0.9fr)_auto] min-[1024px]:gap-x-10">
-                <section
-                  aria-label="Boilabin contact"
-                  className="min-w-0"
-                >
+                <section aria-label="Boilabin contact" className="min-w-0">
                   <div className="min-w-0">
-                    <Link href="/" className="inline-flex" aria-label="Boilabin home">
-                      <BrandWordmark variant="art" className="w-[8.8rem]" />
+                    <Link
+                      href="/"
+                      className="inline-flex"
+                      aria-label="Boilabin home"
+                    >
+                      <BrandWordmark variant="art" className="w-[10.25rem]" />
                     </Link>
                     <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
                       Everyday finds. Best deals. Delivered across Bangladesh.
@@ -334,14 +369,20 @@ export async function Footer() {
                         href={`mailto:${CONTACT_EMAIL}`}
                         className="flex min-w-0 items-center gap-2 focus:outline-none"
                       >
-                        <LocalIcon name="mail" className="h-4 w-4 text-foreground/55" />
+                        <LocalIcon
+                          name="mail"
+                          className="h-4 w-4 text-foreground/55"
+                        />
                         <span className="truncate">{CONTACT_EMAIL}</span>
                       </a>
                       <a
                         href={`tel:${CONTACT_PHONE}`}
                         className="flex items-center gap-2 whitespace-nowrap focus:outline-none"
                       >
-                        <LocalIcon name="phone" className="h-4 w-4 text-foreground/55" />
+                        <LocalIcon
+                          name="phone"
+                          className="h-4 w-4 text-foreground/55"
+                        />
                         {CONTACT_PHONE}
                       </a>
                     </div>
@@ -353,14 +394,22 @@ export async function Footer() {
                   aria-label="Boilabin social and apps"
                 >
                   <div className="min-w-0">
-                    <h2 className="text-sm font-semibold leading-5 text-foreground">Stay connected</h2>
+                    <h2 className="text-sm font-semibold leading-5 text-foreground">
+                      Stay connected
+                    </h2>
                     <div className="mt-4 flex flex-wrap items-center gap-2.5">
                       {SOCIAL_AND_CONTACT_LINKS.map((item) => (
                         <a
                           key={item.label}
                           href={item.href}
-                          target={item.href.startsWith('http') ? '_blank' : undefined}
-                          rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          target={
+                            item.href.startsWith('http') ? '_blank' : undefined
+                          }
+                          rel={
+                            item.href.startsWith('http')
+                              ? 'noopener noreferrer'
+                              : undefined
+                          }
                           aria-label={item.label}
                           className="flex h-9 w-9 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                         >
@@ -380,7 +429,10 @@ export async function Footer() {
                 />
               </div>
 
-              <nav aria-label="Footer sections" className="grid min-w-0 grid-cols-4 gap-x-3 border-t border-black/8 pt-6 text-muted-foreground min-[700px]:gap-x-6 min-[820px]:gap-x-10 min-[1024px]:gap-x-14">
+              <nav
+                aria-label="Footer sections"
+                className="grid min-w-0 grid-cols-4 gap-x-3 border-t border-black/8 pt-6 text-muted-foreground min-[700px]:gap-x-6 min-[820px]:gap-x-10 min-[1024px]:gap-x-14"
+              >
                 {TABLET_FOOTER_LINK_SECTIONS.map((section) => (
                   <div key={section.title} className="min-w-0">
                     <LocalIcon
@@ -391,7 +443,10 @@ export async function Footer() {
                       {section.title}
                     </h2>
                     {section.title === 'Account' ? (
-                      <FooterAccountLinks variant="tablet" isInitiallyAuthenticated={isInitiallyAuthenticated} />
+                      <FooterAccountLinks
+                        variant="tablet"
+                        isInitiallyAuthenticated={isInitiallyAuthenticated}
+                      />
                     ) : (
                       <ul className="mt-3 space-y-2 text-xs leading-5 min-[820px]:text-sm">
                         {section.links.map((link) => (
@@ -433,15 +488,22 @@ export async function Footer() {
                 </div>
               </div>
               <p className="flex items-center justify-end text-right text-xs text-muted-foreground min-[820px]:text-sm">
-                <span className="whitespace-nowrap">&copy; {new Date().getFullYear()} Boilabin. All rights reserved.</span>
+                <span className="whitespace-nowrap">
+                  &copy; {new Date().getFullYear()} Boilabin. All rights
+                  reserved.
+                </span>
               </p>
             </div>
           </div>
 
           <div className="min-[560px]:hidden">
             <section aria-label="Boilabin contact" className="text-center">
-              <Link href="/" className="inline-flex justify-center" aria-label="Boilabin home">
-                <BrandWordmark variant="art" className="w-[7.9rem]" />
+              <Link
+                href="/"
+                className="inline-flex justify-center"
+                aria-label="Boilabin home"
+              >
+                <BrandWordmark variant="art" className="w-[9.15rem]" />
               </Link>
               <p className="mx-auto mt-2.5 max-w-[17.5rem] text-[15px] leading-6 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -451,14 +513,20 @@ export async function Footer() {
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="flex min-w-0 items-center justify-center gap-2 focus:outline-none"
                 >
-                  <LocalIcon name="mail" className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55" />
+                  <LocalIcon
+                    name="mail"
+                    className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55"
+                  />
                   <span className="min-w-0 truncate">{CONTACT_EMAIL}</span>
                 </a>
                 <a
                   href={`tel:${CONTACT_PHONE}`}
                   className="flex min-w-0 items-center justify-center gap-2 whitespace-nowrap focus:outline-none"
                 >
-                  <LocalIcon name="phone" className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55" />
+                  <LocalIcon
+                    name="phone"
+                    className="h-[1.05rem] w-[1.05rem] shrink-0 text-foreground/55"
+                  />
                   <span>{CONTACT_PHONE}</span>
                 </a>
               </div>
@@ -468,7 +536,11 @@ export async function Footer() {
                     key={item.label}
                     href={item.href}
                     target={item.href.startsWith('http') ? '_blank' : undefined}
-                    rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    rel={
+                      item.href.startsWith('http')
+                        ? 'noopener noreferrer'
+                        : undefined
+                    }
                     aria-label={item.label}
                     className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-foreground focus:outline-none"
                   >
@@ -479,9 +551,15 @@ export async function Footer() {
               <TrustpilotReviewLine className="mt-2.5 justify-center whitespace-nowrap" />
             </section>
 
-            <nav aria-label="Footer sections" className="mt-5 border-t border-black/10">
+            <nav
+              aria-label="Footer sections"
+              className="mt-5 border-t border-black/10"
+            >
               {MOBILE_FOOTER_LINK_SECTIONS.map((section) => (
-                <details key={section.title} className="group border-b border-black/10">
+                <details
+                  key={section.title}
+                  className="group border-b border-black/10"
+                >
                   <summary className="relative flex cursor-pointer list-none items-center justify-center py-4 text-center text-sm font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-center gap-3">
                       <LocalIcon
@@ -490,10 +568,16 @@ export async function Footer() {
                       />
                       {section.title}
                     </span>
-                    <LocalIcon name="chevron-down" className="absolute right-0 h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180" />
+                    <LocalIcon
+                      name="chevron-down"
+                      className="absolute right-0 h-4 w-4 shrink-0 text-foreground/90 group-open:rotate-180"
+                    />
                   </summary>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks variant="mobile" isInitiallyAuthenticated={isInitiallyAuthenticated} />
+                    <FooterAccountLinks
+                      variant="mobile"
+                      isInitiallyAuthenticated={isInitiallyAuthenticated}
+                    />
                   ) : (
                     <ul className="ml-9 divide-y divide-black/8 pb-3">
                       {section.links.map((link) => (
@@ -518,7 +602,9 @@ export async function Footer() {
             </nav>
 
             <section className="pb-1 pt-5 text-center">
-              <h2 className="text-[13px] font-medium leading-4 text-foreground/82">We accept</h2>
+              <h2 className="text-[13px] font-medium leading-4 text-foreground/82">
+                We accept
+              </h2>
               <div className="mt-2 flex items-center justify-center gap-x-4 py-1">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img
@@ -534,14 +620,15 @@ export async function Footer() {
                 ))}
               </div>
             </section>
-
           </div>
         </div>
 
         <div className="w-full border-t border-black/8 py-3 text-[11px] text-muted-foreground min-[560px]:hidden min-[560px]:py-3 xl:block">
           <div className="flex w-full flex-col items-center justify-between gap-1.5 min-[700px]:flex-row xl:grid xl:grid-cols-[auto_minmax(0,1fr)_auto]">
             <div className="hidden items-center justify-start gap-x-3 xl:col-start-1 xl:row-start-1 xl:flex">
-              <span className="whitespace-nowrap text-[11px] font-medium text-foreground/82">We accept</span>
+              <span className="whitespace-nowrap text-[11px] font-medium text-foreground/82">
+                We accept
+              </span>
               <div className="flex items-center gap-x-4">
                 {FOOTER_PAYMENT_LOGOS.map((method) => (
                   <img

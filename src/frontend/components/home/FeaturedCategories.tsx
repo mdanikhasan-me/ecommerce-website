@@ -32,42 +32,42 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 
   return (
     <section className="w-full bg-white py-9 sm:py-11 lg:py-14">
-      <div className="category-tile-scope container-site">
-        <div className="flex items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="section-kicker">Shop by</p>
-            <h2 className="section-title mt-2">
-              Category
-            </h2>
-            <p className="mt-4 max-w-[42rem] text-[0.98rem] leading-6 text-muted-foreground sm:text-base">
-              Explore our wide range of products across all categories.
-            </p>
+      <div className="container-site">
+        <div className="category-tile-scope mx-auto w-full max-w-[108rem]">
+          <div className="flex items-end justify-between gap-4">
+            <div className="min-w-0">
+              <p className="section-kicker">Shop by</p>
+              <h2 className="section-title mt-2">Category</h2>
+              <p className="mt-4 max-w-[42rem] text-[0.98rem] leading-6 text-muted-foreground sm:text-base">
+                Explore our wide range of products across all categories.
+              </p>
+            </div>
+
+            <Link
+              href="/category"
+              prefetch={false}
+              className="hidden shrink-0 items-center gap-5 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:inline-flex lg:text-base"
+            >
+              View all categories
+              <LocalIcon name="arrow-right" className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-7 grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:gap-5 xl:grid-cols-[repeat(4,minmax(0,20.5rem))] xl:justify-between">
+            {visibleCategories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
           </div>
 
           <Link
             href="/category"
             prefetch={false}
-            className="hidden shrink-0 items-center gap-5 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:inline-flex lg:text-base"
+            className="mt-5 inline-flex items-center gap-4 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:hidden"
           >
             View all categories
             <LocalIcon name="arrow-right" className="h-4 w-4" />
           </Link>
         </div>
-
-        <div className="mt-7 grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:gap-5 xl:grid-cols-[repeat(4,minmax(0,23rem))] xl:justify-between">
-          {visibleCategories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))}
-        </div>
-
-        <Link
-          href="/category"
-          prefetch={false}
-          className="mt-5 inline-flex items-center gap-4 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:hidden"
-        >
-          View all categories
-          <LocalIcon name="arrow-right" className="h-4 w-4" />
-        </Link>
       </div>
     </section>
   )
@@ -90,7 +90,7 @@ function CategoryCard({ category }: { category: Category }) {
           alt={category.name}
           fill
           className="object-cover"
-          sizes="(min-width: 1280px) 23rem, (max-width: 559px) 50vw, (max-width: 767px) 33vw, 25vw"
+          sizes="(min-width: 1280px) 20.5rem, (max-width: 559px) 50vw, (max-width: 767px) 33vw, 25vw"
           quality={90}
         />
       </div>
@@ -101,10 +101,15 @@ function CategoryCard({ category }: { category: Category }) {
             name={CATEGORY_ICON_NAMES[category.slug] ?? 'category-view-all'}
             className="h-5 w-5 text-foreground sm:h-6 sm:w-6"
           />
-          <span className="line-clamp-2 min-w-0 text-sm font-semibold leading-tight text-foreground sm:text-base">{displayName}</span>
+          <span className="line-clamp-2 min-w-0 text-sm font-semibold leading-tight text-foreground sm:text-base">
+            {displayName}
+          </span>
         </span>
 
-        <LocalIcon name="arrow-right" className="h-4 w-4 text-foreground sm:h-5 sm:w-5" />
+        <LocalIcon
+          name="arrow-right"
+          className="h-4 w-4 text-foreground sm:h-5 sm:w-5"
+        />
       </div>
     </Link>
   )

@@ -14,28 +14,43 @@ import { useCartStore } from '@/frontend/stores/cart'
 import { useClientSession } from '@/frontend/hooks/useClientSession'
 
 const HeaderSearchPanel = dynamic(
-  () => import('@/frontend/components/layout/HeaderSearchPanel').then((mod) => mod.HeaderSearchPanel),
-  { loading: () => null, ssr: false },
+  () =>
+    import('@/frontend/components/layout/HeaderSearchPanel').then(
+      (mod) => mod.HeaderSearchPanel
+    ),
+  { loading: () => null, ssr: false }
 )
 
 const DesktopCategoriesMenu = dynamic(
-  () => import('@/frontend/components/layout/DesktopCategoriesMenu').then((mod) => mod.DesktopCategoriesMenu),
-  { loading: () => null, ssr: false },
+  () =>
+    import('@/frontend/components/layout/DesktopCategoriesMenu').then(
+      (mod) => mod.DesktopCategoriesMenu
+    ),
+  { loading: () => null, ssr: false }
 )
 
 const DesktopAccountMenu = dynamic(
-  () => import('@/frontend/components/layout/DesktopAccountMenu').then((mod) => mod.DesktopAccountMenu),
-  { loading: () => null, ssr: false },
+  () =>
+    import('@/frontend/components/layout/DesktopAccountMenu').then(
+      (mod) => mod.DesktopAccountMenu
+    ),
+  { loading: () => null, ssr: false }
 )
 
 const MobileNavigationDrawer = dynamic(
-  () => import('@/frontend/components/layout/MobileNavigationDrawer').then((mod) => mod.MobileNavigationDrawer),
-  { loading: () => null, ssr: false },
+  () =>
+    import('@/frontend/components/layout/MobileNavigationDrawer').then(
+      (mod) => mod.MobileNavigationDrawer
+    ),
+  { loading: () => null, ssr: false }
 )
 
 const MobileAccountDrawer = dynamic(
-  () => import('@/frontend/components/layout/MobileAccountDrawer').then((mod) => mod.MobileAccountDrawer),
-  { loading: () => null, ssr: false },
+  () =>
+    import('@/frontend/components/layout/MobileAccountDrawer').then(
+      (mod) => mod.MobileAccountDrawer
+    ),
+  { loading: () => null, ssr: false }
 )
 
 const DESKTOP_NAV_LINKS = [
@@ -59,7 +74,8 @@ export function Header() {
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { data: session, status: sessionStatus } = useClientSession()
-  const [lastAuthenticatedSession, setLastAuthenticatedSession] = useState<Session | null>(null)
+  const [lastAuthenticatedSession, setLastAuthenticatedSession] =
+    useState<Session | null>(null)
   const storedCartCount = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.quantity, 0)
   )
@@ -75,9 +91,12 @@ export function Header() {
   const mobileMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mobileAccountButtonRef = useRef<HTMLButtonElement>(null)
   const mobileAccountFrameRef = useRef<number | null>(null)
-  const mobileAccountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const mobileAccountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  )
   const cartCount = mounted ? storedCartCount : 0
-  const activeSession = session ?? (sessionStatus === 'loading' ? lastAuthenticatedSession : null)
+  const activeSession =
+    session ?? (sessionStatus === 'loading' ? lastAuthenticatedSession : null)
   const isSessionLoading = sessionStatus === 'loading' && !activeSession
 
   useEffect(() => {
@@ -137,7 +156,9 @@ export function Header() {
       setIsCategoriesOpen(false)
     }
 
-    window.addEventListener('scroll', closeCategoriesOnScroll, { passive: true })
+    window.addEventListener('scroll', closeCategoriesOnScroll, {
+      passive: true,
+    })
     return () => window.removeEventListener('scroll', closeCategoriesOnScroll)
   }, [isCategoriesOpen])
 
@@ -338,7 +359,8 @@ export function Header() {
     setIsMobileAccountOpen(false)
   }, [pathname])
 
-  const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`)
+  const isActive = (href: string) =>
+    pathname === href || pathname?.startsWith(`${href}/`)
 
   const toggleCategoriesDropdown = () => {
     setIsCategoriesOpen((open) => !open)
@@ -366,21 +388,32 @@ export function Header() {
     <header
       className={cn(
         'top-0 w-full bg-white',
-        keepMobileHeaderVisible ? 'fixed inset-x-0 z-[60] lg:sticky lg:z-40' : 'sticky z-40'
+        keepMobileHeaderVisible
+          ? 'fixed inset-x-0 z-[60] lg:sticky lg:z-40'
+          : 'sticky z-40'
       )}
     >
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
-          <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <BrandWordmark variant="art" className="w-[12rem]" />
+          <Link
+            href="/"
+            className="flex shrink-0 items-center"
+            aria-label="Boilabin home"
+          >
+            <BrandWordmark variant="art" className="w-[13.75rem]" />
           </Link>
 
-          <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
+          <nav
+            aria-label="Primary navigation"
+            className="flex items-center justify-center gap-8 text-sm font-medium"
+          >
             <Link
               href="/new-arrivals"
               className={cn(
                 'transition-colors min-[1025px]:hover:text-foreground',
-                isActive('/new-arrivals') ? 'text-foreground' : 'text-foreground/72'
+                isActive('/new-arrivals')
+                  ? 'text-foreground'
+                  : 'text-foreground/72'
               )}
             >
               New Arrivals
@@ -403,7 +436,10 @@ export function Header() {
                 Categories
                 <LocalIcon
                   name="chevron-down"
-                  className={cn('h-3.5 w-3.5 transition-transform', isCategoriesOpen && 'rotate-180')}
+                  className={cn(
+                    'h-3.5 w-3.5 transition-transform',
+                    isCategoriesOpen && 'rotate-180'
+                  )}
                 />
               </AriaExpandedButton>
 
@@ -459,7 +495,9 @@ export function Header() {
                   <HeaderAvatar imageUrl={activeSession.user.image} />
                 </AriaExpandedButton>
 
-                {isAccountOpen ? <DesktopAccountMenu session={activeSession} /> : null}
+                {isAccountOpen ? (
+                  <DesktopAccountMenu session={activeSession} />
+                ) : null}
               </div>
             ) : isSessionLoading ? (
               <button
@@ -507,7 +545,7 @@ export function Header() {
 
         <div
           data-testid="mobile-header"
-          className="grid h-16 grid-cols-[5.5rem_minmax(7.25rem,1fr)_5.5rem] items-center min-[390px]:grid-cols-[6rem_minmax(7.75rem,1fr)_6rem] lg:hidden"
+          className="grid h-16 grid-cols-[5.25rem_minmax(7.85rem,1fr)_5.25rem] items-center min-[390px]:grid-cols-[5.75rem_minmax(8.35rem,1fr)_5.75rem] lg:hidden"
         >
           <div className="flex items-center justify-self-start">
             <AriaExpandedButton
@@ -562,7 +600,7 @@ export function Header() {
           >
             <BrandWordmark
               variant="art"
-              className="w-[7.25rem] min-[390px]:w-[7.75rem]"
+              className="w-[7.85rem] min-[390px]:w-[8.35rem]"
             />
           </Link>
 
@@ -594,8 +632,16 @@ export function Header() {
                 data-testid="mobile-profile-button"
                 expanded={isMobileAccountOpen}
                 aria-controls="mobile-account-drawer"
-                aria-label={isMobileAccountOpen ? 'Close account menu' : 'Open account menu'}
-                title={isMobileAccountOpen ? 'Close account menu' : 'Open account menu'}
+                aria-label={
+                  isMobileAccountOpen
+                    ? 'Close account menu'
+                    : 'Open account menu'
+                }
+                title={
+                  isMobileAccountOpen
+                    ? 'Close account menu'
+                    : 'Open account menu'
+                }
                 onClick={() => {
                   setIsMobileAccountOpen((open) => !open)
                   setIsMobileMenuOpen(false)
@@ -641,7 +687,10 @@ export function Header() {
 
         {isSearchOpen ? (
           <div className="pb-3 lg:hidden">
-            <HeaderSearchPanel className="mx-auto max-w-[30rem]" onClose={closeSearch} />
+            <HeaderSearchPanel
+              className="mx-auto max-w-[30rem]"
+              onClose={closeSearch}
+            />
           </div>
         ) : null}
       </div>

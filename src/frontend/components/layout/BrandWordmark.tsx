@@ -20,12 +20,13 @@ export function BrandWordmark({
           src={BRAND_ASSETS.wordmark}
           alt=""
           aria-hidden="true"
-          fill
+          width={2380}
+          height={560}
           sizes="(max-width: 559px) 128px, (max-width: 1279px) 148px, 192px"
           unoptimized
           decoding="async"
           draggable={false}
-          className="object-contain"
+          className="block h-auto w-full"
         />
       </span>
     )

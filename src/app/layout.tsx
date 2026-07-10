@@ -24,15 +24,23 @@ const fontMono = DM_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  manifest: BRAND_ASSETS.icons.manifest,
   icons: {
     icon: [
-      { url: BRAND_ASSETS.icons.favicon32, sizes: 'any', type: 'image/svg+xml' },
-      { url: BRAND_ASSETS.icons.app512, sizes: '512x512', type: 'image/svg+xml' },
+      { url: BRAND_ASSETS.icons.faviconIco, sizes: 'any' },
+      { url: BRAND_ASSETS.icons.favicon32, sizes: '32x32', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.favicon16, sizes: '16x16', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.app192, sizes: '192x192', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.app512, sizes: '512x512', type: 'image/png' },
     ],
     apple: [
-      { url: BRAND_ASSETS.icons.appleTouch, sizes: '180x180', type: 'image/svg+xml' },
+      {
+        url: BRAND_ASSETS.icons.appleTouch,
+        sizes: '180x180',
+        type: 'image/png',
+      },
     ],
-    shortcut: BRAND_ASSETS.icons.favicon32,
+    shortcut: BRAND_ASSETS.icons.faviconIco,
   },
   title: {
     default: 'Boilabin, Online Shopping in Bangladesh',
@@ -40,7 +48,13 @@ export const metadata: Metadata = {
   },
   description:
     'Browse electronics, fashion, home appliances, and everyday products in Bangladesh. Orders over Tk 5,000 qualify for free delivery, and cash on delivery is available.',
-  keywords: ['online shopping bangladesh', 'buy online bd', 'product price bangladesh', 'price in bd', 'boilabin'],
+  keywords: [
+    'online shopping bangladesh',
+    'buy online bd',
+    'product price bangladesh',
+    'price in bd',
+    'boilabin',
+  ],
   authors: [{ name: 'Boilabin' }],
   creator: 'Boilabin',
   publisher: 'Boilabin',
@@ -50,13 +64,15 @@ export const metadata: Metadata = {
     url: getSiteUrl(),
     siteName: 'Boilabin',
     title: 'Boilabin, Online Shopping in Bangladesh',
-    description: 'Browse electronics, fashion, home appliances, and everyday products in Bangladesh.',
+    description:
+      'Browse electronics, fashion, home appliances, and everyday products in Bangladesh.',
   },
   twitter: {
     card: 'summary_large_image',
     site: '@boilabin',
     title: 'Boilabin, Online Shopping in Bangladesh',
-    description: 'Browse electronics, fashion, home appliances, and everyday products in Bangladesh.',
+    description:
+      'Browse electronics, fashion, home appliances, and everyday products in Bangladesh.',
   },
   robots: {
     index: true,
@@ -80,10 +96,21 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
-      <body suppressHydrationWarning className="font-sans antialiased bg-background text-foreground">
+    <html
+      lang="en"
+      className={`${fontSans.variable} ${fontMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body
+        suppressHydrationWarning
+        className="font-sans antialiased bg-background text-foreground"
+      >
         {children}
         <DeferredToaster />
       </body>

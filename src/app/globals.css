@@ -205,19 +205,6 @@
       box-shadow: none;
     }
 
-    .product-card-action-button {
-      transition:
-        background-color 120ms ease,
-        border-color 120ms ease,
-        color 120ms ease;
-    }
-
-    .product-card-action-button:hover {
-      border-color: hsl(var(--foreground) / 0.14);
-      background: hsl(var(--secondary) / 0.42);
-      color: hsl(var(--foreground));
-    }
-
     .product-card-add-button:hover {
       border-color: hsl(270 18% 8%);
       background: hsl(270 18% 8%);
@@ -342,11 +329,10 @@
   }
 
   .brand-wordmark-art {
-    position: relative;
     display: inline-flex;
-    aspect-ratio: 2480 / 560;
     align-items: center;
     justify-content: center;
+    line-height: 0;
     vertical-align: middle;
   }
 }

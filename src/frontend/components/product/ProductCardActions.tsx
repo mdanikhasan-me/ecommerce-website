@@ -31,11 +31,17 @@ function WishlistActionIcons() {
   )
 }
 
-export function ProductCardActions({ product, inStock, layout }: ProductCardActionsProps) {
+export function ProductCardActions({
+  product,
+  inStock,
+  layout,
+}: ProductCardActionsProps) {
   const price = product.salePrice ?? product.basePrice
   const isPreOrder = product.isPreOrder ?? false
   const buyLabel = isPreOrder ? 'Pre-order' : 'Add to Cart'
-  const addToCartActionLabel = isPreOrder ? `Pre-order ${product.name}` : `Add ${product.name} to cart`
+  const addToCartActionLabel = isPreOrder
+    ? `Pre-order ${product.name}`
+    : `Add ${product.name} to cart`
   const buyButtonClassName = isPreOrder
     ? 'product-card-preorder-button'
     : 'product-card-add-button border-[hsl(270_18%_8%)] bg-[hsl(270_18%_8%)] text-primary-foreground'
@@ -53,18 +59,28 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
 
   if (layout === 'list') {
     return (
-      <div className="flex flex-col items-end justify-between gap-2" data-product-actions data-product={productData}>
+      <div
+        className="flex flex-col items-end justify-between gap-2"
+        data-product-actions
+        data-product={productData}
+      >
         <button
           type="button"
           data-product-action={inStock ? 'cart' : 'wishlist'}
           data-kind={inStock ? undefined : 'wishlist'}
           data-product-id={inStock ? undefined : product.id}
           data-product-name={inStock ? undefined : product.name}
-          aria-label={inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`}
-          title={inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`}
-          className={inStock
-            ? `inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-semibold md:transition-colors ${buyButtonClassName}`
-            : 'product-card-wishlist-button inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold'}
+          aria-label={
+            inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`
+          }
+          title={
+            inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`
+          }
+          className={
+            inStock
+              ? `inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-semibold md:transition-colors ${buyButtonClassName}`
+              : 'product-card-wishlist-button inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold'
+          }
         >
           {inStock ? (
             buyLabel
@@ -91,7 +107,6 @@ export function ProductCardActions({ product, inStock, layout }: ProductCardActi
           data-product-name={product.name}
           className="product-card-action-button flex h-9 w-9 items-center justify-center rounded-full border border-black/6 bg-[hsl(var(--card)/0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
           aria-label={`Compare ${product.name}`}
-          title={`Compare ${product.name}`}
         >
           <LocalIcon name="compare" className="h-4 w-4" />
         </button>
