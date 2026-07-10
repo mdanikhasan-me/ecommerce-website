@@ -372,7 +372,7 @@ export function Header() {
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <BrandWordmark variant="art" className="w-[150px]" />
+            <BrandWordmark variant="art" className="w-[12rem]" />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
@@ -507,7 +507,7 @@ export function Header() {
 
         <div
           data-testid="mobile-header"
-          className="grid h-16 grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] items-center lg:hidden"
+          className="grid h-16 grid-cols-[5.5rem_minmax(7.25rem,1fr)_5.5rem] items-center min-[390px]:grid-cols-[6rem_minmax(7.75rem,1fr)_6rem] lg:hidden"
         >
           <div className="flex items-center justify-self-start">
             <AriaExpandedButton
@@ -562,7 +562,7 @@ export function Header() {
           >
             <BrandWordmark
               variant="art"
-              className="w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
+              className="w-[7.25rem] min-[390px]:w-[7.75rem]"
             />
           </Link>
 

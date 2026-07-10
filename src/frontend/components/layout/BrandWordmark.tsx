@@ -21,7 +21,7 @@ export function BrandWordmark({
           alt=""
           aria-hidden="true"
           fill
-          sizes="150px"
+          sizes="(max-width: 559px) 128px, (max-width: 1279px) 148px, 192px"
           unoptimized
           decoding="async"
           draggable={false}

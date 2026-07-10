@@ -229,7 +229,7 @@ export async function Footer() {
           <div className="hidden gap-10 xl:grid xl:grid-cols-[minmax(15rem,0.9fr)_minmax(0,2.3fr)_minmax(16rem,0.85fr)] xl:items-start">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link href="/" className="inline-flex items-center gap-3" aria-label="Boilabin home">
-                <BrandWordmark variant="art" className="w-[7rem]" />
+                <BrandWordmark variant="art" className="w-[9rem]" />
               </Link>
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -324,7 +324,7 @@ export async function Footer() {
                 >
                   <div className="min-w-0">
                     <Link href="/" className="inline-flex" aria-label="Boilabin home">
-                      <BrandWordmark variant="art" className="w-[7.35rem]" />
+                      <BrandWordmark variant="art" className="w-[8.8rem]" />
                     </Link>
                     <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
                       Everyday finds. Best deals. Delivered across Bangladesh.
@@ -441,7 +441,7 @@ export async function Footer() {
           <div className="min-[560px]:hidden">
             <section aria-label="Boilabin contact" className="text-center">
               <Link href="/" className="inline-flex justify-center" aria-label="Boilabin home">
-                <BrandWordmark variant="art" className="w-[6.8rem]" />
+                <BrandWordmark variant="art" className="w-[7.9rem]" />
               </Link>
               <p className="mx-auto mt-2.5 max-w-[17.5rem] text-[15px] leading-6 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.

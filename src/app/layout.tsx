@@ -83,7 +83,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`} suppressHydrationWarning>
-      <body className="font-sans antialiased bg-background text-foreground">
+      <body suppressHydrationWarning className="font-sans antialiased bg-background text-foreground">
         {children}
         <DeferredToaster />
       </body>
