@@ -33,7 +33,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   return (
     <section className="w-full bg-white py-9 sm:py-11 lg:py-14">
       <div className="container-site">
-        <div className="category-tile-scope mx-auto w-full max-w-[108rem]">
+        <div className="category-tile-scope mx-auto w-full max-w-[106rem]">
           <div className="flex items-end justify-between gap-4">
             <div className="min-w-0">
               <p className="section-kicker">Shop by</p>
@@ -53,7 +53,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
             </Link>
           </div>
 
-          <div className="mt-7 grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:gap-5 xl:grid-cols-[repeat(4,minmax(0,20.5rem))] xl:justify-between">
+          <div className="category-tile-grid mt-7">
             {visibleCategories.map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
@@ -90,7 +90,7 @@ function CategoryCard({ category }: { category: Category }) {
           alt={category.name}
           fill
           className="object-cover"
-          sizes="(min-width: 1280px) 20.5rem, (max-width: 559px) 50vw, (max-width: 767px) 33vw, 25vw"
+          sizes="(min-width: 1536px) 18.5rem, (min-width: 1024px) 18rem, (min-width: 768px) 15.5rem, (max-width: 559px) 50vw, 33vw"
           quality={90}
         />
       </div>

@@ -22,11 +22,11 @@ export function BrandWordmark({
           aria-hidden="true"
           width={2380}
           height={560}
-          sizes="(max-width: 559px) 128px, (max-width: 1279px) 148px, 192px"
+          sizes="(max-width: 559px) 9rem, (max-width: 1279px) 10rem, 11rem"
           unoptimized
           decoding="async"
           draggable={false}
-          className="block h-auto w-full"
+          className="block h-full w-auto max-w-none"
         />
       </span>
     )

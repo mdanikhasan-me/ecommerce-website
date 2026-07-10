@@ -252,7 +252,7 @@ export async function Footer() {
                 className="inline-flex items-center gap-3"
                 aria-label="Boilabin home"
               >
-                <BrandWordmark variant="art" className="w-[11.25rem]" />
+                <BrandWordmark variant="art" className="h-[2.35rem]" />
               </Link>
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -359,7 +359,7 @@ export async function Footer() {
                       className="inline-flex"
                       aria-label="Boilabin home"
                     >
-                      <BrandWordmark variant="art" className="w-[10.25rem]" />
+                      <BrandWordmark variant="art" className="h-[2.15rem]" />
                     </Link>
                     <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
                       Everyday finds. Best deals. Delivered across Bangladesh.
@@ -503,7 +503,7 @@ export async function Footer() {
                 className="inline-flex justify-center"
                 aria-label="Boilabin home"
               >
-                <BrandWordmark variant="art" className="w-[9.15rem]" />
+                <BrandWordmark variant="art" className="h-[2.1rem]" />
               </Link>
               <p className="mx-auto mt-2.5 max-w-[17.5rem] text-[15px] leading-6 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.

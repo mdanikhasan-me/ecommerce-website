@@ -400,7 +400,7 @@ export function Header() {
             className="flex shrink-0 items-center"
             aria-label="Boilabin home"
           >
-            <BrandWordmark variant="art" className="w-[13.75rem]" />
+            <BrandWordmark variant="art" className="h-[2.15rem]" />
           </Link>
 
           <nav
@@ -600,7 +600,7 @@ export function Header() {
           >
             <BrandWordmark
               variant="art"
-              className="w-[7.85rem] min-[390px]:w-[8.35rem]"
+              className="h-[1.95rem] min-[390px]:h-[2.05rem]"
             />
           </Link>
 

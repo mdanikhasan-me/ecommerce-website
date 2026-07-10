@@ -332,6 +332,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
+    width: fit-content;
+    max-width: none;
+    overflow: hidden;
     line-height: 0;
     vertical-align: middle;
   }
@@ -866,11 +870,9 @@
   }
 
   .category-tile-grid {
-    --category-card-min: 9.25rem;
-    --category-grid-gap: 0.625rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--category-card-min)), 1fr));
-    gap: var(--category-grid-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 
   @container (min-width: 30rem) {
@@ -881,8 +883,8 @@
     }
 
     .category-tile-grid {
-      --category-card-min: 10.25rem;
-      --category-grid-gap: 0.75rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
     }
   }
 
@@ -894,7 +896,9 @@
     }
 
     .category-tile-grid {
-      --category-card-min: 11.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 17.75rem));
+      justify-content: center;
+      gap: 1rem;
     }
   }
 
@@ -904,11 +908,17 @@
       --product-grid-column-gap: 1.15rem;
       --product-grid-row-gap: 1.35rem;
     }
+
+    .category-tile-grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.75rem), 18.5rem));
+      gap: 1.15rem;
+    }
   }
 
   @container (min-width: 82rem) {
     .category-tile-grid {
-      --category-card-min: 12.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 18.5rem));
+      gap: 1.25rem;
     }
   }
 
