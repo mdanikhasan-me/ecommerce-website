@@ -32,7 +32,7 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 
   return (
     <section className="w-full bg-white py-9 sm:py-11 lg:py-14">
-      <div className="category-tile-scope container-site">
+      <div className="category-tile-scope container-site mx-auto 2xl:max-w-[106rem]">
         <div className="flex items-end justify-between gap-4">
           <div className="min-w-0">
             <p className="section-kicker">Shop by</p>
@@ -90,7 +90,7 @@ function CategoryCard({ category }: { category: Category }) {
           alt={category.name}
           fill
           className="object-cover"
-          sizes="(max-width: 559px) 50vw, (max-width: 767px) 33vw, 25vw"
+          sizes="(min-width: 1536px) 360px, (max-width: 559px) 50vw, (max-width: 767px) 33vw, 25vw"
           quality={90}
         />
       </div>
