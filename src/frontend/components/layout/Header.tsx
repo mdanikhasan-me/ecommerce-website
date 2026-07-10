@@ -372,7 +372,7 @@ export function Header() {
       <div className="container-site">
         <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Boilabin home">
-            <BrandWordmark variant="art" className="h-[34px] w-[150px] text-foreground" />
+            <BrandWordmark variant="art" className="w-[150px]" />
           </Link>
 
           <nav aria-label="Primary navigation" className="flex items-center justify-center gap-8 text-sm font-medium">
@@ -562,7 +562,7 @@ export function Header() {
           >
             <BrandWordmark
               variant="art"
-              className="h-[19px] w-[5.25rem] text-foreground min-[375px]:h-[22px] min-[375px]:w-24 min-[390px]:h-6 min-[390px]:w-[6.625rem]"
+              className="w-[5.25rem] min-[375px]:w-24 min-[390px]:w-[6.625rem]"
             />
           </Link>
 

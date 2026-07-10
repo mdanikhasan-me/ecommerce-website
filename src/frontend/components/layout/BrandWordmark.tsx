@@ -1,5 +1,7 @@
 import type { HTMLAttributes } from 'react'
+import Image from 'next/image'
 import { cn } from '@/backend/utils'
+import { BRAND_ASSETS } from '@/shared/assets'
 
 type BrandWordmarkProps = HTMLAttributes<HTMLSpanElement> & {
   variant?: 'text' | 'art'
@@ -12,7 +14,21 @@ export function BrandWordmark({
   ...props
 }: BrandWordmarkProps) {
   if (variant === 'art') {
-    return <span {...props} className={cn('brand-wordmark-art', className)} />
+    return (
+      <span {...props} className={cn('brand-wordmark-art', className)}>
+        <Image
+          src={BRAND_ASSETS.wordmark}
+          alt=""
+          aria-hidden="true"
+          fill
+          sizes="150px"
+          unoptimized
+          decoding="async"
+          draggable={false}
+          className="object-contain"
+        />
+      </span>
+    )
   }
 
   return (

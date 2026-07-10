@@ -342,18 +342,12 @@
   }
 
   .brand-wordmark-art {
-    display: inline-block;
-    aspect-ratio: 1248 / 282;
-    background-color: currentColor;
+    position: relative;
+    display: inline-flex;
+    aspect-ratio: 2600 / 600;
+    align-items: center;
+    justify-content: center;
     vertical-align: middle;
-    -webkit-mask-image: url('/assets/branding/boilabin-logo-wordmark.png');
-    mask-image: url('/assets/branding/boilabin-logo-wordmark.png');
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-position: center;
-    -webkit-mask-size: contain;
-    mask-size: contain;
   }
 }
 

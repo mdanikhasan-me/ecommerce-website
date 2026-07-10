@@ -12,11 +12,11 @@ type LogoProps = {
 }
 
 const VARIANT_MAP: Record<LogoVariant, { src: string; w: number; h: number; alt: string }> = {
-  mark:         { src: BRAND_ASSETS.mark,         w: 948,  h: 745,  alt: 'Boilabin' },
-  'mark-light': { src: BRAND_ASSETS.markLight,    w: 948,  h: 745,  alt: 'Boilabin' },
-  wordmark:     { src: BRAND_ASSETS.wordmark,     w: 1248, h: 282,  alt: 'Boilabin' },
-  full:         { src: BRAND_ASSETS.wordmarkFull, w: 1248, h: 1305, alt: 'Boilabin' },
-  lockup:       { src: BRAND_ASSETS.lockup,       w: 1248, h: 1305, alt: 'Boilabin' },
+  mark:         { src: BRAND_ASSETS.mark,         w: 1000, h: 1000, alt: 'Boilabin' },
+  'mark-light': { src: BRAND_ASSETS.markLight,    w: 1000, h: 1000, alt: 'Boilabin' },
+  wordmark:     { src: BRAND_ASSETS.wordmark,     w: 2600, h: 600, alt: 'Boilabin' },
+  full:         { src: BRAND_ASSETS.wordmarkFull, w: 2600, h: 600, alt: 'Boilabin' },
+  lockup:       { src: BRAND_ASSETS.lockup,       w: 2600, h: 600, alt: 'Boilabin' },
 }
 
 export function BoilabinLogo({ className, variant = 'mark', size = 44, priority }: LogoProps) {
@@ -32,6 +32,7 @@ export function BoilabinLogo({ className, variant = 'mark', size = 44, priority 
       width={width}
       height={height}
       priority={priority}
+      unoptimized={cfg.src.endsWith('.svg')}
       className={cn('shrink-0 select-none', className)}
       draggable={false}
     />

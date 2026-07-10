@@ -1,13 +1,16 @@
 export const BRAND_ASSETS = {
-  mark: '/assets/branding/boilabin-logo-mark.png',
-  markLight: '/assets/branding/boilabin-logo-mark.png',
-  wordmark: '/assets/branding/boilabin-logo-wordmark.png',
-  wordmarkFull: '/assets/branding/boilabin-logo-horizontal.png',
-  lockup: '/assets/branding/boilabin-logo-full.png',
+  mark: '/assets/branding/boilabin-mark.svg',
+  markLight: '/assets/branding/boilabin-mark.svg',
+  wordmark: '/assets/branding/boilabin-wordmark-black.svg',
+  wordmarkLight: '/assets/branding/boilabin-wordmark-white.svg',
+  wordmarkFull: '/assets/branding/boilabin-wordmark-black.svg',
+  lockup: '/assets/branding/boilabin-wordmark-black.svg',
   icons: {
-    favicon32: '/assets/branding/icons/favicon-32x32.png',
-    appleTouch: '/assets/branding/icons/apple-touch-icon.png',
-    app512: '/assets/branding/icons/app-icon-512.png',
+    favicon32: '/assets/branding/icons/app-icon-light.svg',
+    appleTouch: '/assets/branding/icons/app-icon-light.svg',
+    app512: '/assets/branding/icons/app-icon-light.svg',
+    appLight: '/assets/branding/icons/app-icon-light.svg',
+    appDark: '/assets/branding/icons/app-icon-dark.svg',
   },
 } as const
 

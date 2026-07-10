@@ -26,11 +26,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   icons: {
     icon: [
-      { url: BRAND_ASSETS.icons.favicon32, sizes: '32x32', type: 'image/png' },
-      { url: BRAND_ASSETS.icons.app512, sizes: '512x512', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.favicon32, sizes: 'any', type: 'image/svg+xml' },
+      { url: BRAND_ASSETS.icons.app512, sizes: '512x512', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: BRAND_ASSETS.icons.appleTouch, sizes: '180x180', type: 'image/png' },
+      { url: BRAND_ASSETS.icons.appleTouch, sizes: '180x180', type: 'image/svg+xml' },
     ],
     shortcut: BRAND_ASSETS.icons.favicon32,
   },
