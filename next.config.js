@@ -41,6 +41,7 @@ function buildSecurityHeaders() {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: getAllowedDevOrigins(),
+  htmlLimitedBots: /.*/,
   poweredByHeader: false,
   async headers() {
     return [

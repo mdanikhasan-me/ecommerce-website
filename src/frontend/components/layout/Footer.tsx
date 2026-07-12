@@ -191,7 +191,7 @@ function TrustpilotReviewLine({
           alt="Trustpilot"
           width={86}
           height={21}
-          loading="eager"
+          loading="lazy"
           decoding="async"
           className="block h-auto w-[5.45rem] max-w-none object-contain"
         />
