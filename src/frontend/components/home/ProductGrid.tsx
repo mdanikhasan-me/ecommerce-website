@@ -14,7 +14,7 @@ interface ProductGridProps {
   gridClassName?: string
 }
 
-const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw'
+const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 639px) 44vw, (max-width: 1023px) 31vw, (max-width: 1279px) 25vw, (max-width: 1535px) 20vw, 250px'
 
 export function ProductGrid({
   title,

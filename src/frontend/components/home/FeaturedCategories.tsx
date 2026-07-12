@@ -90,7 +90,7 @@ function CategoryCard({ category }: { category: Category }) {
           alt={category.name}
           fill
           className="object-cover"
-          sizes="(min-width: 1536px) 18.5rem, (min-width: 1024px) 18rem, (min-width: 768px) 15.5rem, (max-width: 559px) 50vw, 33vw"
+          sizes="(min-width: 1536px) 18.5rem, (min-width: 1024px) 18rem, (min-width: 768px) 15.5rem, (max-width: 559px) 44vw, 33vw"
           quality={90}
         />
       </div>
