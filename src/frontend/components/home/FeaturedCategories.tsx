@@ -32,8 +32,8 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
 
   return (
     <section className="w-full bg-white py-9 sm:py-11 lg:py-14">
-      <div className="container-site">
-        <div className="category-tile-scope mx-auto w-full max-w-[106rem]">
+      <div className="home-category-frame">
+        <div className="category-tile-scope w-full">
           <div className="flex items-end justify-between gap-4">
             <div className="min-w-0">
               <p className="section-kicker">Shop by</p>

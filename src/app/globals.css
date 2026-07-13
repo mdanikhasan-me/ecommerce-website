@@ -1827,6 +1827,25 @@
     @apply w-full px-4 sm:px-6 lg:px-10 xl:px-16 2xl:px-24;
   }
 
+  .home-category-frame {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .home-category-frame {
+      padding-inline: clamp(2.5rem, 5vw, 3.5rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .home-category-frame {
+      padding-inline: clamp(5rem, 6vw, 9rem);
+    }
+  }
+
   .about-hero {
     position: relative;
     min-height: clamp(18.75rem, 24vw, 23.75rem);
