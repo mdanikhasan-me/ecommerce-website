@@ -1573,8 +1573,8 @@
   }
 
   .local-icon--category-home-appliances {
-    -webkit-mask-image: url('/assets/icons/ui/categories/home-appliances.svg');
-    mask-image: url('/assets/icons/ui/categories/home-appliances.svg');
+    -webkit-mask-image: url('/assets/icons/ui/categories/home-appliances.svg?v=20260713-washing-machine-light');
+    mask-image: url('/assets/icons/ui/categories/home-appliances.svg?v=20260713-washing-machine-light');
   }
 
   .local-icon--category-beauty-health {

@@ -76,7 +76,7 @@ export const UI_ICON_ASSETS = {
   'subcategory-collectible-cards': '/assets/icons/ui/subcategories/collectible-cards.svg',
   'category-electronics': '/assets/icons/ui/categories/electronics.svg',
   'category-fashion': '/assets/icons/ui/categories/fashion.svg',
-  'category-home-appliances': '/assets/icons/ui/categories/home-appliances.svg',
+  'category-home-appliances': '/assets/icons/ui/categories/home-appliances.svg?v=20260713-washing-machine-light',
   'category-beauty-health': '/assets/icons/ui/categories/beauty-health.svg',
   'category-sports-fitness': '/assets/icons/ui/categories/sports-fitness.svg',
   'category-books-stationery': '/assets/icons/ui/categories/books-stationery.svg',
