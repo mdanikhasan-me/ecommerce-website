@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/backend/database'
 import { CategoryEditorForm } from '@/frontend/components/admin/CategoryEditorForm'
+import { getCategoryMediaBasePath } from '@/shared/category-media'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -38,6 +39,10 @@ export default async function AdminCategoryDetailPage({ params }: Props) {
 
   if (!category) notFound()
 
+  const editableCategory = category.parentId
+    ? category
+    : { ...category, image: getCategoryMediaBasePath(category) }
+
   return (
     <div className="space-y-5">
       <div className="admin-page-header">
@@ -52,7 +57,7 @@ export default async function AdminCategoryDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <CategoryEditorForm categories={categories} category={category} />
+      <CategoryEditorForm categories={categories} category={editableCategory} />
     </div>
   )
 }

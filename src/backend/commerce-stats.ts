@@ -36,10 +36,20 @@ type RecordProductViewArgs = {
   productId: string
   viewerKey: string
   userId?: string | null
+  alternateViewerKeys?: string[]
 }
 
-export async function recordProductView({ productId, viewerKey, userId }: RecordProductViewArgs) {
+export async function recordProductView({ productId, viewerKey, userId, alternateViewerKeys = [] }: RecordProductViewArgs) {
   const result = await db.$transaction(async (tx) => {
+    const viewerKeys = uniqueIds([viewerKey, ...alternateViewerKeys])
+    if (viewerKeys.length > 1) {
+      const existing = await tx.productView.findFirst({
+        where: { productId, viewerKey: { in: viewerKeys } },
+        select: { id: true },
+      })
+      if (existing) return false
+    }
+
     const created = await tx.productView.createMany({
       data: [
         {

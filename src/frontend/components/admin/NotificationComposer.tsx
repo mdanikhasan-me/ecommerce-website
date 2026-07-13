@@ -78,14 +78,7 @@ export function NotificationComposer({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="admin-card p-5">
-      <div className="mb-4">
-        <h2 className="font-display text-lg font-semibold">Compose Notification</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Send in-app notifications to one user or a whole audience.
-        </p>
-      </div>
-
+    <form onSubmit={handleSubmit} className="p-4 sm:p-5">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label htmlFor={`${fieldIdPrefix}-audience`} className="mb-1.5 block text-sm font-medium">

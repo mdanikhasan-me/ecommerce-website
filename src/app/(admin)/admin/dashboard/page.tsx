@@ -1,396 +1,445 @@
-import { db } from '@/backend/database'
-import { formatDate, formatPrice } from '@/backend/utils'
+import Link from 'next/link'
 import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  BarChart3,
-  CheckCircle,
-  Clock,
+  Clock3,
+  Eye,
   Image as ImageIcon,
   Package,
   Plus,
-  RefreshCcw,
+  RotateCcw,
   ShoppingBag,
   Star,
   TrendingUp,
-  Truck,
-  Users,
   Warehouse,
-  XCircle,
 } from 'lucide-react'
-import Link from 'next/link'
 
-async function getDashboardData() {
-  const today = new Date()
-  const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
-  const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000)
+import { db } from '@/backend/database'
+import { formatDate, formatPrice } from '@/backend/utils'
+import { AdminDashboardVisuals } from '@/frontend/components/admin/AdminDashboardVisuals'
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const CHART_RANGES = [7, 14, 30] as const
+const ACTIVE_REVENUE_STATUSES = [
+  'PENDING',
+  'CONFIRMED',
+  'PACKED',
+  'SHIPPED',
+  'DELIVERED',
+  'RETURN_REQUESTED',
+  'REFUND_REQUESTED',
+] as const
+
+type ChartRange = (typeof CHART_RANGES)[number]
+type ChartMetric = 'revenue' | 'orders'
+
+function getDateKey(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function parseChartRange(value: string | undefined): ChartRange {
+  const parsed = Number(value)
+  return CHART_RANGES.includes(parsed as ChartRange) ? parsed as ChartRange : 14
+}
+
+function parseChartMetric(value: string | undefined): ChartMetric {
+  return value === 'orders' ? 'orders' : 'revenue'
+}
+
+async function getDashboardData(chartDays: ChartRange, outcomeDays: ChartRange) {
+  const now = new Date()
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * DAY_MS)
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * DAY_MS)
+  const chartStart = new Date(now.getTime() - (chartDays - 1) * DAY_MS)
+  chartStart.setHours(0, 0, 0, 0)
+  const outcomeStart = new Date(now.getTime() - (outcomeDays - 1) * DAY_MS)
+  outcomeStart.setHours(0, 0, 0, 0)
 
   const [
-    totalOrders,
-    prevOrders,
-    totalRevenue,
-    prevRevenue,
-    totalUsers,
-    prevUsers,
+    currentOrders,
+    previousOrders,
+    productViews,
+    previousProductViews,
     totalProducts,
     recentOrders,
-    pendingOrders,
-    lowStockProducts,
+    lowStockCount,
+    outOfStockCount,
     ordersByStatus,
-    pendingReviews,
+    orderOutcomes,
+    reviewAttention,
+    returnRequests,
   ] = await Promise.all([
-    db.order.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    db.order.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
-    db.order.aggregate({ where: { createdAt: { gte: thirtyDaysAgo }, status: { not: 'CANCELLED' } }, _sum: { total: true } }),
-    db.order.aggregate({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo }, status: { not: 'CANCELLED' } }, _sum: { total: true } }),
-    db.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    db.user.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+    db.order.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { total: true, status: true, createdAt: true },
+    }),
+    db.order.findMany({
+      where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
+      select: { total: true, status: true },
+    }),
+    db.productView.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    db.productView.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
     db.product.count({ where: { isActive: true } }),
     db.order.findMany({
-      take: 8,
+      take: 6,
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { name: true, email: true } },
         items: { take: 1, select: { productName: true } },
       },
     }),
-    db.order.count({ where: { status: 'PENDING' } }),
-    db.product.findMany({
-      where: { isActive: true, stockQuantity: { lte: 5 } },
-      take: 5,
-      select: { id: true, name: true, stockQuantity: true },
-      orderBy: { stockQuantity: 'asc' },
-    }),
+    db.product.count({ where: { isActive: true, stockQuantity: { gt: 0, lte: 5 } } }),
+    db.product.count({ where: { isActive: true, stockQuantity: { lte: 0 } } }),
     db.order.groupBy({ by: ['status'], _count: { id: true } }),
-    db.review.count({ where: { status: 'PENDING' } }),
+    db.order.groupBy({
+      by: ['status', 'paymentStatus'],
+      where: { createdAt: { gte: outcomeStart } },
+      _count: { id: true },
+    }),
+    db.review.count({ where: { OR: [{ status: 'PENDING' }, { rating: { lt: 5 } }] } }),
+    db.returnRequest.count({ where: { status: 'REQUESTED' } }),
   ])
 
+  const currentRevenue = currentOrders
+    .filter((order) => ACTIVE_REVENUE_STATUSES.includes(order.status as (typeof ACTIVE_REVENUE_STATUSES)[number]))
+    .reduce((sum, order) => sum + order.total, 0)
+  const previousRevenue = previousOrders
+    .filter((order) => ACTIVE_REVENUE_STATUSES.includes(order.status as (typeof ACTIVE_REVENUE_STATUSES)[number]))
+    .reduce((sum, order) => sum + order.total, 0)
+  const activeOrderCount = currentOrders.filter((order) => order.status !== 'CANCELLED').length
+  const previousOrderCount = previousOrders.filter((order) => order.status !== 'CANCELLED').length
+
+  const dailyActivity = Array.from({ length: chartDays }, (_, index) => {
+    const date = new Date(chartStart.getTime() + index * DAY_MS)
+    const key = getDateKey(date)
+    const orders = currentOrders.filter(
+      (order) => getDateKey(order.createdAt) === key && order.status !== 'CANCELLED',
+    )
+    return {
+      date,
+      revenue: orders.reduce((sum, order) => sum + order.total, 0),
+      orders: orders.length,
+    }
+  })
+
   return {
-    totalOrders,
-    prevOrders,
-    totalRevenue: totalRevenue._sum.total ?? 0,
-    prevRevenue: prevRevenue._sum.total ?? 0,
-    totalUsers,
-    prevUsers,
+    currentRevenue,
+    previousRevenue,
+    activeOrderCount,
+    previousOrderCount,
+    averageOrderValue: activeOrderCount ? currentRevenue / activeOrderCount : 0,
+    productViews,
+    previousProductViews,
     totalProducts,
     recentOrders,
-    pendingOrders,
-    lowStockProducts,
+    lowStockCount,
+    outOfStockCount,
     ordersByStatus,
-    pendingReviews,
+    orderOutcomes,
+    reviewAttention,
+    returnRequests,
+    dailyActivity,
   }
 }
 
-function pctChange(current: number, previous: number) {
+function percentageChange(current: number, previous: number) {
   if (previous === 0) return current > 0 ? 100 : 0
   return Math.round(((current - previous) / previous) * 100)
 }
 
-export default async function AdminDashboard() {
-  const data = await getDashboardData()
-  const statusMap: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-    PENDING: { label: 'Pending', color: 'text-amber-600', icon: Clock },
-    CONFIRMED: { label: 'Confirmed', color: 'text-blue-600', icon: CheckCircle },
-    PACKED: { label: 'Packed', color: 'text-purple-600', icon: Package },
-    SHIPPED: { label: 'Shipped', color: 'text-purple-600', icon: Truck },
-    DELIVERED: { label: 'Delivered', color: 'text-green-600', icon: CheckCircle },
-    CANCELLED: { label: 'Cancelled', color: 'text-red-600', icon: XCircle },
-    RETURN_REQUESTED: { label: 'Return requested', color: 'text-amber-600', icon: RefreshCcw },
-    RETURNED: { label: 'Returned', color: 'text-blue-600', icon: RefreshCcw },
-    REFUND_REQUESTED: { label: 'Refund requested', color: 'text-amber-600', icon: RefreshCcw },
-    REFUNDED: { label: 'Refunded', color: 'text-green-600', icon: CheckCircle },
-  }
-  const stats = [
-    { title: 'Revenue', caption: 'Last 30 days', value: formatPrice(data.totalRevenue), change: pctChange(data.totalRevenue, data.prevRevenue), icon: TrendingUp, tone: 'bg-green-50 text-green-600' },
-    { title: 'Orders', caption: 'Last 30 days', value: data.totalOrders.toString(), change: pctChange(data.totalOrders, data.prevOrders), icon: ShoppingBag, tone: 'bg-blue-50 text-blue-600' },
-    { title: 'New customers', caption: 'Last 30 days', value: data.totalUsers.toString(), change: pctChange(data.totalUsers, data.prevUsers), icon: Users, tone: 'bg-purple-50 text-purple-600' },
-    { title: 'Active products', caption: 'Live catalog', value: data.totalProducts.toString(), change: null, icon: Package, tone: 'bg-amber-50 text-amber-600' },
-  ]
-  const attentionItems = [
-    { label: 'Pending orders', detail: 'Ready for confirmation', value: data.pendingOrders, href: '/admin/orders?status=PENDING', icon: Clock, tone: 'bg-amber-50 text-amber-700' },
-    { label: 'Reviews to moderate', detail: 'Awaiting a decision', value: data.pendingReviews, href: '/admin/reviews?status=PENDING', icon: Star, tone: 'bg-blue-50 text-blue-700' },
-    { label: 'Low stock products', detail: 'Five units or fewer', value: data.lowStockProducts.length, href: '/admin/inventory', icon: Warehouse, tone: 'bg-red-50 text-red-700' },
-  ]
-  const quickActions = [
-    { label: 'Add product', href: '/admin/products/new', icon: Plus },
-    { label: 'Create banner', href: '/admin/banners/new', icon: ImageIcon },
-    { label: 'Adjust inventory', href: '/admin/inventory', icon: Warehouse },
-    { label: 'Open analytics', href: '/admin/reports', icon: BarChart3 },
+function formatCount(value: number) {
+  return new Intl.NumberFormat('en-BD', { notation: value >= 10_000 ? 'compact' : 'standard' }).format(value)
+}
+
+interface AdminDashboardProps {
+  searchParams: Promise<{ range?: string; chartRange?: string; outcomeRange?: string; metric?: string }>
+}
+
+export default async function AdminDashboard({ searchParams }: AdminDashboardProps) {
+  const query = await searchParams
+  const chartDays = parseChartRange(query.chartRange ?? query.range)
+  const outcomeDays = parseChartRange(query.outcomeRange ?? query.range)
+  const chartMetric = parseChartMetric(query.metric)
+  const data = await getDashboardData(chartDays, outcomeDays)
+  const revenueChange = percentageChange(data.currentRevenue, data.previousRevenue)
+  const orderChange = percentageChange(data.activeOrderCount, data.previousOrderCount)
+  const viewsChange = percentageChange(data.productViews, data.previousProductViews)
+  const statusCounts = new Map<string, number>()
+  const outcomeCounts = new Map<string, number>([
+    ['completed', 0],
+    ['in-progress', 0],
+    ['returned', 0],
+    ['refunded', 0],
+    ['partially-refunded', 0],
+    ['cancelled', 0],
+  ])
+  data.ordersByStatus.forEach((row) => {
+    statusCounts.set(row.status, row._count.id)
+  })
+  data.orderOutcomes.forEach((row) => {
+    let outcome = 'in-progress'
+    if (row.paymentStatus === 'PARTIALLY_REFUNDED') outcome = 'partially-refunded'
+    else if (row.paymentStatus === 'REFUNDED' || row.status === 'REFUNDED') outcome = 'refunded'
+    else if (row.status === 'RETURN_REQUESTED' || row.status === 'RETURNED' || row.status === 'REFUND_REQUESTED') outcome = 'returned'
+    else if (row.status === 'DELIVERED') outcome = 'completed'
+    else if (row.status === 'CANCELLED') outcome = 'cancelled'
+    outcomeCounts.set(outcome, (outcomeCounts.get(outcome) ?? 0) + row._count.id)
+  })
+  const chartDateFormatter = new Intl.DateTimeFormat('en-BD', { day: 'numeric', month: 'short' })
+  const chartActivity = data.dailyActivity.map((item) => ({
+    date: item.date.toISOString(),
+    label: chartDateFormatter.format(item.date),
+    revenue: item.revenue,
+    orders: item.orders,
+  }))
+  const orderOutcomes = [
+    {
+      id: 'completed',
+      label: 'Delivered',
+      description: 'Successfully completed',
+      count: outcomeCounts.get('completed') ?? 0,
+      color: '#2f7d5d',
+    },
+    {
+      id: 'in-progress',
+      label: 'In progress',
+      description: 'Pending through shipping',
+      count: outcomeCounts.get('in-progress') ?? 0,
+      color: '#426b99',
+    },
+    {
+      id: 'returned',
+      label: 'Returned',
+      description: 'Return or refund requested',
+      count: outcomeCounts.get('returned') ?? 0,
+      color: '#b47b2f',
+    },
+    {
+      id: 'refunded',
+      label: 'Refunded',
+      description: 'Full payment refunded',
+      count: outcomeCounts.get('refunded') ?? 0,
+      color: '#a24f5b',
+    },
+    {
+      id: 'partially-refunded',
+      label: 'Partial refund',
+      description: 'Part of payment returned',
+      count: outcomeCounts.get('partially-refunded') ?? 0,
+      color: '#725da0',
+    },
+    {
+      id: 'cancelled',
+      label: 'Cancelled',
+      description: 'Cancelled before completion',
+      count: outcomeCounts.get('cancelled') ?? 0,
+      color: '#6b7280',
+    },
   ]
   const todayLabel = new Intl.DateTimeFormat('en-BD', {
-    weekday: 'short',
     day: 'numeric',
     month: 'short',
     year: 'numeric',
   }).format(new Date())
-  const orderStatusTotal = data.ordersByStatus.reduce((total, status) => total + status._count.id, 0)
-  const chartColors: Record<string, string> = {
-    PENDING: '#b28743',
-    CONFIRMED: '#71869a',
-    PACKED: '#7b748b',
-    SHIPPED: '#52748b',
-    DELIVERED: '#4f7d64',
-    CANCELLED: '#955d5d',
-    RETURN_REQUESTED: '#9a7442',
-    RETURNED: '#6d7882',
-    REFUND_REQUESTED: '#9a7442',
-    REFUNDED: '#52745f',
+
+  const metrics = [
+    {
+      label: 'Revenue',
+      detail: 'Last 30 days',
+      value: formatPrice(data.currentRevenue),
+      change: revenueChange,
+      icon: TrendingUp,
+    },
+    {
+      label: 'Orders',
+      detail: 'Active and completed',
+      value: formatCount(data.activeOrderCount),
+      change: orderChange,
+      icon: ShoppingBag,
+    },
+    {
+      label: 'Product views',
+      detail: 'Unique first-party views',
+      value: formatCount(data.productViews),
+      change: viewsChange,
+      icon: Eye,
+    },
+    {
+      label: 'Average order',
+      detail: `${data.totalProducts} active products`,
+      value: formatPrice(data.averageOrderValue),
+      change: null,
+      icon: Package,
+    },
+  ]
+
+  const workQueue = [
+    {
+      label: 'Pending orders',
+      detail: 'Need confirmation',
+      value: statusCounts.get('PENDING') ?? 0,
+      href: '/admin/orders?status=PENDING',
+      icon: Clock3,
+      tone: 'warning',
+    },
+    {
+      label: 'Stock attention',
+      detail: `${data.outOfStockCount} out, ${data.lowStockCount} low`,
+      value: data.outOfStockCount + data.lowStockCount,
+      href: '/admin/inventory',
+      icon: Warehouse,
+      tone: data.outOfStockCount ? 'critical' : 'warning',
+    },
+    {
+      label: 'Review attention',
+      detail: 'Pending or below 5 stars',
+      value: data.reviewAttention,
+      href: '/admin/reviews',
+      icon: Star,
+      tone: data.reviewAttention ? 'warning' : 'neutral',
+    },
+    {
+      label: 'Return requests',
+      detail: 'Waiting for a decision',
+      value: data.returnRequests,
+      href: '/admin/returns?status=REQUESTED',
+      icon: RotateCcw,
+      tone: data.returnRequests ? 'warning' : 'neutral',
+    },
+  ]
+
+  const statusStyle: Record<string, string> = {
+    DELIVERED: 'text-green-700',
+    PENDING: 'text-amber-700',
+    CANCELLED: 'text-red-700',
   }
-  let chartCursor = 0
-  const chartSegments = data.ordersByStatus
-    .filter((status) => status._count.id > 0)
-    .map((status) => {
-      const start = chartCursor
-      chartCursor += orderStatusTotal ? (status._count.id / orderStatusTotal) * 100 : 0
-      return `${chartColors[status.status] ?? '#77808a'} ${start}% ${chartCursor}%`
-    })
-  const chartBackground = chartSegments.length
-    ? `conic-gradient(${chartSegments.join(', ')})`
-    : 'conic-gradient(#d5d8dc 0 100%)'
-  const revenueMaximum = Math.max(data.totalRevenue, data.prevRevenue, 1)
-  const currentRevenueWidth = Math.max((data.totalRevenue / revenueMaximum) * 100, data.totalRevenue ? 4 : 0)
-  const previousRevenueWidth = Math.max((data.prevRevenue / revenueMaximum) * 100, data.prevRevenue ? 4 : 0)
-  const deliveredCount = data.ordersByStatus.find((status) => status.status === 'DELIVERED')?._count.id ?? 0
-  const deliveryRate = orderStatusTotal ? Math.round((deliveredCount / orderStatusTotal) * 100) : 0
 
   return (
-    <div className="space-y-6">
-      <header className="admin-page-header">
+    <div className="space-y-5 sm:space-y-6">
+      <header className="admin-page-header items-center">
         <div>
           <h1 className="admin-page-title">Dashboard</h1>
-          <p className="admin-page-description">Sales, fulfilment, inventory, and the work that needs attention today.</p>
+          <p className="admin-page-description">A concise view of demand, fulfilment, and work that needs a decision.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-lg bg-card px-3 py-2 text-xs font-medium text-muted-foreground">{todayLabel}</span>
-          <Link href="/admin/products/new" className="btn-primary gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          <span className="rounded-md bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">{todayLabel}</span>
+          <Link href="/admin/products/new" className="btn-primary flex-1 gap-2 sm:flex-none">
             <Plus className="h-4 w-4" /> Add product
           </Link>
         </div>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Performance metrics">
-        {stats.map((stat) => (
-          <div key={stat.title} className="admin-card min-h-[7.75rem] p-4 sm:min-h-[9rem] sm:p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold">{stat.title}</p>
-                <p className="text-xs text-muted-foreground">{stat.caption}</p>
+      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-label="Business summary">
+        {metrics.map((metric) => {
+          const Icon = metric.icon
+          return (
+            <article key={metric.label} className="admin-card min-w-0 p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-muted-foreground">{metric.label}</p>
+                  <p className="mt-2 font-display text-lg font-bold tracking-tight sm:text-2xl">{metric.value}</p>
+                </div>
+                <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
               </div>
-              <span className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-md min-[430px]:flex sm:h-10 sm:w-10 ${stat.tone}`}>
-                <stat.icon className="h-4 w-4" />
-              </span>
-            </div>
-            <p className="mt-3 truncate font-display text-[1.28rem] font-bold tracking-tight sm:mt-4 sm:text-[1.7rem]">{stat.value}</p>
-            {stat.change === null ? (
-              <p className="mt-1 text-xs text-muted-foreground">Available to customers</p>
-            ) : (
-              <p className={`mt-1 flex items-center gap-1 text-xs font-semibold ${stat.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {stat.change >= 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
-                <span className="sm:hidden">{Math.abs(stat.change)}% vs prior</span>
-                <span className="hidden sm:inline">{Math.abs(stat.change)}% from previous period</span>
-              </p>
-            )}
-          </div>
-        ))}
+              <div className="mt-2 min-h-5 text-[11px] sm:text-xs">
+                {metric.change === null ? (
+                  <span className="text-muted-foreground">{metric.detail}</span>
+                ) : (
+                  <span className={`inline-flex items-center gap-1 font-semibold ${metric.change >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                    {metric.change >= 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                    {Math.abs(metric.change)}% <span className="hidden text-muted-foreground sm:inline">vs prior period</span>
+                  </span>
+                )}
+              </div>
+            </article>
+          )
+        })}
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]" aria-label="Business overview">
-        <div className="admin-card p-4 sm:p-5 lg:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="admin-section-title">Revenue comparison</h2>
-              <p className="mt-1 text-xs text-muted-foreground">Completed and active orders, excluding cancellations</p>
-            </div>
-            <span className="text-xs font-semibold text-muted-foreground">30-day periods</span>
-          </div>
-          <div className="mt-6 space-y-5">
-            <RevenueBar label="Current period" value={formatPrice(data.totalRevenue)} width={currentRevenueWidth} emphasized />
-            <RevenueBar label="Previous period" value={formatPrice(data.prevRevenue)} width={previousRevenueWidth} />
-          </div>
-          <div className="mt-6 grid grid-cols-2 gap-3 rounded-lg bg-secondary/55 p-3.5 text-sm">
-            <div>
-              <p className="text-xs text-muted-foreground">Movement</p>
-              <p className="mt-1 font-semibold">{pctChange(data.totalRevenue, data.prevRevenue)}%</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Current orders</p>
-              <p className="mt-1 font-semibold">{data.totalOrders}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="admin-card p-4 sm:p-5 lg:p-6">
+      <section className="admin-card overflow-hidden" aria-labelledby="sales-trend-heading">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/70 px-4 py-4 sm:px-5 lg:px-6">
           <div>
-            <h2 className="admin-section-title">Order distribution</h2>
-            <p className="mt-1 text-xs text-muted-foreground">All recorded order states</p>
+            <h2 id="sales-trend-heading" className="admin-section-title">
+              Performance and order outcomes
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">Two independent views for activity and fulfilment quality.</p>
           </div>
-          <div className="mt-5 grid items-center gap-6 sm:grid-cols-[10rem_minmax(0,1fr)]">
-            <div className="relative mx-auto h-36 w-36 rounded-full sm:h-40 sm:w-40" style={{ background: chartBackground }}>
-              <div className="absolute inset-[1.15rem] flex flex-col items-center justify-center rounded-full bg-card text-center">
-                <span className="font-display text-2xl font-bold">{orderStatusTotal}</span>
-                <span className="text-[11px] text-muted-foreground">total orders</span>
-              </div>
-            </div>
-            <div className="grid gap-2.5">
-              {data.ordersByStatus.slice(0, 6).map((status) => {
-                const info = statusMap[status.status]
-                return (
-                  <div key={status.status} className="flex items-center justify-between gap-3 text-xs">
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: chartColors[status.status] ?? '#77808a' }} />
-                      <span className="truncate text-muted-foreground">{info?.label ?? status.status.replace('_', ' ')}</span>
-                    </span>
-                    <span className="font-semibold">{status._count.id}</span>
-                  </div>
-                )
-              })}
-              <div className="mt-1 rounded-md bg-secondary/55 px-3 py-2.5 text-xs">
-                <span className="text-muted-foreground">Delivered share</span>
-                <span className="float-right font-semibold">{deliveryRate}%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="admin-card grid gap-2.5 p-3 sm:gap-4 sm:p-5 md:grid-cols-2 xl:grid-cols-[minmax(14rem,0.8fr)_repeat(3,minmax(0,1fr))]" aria-labelledby="attention-heading">
-        <div className="flex flex-col justify-center md:col-span-2 xl:col-span-1">
-          <h2 id="attention-heading" className="admin-section-title">Action queue</h2>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">Open the areas that need an admin decision.</p>
-        </div>
-        {attentionItems.map((item) => (
-          <Link key={item.label} href={item.href} className="flex min-h-[4.25rem] items-center gap-3 rounded-lg bg-secondary/55 px-3 py-2.5 sm:min-h-[5rem] sm:px-4 sm:py-3">
-            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${item.tone}`}>
-              <item.icon className="h-5 w-5" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">{item.label}</span>
-              <span className="block truncate text-xs text-muted-foreground">{item.detail}</span>
-            </span>
-            <span className="admin-page-title">{item.value}</span>
+          <Link href="/admin/reports?tab=sales" className="admin-action-link">
+            Full analytics <ArrowRight className="h-3.5 w-3.5" />
           </Link>
-        ))}
+        </div>
+        <AdminDashboardVisuals
+          activity={chartActivity}
+          chartDays={chartDays}
+          metric={chartMetric}
+          outcomeDays={outcomeDays}
+          outcomes={orderOutcomes}
+        />
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.75fr)_minmax(20rem,0.75fr)]">
-        <section className="admin-card overflow-hidden" aria-labelledby="recent-orders-heading">
-          <div className="admin-card-header">
-            <div>
-              <h2 id="recent-orders-heading" className="admin-section-title">Recent orders</h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">Latest customer activity</p>
-            </div>
-            <Link href="/admin/orders" className="admin-action-link">
-              View orders <ArrowRight className="h-3.5 w-3.5" />
+      <section className="admin-card p-4 sm:p-5" aria-labelledby="operations-heading">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 id="operations-heading" className="admin-section-title">Operations queue</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Every item that currently needs an admin decision.</p>
+          </div>
+          <div className="flex gap-2 text-xs font-semibold">
+            <Link href="/admin/inventory" className="admin-compact-link"><Warehouse className="h-3.5 w-3.5" /> Inventory</Link>
+            <Link href="/admin/banners/new" className="admin-compact-link"><ImageIcon className="h-3.5 w-3.5" /> New banner</Link>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          {workQueue.map((item) => {
+            const Icon = item.icon
+            return (
+              <Link key={item.label} href={item.href} className="admin-work-item" data-tone={item.tone}>
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold">{item.label}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{item.detail}</span>
+                </span>
+                <strong className="font-display text-xl">{item.value}</strong>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="admin-card overflow-hidden" aria-labelledby="recent-orders-heading">
+        <div className="admin-card-header">
+          <div>
+            <h2 id="recent-orders-heading" className="admin-section-title">Recent orders</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">Latest customer activity</p>
+          </div>
+          <Link href="/admin/orders" className="admin-action-link">
+            View orders <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="grid gap-2 p-3 sm:p-4">
+          {data.recentOrders.length ? data.recentOrders.map((order) => (
+            <Link key={order.id} href={`/admin/orders/${order.id}`} className="admin-order-row">
+              <span className="min-w-0">
+                <span className="block font-mono text-xs font-bold">{order.orderNumber}</span>
+                <span className="block truncate text-[11px] text-muted-foreground">{order.user?.name ?? order.guestEmail}</span>
+              </span>
+              <span className="hidden truncate text-xs text-muted-foreground sm:block">{order.items[0]?.productName ?? 'Order items'}</span>
+              <span className="text-right">
+                <span className="block text-xs font-bold">{formatPrice(order.total)}</span>
+                <span className="block text-[11px] text-muted-foreground">{formatDate(order.createdAt)}</span>
+              </span>
+              <span className={`text-right text-[11px] font-semibold ${statusStyle[order.status] ?? 'text-muted-foreground'}`}>
+                {order.status.replaceAll('_', ' ')}
+              </span>
             </Link>
-          </div>
-          <div className="space-y-2 p-3">
-            {data.recentOrders.length ? data.recentOrders.map((order) => {
-              const statusInfo = statusMap[order.status] ?? { label: order.status, color: 'text-muted-foreground', icon: Clock }
-              const StatusIcon = statusInfo.icon
-              return (
-                <Link key={order.id} href={`/admin/orders/${order.id}`} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg bg-secondary/40 px-3 py-3 sm:grid-cols-[8.5rem_minmax(0,1fr)_7rem_7.5rem] sm:px-4 sm:py-3.5">
-                  <span>
-                    <span className="block font-mono text-xs font-bold">{order.orderNumber}</span>
-                    <span className="block truncate text-[11px] text-muted-foreground">{order.user?.name ?? order.guestEmail}</span>
-                  </span>
-                  <span className="col-span-2 truncate text-xs text-muted-foreground sm:col-span-1">{order.items[0]?.productName ?? 'Order items'}</span>
-                  <span className="text-right">
-                    <span className="block text-xs font-bold">{formatPrice(order.total)}</span>
-                    <span className="block text-[11px] text-muted-foreground">{formatDate(order.createdAt)}</span>
-                  </span>
-                  <span className={`flex items-center justify-end gap-1 text-[11px] font-semibold ${statusInfo.color}`}>
-                    <StatusIcon className="h-3.5 w-3.5" /> {statusInfo.label}
-                  </span>
-                </Link>
-              )
-            }) : (
-              <p className="px-4 py-10 text-center text-sm text-muted-foreground">No recent orders.</p>
-            )}
-          </div>
-        </section>
-
-        <aside className="space-y-5">
-          <section className="admin-card p-5" aria-labelledby="quick-actions-heading">
-            <h2 id="quick-actions-heading" className="admin-section-title">Quick actions</h2>
-            <div className="mt-4 grid grid-cols-2 gap-2.5">
-              {quickActions.map((action) => (
-                <Link key={action.label} href={action.href} className="flex min-h-24 flex-col justify-between rounded-lg bg-secondary/60 p-3.5 text-xs font-semibold">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-card text-primary">
-                    <action.icon className="h-4 w-4" />
-                  </span>
-                  {action.label}
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section className="admin-card p-5" aria-labelledby="order-status-heading">
-            <h2 id="order-status-heading" className="admin-section-title">Order status</h2>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-              {data.ordersByStatus.map((status) => {
-                const info = statusMap[status.status]
-                if (!info) return null
-                const Icon = info.icon
-                return (
-                  <div key={status.status} className="flex items-center justify-between rounded-lg bg-secondary/40 px-3.5 py-2.5 text-xs">
-                    <span className={`flex items-center gap-2 font-semibold ${info.color}`}>
-                      <Icon className="h-3.5 w-3.5" /> {info.label}
-                    </span>
-                    <span className="font-bold">{status._count.id}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
-          <section className="admin-card p-5" aria-labelledby="stock-heading">
-            <div className="flex items-center justify-between gap-3">
-              <h2 id="stock-heading" className="admin-section-title">Low stock</h2>
-              <Link href="/admin/inventory" className="text-xs font-semibold text-primary">Manage</Link>
-            </div>
-            <div className="mt-4 space-y-2">
-              {data.lowStockProducts.length ? data.lowStockProducts.map((product) => (
-                <Link key={product.id} href={`/admin/products/${product.id}`} className="flex items-center justify-between gap-3 rounded-lg bg-secondary/40 px-3.5 py-2.5 text-xs">
-                  <span className="truncate font-medium">{product.name}</span>
-                  <span className={product.stockQuantity === 0 ? 'font-bold text-red-600' : 'font-bold text-amber-600'}>
-                    {product.stockQuantity === 0 ? 'Out' : product.stockQuantity}
-                  </span>
-                </Link>
-              )) : (
-                <p className="rounded-md bg-green-50 px-3 py-3 text-xs font-medium text-green-700">Inventory levels look healthy.</p>
-              )}
-            </div>
-          </section>
-        </aside>
-      </div>
-    </div>
-  )
-}
-
-function RevenueBar({
-  label,
-  value,
-  width,
-  emphasized = false,
-}: {
-  label: string
-  value: string
-  width: number
-  emphasized?: boolean
-}) {
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-3 text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-semibold">{value}</span>
-      </div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-secondary">
-        <div
-          className={`h-full rounded-full ${emphasized ? 'bg-foreground' : 'bg-muted-foreground/45'}`}
-          style={{ width: `${width}%` }}
-        />
-      </div>
+          )) : (
+            <p className="px-4 py-10 text-center text-sm text-muted-foreground">No recent orders.</p>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

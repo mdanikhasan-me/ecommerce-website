@@ -88,7 +88,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-xs text-primary">
+      <button type="button" onClick={() => setOpen(true)} className="admin-mobile-action">
         Adjust
       </button>
 

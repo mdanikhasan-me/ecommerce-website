@@ -259,7 +259,7 @@ export function CouponEditorForm({
       ) : null}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <section className="admin-card p-5 sm:p-6">
             <div>
               <h2 className="admin-section-title">Identity</h2>
@@ -447,7 +447,7 @@ export function CouponEditorForm({
           </section>
         </div>
 
-        <aside className="space-y-5 xl:sticky xl:top-0">
+        <aside className="min-w-0 space-y-5 xl:sticky xl:top-0">
           <section className="admin-card p-5">
             <h2 className="admin-section-title">Discount summary</h2>
             {value > 0 ? (

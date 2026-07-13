@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client'
+
 import { db } from '@/backend/database'
 
 export type AdminReportExportType = 'orders' | 'products' | 'customers'
@@ -144,7 +146,23 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
     status: { not: 'CANCELLED' as const },
   }
 
-  const [revenue, orderCount, recentOrders, topProducts, customerTotals, newCustomers] = await Promise.all([
+  const [
+    revenue,
+    orderCount,
+    recentOrders,
+    topProducts,
+    customerTotals,
+    newCustomers,
+    productViewCount,
+    viewedProductGroups,
+    reviewAggregate,
+    reviewRatings,
+    reviewAttention,
+    orderStatuses,
+    dailySales,
+    dailyViews,
+    trafficSources,
+  ] = await Promise.all([
     db.order.aggregate({
       where: activeOrderWhere,
       _sum: { total: true },
@@ -201,11 +219,77 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
         },
       },
     }),
+    db.productView.count({
+      where: { createdAt: { gte: range.from, lte: range.to } },
+    }),
+    db.productView.groupBy({
+      by: ['productId'],
+      where: { createdAt: { gte: range.from, lte: range.to } },
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+      take: 10,
+    }),
+    db.review.aggregate({
+      where: { createdAt: { gte: range.from, lte: range.to } },
+      _avg: { rating: true },
+      _count: { id: true },
+    }),
+    db.review.groupBy({
+      by: ['rating'],
+      where: { createdAt: { gte: range.from, lte: range.to } },
+      _count: { id: true },
+      orderBy: { rating: 'desc' },
+    }),
+    db.review.count({
+      where: {
+        createdAt: { gte: range.from, lte: range.to },
+        OR: [{ status: 'PENDING' }, { rating: { lt: 5 } }],
+      },
+    }),
+    db.order.groupBy({
+      by: ['status'],
+      where: orderWhere,
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+    }),
+    db.$queryRaw<Array<{ day: Date; revenue: number; orders: number }>>(Prisma.sql`
+      SELECT
+        date_trunc('day', "createdAt") AS "day",
+        COALESCE(SUM("total"), 0)::float8 AS "revenue",
+        COUNT(*)::int AS "orders"
+      FROM "Order"
+      WHERE "createdAt" >= ${range.from}
+        AND "createdAt" <= ${range.to}
+        AND "status" <> 'CANCELLED'
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `),
+    db.$queryRaw<Array<{ day: Date; views: number }>>(Prisma.sql`
+      SELECT date_trunc('day', "createdAt") AS "day", COUNT(*)::int AS "views"
+      FROM "ProductView"
+      WHERE "createdAt" >= ${range.from} AND "createdAt" <= ${range.to}
+      GROUP BY 1
+      ORDER BY 1 ASC
+    `),
+    db.$queryRaw<Array<{ source: string; views: number }>>(Prisma.sql`
+      SELECT
+        CASE
+          WHEN "viewerKey" LIKE '%|source:%' THEN split_part("viewerKey", '|source:', 2)
+          ELSE 'direct'
+        END AS "source",
+        COUNT(*)::int AS "views"
+      FROM "ProductView"
+      WHERE "createdAt" >= ${range.from} AND "createdAt" <= ${range.to}
+      GROUP BY 1
+      ORDER BY 2 DESC
+      LIMIT 10
+    `),
   ])
 
   const customerIds = customerTotals.map((row) => row.userId)
-  const customers = customerIds.length
-    ? await db.user.findMany({
+  const viewedProductIds = viewedProductGroups.map((row) => row.productId)
+  const [customers, viewedProducts] = await Promise.all([
+    customerIds.length ? db.user.findMany({
         where: { id: { in: customerIds } },
         select: {
           id: true,
@@ -214,8 +298,12 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
           role: true,
           createdAt: true,
         },
-      })
-    : []
+      }) : [],
+    viewedProductIds.length ? db.product.findMany({
+      where: { id: { in: viewedProductIds } },
+      select: { id: true, name: true, slug: true, sku: true, soldCount: true, viewCount: true },
+    }) : [],
+  ])
 
   const customerMap = new Map(customers.map((customer) => [customer.id, customer]))
   const topCustomers = customerTotals.map((row) => ({
@@ -223,6 +311,12 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
     customer: customerMap.get(row.userId) ?? null,
     revenue: row._sum.total ?? 0,
     orders: row._count.id,
+  }))
+  const viewedProductMap = new Map(viewedProducts.map((product) => [product.id, product]))
+  const topViewedProducts = viewedProductGroups.map((row) => ({
+    productId: row.productId,
+    views: row._count.id,
+    product: viewedProductMap.get(row.productId) ?? null,
   }))
 
   return {
@@ -232,6 +326,8 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
       averageOrderValue: revenue._avg.total ?? 0,
       orders: orderCount,
       newCustomers,
+      productViews: productViewCount,
+      conversionRate: productViewCount ? Math.round((orderCount / productViewCount) * 1000) / 10 : 0,
     },
     recentOrders,
     topProducts: topProducts.map((product) => ({
@@ -240,6 +336,17 @@ export async function getAdminReportData(range: { from: Date; to: Date }) {
       revenue: product._sum.total ?? 0,
     })),
     topCustomers,
+    topViewedProducts,
+    reviews: {
+      total: reviewAggregate._count.id,
+      averageRating: reviewAggregate._avg.rating ?? 0,
+      attention: reviewAttention,
+      ratings: reviewRatings.map((row) => ({ rating: row.rating, count: row._count.id })),
+    },
+    orderStatuses: orderStatuses.map((row) => ({ status: row.status, count: row._count.id })),
+    dailySales,
+    dailyViews,
+    trafficSources,
   }
 }
 

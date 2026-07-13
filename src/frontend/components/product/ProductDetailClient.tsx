@@ -161,6 +161,11 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
       method: 'POST',
       credentials: 'same-origin',
       keepalive: true,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        referrer: document.referrer || null,
+        landingUrl: window.location.href,
+      }),
     })
       .then(() => markProductView(product.id))
       .catch(() => {
