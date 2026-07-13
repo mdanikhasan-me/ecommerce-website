@@ -1,13 +1,16 @@
 import { Buffer } from 'node:buffer'
+import sharp from 'sharp'
 import { persistAdminUpload } from '@/backend/admin/admin-utils'
 import {
   IMAGE_UPLOAD_ERROR_MESSAGES,
+  MAX_DECODED_IMAGE_PIXELS,
   MAX_IMAGE_UPLOAD_BYTES,
 } from '@/backend/admin/image-processing'
 import {
   isAdminBannerImageSlot,
   isImageDataUrl,
   type AdminBannerImageSlot,
+  validateAdminBannerImageAspectRatio,
 } from '@/backend/admin/banner-image-policy'
 
 export type AdminBannerUploadFile = {
@@ -46,6 +49,23 @@ export async function persistAdminBannerImageFile(
   }
   if (buffer.byteLength > MAX_IMAGE_UPLOAD_BYTES) {
     throw new Error(IMAGE_UPLOAD_ERROR_MESSAGES.uploadTooLarge)
+  }
+
+  try {
+    const metadata = await sharp(buffer, {
+      failOn: 'error',
+      limitInputPixels: MAX_DECODED_IMAGE_PIXELS + 1,
+    }).metadata()
+    validateAdminBannerImageAspectRatio(
+      input.slot,
+      metadata.width ?? 0,
+      metadata.pageHeight ?? metadata.height ?? 0,
+    )
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('must use the')) {
+      throw error
+    }
+    throw new Error(IMAGE_UPLOAD_ERROR_MESSAGES.safeUpload)
   }
 
   const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`

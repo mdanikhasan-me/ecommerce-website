@@ -52,7 +52,7 @@ function BannerImage({
   return (
     <picture className="absolute inset-0 block h-full w-full">
       <source media="(max-width: 639px)" srcSet={resolvedMobileSrc} />
-      <source media="(max-width: 1023px)" srcSet={resolvedTabletSrc} />
+      <source media="(max-width: 1279px)" srcSet={resolvedTabletSrc} />
       <img src={desktopSrc} alt={alt} className={imageClassName} decoding="sync" fetchPriority="high" />
     </picture>
   )
@@ -207,7 +207,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
     <section className="w-full">
       <div ref={bannerRootRef} className="relative overflow-hidden bg-foreground">
         <div
-          className="relative aspect-[13/12] w-full sm:aspect-video lg:aspect-[3/1]"
+          className="relative aspect-[5/4] w-full sm:aspect-video xl:aspect-[21/9]"
           role="region"
           aria-label="Homepage banner carousel"
           aria-roledescription="carousel"

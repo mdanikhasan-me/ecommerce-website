@@ -150,10 +150,10 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
       ? form.tabletImageUrl || form.imageUrl || form.mobileImageUrl
       : form.imageUrl || form.tabletImageUrl || form.mobileImageUrl
   const previewFrameClass = previewMode === 'mobile'
-    ? 'mx-auto aspect-[13/12] max-w-56'
+    ? 'mx-auto aspect-[5/4] max-w-56'
     : previewMode === 'tablet'
       ? 'mx-auto aspect-video max-w-[28rem]'
-      : 'aspect-[3/1]'
+      : 'aspect-[21/9]'
   const overlayAlpha = ({ none: 0, soft: 0.24, medium: 0.46, strong: 0.68 } as Record<string, number>)[form.overlayStrength] ?? 0.46
   const overlayRgb = form.textTone === 'dark' ? '255,255,255' : '15,23,42'
   const overlayDirection = form.textPosition === 'right' ? '270deg' : '90deg'
@@ -245,11 +245,11 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
 
           <section className="admin-card p-5 sm:p-6">
             <h2 className="admin-section-title">Responsive artwork</h2>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">Upload separate artwork for each frame. Missing tablet or mobile artwork falls back safely to the next available image.</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Use the required ratio preset for each screen. Pixel dimensions are balanced recommendations for sharp output and lightweight delivery; larger source files are accepted.</p>
             <div className="mt-4 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              <AdminImageField label="Desktop image" value={form.imageUrl} onChange={(value) => updateField('imageUrl', value)} helperText="3:1 • 2400 x 800 px • WebP preferred • stored as WebP q90 • aim under 500 KB." previewClassName="aspect-[3/1]" uploadImage={(file) => uploadBannerImage('desktop', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
-              <AdminImageField label="Tablet / iPad image" value={form.tabletImageUrl} onChange={(value) => updateField('tabletImageUrl', value)} helperText="16:9 • 1920 x 1080 px • WebP preferred • stored as WebP q90 • aim under 400 KB." previewClassName="aspect-video" uploadImage={(file) => uploadBannerImage('tablet', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
-              <AdminImageField label="Mobile image" value={form.mobileImageUrl} onChange={(value) => updateField('mobileImageUrl', value)} helperText="13:12 • 1300 x 1200 px • WebP preferred • stored as WebP q90 • aim under 250 KB." previewClassName="aspect-[13/12]" uploadImage={(file) => uploadBannerImage('mobile', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Desktop image" value={form.imageUrl} onChange={(value) => updateField('imageUrl', value)} helperText="Required ratio: Ultrawide 21:9. Recommended export: 2048 × 864 px, WebP, under 500 KB. Stored at q90." previewClassName="aspect-[21/9]" uploadImage={(file) => uploadBannerImage('desktop', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Tablet / iPad image" value={form.tabletImageUrl} onChange={(value) => updateField('tabletImageUrl', value)} helperText="Required ratio: 16:9. Recommended export: 1376 × 768 px, WebP, under 400 KB. Stored at q90." previewClassName="aspect-video" uploadImage={(file) => uploadBannerImage('tablet', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Mobile image" value={form.mobileImageUrl} onChange={(value) => updateField('mobileImageUrl', value)} helperText="Required ratio: landscape 5:4. Recommended export: 1152 × 928 px, WebP, under 300 KB. Stored at q90." previewClassName="aspect-[5/4]" uploadImage={(file) => uploadBannerImage('mobile', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
             </div>
           </section>
         </div>
