@@ -701,7 +701,14 @@ model Banner {
   subtitle    String?
   imageUrl    String
   mobileImageUrl String?
+  tabletImageUrl String?
   linkUrl     String?
+  buttonLabel String?
+  buttonStyle String   @default("light")
+  textPosition String  @default("left")
+  textTone    String   @default("light")
+  overlayStrength String @default("medium")
+  textShadow  Boolean  @default(true)
   position    String   @default("hero")
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)

@@ -18,8 +18,15 @@ export default async function AdminBannerDetailPage({ params }: Props) {
       title: true,
       subtitle: true,
       imageUrl: true,
+      tabletImageUrl: true,
       mobileImageUrl: true,
       linkUrl: true,
+      buttonLabel: true,
+      buttonStyle: true,
+      textPosition: true,
+      textTone: true,
+      overlayStrength: true,
+      textShadow: true,
       position: true,
       sortOrder: true,
       isActive: true,
@@ -31,22 +38,20 @@ export default async function AdminBannerDetailPage({ params }: Props) {
   if (!banner) notFound()
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">{banner.title || 'Untitled banner'}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Update banner artwork, placement, schedule, and links.
+          <h1 className="admin-page-title">{banner.title || 'Untitled banner'}</h1>
+          <p className="admin-page-description">
+            Edit responsive artwork, content emphasis, call to action, and publishing rules.
           </p>
         </div>
         <Link href="/admin/banners" className="btn-outline">
-          Back to Banners
+          Back to banners
         </Link>
       </div>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <BannerEditorForm banner={banner} />
-      </div>
+      <BannerEditorForm banner={banner} />
     </div>
   )
 }

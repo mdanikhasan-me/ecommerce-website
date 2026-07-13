@@ -9,6 +9,7 @@ interface AdminImageFieldProps {
   value: string
   onChange: (value: string) => void
   helperText?: string
+  previewClassName?: string
   uploadImage?: (file: File) => Promise<string>
   rejectDataUrls?: boolean
   dataUrlErrorMessage?: string
@@ -29,6 +30,7 @@ export function AdminImageField({
   value,
   onChange,
   helperText,
+  previewClassName,
   uploadImage,
   rejectDataUrls = false,
   dataUrlErrorMessage = DEFAULT_DATA_URL_ERROR,
@@ -77,8 +79,8 @@ export function AdminImageField({
         {helperText && <p className="text-xs text-muted-foreground">{helperText}</p>}
       </div>
 
-      <div className="rounded-md border border-border bg-secondary/30 p-3">
-        <div className="aspect-[16/10] overflow-hidden rounded-md border border-border bg-card">
+      <div className="rounded-md bg-secondary/45 p-3">
+        <div className={`overflow-hidden rounded-md bg-card ${previewClassName ?? 'aspect-[16/10]'}`}>
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className="h-full w-full object-cover" />
@@ -122,6 +124,7 @@ export function AdminImageField({
         </div>
 
         <div className="mt-3">
+          <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Or use an image URL</label>
           <input aria-label="Form input" title="Form input"
             value={value}
             onChange={handleUrlChange}

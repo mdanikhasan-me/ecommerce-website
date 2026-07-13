@@ -2,26 +2,32 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, Trash2 } from 'lucide-react'
+import { Eye, Loader2, Monitor, Save, Smartphone, Tablet, Trash2 } from 'lucide-react'
+import { cn } from '@/backend/utils'
 import { AdminImageField } from './AdminImageField'
 import { toDateTimeLocalValue } from './form-utils'
+import { AdminDateTimeField } from './AdminDateTimeField'
 
 const BANNER_IMAGE_DATA_URL_ERROR =
   'Banner images must be uploaded as files before saving. Base64 image data is not allowed.'
 
-function isBannerImageDataUrl(value: string | null | undefined) {
-  return value?.trim().toLowerCase().startsWith('data:image/') ?? false
-}
-
-type BannerImageSlot = 'desktop' | 'mobile'
+type BannerImageSlot = 'desktop' | 'tablet' | 'mobile'
+type PreviewMode = 'desktop' | 'tablet' | 'mobile'
 
 interface EditableBanner {
   id: string
   title: string
   subtitle: string | null
   imageUrl: string
+  tabletImageUrl: string | null
   mobileImageUrl: string | null
   linkUrl: string | null
+  buttonLabel: string | null
+  buttonStyle: string
+  textPosition: string
+  textTone: string
+  overlayStrength: string
+  textShadow: boolean
   sortOrder: number
   isActive: boolean
   startsAt: string | Date | null
@@ -33,93 +39,86 @@ interface BannerEditorFormProps {
   redirectTo?: string
 }
 
-export function BannerEditorForm({
-  banner,
-  redirectTo = '/admin/banners',
-}: BannerEditorFormProps) {
+function isBannerImageDataUrl(value: string | null | undefined) {
+  return value?.trim().toLowerCase().startsWith('data:image/') ?? false
+}
+
+export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: BannerEditorFormProps) {
   const router = useRouter()
   const isEditing = Boolean(banner)
-
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
+  const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop')
   const [form, setForm] = useState({
     title: banner?.title ?? '',
     subtitle: banner?.subtitle ?? '',
     imageUrl: banner?.imageUrl ?? '',
+    tabletImageUrl: banner?.tabletImageUrl ?? '',
     mobileImageUrl: banner?.mobileImageUrl ?? '',
     linkUrl: banner?.linkUrl ?? '',
+    buttonLabel: banner?.buttonLabel ?? '',
+    buttonStyle: banner?.buttonStyle ?? 'light',
+    textPosition: banner?.textPosition ?? 'left',
+    textTone: banner?.textTone ?? 'light',
+    overlayStrength: banner?.overlayStrength ?? 'medium',
+    textShadow: banner?.textShadow ?? true,
     sortOrder: String(banner?.sortOrder ?? 0),
     isActive: banner?.isActive ?? true,
     startsAt: toDateTimeLocalValue(banner?.startsAt),
     endsAt: toDateTimeLocalValue(banner?.endsAt),
   })
   const fieldIdPrefix = banner ? `banner-${banner.id}` : 'banner-new'
-
   const updateField = (field: keyof typeof form, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }))
   }
-
   const buildPayload = () => ({
     title: form.title.trim(),
     subtitle: form.subtitle.trim() || null,
     imageUrl: form.imageUrl.trim(),
+    tabletImageUrl: form.tabletImageUrl.trim() || null,
     mobileImageUrl: form.mobileImageUrl.trim() || null,
     linkUrl: form.linkUrl.trim() || null,
+    buttonLabel: form.buttonLabel.trim() || null,
+    buttonStyle: form.buttonStyle,
+    textPosition: form.textPosition,
+    textTone: form.textTone,
+    overlayStrength: form.overlayStrength,
+    textShadow: form.textShadow,
     position: 'hero',
     sortOrder: Number(form.sortOrder || 0),
     isActive: form.isActive,
     startsAt: form.startsAt || null,
     endsAt: form.endsAt || null,
   })
-
-  const getBannerUploadOwner = () => banner?.id || form.title.trim() || 'banner'
-
   const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
     const uploadForm = new FormData()
     uploadForm.set('file', file)
     uploadForm.set('slot', slot)
-    uploadForm.set('owner', getBannerUploadOwner())
-
-    const response = await fetch('/api/admin/banners/upload', {
-      method: 'POST',
-      body: uploadForm,
-    })
+    uploadForm.set('owner', banner?.id || form.title.trim() || 'banner')
+    const response = await fetch('/api/admin/banners/upload', { method: 'POST', body: uploadForm })
     const data = await response.json().catch(() => null)
-
     if (!response.ok || typeof data?.url !== 'string') {
       throw new Error(data?.error || 'Could not upload banner image')
     }
-
     return data.url
   }
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     setError('')
-
-    if (isBannerImageDataUrl(form.imageUrl) || isBannerImageDataUrl(form.mobileImageUrl)) {
+    if (isBannerImageDataUrl(form.imageUrl) || isBannerImageDataUrl(form.tabletImageUrl) || isBannerImageDataUrl(form.mobileImageUrl)) {
       setError(BANNER_IMAGE_DATA_URL_ERROR)
       return
     }
-
     setIsSaving(true)
-
     try {
-      const response = await fetch(
-        isEditing ? `/api/admin/banners/${banner!.id}` : '/api/admin/banners',
-        {
-          method: isEditing ? 'PUT' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(buildPayload()),
-        },
-      )
-
+      const response = await fetch(isEditing ? `/api/admin/banners/${banner!.id}` : '/api/admin/banners', {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPayload()),
+      })
       const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.error || 'Could not save banner')
-      }
-
+      if (!response.ok) throw new Error(data.error || 'Could not save banner')
       router.push(redirectTo)
       router.refresh()
     } catch (submitError) {
@@ -128,23 +127,14 @@ export function BannerEditorForm({
       setIsSaving(false)
     }
   }
-
   const handleDelete = async () => {
-    if (!banner) return
-    if (!window.confirm('Delete this banner?')) {
-      return
-    }
-
+    if (!banner || !window.confirm('Delete this banner?')) return
     setIsDeleting(true)
     setError('')
-
     try {
       const response = await fetch(`/api/admin/banners/${banner.id}`, { method: 'DELETE' })
       const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.error || 'Could not delete banner')
-      }
-
+      if (!response.ok) throw new Error(data.error || 'Could not delete banner')
       router.push(redirectTo)
       router.refresh()
     } catch (deleteError) {
@@ -154,147 +144,175 @@ export function BannerEditorForm({
     }
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          {error}
-        </div>
-      )}
+  const previewImage = previewMode === 'mobile'
+    ? form.mobileImageUrl || form.tabletImageUrl || form.imageUrl
+    : previewMode === 'tablet'
+      ? form.tabletImageUrl || form.imageUrl || form.mobileImageUrl
+      : form.imageUrl || form.tabletImageUrl || form.mobileImageUrl
+  const previewFrameClass = previewMode === 'mobile'
+    ? 'mx-auto aspect-[13/12] max-w-56'
+    : previewMode === 'tablet'
+      ? 'mx-auto aspect-video max-w-[28rem]'
+      : 'aspect-[3/1]'
+  const overlayAlpha = ({ none: 0, soft: 0.24, medium: 0.46, strong: 0.68 } as Record<string, number>)[form.overlayStrength] ?? 0.46
+  const overlayRgb = form.textTone === 'dark' ? '255,255,255' : '15,23,42'
+  const overlayDirection = form.textPosition === 'right' ? '270deg' : '90deg'
+  const previewOverlay = overlayAlpha
+    ? form.textPosition === 'center'
+      ? `rgba(${overlayRgb},${Math.max(0.12, overlayAlpha * 0.55)})`
+      : `linear-gradient(${overlayDirection}, rgba(${overlayRgb},${overlayAlpha}), rgba(${overlayRgb},${overlayAlpha * 0.42}) 48%, rgba(${overlayRgb},0))`
+    : 'transparent'
+  const previewPosition = form.textPosition === 'center'
+    ? 'items-center text-center'
+    : form.textPosition === 'right'
+      ? 'items-end text-right'
+      : 'items-start text-left'
+  const previewTone = form.textTone === 'dark' ? 'text-[#111827]' : 'text-white'
+  const previewButton = form.buttonStyle === 'dark'
+    ? 'bg-[#111827] text-white'
+    : form.buttonStyle === 'outline'
+      ? form.textTone === 'dark' ? 'border border-[#111827]/60 text-[#111827]' : 'border border-white/75 text-white'
+      : 'bg-[#f4efe5] text-[#2d1b3d]'
+  const previewTextShadow = form.textShadow
+    ? form.textTone === 'dark' ? '0 2px 10px rgba(255,255,255,0.55)' : '0 3px 14px rgba(15,23,42,0.55)'
+    : 'none'
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
-            <h2 className="font-display text-lg font-semibold">Banner Details</h2>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5 pb-20 sm:pb-0">
+      {error ? <div className="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div> : null}
+
+      <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_23rem]">
+        <div className="space-y-5">
+          <section className="admin-card p-5 sm:p-6">
+            <h2 className="admin-section-title">Content</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Headline, supporting copy, and call to action.</p>
             <div className="mt-4 grid gap-4">
               <div>
                 <label htmlFor={`${fieldIdPrefix}-title`} className="mb-1.5 block text-sm font-medium">Title</label>
-                <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the large headline on the storefront.</p>
-                <input id={`${fieldIdPrefix}-title`}
-                  value={form.title}
-                  onChange={(event) => updateField('title', event.target.value)}
-                  className="input-base"
-                  placeholder="Optional banner title"
-                />
+                <input id={`${fieldIdPrefix}-title`} value={form.title} onChange={(event) => updateField('title', event.target.value)} className="input-base" placeholder="Optional banner title" />
               </div>
               <div>
                 <label htmlFor={`${fieldIdPrefix}-subtitle`} className="mb-1.5 block text-sm font-medium">Subtitle</label>
-                <p className="mb-1.5 text-xs text-muted-foreground">Leave empty to hide the smaller supporting text.</p>
-                <input id={`${fieldIdPrefix}-subtitle`}
-                  value={form.subtitle}
-                  onChange={(event) => updateField('subtitle', event.target.value)}
-                  className="input-base"
-                  placeholder="Optional supporting text"
-                />
+                <textarea id={`${fieldIdPrefix}-subtitle`} value={form.subtitle} onChange={(event) => updateField('subtitle', event.target.value)} className="input-base min-h-24 resize-y" placeholder="Optional supporting text" />
               </div>
-              <div>
-                <label htmlFor={`${fieldIdPrefix}-link`} className="mb-1.5 block text-sm font-medium">Link URL</label>
-                <input id={`${fieldIdPrefix}-link`}
-                  value={form.linkUrl}
-                  onChange={(event) => updateField('linkUrl', event.target.value)}
-                  className="input-base"
-                  placeholder="/category or https://example.com"
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor={`${fieldIdPrefix}-button-label`} className="mb-1.5 block text-sm font-medium">Button label</label>
+                  <input id={`${fieldIdPrefix}-button-label`} value={form.buttonLabel} onChange={(event) => updateField('buttonLabel', event.target.value)} className="input-base" placeholder="Explore collection" />
+                </div>
+                <div>
+                  <label htmlFor={`${fieldIdPrefix}-link`} className="mb-1.5 block text-sm font-medium">Button destination</label>
+                  <input id={`${fieldIdPrefix}-link`} value={form.linkUrl} onChange={(event) => updateField('linkUrl', event.target.value)} className="input-base" placeholder="/category/mobile-phones" />
+                </div>
               </div>
             </div>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
-            <AdminImageField
-              label="Desktop image"
-              value={form.imageUrl}
-              onChange={(value) => updateField('imageUrl', value)}
-              helperText="Shown on tablet and desktop. Remove it if you want a text-only banner there."
-              uploadImage={(file) => uploadBannerImage('desktop', file)}
-              rejectDataUrls
-              dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR}
-            />
+          <section className="admin-card p-5 sm:p-6">
+            <h2 className="admin-section-title">Presentation</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Control contrast and placement without editing the artwork.</p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor={`${fieldIdPrefix}-text-position`} className="mb-1.5 block text-sm font-medium">Text position</label>
+                <select id={`${fieldIdPrefix}-text-position`} value={form.textPosition} onChange={(event) => updateField('textPosition', event.target.value)} className="input-base">
+                  <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`${fieldIdPrefix}-text-tone`} className="mb-1.5 block text-sm font-medium">Text color</label>
+                <select id={`${fieldIdPrefix}-text-tone`} value={form.textTone} onChange={(event) => updateField('textTone', event.target.value)} className="input-base">
+                  <option value="light">Light</option><option value="dark">Dark</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`${fieldIdPrefix}-overlay`} className="mb-1.5 block text-sm font-medium">Image shading</label>
+                <select id={`${fieldIdPrefix}-overlay`} value={form.overlayStrength} onChange={(event) => updateField('overlayStrength', event.target.value)} className="input-base">
+                  <option value="none">None</option><option value="soft">Soft</option><option value="medium">Medium</option><option value="strong">Strong</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Button style</label>
+                <select id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
+                  <option value="light">Light</option><option value="dark">Dark</option><option value="outline">Outline</option>
+                </select>
+              </div>
+            </div>
+            <label htmlFor={`${fieldIdPrefix}-text-shadow`} className="mt-4 flex items-center justify-between gap-4 rounded-md bg-secondary/55 px-4 py-3 text-sm">
+              <span><span className="block font-semibold">Text highlight</span><span className="block text-xs text-muted-foreground">Adds a small contrast shadow behind banner copy.</span></span>
+              <input id={`${fieldIdPrefix}-text-shadow`} type="checkbox" checked={form.textShadow} onChange={(event) => updateField('textShadow', event.target.checked)} className="size-4 rounded border-input" />
+            </label>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
-            <AdminImageField
-              label="Mobile image"
-              value={form.mobileImageUrl}
-              onChange={(value) => updateField('mobileImageUrl', value)}
-              helperText="Optional phone-only artwork. If empty, the desktop image is reused on mobile."
-              uploadImage={(file) => uploadBannerImage('mobile', file)}
-              rejectDataUrls
-              dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR}
-            />
+          <section className="admin-card p-5 sm:p-6">
+            <h2 className="admin-section-title">Responsive artwork</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Upload separate artwork for each frame. Missing tablet or mobile artwork falls back safely to the next available image.</p>
+            <div className="mt-4 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+              <AdminImageField label="Desktop image" value={form.imageUrl} onChange={(value) => updateField('imageUrl', value)} helperText="3:1 • 2400 x 800 px • WebP preferred • stored as WebP q90 • aim under 500 KB." previewClassName="aspect-[3/1]" uploadImage={(file) => uploadBannerImage('desktop', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Tablet / iPad image" value={form.tabletImageUrl} onChange={(value) => updateField('tabletImageUrl', value)} helperText="16:9 • 1920 x 1080 px • WebP preferred • stored as WebP q90 • aim under 400 KB." previewClassName="aspect-video" uploadImage={(file) => uploadBannerImage('tablet', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Mobile image" value={form.mobileImageUrl} onChange={(value) => updateField('mobileImageUrl', value)} helperText="13:12 • 1300 x 1200 px • WebP preferred • stored as WebP q90 • aim under 250 KB." previewClassName="aspect-[13/12]" uploadImage={(file) => uploadBannerImage('mobile', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+            </div>
           </section>
         </div>
 
-        <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
-            <h2 className="font-display text-lg font-semibold">Placement</h2>
+        <aside className="space-y-5 2xl:sticky 2xl:top-0 2xl:self-start">
+          <section className="admin-card p-4">
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex items-center gap-2 text-sm font-semibold"><Eye className="h-4 w-4" /> Live preview</span>
+              <div className="flex rounded-md bg-secondary p-1">
+                <button type="button" aria-label="Desktop preview" aria-pressed={previewMode === 'desktop'} onClick={() => setPreviewMode('desktop')} className={cn('flex h-8 w-8 items-center justify-center rounded', previewMode === 'desktop' && 'bg-card text-primary')}><Monitor className="h-4 w-4" /></button>
+                <button type="button" aria-label="Tablet preview" aria-pressed={previewMode === 'tablet'} onClick={() => setPreviewMode('tablet')} className={cn('flex h-8 w-8 items-center justify-center rounded', previewMode === 'tablet' && 'bg-card text-primary')}><Tablet className="h-4 w-4" /></button>
+                <button type="button" aria-label="Mobile preview" aria-pressed={previewMode === 'mobile'} onClick={() => setPreviewMode('mobile')} className={cn('flex h-8 w-8 items-center justify-center rounded', previewMode === 'mobile' && 'bg-card text-primary')}><Smartphone className="h-4 w-4" /></button>
+              </div>
+            </div>
+            <div className={cn('relative mt-3 overflow-hidden rounded-md bg-[#111827] bg-cover bg-center', previewFrameClass)} style={previewImage ? { backgroundImage: `url("${previewImage.replace(/"/g, '%22')}")` } : undefined}>
+              {!previewImage ? <div className="absolute inset-0 flex items-center justify-center text-xs text-white/60">Choose an image to preview</div> : null}
+              <div className="absolute inset-0" style={{ background: previewOverlay }} />
+              <div className={cn('absolute inset-0 flex flex-col justify-center p-4', previewPosition, previewTone)} style={{ textShadow: previewTextShadow }}>
+                <p className="max-w-[85%] text-lg font-bold leading-tight">{form.title || 'Banner title'}</p>
+                <p className="mt-1 max-w-[85%] text-[10px] leading-4 opacity-90">{form.subtitle || 'Supporting banner text appears here.'}</p>
+                {form.linkUrl || form.buttonLabel ? <span className={cn('mt-3 inline-flex min-h-7 items-center rounded-full px-3 text-[9px] font-semibold', previewButton)}>{form.buttonLabel || 'Explore collection'}</span> : null}
+              </div>
+            </div>
+            <p className="mt-3 text-xs leading-5 text-muted-foreground">Preview approximates storefront composition; saved artwork remains unchanged.</p>
+          </section>
+
+          <section className="admin-card p-5 sm:p-6">
+            <h2 className="admin-section-title">Publishing</h2>
             <div className="mt-4 space-y-4">
-              <p className="text-xs text-muted-foreground">
-                Banners show in the hero rotator at the top of the homepage. Sort order controls the rotation sequence.
-              </p>
               <div>
-                <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">Sort order</label>
-                <input id={`${fieldIdPrefix}-sort-order`}
-                  type="number"
-                  value={form.sortOrder}
-                  onChange={(event) => updateField('sortOrder', event.target.value)}
-                  className="input-base"
-                />
+                <label htmlFor={`${fieldIdPrefix}-sort-order`} className="mb-1.5 block text-sm font-medium">Priority</label>
+                <input id={`${fieldIdPrefix}-sort-order`} type="number" value={form.sortOrder} onChange={(event) => updateField('sortOrder', event.target.value)} className="input-base" />
+                <p className="mt-1 text-xs text-muted-foreground">Lowest number becomes the homepage hero.</p>
               </div>
-              <div>
-                <label htmlFor={`${fieldIdPrefix}-starts-at`} className="mb-1.5 block text-sm font-medium">Starts at</label>
-                <input id={`${fieldIdPrefix}-starts-at`}
-                  type="datetime-local"
-                  value={form.startsAt}
-                  onChange={(event) => updateField('startsAt', event.target.value)}
-                  className="input-base"
-                />
-              </div>
-              <div>
-                <label htmlFor={`${fieldIdPrefix}-ends-at`} className="mb-1.5 block text-sm font-medium">Ends at</label>
-                <input id={`${fieldIdPrefix}-ends-at`}
-                  type="datetime-local"
-                  value={form.endsAt}
-                  onChange={(event) => updateField('endsAt', event.target.value)}
-                  className="input-base"
-                />
-              </div>
-              <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center gap-3 text-sm">
-                <input id={`${fieldIdPrefix}-active`}
-                  type="checkbox"
-                  checked={form.isActive}
-                  onChange={(event) => updateField('isActive', event.target.checked)}
-                  className="size-4 rounded border-input"
-                />
+              <AdminDateTimeField
+                id={`${fieldIdPrefix}-starts-at`}
+                label="Starts at"
+                value={form.startsAt}
+                onChange={(value) => updateField('startsAt', value)}
+                helperText="Leave empty to publish immediately."
+                allowNow
+              />
+              <AdminDateTimeField
+                id={`${fieldIdPrefix}-ends-at`}
+                label="Ends at"
+                value={form.endsAt}
+                onChange={(value) => updateField('endsAt', value)}
+                helperText="Leave empty to keep the banner available."
+              />
+              <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center justify-between rounded-md bg-secondary/55 px-4 py-3 text-sm font-semibold">
                 Active
+                <input id={`${fieldIdPrefix}-active`} type="checkbox" checked={form.isActive} onChange={(event) => updateField('isActive', event.target.checked)} className="size-4 rounded border-input" />
               </label>
             </div>
           </section>
-        </div>
+        </aside>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-        <div>
-          {isEditing && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting || isSaving}
-              className="btn-outline gap-2 text-red-600"
-            >
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-              Delete banner
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button type="button" onClick={() => router.push(redirectTo)} className="btn-outline">
-            Cancel
-          </button>
-          <button type="submit" disabled={isSaving || isDeleting} className="btn-primary gap-2">
-            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {isEditing ? 'Save banner' : 'Create banner'}
-          </button>
+      <div className="admin-form-actions admin-card flex flex-wrap items-center justify-between gap-3 p-3">
+        <div>{isEditing ? <button type="button" onClick={handleDelete} disabled={isDeleting || isSaving} className="btn-outline gap-2 text-red-600">{isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}Delete banner</button> : null}</div>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => router.push(redirectTo)} className="btn-outline">Cancel</button>
+          <button type="submit" disabled={isSaving || isDeleting} className="btn-primary gap-2">{isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}{isEditing ? 'Save banner' : 'Create banner'}</button>
         </div>
       </div>
     </form>

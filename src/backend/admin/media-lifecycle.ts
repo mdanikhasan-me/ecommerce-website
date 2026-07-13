@@ -302,6 +302,14 @@ export const MEDIA_EXISTING_FIELD_MIGRATION_PLAN = [
     canBecomeDeletionCandidate: false,
     risk: 'Mobile banner media can share desktop media and must not create duplicate ownership.',
   },
+  {
+    field: 'Banner.tabletImageUrl',
+    referenceKind: 'active-record',
+    futureTreatment: 'admin-owned-candidate-or-source-protected',
+    canBackfillOwnership: true,
+    canBecomeDeletionCandidate: false,
+    risk: 'Tablet banner media can share desktop or mobile media and must not create duplicate ownership.',
+  },
 ] as const
 
 export const MEDIA_BACKFILL_PHASE_PLAN = [

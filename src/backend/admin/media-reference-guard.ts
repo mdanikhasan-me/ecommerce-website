@@ -118,6 +118,13 @@ export const ADMIN_MEDIA_REFERENCE_FIELDS = [
     referenceKind: 'active-record',
   },
   {
+    key: 'Banner.tabletImageUrl',
+    model: 'Banner',
+    field: 'tabletImageUrl',
+    valueKind: 'scalar',
+    referenceKind: 'active-record',
+  },
+  {
     key: 'OrderItem.imageUrl',
     model: 'OrderItem',
     field: 'imageUrl',

@@ -40,8 +40,15 @@ const bannerPayloadSchema = z
     title: optionalTrimmedString(140),
     subtitle: optionalTrimmedString(240),
     imageUrl: optionalBannerImageUrl,
+    tabletImageUrl: optionalBannerImageUrl,
     mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
+    buttonLabel: optionalTrimmedString(48),
+    buttonStyle: z.enum(['light', 'dark', 'outline']).optional().default('light'),
+    textPosition: z.enum(['left', 'center', 'right']).optional().default('left'),
+    textTone: z.enum(['light', 'dark']).optional().default('light'),
+    overlayStrength: z.enum(['none', 'soft', 'medium', 'strong']).optional().default('medium'),
+    textShadow: z.boolean().optional().default(true),
     // Single banner placement for now: the homepage hero. Any legacy value is coerced.
     position: z.string().trim().max(80).optional().transform(() => 'hero' as const),
     sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),
@@ -50,7 +57,7 @@ const bannerPayloadSchema = z
     endsAt: optionalDate('End date is invalid'),
   })
   .superRefine((payload, ctx) => {
-    if (!payload.title && !payload.subtitle && !payload.imageUrl && !payload.mobileImageUrl) {
+    if (!payload.title && !payload.subtitle && !payload.imageUrl && !payload.tabletImageUrl && !payload.mobileImageUrl) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['imageUrl'],
@@ -66,7 +73,7 @@ const bannerPayloadSchema = z
       })
     }
 
-    if (payload.startsAt && payload.endsAt && payload.startsAt > payload.endsAt) {
+    if (payload.startsAt && payload.endsAt && payload.startsAt >= payload.endsAt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['endsAt'],

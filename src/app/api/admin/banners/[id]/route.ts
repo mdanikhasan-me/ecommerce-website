@@ -38,17 +38,23 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       ownerSlugOrId: bannerOwner,
       mediaId: 'desktop',
     })
+    const tabletImageUrl = await persistAdminUpload(payload.tabletImageUrl, {
+      purpose: 'banners',
+      ownerSlugOrId: bannerOwner,
+      mediaId: 'tablet',
+    })
     const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, {
       purpose: 'banners',
       ownerSlugOrId: bannerOwner,
       mediaId: 'mobile',
     })
-    const newUploads = [imageUrl, mobileImageUrl].filter(
+    const newUploads = [imageUrl, tabletImageUrl, mobileImageUrl].filter(
       (url): url is string =>
         Boolean(
           url &&
           url.startsWith('/uploads/admin/') &&
           url !== existingBanner.imageUrl &&
+          url !== existingBanner.tabletImageUrl &&
           url !== existingBanner.mobileImageUrl,
         ),
     )
@@ -60,8 +66,15 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
           title: payload.title ?? '',
           subtitle: payload.subtitle,
           imageUrl: imageUrl ?? '',
+          tabletImageUrl,
           mobileImageUrl,
           linkUrl: payload.linkUrl,
+          buttonLabel: payload.buttonLabel,
+          buttonStyle: payload.buttonStyle,
+          textPosition: payload.textPosition,
+          textTone: payload.textTone,
+          overlayStrength: payload.overlayStrength,
+          textShadow: payload.textShadow,
           position: payload.position,
           sortOrder: payload.sortOrder,
           isActive: payload.isActive,
@@ -72,8 +85,8 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
 
       try {
         await deleteReplacedAdminUploads(
-          [existingBanner.imageUrl, existingBanner.mobileImageUrl],
-          [imageUrl, mobileImageUrl],
+          [existingBanner.imageUrl, existingBanner.tabletImageUrl, existingBanner.mobileImageUrl],
+          [imageUrl, tabletImageUrl, mobileImageUrl],
         )
       } catch {
         logSecurityEvent({
@@ -116,7 +129,7 @@ export async function DELETE(req: NextRequest, { params }: RouteContext) {
     }
 
     await db.banner.delete({ where: { id: existingBanner.id } })
-    await cleanupManagedAdminUploads([existingBanner.imageUrl, existingBanner.mobileImageUrl])
+    await cleanupManagedAdminUploads([existingBanner.imageUrl, existingBanner.tabletImageUrl, existingBanner.mobileImageUrl])
 
     revalidateHomeSurface()
 

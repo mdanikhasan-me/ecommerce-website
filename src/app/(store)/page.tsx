@@ -33,6 +33,7 @@ export const metadata: Metadata = {
 export const revalidate = 300
 
 const getHomeData = unstable_cache(async () => {
+  const now = new Date()
   const categoriesPromise = db.category.findMany({
     where: { isActive: true, parentId: null },
     orderBy: { sortOrder: 'asc' },
@@ -52,15 +53,30 @@ const getHomeData = unstable_cache(async () => {
   })
 
   const bannersPromise = db.banner.findMany({
-    where: { isActive: true, position: 'hero' },
-    orderBy: { sortOrder: 'asc' },
+    where: {
+      isActive: true,
+      position: 'hero',
+      AND: [
+        { OR: [{ startsAt: null }, { startsAt: { lte: now } }] },
+        { OR: [{ endsAt: null }, { endsAt: { gte: now } }] },
+      ],
+    },
+    take: 6,
+    orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
     select: {
       id: true,
       title: true,
       subtitle: true,
       imageUrl: true,
+      tabletImageUrl: true,
       mobileImageUrl: true,
       linkUrl: true,
+      buttonLabel: true,
+      buttonStyle: true,
+      textPosition: true,
+      textTone: true,
+      overlayStrength: true,
+      textShadow: true,
     },
   })
   const featuredPromise = db.product.findMany({
@@ -103,7 +119,7 @@ const getHomeData = unstable_cache(async () => {
     bestSellers,
     newArrivals,
   }
-}, ['storefront-home-data-v3'], {
+}, ['storefront-home-data-v5'], {
   revalidate: 300,
   tags: [
     STOREFRONT_CACHE_TAGS.banners,
@@ -123,7 +139,7 @@ export default async function HomePage() {
   const shouldLeadWithBestSellers = featured.length === 0 && bestSellers.length > 0
 
   const bestSellersSection = bestSellers.length > 0 ? (
-    <section className="container-site py-5 sm:py-7 lg:py-8">
+    <section className="storefront-frame">
       <ProductGrid
         title="Best Sellers"
         subtitle="Popular listings from the current catalog"
@@ -145,7 +161,7 @@ export default async function HomePage() {
 
       <div className="storefront-home-stack">
         {featured.length > 0 && (
-          <section className="container-site pt-5 sm:pt-8">
+          <section className="storefront-frame">
             <ProductGrid
               title="Featured Products"
               subtitle="Selected listings from the current catalog"
@@ -164,7 +180,7 @@ export default async function HomePage() {
         {!shouldLeadWithBestSellers ? bestSellersSection : null}
 
         {newArrivals.length > 0 && (
-          <section className="container-site pb-9 pt-5 sm:pb-12 sm:pt-7 lg:py-8">
+          <section className="storefront-frame">
             <ProductGrid
               title="New Arrivals"
               subtitle="Fresh finds, just landed"

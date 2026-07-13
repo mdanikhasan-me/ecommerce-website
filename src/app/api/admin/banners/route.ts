@@ -26,6 +26,11 @@ export async function POST(req: NextRequest) {
       ownerSlugOrId: bannerOwner,
       mediaId: 'desktop',
     })
+    const tabletImageUrl = await persistAdminUpload(payload.tabletImageUrl, {
+      purpose: 'banners',
+      ownerSlugOrId: bannerOwner,
+      mediaId: 'tablet',
+    })
     const mobileImageUrl = await persistAdminUpload(payload.mobileImageUrl, {
       purpose: 'banners',
       ownerSlugOrId: bannerOwner,
@@ -38,8 +43,15 @@ export async function POST(req: NextRequest) {
           title: payload.title ?? '',
           subtitle: payload.subtitle,
           imageUrl: imageUrl ?? '',
+          tabletImageUrl,
           mobileImageUrl,
           linkUrl: payload.linkUrl,
+          buttonLabel: payload.buttonLabel,
+          buttonStyle: payload.buttonStyle,
+          textPosition: payload.textPosition,
+          textTone: payload.textTone,
+          overlayStrength: payload.overlayStrength,
+          textShadow: payload.textShadow,
           position: payload.position,
           sortOrder: payload.sortOrder,
           isActive: payload.isActive,
@@ -52,7 +64,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ banner }, { status: 201 })
     } catch (error) {
-      await cleanupManagedAdminUploads([imageUrl, mobileImageUrl])
+      await cleanupManagedAdminUploads([imageUrl, tabletImageUrl, mobileImageUrl])
       throw error
     }
   } catch (error: unknown) {
