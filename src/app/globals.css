@@ -1842,7 +1842,7 @@
 
   @media (min-width: 1024px) {
     .home-category-frame {
-      padding-inline: clamp(7rem, 8vw, 11rem);
+      padding-inline: clamp(8rem, 9vw, 12rem);
     }
   }
 
