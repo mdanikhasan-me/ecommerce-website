@@ -36,6 +36,8 @@ interface ProductJsonLdInput {
   reviewCount?: number
   stockQuantity?: number
   lifecycleState?: ProductLifecycleState
+  attributes?: { name: string; value: string }[]
+  specifications?: { name: string; value: string }[]
   reviews?: {
     rating: number
     body: string
@@ -93,6 +95,19 @@ export function generateProductJsonLd(product: ProductJsonLdInput) {
         merchantReturnDays: 7,
       },
     },
+  }
+
+  const additionalProperties = [...(product.attributes ?? []), ...(product.specifications ?? [])]
+    .map((property) => ({ name: property.name.trim(), value: property.value.trim() }))
+    .filter((property) => property.name && property.value)
+    .slice(0, 24)
+
+  if (additionalProperties.length > 0) {
+    jsonLd.additionalProperty = additionalProperties.map((property) => ({
+      '@type': 'PropertyValue',
+      name: property.name,
+      value: property.value,
+    }))
   }
 
   // Aggregate ratings are emitted only when product data supplies real rating inputs.

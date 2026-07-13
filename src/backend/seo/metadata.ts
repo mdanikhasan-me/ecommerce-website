@@ -8,10 +8,7 @@ import type { Metadata } from 'next'
 import { SEO } from './constants'
 import { canonicalUrl, toAbsoluteUrl } from './urls'
 import { noIndexFollowRobots } from './robots'
-
-function formatBdt(value: number) {
-  return new Intl.NumberFormat('en-BD').format(value)
-}
+import { buildProductSearchCopy } from './product-copy'
 
 interface ProductMeta {
   name: string
@@ -28,6 +25,7 @@ interface ProductMeta {
   reviewCount?: number
   stockQuantity?: number
   tags?: string[]
+  sku?: string | null
 }
 
 export function generateProductMetadata(product: ProductMeta): Metadata {
@@ -37,32 +35,23 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
   )
   const url = canonicalUrl(`/products/${product.slug}`)
 
-  const desc =
-    product.shortDescription ??
-    product.description?.slice(0, 155) ??
-    `Buy ${product.name} at Tk ${price.toLocaleString('en-BD')} in Bangladesh. View product details, availability, and checkout options on Boilabin.`
-
-  const keywords = [
-    product.name,
-    `${product.name} price in bd`,
-    `${product.name} price bangladesh`,
-    `buy ${product.name} online`,
-    product.category.name,
-    `${product.category.name} price bd`,
-    ...(product.tags ?? []),
-    'boilabin',
-    'online shopping bangladesh',
-  ]
-
-  const seoTitle = product.metaTitle?.trim() || `${product.name} price in Bangladesh`
-  const seoDescription =
-    product.metaDescription?.trim() ||
-    `View ${product.name} in Bangladesh at BDT ${formatBdt(price)} with product details, category, availability, and checkout options on Boilabin.`
+  const generated = buildProductSearchCopy({
+    name: product.name,
+    price,
+    categoryName: product.category.name,
+    sku: product.sku,
+    shortDescription: product.shortDescription,
+    description: product.description,
+    tags: product.tags,
+  })
+  const desc = product.shortDescription?.trim() || product.description?.trim() || generated.description
+  const seoTitle = product.metaTitle?.trim() || generated.title
+  const seoDescription = product.metaDescription?.trim() || generated.description
 
   return {
     title: seoTitle,
     description: seoDescription,
-    keywords,
+    keywords: generated.searchTerms,
     alternates: {
       canonical: url,
     },

@@ -125,6 +125,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
     tags: product.tags,
+    sku: product.sku,
   })
 }
 
@@ -241,6 +242,8 @@ export default async function ProductPage({ params }: Props) {
     rating: product.rating,
     reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
+    attributes: product.attributes,
+    specifications: product.specifications,
   })
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([

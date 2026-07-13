@@ -8,6 +8,7 @@ import type {
   AdminEditableProduct,
 } from '@/backend/admin/product-editor'
 import { createRowId, readFileAsDataUrl, toSlug } from './form-utils'
+import { buildProductSearchCopy } from '@/backend/seo/product-copy'
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
@@ -105,6 +106,19 @@ export function ProductEditorForm({
     () => categories.filter((category) => !category.parentId),
     [categories]
   )
+
+  const generatedSeo = useMemo(() => {
+    const categoryName = categories.find((category) => category.id === form.categoryId)?.name
+    return buildProductSearchCopy({
+      name: form.name || 'Product',
+      price: Number(form.salePrice || form.basePrice || 0),
+      categoryName,
+      sku: form.sku,
+      shortDescription: form.shortDescription,
+      description: form.description,
+      tags: form.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+    })
+  }, [categories, form.basePrice, form.categoryId, form.description, form.name, form.salePrice, form.shortDescription, form.sku, form.tags])
 
   useEffect(() => {
     if (!manualSlug) {
@@ -305,7 +319,7 @@ export function ProductEditorForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-20 sm:pb-0">
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
@@ -320,7 +334,7 @@ export function ProductEditorForm({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Basic Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -379,7 +393,7 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Pricing and Inventory</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               <div>
@@ -472,11 +486,12 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Images</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Recommended master: 3:2 • 1500 x 1000 px • WebP preferred • stored as WebP q88 • aim under 350 KB. Keep 6–10% clear space around the product; the storefront creates delivery variants automatically.</p>
 
             <div className="mt-4 flex flex-wrap gap-3">
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground min-[1025px]:hover:bg-secondary/80">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-foreground">
                 <Upload className="h-4 w-4" />
                 Upload files
                 <input aria-label="Form input" title="Form input" type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} />
@@ -501,11 +516,11 @@ export function ProductEditorForm({
             ) : (
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {images.map((image, index) => (
-                  <div key={image.id} className="rounded-md border border-border bg-secondary/40 p-3">
-                    <div className="aspect-[4/3] overflow-hidden rounded-md bg-card">
+                  <div key={image.id} className="rounded-lg bg-secondary/45 p-3">
+                    <div className="aspect-[3/2] overflow-hidden rounded-md bg-card">
                       {image.url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image.url} alt={image.alt || form.name || ''} className="h-full w-full object-cover" />
+                        <img src={image.url} alt={image.alt || form.name || ''} className="h-full w-full object-contain" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                           No preview
@@ -553,7 +568,7 @@ export function ProductEditorForm({
             )}
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-lg font-semibold">Variants</h2>
               <button type="button" onClick={addVariant} className="btn-outline gap-2 px-3 py-2 text-xs">
@@ -567,7 +582,7 @@ export function ProductEditorForm({
             ) : (
               <div className="mt-4 space-y-4">
                 {variants.map((variant) => (
-                  <div key={variant.id} className="rounded-md border border-border bg-secondary/40 p-4">
+                  <div key={variant.id} className="rounded-lg bg-secondary/45 p-4">
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                       <input aria-label="Form input" title="Form input"
                         value={variant.name}
@@ -619,7 +634,7 @@ export function ProductEditorForm({
                         className="input-base text-sm"
                         placeholder="Stock"
                       />
-                      <label className="flex items-center gap-2 rounded-md border border-border bg-card px-3 text-sm">
+                      <label className="flex items-center gap-2 admin-card px-3 text-sm">
                         <input aria-label="Form input" title="Form input"
                           type="checkbox"
                           checked={variant.isActive}
@@ -643,7 +658,7 @@ export function ProductEditorForm({
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Classification</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -682,7 +697,7 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Choose which storefront sections show this product. Enable a section to reveal its pin-to-rotator option.
@@ -771,10 +786,10 @@ export function ProductEditorForm({
             </div>
           </section>
 
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">SEO</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Leave everything blank. SEO is generated automatically from the product name, category and price. Only override when you need custom wording.
+              Leave both fields blank to generate concise, product-specific search copy from the name, category, price, summary, and tags. Only override when you need clearer customer-facing wording.
             </p>
             <div className="mt-4 space-y-4">
               <div>
@@ -783,7 +798,7 @@ export function ProductEditorForm({
                   value={form.metaTitle}
                   onChange={(event) => updateField('metaTitle', event.target.value)}
                   className="input-base"
-                  placeholder={`${form.name || 'Product name'} price in Bangladesh`}
+                  placeholder={generatedSeo.title}
                 />
               </div>
 
@@ -793,7 +808,7 @@ export function ProductEditorForm({
                   value={form.metaDescription}
                   onChange={(event) => updateField('metaDescription', event.target.value)}
                   className="input-base min-h-[100px] resize-y"
-                  placeholder={`View ${form.name || 'product'} in Bangladesh with price, product details, availability, and checkout options from Boilabin.`}
+                  placeholder={generatedSeo.description}
                 />
               </div>
 
@@ -803,7 +818,7 @@ export function ProductEditorForm({
                   <p>
                     <span className="font-semibold">Title: </span>
                     <span className="text-foreground/90">
-                      {form.metaTitle.trim() || (form.name ? `${form.name} price in Bangladesh` : 'Not set')}
+                      {form.metaTitle.trim() || (form.name ? generatedSeo.title : 'Not set')}
                     </span>
                   </p>
                   <p>
@@ -811,27 +826,14 @@ export function ProductEditorForm({
                     <span className="text-foreground/80">
                       {form.metaDescription.trim() ||
                         (form.name
-                          ? `View ${form.name} in Bangladesh with price, product details, availability, and checkout options from Boilabin.`
+                          ? generatedSeo.description
                           : 'Not set')}
                     </span>
                   </p>
                   <p>
-                    <span className="font-semibold">Keywords: </span>
+                    <span className="font-semibold">Search terms: </span>
                     <span className="text-muted-foreground">
-                      {form.name
-                        ? [
-                            form.name,
-                            `${form.name} price in bd`,
-                            `${form.name} price bangladesh`,
-                            `buy ${form.name} online`,
-                            ...form.tags
-                              .split(',')
-                              .map((tag) => tag.trim())
-                              .filter(Boolean),
-                            'boilabin',
-                            'online shopping bangladesh',
-                          ].join(', ')
-                        : 'Not set'}
+                      {form.name ? generatedSeo.searchTerms.join(', ') : 'Not set'}
                     </span>
                   </p>
                 </div>
@@ -841,7 +843,7 @@ export function ProductEditorForm({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+      <div className="admin-form-actions flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         <div>
           {isEditing && (
             <button
