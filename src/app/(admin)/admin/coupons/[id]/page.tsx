@@ -34,36 +34,46 @@ export default async function AdminCouponDetailPage({ params }: Props) {
     }),
     db.category.findMany({
       where: { isActive: true },
-      select: { id: true, name: true },
+      select: { id: true, name: true, parent: { select: { name: true } } },
       orderBy: { name: 'asc' },
     }),
     db.product.findMany({
       where: { isActive: true },
-      select: { id: true, name: true, sku: true },
+      select: { id: true, name: true, sku: true, category: { select: { name: true } } },
       orderBy: { name: 'asc' },
-      take: 200,
+      take: 1000,
     }),
   ])
 
   if (!coupon) notFound()
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6">
+      <header className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">{coupon.code}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Update coupon schedule, restrictions, value, and usage rules.
-          </p>
+          <h1 className="admin-page-title">{coupon.code}</h1>
+          <p className="admin-page-description">Update the offer, qualifying items, limits, and publishing schedule.</p>
         </div>
         <Link href="/admin/coupons" className="btn-outline">
-          Back to Coupons
+          Back to coupons
         </Link>
-      </div>
+      </header>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <CouponEditorForm categories={categories} products={products} coupon={coupon} />
-      </div>
+      <CouponEditorForm
+        categories={categories
+          .map((category) => ({
+            id: category.id,
+            name: category.parent ? `${category.parent.name} / ${category.name}` : category.name,
+          }))
+          .sort((left, right) => left.name.localeCompare(right.name))}
+        products={products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          sku: product.sku,
+          categoryName: product.category.name,
+        }))}
+        coupon={coupon}
+      />
     </div>
   )
 }

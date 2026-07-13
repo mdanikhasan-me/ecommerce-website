@@ -5,22 +5,20 @@ export const metadata = { title: 'Admin Create Banner' }
 
 export default function AdminNewBannerPage() {
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">Create Banner</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Add homepage and promotional banners with desktop and mobile artwork.
+          <h1 className="admin-page-title">Create banner</h1>
+          <p className="admin-page-description">
+            Build a responsive homepage hero with editable copy, CTA, contrast, and scheduling.
           </p>
         </div>
         <Link href="/admin/banners" className="btn-outline">
-          Back to Banners
+          Back to banners
         </Link>
       </div>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <BannerEditorForm />
-      </div>
+      <BannerEditorForm />
     </div>
   )
 }

@@ -3,11 +3,13 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { LockKeyhole } from 'lucide-react'
 import toast from '@/frontend/lib/toast'
 import type { AdminUserDetail } from '@/backend/admin/user-editor'
 
 interface UserManagementFormProps {
   user: AdminUserDetail
+  actor: { id: string; role: string }
 }
 
 const ROLES = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN']
@@ -23,7 +25,7 @@ function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
 }
 
-export function UserManagementForm({ user }: UserManagementFormProps) {
+export function UserManagementForm({ user, actor }: UserManagementFormProps) {
   const router = useRouter()
   const fieldIdPrefix = `admin-user-${user.id}`
   const [form, setForm] = useState<UserManagementFormState>({
@@ -33,6 +35,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
     isActive: user.isActive,
   })
   const [isSaving, setIsSaving] = useState(false)
+  const canManageAccess = actor.role === 'SUPER_ADMIN' && actor.id !== user.id
 
   const updateField = <Field extends keyof UserManagementFormState>(
     field: Field,
@@ -68,7 +71,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <section className="space-y-6 rounded-md border border-border bg-card p-5">
+      <section className="space-y-6 admin-card p-5">
         <div>
           <h2 className="font-display text-lg font-semibold">Account Details</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -116,6 +119,7 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
               value={form.role}
               onChange={(event) => updateField('role', event.target.value)}
               className="input-base"
+              disabled={!canManageAccess}
             >
               {ROLES.map((role) => (
                 <option key={role} value={role}>
@@ -123,12 +127,19 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
                 </option>
               ))}
             </select>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {canManageAccess
+                ? 'Super admins may change access for other accounts.'
+                : actor.id === user.id
+                  ? 'Your own access level cannot be changed here.'
+                  : 'Only a super admin can change account roles.'}
+            </p>
           </div>
         </div>
 
         <label
           htmlFor={`${fieldIdPrefix}-is-active`}
-          className="flex items-center gap-3 rounded-md border border-border bg-secondary/40 px-4 py-3 text-sm"
+          className="flex items-center gap-3 rounded-lg bg-secondary/55 px-4 py-3 text-sm"
         >
           <input
             id={`${fieldIdPrefix}-is-active`}
@@ -136,11 +147,17 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
             checked={form.isActive}
             onChange={(event) => updateField('isActive', event.target.checked)}
             className="size-4 rounded border-input"
+            disabled={!canManageAccess}
           />
-          Account is active
+          <span>
+            <span className="block font-medium">Account is active</span>
+            <span className="block text-xs text-muted-foreground">
+              {canManageAccess ? 'Disable access only when account ownership is confirmed.' : 'Only a super admin can change account status.'}
+            </span>
+          </span>
         </label>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <Link href="/admin/users" className="btn-outline">
             Back to Users
           </Link>
@@ -151,7 +168,19 @@ export function UserManagementForm({ user }: UserManagementFormProps) {
       </section>
 
       <aside className="space-y-4">
-        <section className="rounded-md border border-border bg-card p-5">
+        <section className="admin-card p-5">
+          <div className="flex items-start gap-3">
+            <LockKeyhole className="mt-0.5 h-4 w-4 text-muted-foreground" />
+            <div>
+              <h3 className="font-semibold">Access controls</h3>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                Role and activation changes require super-admin authority and are recorded in the audit log.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="admin-card p-5">
           <h3 className="font-display font-semibold">Activity Summary</h3>
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between">

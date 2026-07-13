@@ -58,7 +58,7 @@ export function ReturnRequestManager({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-md border border-border bg-card p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 admin-card p-5">
       <div>
         <h3 className="font-display text-lg font-semibold">Manage Return</h3>
         <p className="mt-1 text-sm text-muted-foreground">

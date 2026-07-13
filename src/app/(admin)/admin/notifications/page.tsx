@@ -29,7 +29,7 @@ export default async function AdminNotificationsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-xl font-bold">Notifications</h1>
+        <h1 className="admin-page-title">Notifications</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Recent customer and system notifications.
         </p>
@@ -37,7 +37,7 @@ export default async function AdminNotificationsPage() {
 
       <NotificationComposer users={users} />
 
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="admin-card overflow-hidden">
         <div className="divide-y divide-border">
           {notifications.length === 0 ? (
             <div className="px-4 py-12 text-center text-muted-foreground">
@@ -64,7 +64,7 @@ export default async function AdminNotificationsPage() {
                       <p className="mt-1 text-xs text-primary">{notification.link}</p>
                     )}
                   </div>
-                  <div className="space-y-2 text-right text-xs text-muted-foreground">
+                  <div className="space-y-2 text-left text-xs text-muted-foreground md:text-right">
                     <p>{notification.type}</p>
                     <p>{formatDateRelative(notification.createdAt)}</p>
                     <NotificationRowActions notificationId={notification.id} isRead={notification.isRead} />

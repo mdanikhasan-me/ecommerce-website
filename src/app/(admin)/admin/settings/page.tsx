@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Loader2 } from 'lucide-react'
+import { Save, Loader2, Settings2, Store, Warehouse } from 'lucide-react'
 import toast from '@/frontend/lib/toast'
 import { ariaPressed } from '@/frontend/components/ui/aria'
 
@@ -27,6 +27,16 @@ const SETTINGS_GROUPS = [
 ]
 
 const EDITABLE_SETTING_KEYS = SETTINGS_GROUPS.flatMap((group) => group.fields.map((field) => field.key))
+const GROUP_DETAILS = {
+  general: {
+    description: 'Store identity and customer-facing contact information.',
+    icon: Store,
+  },
+  inventory: {
+    description: 'Thresholds used to identify products that need restocking.',
+    icon: Warehouse,
+  },
+} as const
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
@@ -85,40 +95,58 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="space-y-5 max-w-3xl">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-xl font-bold">Settings</h1>
+    <div className="space-y-6">
+      <div className="admin-page-header items-center">
+        <div>
+          <h1 className="admin-page-title">Settings</h1>
+          <p className="admin-page-description">Manage the store details used throughout customer and operations workflows.</p>
+        </div>
         <button type="button" onClick={handleSave} disabled={saving} className="btn-primary flex items-center gap-2">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
 
-      <div className="flex gap-6">
-        {/* Sidebar */}
-        <div className="w-44 flex-shrink-0">
-          <nav className="space-y-1">
+      <div className="grid gap-5 lg:grid-cols-[14rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
+        <aside className="admin-card h-fit p-2.5">
+          <div className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-muted-foreground">
+            <Settings2 className="h-4 w-4" /> Configuration
+          </div>
+          <nav className="grid grid-cols-2 gap-1.5 lg:grid-cols-1" aria-label="Settings sections">
             {SETTINGS_GROUPS.map((group) => (
               <button type="button"
                 key={group.id}
                 onClick={() => setActiveGroup(group.id)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`w-full rounded-md px-3 py-2.5 text-left text-sm font-medium ${
                   activeGroup === group.id
-                    ? 'bg-primary text-white'
-                    : 'text-muted-foreground min-[1025px]:hover:bg-secondary min-[1025px]:hover:text-foreground'
+                    ? 'bg-secondary text-foreground'
+                    : 'text-muted-foreground'
                 }`}
               >
                 {group.label}
               </button>
             ))}
           </nav>
-        </div>
+        </aside>
 
-        {/* Fields */}
-        <div className="flex-1 bg-card border border-border rounded-md p-6 space-y-5">
-          <h2 className="font-semibold text-base">{currentGroup?.label}</h2>
-          {currentGroup?.fields.map((field) => (
-            <div key={field.key}>
+        <section className="admin-card p-4 sm:p-6 lg:p-7">
+          {currentGroup ? (() => {
+            const detail = GROUP_DETAILS[currentGroup.id as keyof typeof GROUP_DETAILS]
+            const GroupIcon = detail.icon
+            return (
+              <>
+                <div className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-secondary text-muted-foreground">
+                    <GroupIcon className="h-4.5 w-4.5" />
+                  </span>
+                  <div>
+                    <h2 className="admin-section-title">{currentGroup.label}</h2>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail.description}</p>
+                  </div>
+                </div>
+                <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                  {currentGroup.fields.map((field) => (
+                    <div key={field.key} className={field.key === 'site_address' ? 'sm:col-span-2' : ''}>
               <label htmlFor={`setting-${field.key}`} className="text-sm font-medium mb-1.5 block">
                 {field.label}
               </label>
@@ -137,12 +165,12 @@ export default function AdminSettingsPage() {
                       [field.key]: v[field.key] === 'true' ? 'false' : 'true',
                     }))
                   }
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
                     values[field.key] === 'true' ? 'bg-primary' : 'bg-muted-foreground/30'
                   }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                    className={`inline-block h-4 w-4 rounded-full bg-white shadow ${
                       values[field.key] === 'true' ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -158,9 +186,13 @@ export default function AdminSettingsPage() {
                   className="input-base"
                 />
               )}
-            </div>
-          ))}
-        </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )
+          })() : null}
+        </section>
       </div>
     </div>
   )

@@ -332,7 +332,7 @@ export function ProductEditorForm({
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="space-y-6">
           <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Basic Details</h2>
@@ -514,52 +514,54 @@ export function ProductEditorForm({
             {images.length === 0 ? (
               <p className="mt-4 text-sm text-muted-foreground">No product images added yet.</p>
             ) : (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 {images.map((image, index) => (
                   <div key={image.id} className="rounded-lg bg-secondary/45 p-3">
-                    <div className="aspect-[3/2] overflow-hidden rounded-md bg-card">
-                      {image.url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image.url} alt={image.alt || form.name || ''} className="h-full w-full object-contain" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                          No preview
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-3 space-y-3">
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                          Image URL
-                        </label>
-                        <input aria-label="Form input" title="Form input"
-                          value={image.url}
-                          onChange={(event) => updateImage(image.id, 'url', event.target.value)}
-                          className="input-base text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                          Alt text
-                        </label>
-                        <input aria-label="Form input" title="Form input"
-                          value={image.alt}
-                          onChange={(event) => updateImage(image.id, 'alt', event.target.value)}
-                          className="input-base text-sm"
-                        />
-                      </div>
-
-                      <div className="flex gap-2">
-                        {index !== 0 && (
-                          <button type="button" onClick={() => makePrimaryImage(image.id)} className="btn-outline px-3 py-2 text-xs">
-                            Make primary
-                          </button>
+                    <div className="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+                      <div className="aspect-[3/2] overflow-hidden rounded-md bg-card">
+                        {image.url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={image.url} alt={image.alt || form.name || ''} className="h-full w-full object-contain" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                            No preview
+                          </div>
                         )}
-                        <button type="button" onClick={() => removeImage(image.id)} className="btn-outline px-3 py-2 text-xs text-red-600">
-                          Remove
-                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                            Image URL
+                          </label>
+                          <input aria-label="Form input" title="Form input"
+                            value={image.url}
+                            onChange={(event) => updateImage(image.id, 'url', event.target.value)}
+                            className="input-base text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="mb-1.5 block text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                            Alt text
+                          </label>
+                          <input aria-label="Form input" title="Form input"
+                            value={image.alt}
+                            onChange={(event) => updateImage(image.id, 'alt', event.target.value)}
+                            className="input-base text-sm"
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {index !== 0 && (
+                            <button type="button" onClick={() => makePrimaryImage(image.id)} className="btn-outline px-3 py-2 text-xs">
+                              Make primary
+                            </button>
+                          )}
+                          <button type="button" onClick={() => removeImage(image.id)} className="btn-outline px-3 py-2 text-xs text-red-600">
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -787,9 +789,22 @@ export function ProductEditorForm({
           </section>
 
           <section className="admin-card p-5">
-            <h2 className="font-display text-lg font-semibold">SEO</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="font-display text-lg font-semibold">SEO</h2>
+              <button
+                type="button"
+                onClick={() => setForm((current) => ({
+                  ...current,
+                  metaTitle: generatedSeo.title,
+                  metaDescription: generatedSeo.description,
+                }))}
+                className="btn-outline px-3 py-2 text-xs"
+              >
+                Use generated copy
+              </button>
+            </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Leave both fields blank to generate concise, product-specific search copy from the name, category, price, summary, and tags. Only override when you need clearer customer-facing wording.
+              Uses real product facts and structured data, not bulk keyword lists. Only override when you need clearer customer-facing wording.
             </p>
             <div className="mt-4 space-y-4">
               <div>

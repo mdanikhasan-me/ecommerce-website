@@ -123,7 +123,7 @@ export function HomepageSectionEditorForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-20 sm:pb-0">
       {error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
@@ -132,7 +132,7 @@ export function HomepageSectionEditorForm({
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Section Details</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -187,7 +187,7 @@ export function HomepageSectionEditorForm({
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-md border border-border bg-card p-5">
+          <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Visibility</h2>
             <div className="mt-4 space-y-4">
               <div>
@@ -217,7 +217,7 @@ export function HomepageSectionEditorForm({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+      <div className="admin-form-actions flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         <div>
           {isEditing && (
             <button

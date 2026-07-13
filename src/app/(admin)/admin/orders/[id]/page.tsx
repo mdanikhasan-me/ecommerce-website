@@ -28,8 +28,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   if (!order) notFound()
 
   return (
-    <div className="max-w-5xl space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+    <div className="space-y-5">
+      <div className="admin-page-header gap-4">
         <div className="min-w-0">
           <h1 className="break-words font-mono text-lg font-bold tracking-[0.04em] sm:text-xl">
             Order {order.orderNumber}
@@ -39,10 +39,10 @@ export default async function AdminOrderDetailPage({ params }: Props) {
         <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
-          <div className="overflow-hidden rounded-md border border-border bg-card">
-            <div className="border-b border-border px-5 py-4 font-semibold">Order Items</div>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(21rem,0.65fr)] 2xl:grid-cols-[minmax(0,1.7fr)_minmax(24rem,0.55fr)]">
+        <div className="space-y-5">
+          <div className="admin-card overflow-hidden">
+            <div className="px-5 py-4 font-semibold">Order Items</div>
             <div className="divide-y divide-border">
               {order.items.map((item) => (
                 <div key={item.id} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-4">
@@ -95,8 +95,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-md border border-border bg-card">
-            <div className="border-b border-border px-5 py-4 font-semibold">Order Timeline</div>
+          <div className="admin-card overflow-hidden">
+            <div className="px-5 py-4 font-semibold">Order Timeline</div>
             <div className="p-5">
               <div className="space-y-4">
                 {order.statusHistory.map((entry, index) => (
@@ -128,8 +128,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
         </div>
 
         <div className="space-y-5">
-          <div className="overflow-hidden rounded-md border border-border bg-card">
-            <div className="border-b border-border px-5 py-4 font-semibold">Customer</div>
+          <div className="admin-card overflow-hidden">
+            <div className="px-5 py-4 font-semibold">Customer</div>
             <div className="space-y-2 p-5 text-sm">
               <p className="font-medium">{order.user?.name ?? 'Guest'}</p>
               <p className="text-muted-foreground">{order.user?.email ?? order.guestEmail}</p>
@@ -143,8 +143,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
           </div>
 
           {order.address && (
-            <div className="overflow-hidden rounded-md border border-border bg-card">
-              <div className="border-b border-border px-5 py-4 font-semibold">
+            <div className="admin-card overflow-hidden">
+              <div className="px-5 py-4 font-semibold">
                 Delivery Address
               </div>
               <div className="space-y-1 p-5 text-sm text-muted-foreground">
@@ -160,8 +160,8 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             </div>
           )}
 
-          <div className="overflow-hidden rounded-md border border-border bg-card">
-            <div className="border-b border-border px-5 py-4 font-semibold">Payment</div>
+          <div className="admin-card overflow-hidden">
+            <div className="px-5 py-4 font-semibold">Payment</div>
             <div className="space-y-4 p-5 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Method</span>

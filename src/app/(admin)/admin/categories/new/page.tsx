@@ -16,9 +16,9 @@ export default async function AdminNewCategoryPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">Create Category</h1>
+          <h1 className="admin-page-title">Create Category</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Add top level categories or subcategories and control storefront visibility.
           </p>
@@ -28,9 +28,7 @@ export default async function AdminNewCategoryPage() {
         </Link>
       </div>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <CategoryEditorForm categories={categories} />
-      </div>
+      <CategoryEditorForm categories={categories} />
     </div>
   )
 }

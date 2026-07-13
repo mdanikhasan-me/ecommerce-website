@@ -28,9 +28,9 @@ export default async function AdminContentDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">{section.title ?? section.type}</h1>
+          <h1 className="admin-page-title">{section.title ?? section.type}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Update section metadata, visibility, and JSON configuration.
           </p>
@@ -40,9 +40,7 @@ export default async function AdminContentDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <HomepageSectionEditorForm section={section} />
-      </div>
+      <HomepageSectionEditorForm section={section} />
     </div>
   )
 }

@@ -50,7 +50,7 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-2 sm:flex sm:w-auto sm:items-center">
       <label htmlFor={`order-status-${orderId}`} className="sr-only">
         Order status
       </label>
@@ -58,7 +58,7 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
         id={`order-status-${orderId}`}
         value={status}
         onChange={(e) => setStatus(e.target.value)}
-        className="input-base w-44 text-sm"
+        className="input-base min-w-0 text-sm sm:w-44"
       >
         {ORDER_STATUSES.map((s) => (
           <option key={s} value={s}>{s.replace('_', ' ')}</option>
@@ -73,7 +73,7 @@ export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string
         placeholder="Note (optional)"
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        className="input-base w-40 text-sm hidden sm:block"
+        className="input-base order-3 col-span-2 w-full text-sm sm:order-none sm:block sm:w-40"
       />
       <button type="button"
         onClick={updateStatus}

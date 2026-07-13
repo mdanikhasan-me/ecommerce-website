@@ -40,7 +40,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-5">
-      <h1 className="font-display text-xl font-bold">Review Moderation</h1>
+      <h1 className="admin-page-title">Review Moderation</h1>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-secondary rounded-md p-1 w-fit">
@@ -48,7 +48,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
           <a
             key={tab.value}
             href={`/admin/reviews?status=${tab.value}`}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${statusFilter === tab.value ? 'bg-background shadow-sm' : 'text-muted-foreground min-[1025px]:hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-md text-sm font-medium ${statusFilter === tab.value ? 'bg-background shadow-sm' : 'text-muted-foreground'}`}
           >
             {tab.label}
             {tab.count > 0 && (
@@ -59,7 +59,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
       </div>
 
       {/* Reviews */}
-      <div className="bg-card border border-border rounded-md overflow-hidden">
+      <div className="admin-card overflow-hidden">
         <div className="divide-y divide-border">
           {reviews.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
@@ -67,13 +67,13 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
               No {statusFilter.toLowerCase()} reviews
             </div>
           ) : reviews.map((review) => (
-            <div key={review.id} className="p-5">
-              <div className="flex items-start justify-between gap-4">
+            <div key={review.id} className="p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-medium text-sm">{review.user.name ?? review.user.email}</span>
                     <span className="text-muted-foreground text-xs">on</span>
-                    <a href={`/products/${review.product.slug}`} target="_blank" className="text-primary text-sm min-[1025px]:hover:underline truncate max-w-[200px]">
+                    <a href={`/products/${review.product.slug}`} target="_blank" className="text-primary text-sm truncate max-w-[200px]">
                       {review.product.name}
                     </a>
                     <span className="text-xs text-muted-foreground">{formatDateRelative(review.createdAt)}</span>

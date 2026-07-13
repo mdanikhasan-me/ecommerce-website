@@ -48,10 +48,8 @@ export function PaymentStatusUpdater({
   }
 
   return (
-    <div className="space-y-2 rounded-md border border-border bg-secondary/40 p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        Update payment status
-      </p>
+    <div className="space-y-2 rounded-lg bg-secondary/45 p-3">
+      <p className="text-sm font-semibold text-foreground">Update payment status</p>
       <div className="flex flex-col gap-2">
         <label htmlFor={`payment-status-${orderId}`} className="sr-only">
           Payment status

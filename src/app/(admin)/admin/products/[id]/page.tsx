@@ -23,14 +23,14 @@ export default async function AdminProductDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-2xl font-bold">{product.name}</h1>
+          <h1 className="admin-page-title">{product.name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Update product content, price, stock, images, and variant details.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Link href="/admin/products" className="btn-outline">
             Back to Products
           </Link>
@@ -40,13 +40,11 @@ export default async function AdminProductDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="rounded-md border border-border bg-card p-5">
-        <ProductEditorForm
-          categories={categories}
-          officialStoreName={officialStoreName}
-          product={product}
-        />
-      </div>
+      <ProductEditorForm
+        categories={categories}
+        officialStoreName={officialStoreName}
+        product={product}
+      />
     </div>
   )
 }

@@ -26,6 +26,7 @@ export function toDateTimeLocalValue(value: string | Date | null | undefined) {
   if (!value) return ''
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
+  if (date.getFullYear() < 2000) return ''
 
   const year = date.getFullYear()
   const month = `${date.getMonth() + 1}`.padStart(2, '0')

@@ -1,68 +1,76 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
-import { Bell, LogOut, ExternalLink, Menu } from 'lucide-react'
+import { Bell, Menu, Moon, Sun } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { getActiveAdminNavItem } from '@/frontend/components/admin/admin-navigation'
+import { AdminProfileMenu } from '@/frontend/components/admin/AdminProfileMenu'
+
+export type AdminTheme = 'light' | 'dark'
 
 export function AdminHeader({
   user,
   unreadCount = 0,
+  theme,
   onMenuClick,
+  onThemeToggle,
 }: {
   user: { name?: string | null; email?: string | null; image?: string | null; role: string }
   unreadCount?: number
+  theme: AdminTheme
   onMenuClick?: () => void
+  onThemeToggle: () => void
 }) {
+  const pathname = usePathname()
+  const activeItem = getActiveAdminNavItem(pathname)
+  const isDark = theme === 'dark'
+
   return (
-    <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-border/80 bg-card/95 px-3 shadow-[0_1px_0_rgba(23,18,15,0.03)] sm:px-6">
-      <button
-        type="button"
-        aria-label="Open admin menu"
-        title="Open admin menu"
-        onClick={onMenuClick}
-        className="rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70 md:hidden"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
-      <div className="flex items-center gap-1.5 sm:gap-3">
-        <Link href="/" target="_blank" className="rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70" title="View Store">
-          <ExternalLink className="h-4 w-4" />
-        </Link>
-        <Link
-          href="/admin/notifications"
-          aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
-          title={unreadCount > 0 ? `${unreadCount} unread` : 'Notifications'}
-          className="relative rounded-md p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70"
-        >
-          <Bell className="h-4 w-4" />
-          {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
-              {unreadCount > 99 ? '99+' : unreadCount}
-            </span>
-          )}
-        </Link>
-        <div className="flex items-center gap-2 border-l border-border pl-2 sm:pl-3">
-          <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-secondary ring-1 ring-black/5">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.image} alt="" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-            ) : (
-              <span className="text-xs font-bold text-foreground">{user.name?.[0]?.toUpperCase() ?? 'A'}</span>
-            )}
-          </div>
-          <div className="hidden sm:block">
-            <p className="text-xs font-semibold leading-none">{user.name}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{user.role.replace('_', ' ')}</p>
-          </div>
+    <header className="admin-header flex h-[4.25rem] flex-shrink-0 items-center bg-card">
+      <div className="admin-header-content flex w-full items-center justify-between gap-2 sm:gap-4">
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
           <button
             type="button"
-            aria-label="Sign out"
-            title="Sign out"
-            onClick={() => signOut({ callbackUrl: '/auth/login' })}
-            className="ml-1 rounded-md p-1.5 text-muted-foreground transition-colors min-[1025px]:hover:bg-secondary/70"
+            aria-label="Open admin menu"
+            title="Open admin menu"
+            onClick={onMenuClick}
+            className="admin-icon-button xl:hidden"
           >
-            <LogOut className="h-4 w-4" />
+            <Menu className="h-5 w-5" />
           </button>
+          <div className="min-w-0">
+            <p className="truncate text-[0.9rem] font-semibold text-foreground">
+              {activeItem?.label ?? 'Admin Workspace'}
+            </p>
+            <p className="hidden text-[11px] text-muted-foreground sm:block">Operations workspace</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={isDark ? 'Use light admin theme' : 'Use dark admin theme'}
+            title={isDark ? 'Light theme' : 'Dark theme'}
+            aria-pressed={isDark}
+            onClick={onThemeToggle}
+            className="admin-icon-button"
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <Link
+            href="/admin/notifications"
+            aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
+            title={unreadCount > 0 ? `${unreadCount} unread` : 'Notifications'}
+            className="admin-icon-button relative"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 ? (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            ) : null}
+          </Link>
+          <AdminProfileMenu user={user} />
         </div>
       </div>
     </header>

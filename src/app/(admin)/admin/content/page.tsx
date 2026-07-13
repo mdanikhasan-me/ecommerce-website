@@ -13,9 +13,9 @@ export default async function AdminContentPage() {
   return (
     <div className="space-y-5">
       <div>
-        <div className="flex items-center justify-between gap-3">
+        <div className="admin-page-header">
           <div>
-            <h1 className="font-display text-xl font-bold">Content</h1>
+            <h1 className="admin-page-title">Content</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Homepage section configuration and editorial blocks.
             </p>
@@ -26,8 +26,8 @@ export default async function AdminContentPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border bg-card">
-        <table className="w-full text-sm">
+      <div className="admin-card overflow-hidden">
+        <table className="admin-responsive-table w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary">
               <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Section</th>
@@ -40,28 +40,28 @@ export default async function AdminContentPage() {
           <tbody className="divide-y divide-border">
             {sections.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
+                <td colSpan={5} className="admin-empty-cell px-4 py-12 text-center text-muted-foreground">
                   No homepage sections have been configured yet.
                 </td>
               </tr>
             ) : (
               sections.map((section) => (
-                <tr key={section.id} className="min-[1025px]:hover:bg-secondary/40">
-                  <td className="px-4 py-3">
+                <tr key={section.id}>
+                  <td data-mobile data-primary className="px-4 py-3">
                     <p className="font-medium">{section.title ?? 'Untitled section'}</p>
                     {section.subtitle && <p className="text-xs text-muted-foreground">{section.subtitle}</p>}
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{section.type}</td>
-                  <td className="px-4 py-3 text-center">
+                  <td data-mobile data-label="Type" className="px-4 py-3 text-muted-foreground">{section.type}</td>
+                  <td data-mobile data-label="Status" className="px-4 py-3 text-center">
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${section.isActive ? 'bg-green-50 text-green-700' : 'bg-secondary text-muted-foreground'}`}>
                       {section.isActive ? 'Active' : 'Hidden'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right text-xs text-muted-foreground">
+                  <td data-mobile data-label="Updated" className="px-4 py-3 text-right text-xs text-muted-foreground">
                     {formatDate(section.updatedAt)}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/content/${section.id}`} className="p-1.5 rounded-md min-[1025px]:hover:bg-secondary inline-flex">
+                  <td data-mobile data-action className="px-4 py-3 text-right">
+                    <Link href={`/admin/content/${section.id}`} className="p-1.5 rounded-md inline-flex">
                       <Pencil className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   </td>

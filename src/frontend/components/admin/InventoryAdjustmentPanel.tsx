@@ -88,13 +88,13 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-xs text-primary min-[1025px]:hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="text-xs text-primary">
         Adjust
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-md border border-border bg-card p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
+          <div className="admin-card max-h-[92dvh] w-full max-w-3xl overflow-y-auto rounded-b-none p-4 text-left sm:max-h-[85vh] sm:rounded-[0.625rem] sm:p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-display text-lg font-semibold">{product.name}</h3>
@@ -150,7 +150,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
               </div>
 
               {variants.length > 0 && (
-                <section className="space-y-3 rounded-md border border-border bg-secondary/40 p-4">
+                <section className="space-y-3 rounded-lg bg-secondary/45 p-4">
                   <div>
                     <h4 className="font-display font-semibold">Variant stock</h4>
                     <p className="text-sm text-muted-foreground">
@@ -160,7 +160,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
                   <div className="space-y-3">
                     {variants.map((variant) => (
-                      <div key={variant.id} className="grid gap-3 rounded-md border border-border bg-card p-3 md:grid-cols-[minmax(0,1fr)_120px]">
+                      <div key={variant.id} className="grid gap-3 admin-card p-3 md:grid-cols-[minmax(0,1fr)_120px]">
                         <div>
                           <p className="font-medium">{variant.name}</p>
                           <p className="text-xs text-muted-foreground">
@@ -184,7 +184,7 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
                 </section>
               )}
 
-              <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+              <div className="grid grid-cols-2 gap-3 border-t border-border pt-4 sm:flex sm:items-center sm:justify-end">
                 <button type="button" onClick={() => setOpen(false)} className="btn-outline">
                   Cancel
                 </button>

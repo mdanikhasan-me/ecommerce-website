@@ -59,20 +59,53 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const nextRole = payload.role ?? existingUser.role
     const nextActive = payload.isActive ?? existingUser.isActive
     const actorIsSuperAdmin = isSuperAdminRole(session.user.role)
+    const isSelf = session.user.id === existingUser.id
+    const roleChanged = nextRole !== existingUser.role
+    const activeChanged = nextActive !== existingUser.isActive
 
-    if (!actorIsSuperAdmin && (isSuperAdminRole(existingUser.role) || isSuperAdminRole(nextRole))) {
+    if (isSelf && roleChanged) {
+      return NextResponse.json({ error: 'You cannot change your own role' }, { status: 400 })
+    }
+
+    if (isSelf && activeChanged) {
+      return NextResponse.json({ error: 'You cannot change your own account status' }, { status: 400 })
+    }
+
+    if (!actorIsSuperAdmin && roleChanged) {
       return NextResponse.json(
-        { error: 'Only a super admin can manage super admin access' },
+        { error: 'Only a super admin can change account roles' },
         { status: 403 }
       )
     }
 
-    if (session.user.id === existingUser.id && !nextActive) {
-      return NextResponse.json({ error: 'You cannot deactivate your own account' }, { status: 400 })
+    if (!actorIsSuperAdmin && activeChanged) {
+      return NextResponse.json(
+        { error: 'Only a super admin can change account status' },
+        { status: 403 }
+      )
     }
 
-    if (session.user.id === existingUser.id && !['ADMIN', 'SUPER_ADMIN'].includes(nextRole)) {
-      return NextResponse.json({ error: 'You cannot remove your own admin access' }, { status: 400 })
+    if (!actorIsSuperAdmin && existingUser.role !== 'CUSTOMER' && !isSelf) {
+      return NextResponse.json(
+        { error: 'Only a super admin can manage administrator accounts' },
+        { status: 403 }
+      )
+    }
+
+    if (
+      existingUser.role === 'SUPER_ADMIN' &&
+      existingUser.isActive &&
+      (nextRole !== 'SUPER_ADMIN' || !nextActive)
+    ) {
+      const activeSuperAdminCount = await db.user.count({
+        where: { role: 'SUPER_ADMIN', isActive: true },
+      })
+      if (activeSuperAdminCount <= 1) {
+        return NextResponse.json(
+          { error: 'The last active super admin cannot be removed or deactivated' },
+          { status: 409 }
+        )
+      }
     }
 
     const user = await db.user.update({

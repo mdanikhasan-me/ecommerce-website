@@ -34,37 +34,37 @@ export default async function AdminInventoryPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-xl font-bold">Inventory Management</h1>
+        <h1 className="admin-page-title">Inventory Management</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Adjust base stock, low stock thresholds, and variant inventory from one place.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-md border border-red-100 bg-red-50 p-4">
-          <p className="text-2xl font-bold text-red-600">{outOfStock.length}</p>
-          <p className="mt-0.5 text-sm text-red-700">Out of stock</p>
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="critical">
+          <p className="text-xl font-bold text-red-600 sm:text-2xl">{outOfStock.length}</p>
+          <p className="mt-0.5 text-xs text-red-700 sm:text-sm">Out of stock</p>
         </div>
-        <div className="rounded-md border border-amber-100 bg-amber-50 p-4">
-          <p className="text-2xl font-bold text-amber-600">{lowStock.length}</p>
-          <p className="mt-0.5 text-sm text-amber-700">Low stock</p>
+        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="warning">
+          <p className="text-xl font-bold text-amber-600 sm:text-2xl">{lowStock.length}</p>
+          <p className="mt-0.5 text-xs text-amber-700 sm:text-sm">Low stock</p>
         </div>
-        <div className="rounded-md border border-green-100 bg-green-50 p-4">
-          <p className="text-2xl font-bold text-green-600">{inStock.length}</p>
-          <p className="mt-0.5 text-sm text-green-700">Healthy stock</p>
+        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="healthy">
+          <p className="text-xl font-bold text-green-600 sm:text-2xl">{inStock.length}</p>
+          <p className="mt-0.5 text-xs text-green-700 sm:text-sm">Healthy stock</p>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border bg-card">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="admin-card overflow-hidden">
+        <div className="admin-responsive-table-wrap overflow-x-auto">
+          <table className="admin-responsive-table w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary">
                 <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Product</th>
-                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">
+                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">
                   SKU
                 </th>
-                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground sm:table-cell">
+                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">
                   Category
                 </th>
                 <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Price</th>
@@ -75,29 +75,29 @@ export default async function AdminInventoryPage() {
                 <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground xl:table-cell">
                   Views
                 </th>
-                <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Sold</th>
+                <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground lg:table-cell">Sold</th>
                 <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {products.map((product) => (
-                <tr key={product.id} className="min-[1025px]:hover:bg-secondary/50">
-                  <td className="max-w-[260px] px-4 py-3">
+                <tr key={product.id}>
+                  <td data-mobile data-primary className="max-w-[260px] px-4 py-3">
                     <div className="space-y-0.5">
                       <p className="truncate font-medium">{product.name}</p>
                       <p className="text-xs text-muted-foreground">{product.category.name}</p>
                     </div>
                   </td>
-                  <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground md:table-cell">
+                  <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground xl:table-cell">
                     {product.sku}
                   </td>
-                  <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
+                  <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                     {product.category.name}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td data-mobile data-label="Price" className="px-4 py-3 text-right">
                     {formatPrice(product.salePrice ?? product.basePrice)}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td data-mobile data-label="Stock" className="px-4 py-3 text-right">
                     <div className="space-y-1">
                       <p
                         className={`font-bold ${
@@ -121,8 +121,8 @@ export default async function AdminInventoryPage() {
                   <td className="hidden px-4 py-3 text-right text-muted-foreground xl:table-cell">
                     {product.viewCount}
                   </td>
-                  <td className="px-4 py-3 text-right text-muted-foreground">{product.soldCount}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="hidden px-4 py-3 text-right text-muted-foreground lg:table-cell">{product.soldCount}</td>
+                  <td data-mobile data-full data-action className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-3">
                       <InventoryAdjustmentPanel
                         product={{
@@ -136,7 +136,7 @@ export default async function AdminInventoryPage() {
                       />
                       <Link
                         href={`/admin/products/${product.id}`}
-                        className="text-xs text-primary min-[1025px]:hover:underline"
+                        className="text-xs text-primary"
                       >
                         Edit
                       </Link>

@@ -58,16 +58,16 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="admin-page-header">
         <div>
-          <h1 className="font-display text-xl font-bold">Orders</h1>
+          <h1 className="admin-page-title">Orders</h1>
           <p className="text-sm text-muted-foreground">{total} total orders</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-card border border-border rounded-md p-4">
-        <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto_auto]">
+      <div className="admin-card p-3 sm:p-4">
+        <form className="grid grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto_auto]">
           <input
             aria-label="Search by order number or email"
             title="Search by order number or email"
@@ -76,9 +76,9 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             enterKeyHint="search"
             defaultValue={filters.q}
             placeholder="Order ID or email"
-            className="input-base w-full"
+            className="input-base col-span-2 w-full sm:col-span-1"
           />
-          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base w-full">
+          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base col-span-2 w-full sm:col-span-1">
             <option value="">All Status</option>
             {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
           </select>
@@ -91,9 +91,9 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
       </div>
 
       {/* Table */}
-      <div className="bg-card border border-border rounded-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="admin-card overflow-hidden">
+        <div className="admin-responsive-table-wrap overflow-x-auto">
+          <table className="admin-responsive-table w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary">
                 <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Order</th>
@@ -108,18 +108,18 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             <tbody className="divide-y divide-border">
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="admin-empty-cell px-4 py-12 text-center text-muted-foreground">
                     <ShoppingBag className="h-10 w-10 mx-auto mb-3 opacity-30" />
                     No orders found
                   </td>
                 </tr>
               ) : orders.map((order) => (
-                <tr key={order.id} className="min-[1025px]:hover:bg-secondary/50 transition-colors">
-                  <td className="px-4 py-3">
+                <tr key={order.id}>
+                  <td data-mobile data-primary className="px-4 py-3">
                     <span className="font-mono text-xs font-semibold tracking-[0.04em]">{order.orderNumber}</span>
                     <p className="text-xs text-muted-foreground capitalize">{order.paymentMethod.replace('_', ' ')}</p>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell">
+                  <td data-mobile data-full data-label="Customer" className="px-4 py-3 hidden md:table-cell">
                     <p className="font-medium">{order.user?.name ?? 'Guest'}</p>
                     <p className="text-xs text-muted-foreground">{order.user?.email ?? order.guestEmail}</p>
                   </td>
@@ -127,17 +127,17 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
                     {order.items[0]?.productName}
                     {order._count.items > 1 && <span className="ml-1 text-primary">+{order._count.items - 1}</span>}
                   </td>
-                  <td className="px-4 py-3 text-right font-bold">{formatPrice(order.total)}</td>
-                  <td className="px-4 py-3 text-center">
+                  <td data-mobile data-label="Total" className="px-4 py-3 text-right font-bold">{formatPrice(order.total)}</td>
+                  <td data-mobile data-label="Status" className="px-4 py-3 text-center">
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLORS[order.status] ?? 'bg-secondary text-foreground'}`}>
                       {order.status.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right text-muted-foreground text-xs hidden sm:table-cell">
+                  <td data-mobile data-label="Placed" className="px-4 py-3 text-right text-muted-foreground text-xs hidden sm:table-cell">
                     {formatDate(order.createdAt)}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link href={`/admin/orders/${order.id}`} className="text-xs text-primary min-[1025px]:hover:underline font-medium">
+                  <td data-mobile data-action className="px-4 py-3 text-right">
+                    <Link href={`/admin/orders/${order.id}`} className="admin-mobile-action text-xs text-primary font-medium sm:border-0 sm:bg-transparent sm:p-0">
                       View
                     </Link>
                   </td>
