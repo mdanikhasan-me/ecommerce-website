@@ -357,6 +357,10 @@
     color-scheme: dark;
   }
 
+  html[data-admin-theme='dark'] .boilabin-toast {
+    color: hsl(210 40% 98%) !important;
+  }
+
   .admin-shell {
     height: 100vh;
     height: 100dvh;
