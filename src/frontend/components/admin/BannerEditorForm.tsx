@@ -11,6 +11,23 @@ import { AdminDateTimeField } from './AdminDateTimeField'
 const BANNER_IMAGE_DATA_URL_ERROR =
   'Banner images must be uploaded as files before saving. Base64 image data is not allowed.'
 
+const BANNER_TEXT_CLASSES: Record<string, string> = {
+  light: 'text-[hsl(var(--buttermilk))]',
+  white: 'text-white',
+  dark: 'text-[#111827]',
+  brand: 'text-[#0057ff]',
+  gold: 'text-[#f4c95d]',
+  mint: 'text-[#91d7b3]',
+}
+
+const BANNER_BUTTON_CLASSES: Record<string, string> = {
+  light: 'bg-[#f4efe5] text-[#2d1b3d]',
+  dark: 'bg-[#111827] text-white',
+  brand: 'bg-[#0057ff] text-white',
+  gold: 'bg-[#f4c95d] text-[#241a05]',
+  mint: 'bg-[#91d7b3] text-[#0b2d20]',
+}
+
 type BannerImageSlot = 'desktop' | 'tablet' | 'mobile'
 type PreviewMode = 'desktop' | 'tablet' | 'mobile'
 type BannerDestinationType = 'main-category' | 'subcategory' | 'custom'
@@ -178,7 +195,8 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
       ? 'mx-auto aspect-video max-w-[28rem]'
       : 'aspect-[21/9]'
   const overlayAlpha = ({ none: 0, soft: 0.24, medium: 0.46, strong: 0.68 } as Record<string, number>)[form.overlayStrength] ?? 0.46
-  const overlayRgb = form.textTone === 'dark' ? '255,255,255' : '15,23,42'
+  const usesLightBackdrop = form.textTone === 'dark' || form.textTone === 'brand'
+  const overlayRgb = usesLightBackdrop ? '255,255,255' : '15,23,42'
   const overlayDirection = form.textPosition === 'right' ? '270deg' : '90deg'
   const previewOverlay = overlayAlpha
     ? form.textPosition === 'center'
@@ -190,14 +208,12 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     : form.textPosition === 'right'
       ? 'items-end text-right'
       : 'items-start text-left'
-  const previewTone = form.textTone === 'dark' ? 'text-[#111827]' : 'text-white'
-  const previewButton = form.buttonStyle === 'dark'
-    ? 'bg-[#111827] text-white'
-    : form.buttonStyle === 'outline'
-      ? form.textTone === 'dark' ? 'border border-[#111827]/60 text-[#111827]' : 'border border-white/75 text-white'
-      : 'bg-[#f4efe5] text-[#2d1b3d]'
+  const previewTone = BANNER_TEXT_CLASSES[form.textTone] ?? BANNER_TEXT_CLASSES.light
+  const previewButton = form.buttonStyle === 'outline'
+    ? 'border border-current bg-transparent text-current'
+    : BANNER_BUTTON_CLASSES[form.buttonStyle] ?? BANNER_BUTTON_CLASSES.light
   const previewTextShadow = form.textShadow
-    ? form.textTone === 'dark' ? '0 2px 10px rgba(255,255,255,0.55)' : '0 3px 14px rgba(15,23,42,0.55)'
+    ? usesLightBackdrop ? '0 2px 10px rgba(255,255,255,0.58)' : '0 3px 14px rgba(15,23,42,0.52)'
     : 'none'
   const mainDestinations = destinations.filter((destination) => !destination.parentId)
   const subcategoryDestinations = destinations.filter((destination) => destination.parentId)
@@ -277,16 +293,23 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
             <p className="mt-1 text-xs text-muted-foreground">Control contrast and placement without editing the artwork.</p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor={`${fieldIdPrefix}-text-position`} className="mb-1.5 block text-sm font-medium">Text position</label>
+                <label htmlFor={`${fieldIdPrefix}-text-position`} className="mb-1.5 block text-sm font-medium">Content alignment</label>
                 <select id={`${fieldIdPrefix}-text-position`} value={form.textPosition} onChange={(event) => updateField('textPosition', event.target.value)} className="input-base">
                   <option value="left">Left</option><option value="center">Center</option><option value="right">Right</option>
                 </select>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">Aligns the title, description, and button together.</p>
               </div>
               <div>
-                <label htmlFor={`${fieldIdPrefix}-text-tone`} className="mb-1.5 block text-sm font-medium">Text color</label>
+                <label htmlFor={`${fieldIdPrefix}-text-tone`} className="mb-1.5 block text-sm font-medium">Title and description color</label>
                 <select id={`${fieldIdPrefix}-text-tone`} value={form.textTone} onChange={(event) => updateField('textTone', event.target.value)} className="input-base">
-                  <option value="light">Light</option><option value="dark">Dark</option>
+                  <option value="light">Soft cream</option>
+                  <option value="white">Pure white</option>
+                  <option value="dark">Ink</option>
+                  <option value="brand">Brand blue</option>
+                  <option value="gold">Warm gold</option>
+                  <option value="mint">Fresh mint</option>
                 </select>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">Use shading or text highlight when the artwork reduces contrast.</p>
               </div>
               <div>
                 <label htmlFor={`${fieldIdPrefix}-overlay`} className="mb-1.5 block text-sm font-medium">Image shading</label>
@@ -297,7 +320,12 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
               <div>
                 <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Button style</label>
                 <select id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
-                  <option value="light">Light</option><option value="dark">Dark</option><option value="outline">Outline</option>
+                  <option value="light">Soft cream</option>
+                  <option value="dark">Ink</option>
+                  <option value="brand">Brand blue</option>
+                  <option value="gold">Warm gold</option>
+                  <option value="mint">Fresh mint</option>
+                  <option value="outline">Adaptive outline</option>
                 </select>
               </div>
             </div>

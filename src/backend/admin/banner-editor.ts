@@ -44,9 +44,9 @@ const bannerPayloadSchema = z
     mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
     buttonLabel: optionalTrimmedString(48),
-    buttonStyle: z.enum(['light', 'dark', 'outline']).optional().default('light'),
+    buttonStyle: z.enum(['light', 'dark', 'brand', 'gold', 'mint', 'outline']).optional().default('light'),
     textPosition: z.enum(['left', 'center', 'right']).optional().default('left'),
-    textTone: z.enum(['light', 'dark']).optional().default('light'),
+    textTone: z.enum(['light', 'white', 'dark', 'brand', 'gold', 'mint']).optional().default('light'),
     overlayStrength: z.enum(['none', 'soft', 'medium', 'strong']).optional().default('medium'),
     textShadow: z.boolean().optional().default(true),
     // Single banner placement for now: the homepage hero. Any legacy value is coerced.
