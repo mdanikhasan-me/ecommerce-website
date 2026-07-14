@@ -35,6 +35,17 @@ const optionalDate = (message: string) =>
       return value
     })
 
+function isAllowedBannerLink(value: string) {
+  if (value.startsWith('/')) return !value.startsWith('//')
+
+  try {
+    const url = new URL(value)
+    return (url.protocol === 'http:' || url.protocol === 'https:') && Boolean(url.hostname)
+  } catch {
+    return false
+  }
+}
+
 const bannerPayloadSchema = z
   .object({
     title: optionalTrimmedString(140),
@@ -44,15 +55,17 @@ const bannerPayloadSchema = z
     mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
     buttonLabel: optionalTrimmedString(48),
-    buttonStyle: z.enum(['light', 'dark', 'brand', 'gold', 'mint', 'outline']).optional().default('light'),
+    buttonStyle: z.enum(['obsidian', 'cobalt', 'ruby', 'emerald', 'violet', 'orange', 'outline']).optional().default('obsidian'),
+    titleStyle: z.enum(['modern', 'editorial', 'clean', 'statement']).optional().default('modern'),
     textPosition: z.enum(['left', 'center', 'right']).optional().default('left'),
-    textTone: z.enum(['light', 'white', 'dark', 'brand', 'gold', 'mint']).optional().default('light'),
+    textTone: z.enum(['starlight', 'obsidian', 'cobalt', 'ruby', 'emerald', 'violet', 'orange']).optional().default('starlight'),
     overlayStrength: z.enum(['none', 'soft', 'medium', 'strong']).optional().default('medium'),
     textShadow: z.boolean().optional().default(true),
     // Single banner placement for now: the homepage hero. Any legacy value is coerced.
     position: z.string().trim().max(80).optional().transform(() => 'hero' as const),
     sortOrder: z.coerce.number().int('Sort order must be a whole number').min(-9999).max(9999).default(0),
     isActive: z.boolean().optional().default(true),
+    unlimitedDuration: z.boolean().optional().default(false),
     startsAt: optionalDate('Start date is invalid'),
     endsAt: optionalDate('End date is invalid'),
   })
@@ -65,15 +78,15 @@ const bannerPayloadSchema = z
       })
     }
 
-    if (payload.linkUrl && !payload.linkUrl.startsWith('/') && !/^https?:\/\//i.test(payload.linkUrl)) {
+    if (payload.linkUrl && !isAllowedBannerLink(payload.linkUrl)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['linkUrl'],
-        message: 'Link URL must be a site path or an http(s) URL',
+        message: 'Link URL must be a site path or a valid http(s) URL',
       })
     }
 
-    if (payload.startsAt && payload.endsAt && payload.startsAt >= payload.endsAt) {
+    if (!payload.unlimitedDuration && payload.startsAt && payload.endsAt && payload.startsAt >= payload.endsAt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['endsAt'],

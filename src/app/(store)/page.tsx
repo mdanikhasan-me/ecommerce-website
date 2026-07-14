@@ -73,6 +73,7 @@ const getHomeData = unstable_cache(async () => {
       linkUrl: true,
       buttonLabel: true,
       buttonStyle: true,
+      titleStyle: true,
       textPosition: true,
       textTone: true,
       overlayStrength: true,

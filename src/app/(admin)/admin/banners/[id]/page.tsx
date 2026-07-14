@@ -24,6 +24,7 @@ export default async function AdminBannerDetailPage({ params }: Props) {
         linkUrl: true,
         buttonLabel: true,
         buttonStyle: true,
+        titleStyle: true,
         textPosition: true,
         textTone: true,
         overlayStrength: true,

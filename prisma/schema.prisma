@@ -704,9 +704,10 @@ model Banner {
   tabletImageUrl String?
   linkUrl     String?
   buttonLabel String?
-  buttonStyle String   @default("light")
+  buttonStyle String   @default("obsidian")
+  titleStyle  String   @default("modern")
   textPosition String  @default("left")
-  textTone    String   @default("light")
+  textTone    String   @default("starlight")
   overlayStrength String @default("medium")
   textShadow  Boolean  @default(true)
   position    String   @default("hero")

@@ -4,28 +4,19 @@ import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import {
+  BANNER_BUTTON_CLASSES,
+  BANNER_TEXT_CLASSES,
+  BANNER_TITLE_STYLE_CLASSES,
+  bannerToneUsesLightBackdrop,
+  normalizeBannerButtonStyle,
+  normalizeBannerTextTone,
+  normalizeBannerTitleStyle,
+  type BannerTextTone,
+} from '@/shared/banner-presentation'
 
 type BannerTextPosition = 'left' | 'center' | 'right'
-type BannerTextTone = 'light' | 'white' | 'dark' | 'brand' | 'gold' | 'mint'
 type BannerOverlayStrength = 'none' | 'soft' | 'medium' | 'strong'
-type BannerButtonStyle = 'light' | 'dark' | 'brand' | 'gold' | 'mint' | 'outline'
-
-const BANNER_TEXT_CLASSES: Record<BannerTextTone, string> = {
-  light: 'text-[hsl(var(--buttermilk))]',
-  white: 'text-white',
-  dark: 'text-[#111827]',
-  brand: 'text-[#0057ff]',
-  gold: 'text-[#f4c95d]',
-  mint: 'text-[#91d7b3]',
-}
-
-const BANNER_BUTTON_CLASSES: Record<Exclude<BannerButtonStyle, 'outline'>, string> = {
-  light: 'bg-[#f4efe5] text-[#2d1b3d]',
-  dark: 'bg-[#111827] text-white',
-  brand: 'bg-[#0057ff] text-white',
-  gold: 'bg-[#f4c95d] text-[#241a05]',
-  mint: 'bg-[#91d7b3] text-[#0b2d20]',
-}
 
 const HERO_ROTATION_INTERVAL_MS = 7_000
 
@@ -39,6 +30,7 @@ interface Banner {
   linkUrl?: string | null
   buttonLabel?: string | null
   buttonStyle?: string | null
+  titleStyle?: string | null
   textPosition?: string | null
   textTone?: string | null
   overlayStrength?: string | null
@@ -82,7 +74,7 @@ function normalizeOption<T extends string>(value: string | null | undefined, opt
 function overlayStyles(strength: BannerOverlayStrength, tone: BannerTextTone, position: BannerTextPosition) {
   const alpha = { none: 0, soft: 0.24, medium: 0.46, strong: 0.68 }[strength]
   if (!alpha) return { mobile: undefined, desktop: undefined }
-  const usesLightBackdrop = tone === 'dark' || tone === 'brand'
+  const usesLightBackdrop = bannerToneUsesLightBackdrop(tone)
   const rgb = usesLightBackdrop ? '255,255,255' : '15,23,42'
   const direction = position === 'right' ? '270deg' : '90deg'
   return {
@@ -203,9 +195,10 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   const linkUrl = banner.linkUrl?.replace(/^\/categories\//, '/category/')
   const buttonLabel = banner.buttonLabel?.trim() || 'Explore collection'
   const textPosition = normalizeOption(banner.textPosition, ['left', 'center', 'right'] as const, 'left')
-  const textTone = normalizeOption(banner.textTone, ['light', 'white', 'dark', 'brand', 'gold', 'mint'] as const, 'light')
+  const textTone = normalizeBannerTextTone(banner.textTone)
   const overlayStrength = normalizeOption(banner.overlayStrength, ['none', 'soft', 'medium', 'strong'] as const, 'medium')
-  const buttonStyle = normalizeOption(banner.buttonStyle, ['light', 'dark', 'brand', 'gold', 'mint', 'outline'] as const, 'light')
+  const buttonStyle = normalizeBannerButtonStyle(banner.buttonStyle)
+  const titleStyle = normalizeBannerTitleStyle(banner.titleStyle)
   const hasTextShadow = banner.textShadow !== false
   const overlays = overlayStyles(overlayStrength, textTone, textPosition)
   const positionClass = {
@@ -213,12 +206,13 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
     center: 'mx-auto items-center text-center',
     right: 'ml-auto items-end text-right',
   }[textPosition]
-  const usesLightBackdrop = textTone === 'dark' || textTone === 'brand'
+  const usesLightBackdrop = bannerToneUsesLightBackdrop(textTone)
   const toneClass = BANNER_TEXT_CLASSES[textTone]
+  const titleStyleClass = BANNER_TITLE_STYLE_CLASSES[titleStyle]
   const titleShadow = hasTextShadow
     ? usesLightBackdrop
-      ? '[text-shadow:0_3px_14px_rgba(255,255,255,0.58)]'
-      : '[text-shadow:0_4px_18px_rgba(15,23,42,0.52)]'
+      ? '[text-shadow:0_1px_1px_rgba(255,255,255,0.9)]'
+      : '[text-shadow:0_1px_2px_rgba(0,0,0,0.72)]'
     : ''
   const buttonClass = buttonStyle === 'outline'
     ? 'border border-current bg-transparent text-current'
@@ -259,7 +253,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
             <div className="storefront-frame flex h-full items-end py-6 sm:items-center sm:py-8 lg:py-10">
               <div className={cn('flex w-1/2 min-w-0 max-w-[50%] flex-col sm:w-auto sm:max-w-[34rem] lg:max-w-[36rem]', positionClass, toneClass)}>
                 {title ? (
-                  <h2 className={cn('line-clamp-2 w-full min-w-0 break-words font-display text-[1.28rem] font-bold leading-[0.9] sm:line-clamp-none sm:w-auto sm:text-[2.7rem] lg:text-[3.8rem]', titleShadow)}>
+                  <h2 className={cn('line-clamp-2 w-full min-w-0 break-words text-[1.28rem] leading-[0.9] sm:line-clamp-none sm:w-auto sm:text-[2.7rem] lg:text-[3.8rem]', titleStyleClass, titleShadow)}>
                     {title}
                   </h2>
                 ) : null}

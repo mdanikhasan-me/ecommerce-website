@@ -1,36 +1,34 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Eye, Loader2, Monitor, Save, Smartphone, Tablet, Trash2 } from 'lucide-react'
 import { cn } from '@/backend/utils'
 import { AdminImageField } from './AdminImageField'
 import { toDateTimeLocalValue } from './form-utils'
 import { AdminDateTimeField } from './AdminDateTimeField'
+import {
+  BANNER_BUTTON_CLASSES,
+  BANNER_BUTTON_LABELS,
+  BANNER_BUTTON_STYLE_VALUES,
+  BANNER_TEXT_CLASSES,
+  BANNER_TEXT_LABELS,
+  BANNER_TEXT_TONE_VALUES,
+  BANNER_TITLE_STYLE_CLASSES,
+  BANNER_TITLE_STYLE_LABELS,
+  BANNER_TITLE_STYLE_VALUES,
+  bannerToneUsesLightBackdrop,
+  normalizeBannerButtonStyle,
+  normalizeBannerTextTone,
+  normalizeBannerTitleStyle,
+} from '@/shared/banner-presentation'
 
 const BANNER_IMAGE_DATA_URL_ERROR =
   'Banner images must be uploaded as files before saving. Base64 image data is not allowed.'
 
-const BANNER_TEXT_CLASSES: Record<string, string> = {
-  light: 'text-[hsl(var(--buttermilk))]',
-  white: 'text-white',
-  dark: 'text-[#111827]',
-  brand: 'text-[#0057ff]',
-  gold: 'text-[#f4c95d]',
-  mint: 'text-[#91d7b3]',
-}
-
-const BANNER_BUTTON_CLASSES: Record<string, string> = {
-  light: 'bg-[#f4efe5] text-[#2d1b3d]',
-  dark: 'bg-[#111827] text-white',
-  brand: 'bg-[#0057ff] text-white',
-  gold: 'bg-[#f4c95d] text-[#241a05]',
-  mint: 'bg-[#91d7b3] text-[#0b2d20]',
-}
-
 type BannerImageSlot = 'desktop' | 'tablet' | 'mobile'
 type PreviewMode = 'desktop' | 'tablet' | 'mobile'
-type BannerDestinationType = 'main-category' | 'subcategory' | 'custom'
+type BannerDestinationType = 'main-category' | 'subcategory' | 'product' | 'custom'
 
 interface BannerDestinationOption {
   id: string
@@ -50,6 +48,7 @@ interface EditableBanner {
   linkUrl: string | null
   buttonLabel: string | null
   buttonStyle: string
+  titleStyle: string
   textPosition: string
   textTone: string
   overlayStrength: string
@@ -74,18 +73,40 @@ function getCategoryDestination(slug: string) {
   return `/category/${slug}`
 }
 
+function getProductDestination(value: string | null | undefined) {
+  const trimmed = value?.trim()
+  if (!trimmed) return ''
+
+  try {
+    const url = new URL(trimmed, 'https://boilabin.local')
+    const pathname = url.pathname.replace(/\/+$/, '')
+    if (!/^\/products\/[^/?#]+$/i.test(pathname)) return ''
+    return `${pathname}${url.search}${url.hash}`
+  } catch {
+    return ''
+  }
+}
+
 export function BannerEditorForm({ banner, destinations = [], redirectTo = '/admin/banners' }: BannerEditorFormProps) {
   const router = useRouter()
   const isEditing = Boolean(banner)
   const initialDestination = destinations.find((destination) => getCategoryDestination(destination.slug) === banner?.linkUrl)
+  const initialProductDestination = getProductDestination(banner?.linkUrl)
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
   const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop')
   const [destinationType, setDestinationType] = useState<BannerDestinationType>(
-    initialDestination ? (initialDestination.parentId ? 'subcategory' : 'main-category') : banner?.linkUrl ? 'custom' : 'main-category',
+    initialDestination
+      ? (initialDestination.parentId ? 'subcategory' : 'main-category')
+      : initialProductDestination
+        ? 'product'
+        : banner?.linkUrl
+          ? 'custom'
+          : 'main-category',
   )
-  const [hasNoEndDate, setHasNoEndDate] = useState(!banner?.endsAt)
+  const hasNoEndDateRef = useRef(!banner?.endsAt)
+  const [hasNoEndDate, setHasNoEndDate] = useState(hasNoEndDateRef.current)
   const [form, setForm] = useState({
     title: banner?.title ?? '',
     subtitle: banner?.subtitle ?? '',
@@ -94,9 +115,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     mobileImageUrl: banner?.mobileImageUrl ?? '',
     linkUrl: banner?.linkUrl ?? '',
     buttonLabel: banner?.buttonLabel ?? '',
-    buttonStyle: banner?.buttonStyle ?? 'light',
+    buttonStyle: normalizeBannerButtonStyle(banner?.buttonStyle),
+    titleStyle: normalizeBannerTitleStyle(banner?.titleStyle),
     textPosition: banner?.textPosition ?? 'left',
-    textTone: banner?.textTone ?? 'light',
+    textTone: normalizeBannerTextTone(banner?.textTone),
     overlayStrength: banner?.overlayStrength ?? 'medium',
     textShadow: banner?.textShadow ?? true,
     sortOrder: String(banner?.sortOrder ?? 0),
@@ -114,9 +136,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     imageUrl: form.imageUrl.trim(),
     tabletImageUrl: form.tabletImageUrl.trim() || null,
     mobileImageUrl: form.mobileImageUrl.trim() || null,
-    linkUrl: form.linkUrl.trim() || null,
+    linkUrl: (destinationType === 'product' ? getProductDestination(form.linkUrl) : form.linkUrl.trim()) || null,
     buttonLabel: form.buttonLabel.trim() || null,
     buttonStyle: form.buttonStyle,
+    titleStyle: form.titleStyle,
     textPosition: form.textPosition,
     textTone: form.textTone,
     overlayStrength: form.overlayStrength,
@@ -124,8 +147,9 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     position: 'hero',
     sortOrder: Number(form.sortOrder || 0),
     isActive: form.isActive,
+    unlimitedDuration: hasNoEndDateRef.current,
     startsAt: form.startsAt || null,
-    endsAt: hasNoEndDate ? null : form.endsAt || null,
+    endsAt: hasNoEndDateRef.current ? null : form.endsAt || null,
   })
   const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
     const uploadForm = new FormData()
@@ -148,6 +172,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     }
     if (!hasNoEndDate && !form.endsAt) {
       setError('Choose an end date or enable Unlimited duration.')
+      return
+    }
+    if (destinationType === 'product' && !getProductDestination(form.linkUrl)) {
+      setError('Paste a valid Boilabin product page link, such as /products/product-slug.')
       return
     }
     setIsSaving(true)
@@ -195,7 +223,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
       ? 'mx-auto aspect-video max-w-[28rem]'
       : 'aspect-[21/9]'
   const overlayAlpha = ({ none: 0, soft: 0.24, medium: 0.46, strong: 0.68 } as Record<string, number>)[form.overlayStrength] ?? 0.46
-  const usesLightBackdrop = form.textTone === 'dark' || form.textTone === 'brand'
+  const previewTextTone = normalizeBannerTextTone(form.textTone)
+  const previewButtonStyle = normalizeBannerButtonStyle(form.buttonStyle)
+  const previewTitleStyle = normalizeBannerTitleStyle(form.titleStyle)
+  const usesLightBackdrop = bannerToneUsesLightBackdrop(previewTextTone)
   const overlayRgb = usesLightBackdrop ? '255,255,255' : '15,23,42'
   const overlayDirection = form.textPosition === 'right' ? '270deg' : '90deg'
   const previewOverlay = overlayAlpha
@@ -208,12 +239,13 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     : form.textPosition === 'right'
       ? 'items-end text-right'
       : 'items-start text-left'
-  const previewTone = BANNER_TEXT_CLASSES[form.textTone] ?? BANNER_TEXT_CLASSES.light
-  const previewButton = form.buttonStyle === 'outline'
+  const previewTone = BANNER_TEXT_CLASSES[previewTextTone]
+  const previewButton = previewButtonStyle === 'outline'
     ? 'border border-current bg-transparent text-current'
-    : BANNER_BUTTON_CLASSES[form.buttonStyle] ?? BANNER_BUTTON_CLASSES.light
+    : BANNER_BUTTON_CLASSES[previewButtonStyle]
+  const previewTitleClass = BANNER_TITLE_STYLE_CLASSES[previewTitleStyle]
   const previewTextShadow = form.textShadow
-    ? usesLightBackdrop ? '0 2px 10px rgba(255,255,255,0.58)' : '0 3px 14px rgba(15,23,42,0.52)'
+    ? usesLightBackdrop ? '0 1px 1px rgba(255,255,255,0.9)' : '0 1px 2px rgba(0,0,0,0.72)'
     : 'none'
   const mainDestinations = destinations.filter((destination) => !destination.parentId)
   const subcategoryDestinations = destinations.filter((destination) => destination.parentId)
@@ -223,7 +255,8 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
   )?.id ?? ''
   const changeDestinationType = (nextType: BannerDestinationType) => {
     setDestinationType(nextType)
-    if (nextType !== 'custom') updateField('linkUrl', '')
+    if (nextType === 'main-category' || nextType === 'subcategory') updateField('linkUrl', '')
+    if (nextType === 'product' && form.linkUrl && !getProductDestination(form.linkUrl)) updateField('linkUrl', '')
   }
   const changeCategoryDestination = (destinationId: string) => {
     const destination = destinations.find((option) => option.id === destinationId)
@@ -261,13 +294,36 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                       <select id={`${fieldIdPrefix}-destination-type`} value={destinationType} onChange={(event) => changeDestinationType(event.target.value as BannerDestinationType)} className="input-base">
                         <option value="main-category">Main category</option>
                         <option value="subcategory">Subcategory</option>
+                        <option value="product">Product link</option>
                         <option value="custom">Custom link</option>
                       </select>
                     </div>
-                    {destinationType === 'custom' ? (
+                    {destinationType === 'custom' || destinationType === 'product' ? (
                       <div>
-                        <label htmlFor={`${fieldIdPrefix}-link`} className="sr-only">Custom destination</label>
-                        <input id={`${fieldIdPrefix}-link`} value={form.linkUrl} onChange={(event) => updateField('linkUrl', event.target.value)} className="input-base" placeholder="/category/mobile-phones" />
+                        <label htmlFor={`${fieldIdPrefix}-link`} className="sr-only">
+                          {destinationType === 'product' ? 'Product destination' : 'Custom destination'}
+                        </label>
+                        <input
+                          id={`${fieldIdPrefix}-link`}
+                          value={form.linkUrl}
+                          onChange={(event) => updateField('linkUrl', event.target.value)}
+                          onBlur={() => {
+                            if (destinationType !== 'product') return
+                            const normalized = getProductDestination(form.linkUrl)
+                            if (normalized) updateField('linkUrl', normalized)
+                          }}
+                          className="input-base"
+                          placeholder={destinationType === 'product' ? '/products/product-slug' : '/help or https://example.com'}
+                          inputMode="url"
+                          autoComplete="off"
+                          spellCheck={false}
+                          aria-describedby={destinationType === 'product' ? `${fieldIdPrefix}-product-link-help` : undefined}
+                        />
+                        {destinationType === 'product' ? (
+                          <p id={`${fieldIdPrefix}-product-link-help`} className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Paste a Boilabin product page URL. It is saved as a fast internal product path.
+                          </p>
+                        ) : null}
                       </div>
                     ) : (
                       <div>
@@ -300,16 +356,24 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">Aligns the title, description, and button together.</p>
               </div>
               <div>
+                <label htmlFor={`${fieldIdPrefix}-title-style`} className="mb-1.5 block text-sm font-medium">Title style</label>
+                <select id={`${fieldIdPrefix}-title-style`} value={form.titleStyle} onChange={(event) => updateField('titleStyle', event.target.value)} className="input-base">
+                  {BANNER_TITLE_STYLE_VALUES.map((value) => <option key={value} value={value}>{BANNER_TITLE_STYLE_LABELS[value]}</option>)}
+                </select>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">Four focused typography treatments without loading extra fonts.</p>
+              </div>
+              <div>
                 <label htmlFor={`${fieldIdPrefix}-text-tone`} className="mb-1.5 block text-sm font-medium">Title and description color</label>
                 <select id={`${fieldIdPrefix}-text-tone`} value={form.textTone} onChange={(event) => updateField('textTone', event.target.value)} className="input-base">
-                  <option value="light">Soft cream</option>
-                  <option value="white">Pure white</option>
-                  <option value="dark">Ink</option>
-                  <option value="brand">Brand blue</option>
-                  <option value="gold">Warm gold</option>
-                  <option value="mint">Fresh mint</option>
+                  {BANNER_TEXT_TONE_VALUES.map((value) => <option key={value} value={value}>{BANNER_TEXT_LABELS[value]}</option>)}
                 </select>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">Use shading or text highlight when the artwork reduces contrast.</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">Rich contrast presets designed for campaign artwork.</p>
+              </div>
+              <div>
+                <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Button style</label>
+                <select id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
+                  {BANNER_BUTTON_STYLE_VALUES.map((value) => <option key={value} value={value}>{BANNER_BUTTON_LABELS[value]}</option>)}
+                </select>
               </div>
               <div>
                 <label htmlFor={`${fieldIdPrefix}-overlay`} className="mb-1.5 block text-sm font-medium">Image shading</label>
@@ -317,20 +381,9 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                   <option value="none">None</option><option value="soft">Soft</option><option value="medium">Medium</option><option value="strong">Strong</option>
                 </select>
               </div>
-              <div>
-                <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Button style</label>
-                <select id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
-                  <option value="light">Soft cream</option>
-                  <option value="dark">Ink</option>
-                  <option value="brand">Brand blue</option>
-                  <option value="gold">Warm gold</option>
-                  <option value="mint">Fresh mint</option>
-                  <option value="outline">Adaptive outline</option>
-                </select>
-              </div>
             </div>
             <label htmlFor={`${fieldIdPrefix}-text-shadow`} className="mt-4 flex items-center justify-between gap-4 rounded-md bg-secondary/55 px-4 py-3 text-sm">
-              <span><span className="block font-semibold">Text highlight</span><span className="block text-xs text-muted-foreground">Adds a small contrast shadow behind banner copy.</span></span>
+              <span><span className="block font-semibold">Text edge</span><span className="block text-xs text-muted-foreground">Adds a crisp contrast edge without blur.</span></span>
               <input id={`${fieldIdPrefix}-text-shadow`} type="checkbox" checked={form.textShadow} onChange={(event) => updateField('textShadow', event.target.checked)} className="size-4 rounded border-input" />
             </label>
           </section>
@@ -360,7 +413,7 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
               {!previewImage ? <div className="absolute inset-0 flex items-center justify-center text-xs text-white/60">Choose an image to preview</div> : null}
               <div className="absolute inset-0" style={{ background: previewOverlay }} />
               <div className={cn('absolute inset-0 flex flex-col justify-center p-4', previewPosition, previewTone)} style={{ textShadow: previewTextShadow }}>
-                <p className="max-w-[85%] text-lg font-bold leading-tight">{form.title || 'Banner title'}</p>
+                <p className={cn('max-w-[85%] text-lg leading-tight', previewTitleClass)}>{form.title || 'Banner title'}</p>
                 <p className="mt-1 max-w-[85%] text-[10px] leading-4 opacity-90">{form.subtitle || 'Supporting banner text appears here.'}</p>
                 {form.linkUrl || form.buttonLabel ? <span className={cn('mt-3 inline-flex min-h-7 items-center rounded-full px-3 text-[9px] font-semibold', previewButton)}>{form.buttonLabel || 'Explore collection'}</span> : null}
               </div>
@@ -390,8 +443,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                   type="checkbox"
                   checked={hasNoEndDate}
                   onChange={(event) => {
-                    setHasNoEndDate(event.target.checked)
-                    if (event.target.checked) updateField('endsAt', '')
+                    const isUnlimited = event.target.checked
+                    hasNoEndDateRef.current = isUnlimited
+                    setHasNoEndDate(isUnlimited)
+                    if (isUnlimited) updateField('endsAt', '')
                   }}
                   className="mt-0.5 size-4 rounded border-input"
                 />

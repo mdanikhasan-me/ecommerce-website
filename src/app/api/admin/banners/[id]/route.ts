@@ -71,6 +71,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
           linkUrl: payload.linkUrl,
           buttonLabel: payload.buttonLabel,
           buttonStyle: payload.buttonStyle,
+          titleStyle: payload.titleStyle,
           textPosition: payload.textPosition,
           textTone: payload.textTone,
           overlayStrength: payload.overlayStrength,
@@ -79,7 +80,7 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
           sortOrder: payload.sortOrder,
           isActive: payload.isActive,
           startsAt: payload.startsAt,
-          endsAt: payload.endsAt,
+          endsAt: payload.unlimitedDuration ? null : payload.endsAt,
         },
       })
 
