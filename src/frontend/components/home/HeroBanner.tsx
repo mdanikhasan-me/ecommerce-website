@@ -241,7 +241,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
               mobileSrc={mobileImageSrc}
               alt={title || 'Promotional banner'}
               className={cn(
-                'object-cover transition-opacity duration-[180ms] motion-reduce:transition-none',
+                'object-cover transition-opacity [transition-duration:180ms] motion-reduce:transition-none',
                 isTransitioning ? 'opacity-0' : 'opacity-100',
               )}
             />
@@ -249,7 +249,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
           <div className="absolute inset-0 sm:hidden" style={overlays.mobile} />
           <div className="absolute inset-0 hidden sm:block" style={overlays.desktop} />
 
-          <div className={cn('absolute inset-0 transition-opacity duration-[180ms] motion-reduce:transition-none', isTransitioning ? 'opacity-0' : 'opacity-100')}>
+          <div className={cn('absolute inset-0 transition-opacity [transition-duration:180ms] motion-reduce:transition-none', isTransitioning ? 'opacity-0' : 'opacity-100')}>
             <div className="storefront-frame flex h-full items-end py-6 sm:items-center sm:py-8 lg:py-10">
               <div className={cn('flex w-1/2 min-w-0 max-w-[50%] flex-col sm:w-auto sm:max-w-[34rem] lg:max-w-[36rem]', positionClass, toneClass)}>
                 {title ? (

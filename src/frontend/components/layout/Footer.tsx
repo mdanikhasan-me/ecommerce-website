@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 import { APP_BADGE_ASSETS, PAYMENT_ASSETS } from '@/shared/assets'
 import {
   CONTACT_ADDRESS,
@@ -41,13 +40,6 @@ const SOCIAL_LINKS = [
 
 const SOCIAL_AND_CONTACT_LINKS = [...SOCIAL_LINKS, WHATSAPP_LINK] as const
 
-const SESSION_COOKIE_PREFIXES = [
-  'authjs.session-token',
-  '__Secure-authjs.session-token',
-  'next-auth.session-token',
-  '__Secure-next-auth.session-token',
-] as const
-
 // Footer brand display only; does not enable checkout gateways.
 const FOOTER_PAYMENT_LOGOS = [
   {
@@ -75,19 +67,6 @@ type FooterLinkSection = {
     href: string
     prefetch?: false
   }>
-}
-
-function isSessionCookieName(cookieName: string) {
-  return SESSION_COOKIE_PREFIXES.some((prefix) => {
-    if (cookieName === prefix) return true
-    const suffix = cookieName.slice(prefix.length)
-    return /^\.\d+$/.test(suffix)
-  })
-}
-
-async function hasAuthSessionCookie() {
-  const cookieStore = await cookies()
-  return cookieStore.getAll().some((cookie) => isSessionCookieName(cookie.name))
 }
 
 const FOOTER_LINK_SECTIONS: FooterLinkSection[] = [
@@ -238,9 +217,7 @@ function FooterAppBadges({
   )
 }
 
-export async function Footer() {
-  const isInitiallyAuthenticated = await hasAuthSessionCookie()
-
+export function Footer() {
   return (
     <footer className="storefront-footer border-t border-black/8 text-foreground">
       <div className="container-site">
@@ -294,10 +271,7 @@ export async function Footer() {
                     {section.title}
                   </h2>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks
-                      variant="desktop"
-                      isInitiallyAuthenticated={isInitiallyAuthenticated}
-                    />
+                    <FooterAccountLinks variant="desktop" />
                   ) : (
                     <ul className="mt-2 space-y-1.5">
                       {section.links.map((link) => (
@@ -443,10 +417,7 @@ export async function Footer() {
                       {section.title}
                     </h2>
                     {section.title === 'Account' ? (
-                      <FooterAccountLinks
-                        variant="tablet"
-                        isInitiallyAuthenticated={isInitiallyAuthenticated}
-                      />
+                      <FooterAccountLinks variant="tablet" />
                     ) : (
                       <ul className="mt-3 space-y-2 text-xs leading-5 min-[820px]:text-sm">
                         {section.links.map((link) => (
@@ -574,10 +545,7 @@ export async function Footer() {
                     />
                   </summary>
                   {section.title === 'Account' ? (
-                    <FooterAccountLinks
-                      variant="mobile"
-                      isInitiallyAuthenticated={isInitiallyAuthenticated}
-                    />
+                    <FooterAccountLinks variant="mobile" />
                   ) : (
                     <ul className="ml-9 divide-y divide-black/8 pb-3">
                       {section.links.map((link) => (
