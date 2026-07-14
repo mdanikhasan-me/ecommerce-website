@@ -1,9 +1,22 @@
 import Link from 'next/link'
+import { db } from '@/backend/database'
 import { BannerEditorForm } from '@/frontend/components/admin/BannerEditorForm'
 
 export const metadata = { title: 'Admin Create Banner' }
 
-export default function AdminNewBannerPage() {
+export default async function AdminNewBannerPage() {
+  const destinations = await db.category.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      parentId: true,
+      parent: { select: { name: true } },
+    },
+    orderBy: [{ parentId: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+  })
+
   return (
     <div className="space-y-6">
       <div className="admin-page-header">
@@ -18,7 +31,7 @@ export default function AdminNewBannerPage() {
         </Link>
       </div>
 
-      <BannerEditorForm />
+      <BannerEditorForm destinations={destinations} />
     </div>
   )
 }

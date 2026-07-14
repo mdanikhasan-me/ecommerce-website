@@ -11,29 +11,42 @@ export const metadata = { title: 'Admin Edit Banner' }
 
 export default async function AdminBannerDetailPage({ params }: Props) {
   const { id } = await params
-  const banner = await db.banner.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      title: true,
-      subtitle: true,
-      imageUrl: true,
-      tabletImageUrl: true,
-      mobileImageUrl: true,
-      linkUrl: true,
-      buttonLabel: true,
-      buttonStyle: true,
-      textPosition: true,
-      textTone: true,
-      overlayStrength: true,
-      textShadow: true,
-      position: true,
-      sortOrder: true,
-      isActive: true,
-      startsAt: true,
-      endsAt: true,
-    },
-  })
+  const [banner, destinations] = await Promise.all([
+    db.banner.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        imageUrl: true,
+        tabletImageUrl: true,
+        mobileImageUrl: true,
+        linkUrl: true,
+        buttonLabel: true,
+        buttonStyle: true,
+        textPosition: true,
+        textTone: true,
+        overlayStrength: true,
+        textShadow: true,
+        position: true,
+        sortOrder: true,
+        isActive: true,
+        startsAt: true,
+        endsAt: true,
+      },
+    }),
+    db.category.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        parentId: true,
+        parent: { select: { name: true } },
+      },
+      orderBy: [{ parentId: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+    }),
+  ])
 
   if (!banner) notFound()
 
@@ -51,7 +64,7 @@ export default async function AdminBannerDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      <BannerEditorForm banner={banner} />
+      <BannerEditorForm banner={banner} destinations={destinations} />
     </div>
   )
 }

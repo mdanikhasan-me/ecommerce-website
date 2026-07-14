@@ -236,7 +236,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
           <div className={cn('absolute inset-0 transition-opacity duration-[180ms] motion-reduce:transition-none', isTransitioning ? 'opacity-0' : 'opacity-100')}>
             <div className="storefront-frame flex h-full items-end py-6 sm:items-center sm:py-8 lg:py-10">
-              <div className={cn('flex max-w-[90%] flex-col md:max-w-[34rem] lg:max-w-[36rem]', positionClass, toneClass)}>
+              <div className={cn('flex max-w-[50%] flex-col sm:max-w-[34rem] lg:max-w-[36rem]', positionClass, toneClass)}>
                 {title ? (
                   <h2 className={cn('line-clamp-2 font-display text-[1.28rem] font-bold leading-[0.9] sm:line-clamp-none sm:text-[2.7rem] lg:text-[3.8rem]', titleShadow)}>
                     {title}

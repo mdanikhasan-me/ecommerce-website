@@ -13,6 +13,15 @@ const BANNER_IMAGE_DATA_URL_ERROR =
 
 type BannerImageSlot = 'desktop' | 'tablet' | 'mobile'
 type PreviewMode = 'desktop' | 'tablet' | 'mobile'
+type BannerDestinationType = 'main-category' | 'subcategory' | 'custom'
+
+interface BannerDestinationOption {
+  id: string
+  name: string
+  slug: string
+  parentId: string | null
+  parent: { name: string } | null
+}
 
 interface EditableBanner {
   id: string
@@ -36,6 +45,7 @@ interface EditableBanner {
 
 interface BannerEditorFormProps {
   banner?: EditableBanner
+  destinations?: BannerDestinationOption[]
   redirectTo?: string
 }
 
@@ -43,13 +53,22 @@ function isBannerImageDataUrl(value: string | null | undefined) {
   return value?.trim().toLowerCase().startsWith('data:image/') ?? false
 }
 
-export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: BannerEditorFormProps) {
+function getCategoryDestination(slug: string) {
+  return `/category/${slug}`
+}
+
+export function BannerEditorForm({ banner, destinations = [], redirectTo = '/admin/banners' }: BannerEditorFormProps) {
   const router = useRouter()
   const isEditing = Boolean(banner)
+  const initialDestination = destinations.find((destination) => getCategoryDestination(destination.slug) === banner?.linkUrl)
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState('')
   const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop')
+  const [destinationType, setDestinationType] = useState<BannerDestinationType>(
+    initialDestination ? (initialDestination.parentId ? 'subcategory' : 'main-category') : banner?.linkUrl ? 'custom' : 'main-category',
+  )
+  const [hasNoEndDate, setHasNoEndDate] = useState(!banner?.endsAt)
   const [form, setForm] = useState({
     title: banner?.title ?? '',
     subtitle: banner?.subtitle ?? '',
@@ -89,7 +108,7 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
     sortOrder: Number(form.sortOrder || 0),
     isActive: form.isActive,
     startsAt: form.startsAt || null,
-    endsAt: form.endsAt || null,
+    endsAt: hasNoEndDate ? null : form.endsAt || null,
   })
   const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
     const uploadForm = new FormData()
@@ -108,6 +127,10 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
     setError('')
     if (isBannerImageDataUrl(form.imageUrl) || isBannerImageDataUrl(form.tabletImageUrl) || isBannerImageDataUrl(form.mobileImageUrl)) {
       setError(BANNER_IMAGE_DATA_URL_ERROR)
+      return
+    }
+    if (!hasNoEndDate && !form.endsAt) {
+      setError('Choose an end date or enable Unlimited duration.')
       return
     }
     setIsSaving(true)
@@ -176,6 +199,20 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
   const previewTextShadow = form.textShadow
     ? form.textTone === 'dark' ? '0 2px 10px rgba(255,255,255,0.55)' : '0 3px 14px rgba(15,23,42,0.55)'
     : 'none'
+  const mainDestinations = destinations.filter((destination) => !destination.parentId)
+  const subcategoryDestinations = destinations.filter((destination) => destination.parentId)
+  const destinationOptions = destinationType === 'subcategory' ? subcategoryDestinations : mainDestinations
+  const selectedDestination = destinationOptions.find(
+    (destination) => getCategoryDestination(destination.slug) === form.linkUrl,
+  )?.id ?? ''
+  const changeDestinationType = (nextType: BannerDestinationType) => {
+    setDestinationType(nextType)
+    if (nextType !== 'custom') updateField('linkUrl', '')
+  }
+  const changeCategoryDestination = (destinationId: string) => {
+    const destination = destinations.find((option) => option.id === destinationId)
+    updateField('linkUrl', destination ? getCategoryDestination(destination.slug) : '')
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 pb-20 sm:pb-0">
@@ -195,14 +232,41 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
                 <label htmlFor={`${fieldIdPrefix}-subtitle`} className="mb-1.5 block text-sm font-medium">Subtitle</label>
                 <textarea id={`${fieldIdPrefix}-subtitle`} value={form.subtitle} onChange={(event) => updateField('subtitle', event.target.value)} className="input-base min-h-24 resize-y" placeholder="Optional supporting text" />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
                 <div>
                   <label htmlFor={`${fieldIdPrefix}-button-label`} className="mb-1.5 block text-sm font-medium">Button label</label>
                   <input id={`${fieldIdPrefix}-button-label`} value={form.buttonLabel} onChange={(event) => updateField('buttonLabel', event.target.value)} className="input-base" placeholder="Explore collection" />
                 </div>
                 <div>
-                  <label htmlFor={`${fieldIdPrefix}-link`} className="mb-1.5 block text-sm font-medium">Button destination</label>
-                  <input id={`${fieldIdPrefix}-link`} value={form.linkUrl} onChange={(event) => updateField('linkUrl', event.target.value)} className="input-base" placeholder="/category/mobile-phones" />
+                  <span className="mb-1.5 block text-sm font-medium">Button destination</span>
+                  <div className="grid gap-2 lg:grid-cols-[10.5rem_minmax(0,1fr)]">
+                    <div>
+                      <label htmlFor={`${fieldIdPrefix}-destination-type`} className="sr-only">Destination type</label>
+                      <select id={`${fieldIdPrefix}-destination-type`} value={destinationType} onChange={(event) => changeDestinationType(event.target.value as BannerDestinationType)} className="input-base">
+                        <option value="main-category">Main category</option>
+                        <option value="subcategory">Subcategory</option>
+                        <option value="custom">Custom link</option>
+                      </select>
+                    </div>
+                    {destinationType === 'custom' ? (
+                      <div>
+                        <label htmlFor={`${fieldIdPrefix}-link`} className="sr-only">Custom destination</label>
+                        <input id={`${fieldIdPrefix}-link`} value={form.linkUrl} onChange={(event) => updateField('linkUrl', event.target.value)} className="input-base" placeholder="/category/mobile-phones" />
+                      </div>
+                    ) : (
+                      <div>
+                        <label htmlFor={`${fieldIdPrefix}-category-destination`} className="sr-only">Category destination</label>
+                        <select id={`${fieldIdPrefix}-category-destination`} value={selectedDestination} onChange={(event) => changeCategoryDestination(event.target.value)} className="input-base">
+                          <option value="">Select {destinationType === 'subcategory' ? 'a subcategory' : 'a main category'}</option>
+                          {destinationOptions.map((destination) => (
+                            <option key={destination.id} value={destination.id}>
+                              {destination.parent ? `${destination.parent.name} / ${destination.name}` : destination.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -292,13 +356,31 @@ export function BannerEditorForm({ banner, redirectTo = '/admin/banners' }: Bann
                 helperText="Leave empty to publish immediately."
                 allowNow
               />
-              <AdminDateTimeField
-                id={`${fieldIdPrefix}-ends-at`}
-                label="Ends at"
-                value={form.endsAt}
-                onChange={(value) => updateField('endsAt', value)}
-                helperText="Leave empty to keep the banner available."
-              />
+              <label htmlFor={`${fieldIdPrefix}-unlimited`} className="flex items-start gap-3 rounded-md bg-secondary/55 px-4 py-3 text-sm">
+                <input
+                  id={`${fieldIdPrefix}-unlimited`}
+                  type="checkbox"
+                  checked={hasNoEndDate}
+                  onChange={(event) => {
+                    setHasNoEndDate(event.target.checked)
+                    if (event.target.checked) updateField('endsAt', '')
+                  }}
+                  className="mt-0.5 size-4 rounded border-input"
+                />
+                <span>
+                  <span className="block font-semibold">Unlimited duration</span>
+                  <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">No end date. The banner remains available until you disable it.</span>
+                </span>
+              </label>
+              {!hasNoEndDate ? (
+                <AdminDateTimeField
+                  id={`${fieldIdPrefix}-ends-at`}
+                  label="Ends at"
+                  value={form.endsAt}
+                  onChange={(value) => updateField('endsAt', value)}
+                  helperText="Choose when this banner should stop publishing."
+                />
+              ) : null}
               <label htmlFor={`${fieldIdPrefix}-active`} className="flex items-center justify-between rounded-md bg-secondary/55 px-4 py-3 text-sm font-semibold">
                 Active
                 <input id={`${fieldIdPrefix}-active`} type="checkbox" checked={form.isActive} onChange={(event) => updateField('isActive', event.target.checked)} className="size-4 rounded border-input" />
