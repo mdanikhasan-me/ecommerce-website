@@ -373,7 +373,12 @@
 
   .admin-main {
     overscroll-behavior: contain;
-    scrollbar-gutter: stable;
+  }
+
+  @supports (scrollbar-gutter: stable) {
+    .admin-main {
+      scrollbar-gutter: stable;
+    }
   }
 
   .admin-content {
@@ -740,7 +745,12 @@
     display: flex;
     gap: 0.25rem;
     overflow-x: auto;
-    scrollbar-width: none;
+  }
+
+  @supports (scrollbar-width: none) {
+    .admin-report-tabs {
+      scrollbar-width: none;
+    }
   }
 
   .admin-report-tabs::-webkit-scrollbar {
@@ -1947,15 +1957,15 @@
 
   .line-clamp-2 {
     display: -webkit-box;
-    line-clamp: 2;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
   .line-clamp-3 {
     display: -webkit-box;
-    line-clamp: 3;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
