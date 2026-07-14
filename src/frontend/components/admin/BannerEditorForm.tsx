@@ -151,17 +151,43 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     startsAt: form.startsAt || null,
     endsAt: hasNoEndDateRef.current ? null : form.endsAt || null,
   })
-  const uploadBannerImage = async (slot: BannerImageSlot, file: File) => {
+  const uploadBannerImage = async (slot: BannerImageSlot, file: File, previousUrl: string) => {
     const uploadForm = new FormData()
     uploadForm.set('file', file)
     uploadForm.set('slot', slot)
     uploadForm.set('owner', banner?.id || form.title.trim() || 'banner')
+    if (previousUrl.trim()) uploadForm.set('previousUrl', previousUrl.trim())
     const response = await fetch('/api/admin/banners/upload', { method: 'POST', body: uploadForm })
     const data = await response.json().catch(() => null)
     if (!response.ok || typeof data?.url !== 'string') {
       throw new Error(data?.error || 'Could not upload banner image')
     }
     return data.url
+  }
+  const removeBannerImage = async (url: string) => {
+    if (!url.startsWith('/uploads/admin/banners/')) return
+
+    const response = await fetch('/api/admin/banners/upload', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    })
+    const data = await response.json().catch(() => null)
+    if (!response.ok) throw new Error(data?.error || 'Could not remove banner image')
+  }
+  const cleanupTransientBannerImages = async () => {
+    const originalUrls = new Set([
+      banner?.imageUrl,
+      banner?.tabletImageUrl,
+      banner?.mobileImageUrl,
+    ].filter((url): url is string => Boolean(url)))
+    const transientUrls = new Set([
+      form.imageUrl,
+      form.tabletImageUrl,
+      form.mobileImageUrl,
+    ].filter((url) => url.startsWith('/uploads/admin/banners/') && !originalUrls.has(url)))
+
+    await Promise.all([...transientUrls].map((url) => removeBannerImage(url)))
   }
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -210,6 +236,10 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     } finally {
       setIsDeleting(false)
     }
+  }
+  const handleCancel = async () => {
+    await cleanupTransientBannerImages().catch(() => undefined)
+    router.push(redirectTo)
   }
 
   const previewImage = previewMode === 'mobile'
@@ -392,9 +422,9 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
             <h2 className="admin-section-title">Responsive artwork</h2>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">Use the required ratio preset for each screen. Pixel dimensions are balanced recommendations for sharp output and lightweight delivery; larger source files are accepted.</p>
             <div className="mt-4 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              <AdminImageField label="Desktop image" value={form.imageUrl} onChange={(value) => updateField('imageUrl', value)} helperText="Required ratio: Ultrawide 21:9. Recommended export: 2048 × 864 px, WebP, under 500 KB. Stored at q90." previewClassName="aspect-[21/9]" uploadImage={(file) => uploadBannerImage('desktop', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
-              <AdminImageField label="Tablet / iPad image" value={form.tabletImageUrl} onChange={(value) => updateField('tabletImageUrl', value)} helperText="Required ratio: 16:9. Recommended export: 1376 × 768 px, WebP, under 400 KB. Stored at q90." previewClassName="aspect-video" uploadImage={(file) => uploadBannerImage('tablet', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
-              <AdminImageField label="Mobile image" value={form.mobileImageUrl} onChange={(value) => updateField('mobileImageUrl', value)} helperText="Required ratio: landscape 5:4. Recommended export: 1152 × 928 px, WebP, under 300 KB. Stored at q90." previewClassName="aspect-[5/4]" uploadImage={(file) => uploadBannerImage('mobile', file)} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Desktop image" value={form.imageUrl} onChange={(value) => updateField('imageUrl', value)} helperText="Required ratio: Ultrawide 21:9. Recommended export: 2048 × 864 px, WebP, under 500 KB. Stored at q90." previewClassName="aspect-[21/9]" uploadImage={(file) => uploadBannerImage('desktop', file, form.imageUrl)} removeImage={removeBannerImage} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Tablet / iPad image" value={form.tabletImageUrl} onChange={(value) => updateField('tabletImageUrl', value)} helperText="Required ratio: 16:9. Recommended export: 1376 × 768 px, WebP, under 400 KB. Stored at q90." previewClassName="aspect-video" uploadImage={(file) => uploadBannerImage('tablet', file, form.tabletImageUrl)} removeImage={removeBannerImage} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
+              <AdminImageField label="Mobile image" value={form.mobileImageUrl} onChange={(value) => updateField('mobileImageUrl', value)} helperText="Required ratio: landscape 5:4. Recommended export: 1152 × 928 px, WebP, under 300 KB. Stored at q90." previewClassName="aspect-[5/4]" uploadImage={(file) => uploadBannerImage('mobile', file, form.mobileImageUrl)} removeImage={removeBannerImage} rejectDataUrls dataUrlErrorMessage={BANNER_IMAGE_DATA_URL_ERROR} />
             </div>
           </section>
         </div>
@@ -476,7 +506,7 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
       <div className="admin-form-actions admin-card flex flex-wrap items-center justify-between gap-3 p-3">
         <div>{isEditing ? <button type="button" onClick={handleDelete} disabled={isDeleting || isSaving} className="btn-outline gap-2 text-red-600">{isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}Delete banner</button> : null}</div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => router.push(redirectTo)} className="btn-outline">Cancel</button>
+          <button type="button" onClick={handleCancel} className="btn-outline">Cancel</button>
           <button type="submit" disabled={isSaving || isDeleting} className="btn-primary gap-2">{isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}{isEditing ? 'Save banner' : 'Create banner'}</button>
         </div>
       </div>

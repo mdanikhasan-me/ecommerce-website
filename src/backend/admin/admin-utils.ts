@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import path from 'path'
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
 import { slugify } from '@/backend/utils'
@@ -262,6 +263,23 @@ export async function deleteManagedAdminUpload(
 
   try {
     await fs.rm(filePath, { force: true })
+    const classification = classifyAdminMediaPath(url)
+    if (classification.managedPrefix) {
+      const publicRoot = path.resolve(options.publicRoot ?? path.join(process.cwd(), 'public'))
+      const managedRoot = path.resolve(publicRoot, classification.managedPrefix.replace(/^\/+|\/+$/g, ''))
+      const relativeSegments = path.relative(managedRoot, filePath).split(path.sep)
+      const cleanupBoundary = path.resolve(managedRoot, relativeSegments[0] ?? '')
+      let currentDirectory = path.dirname(filePath)
+
+      while (currentDirectory !== cleanupBoundary && currentDirectory.startsWith(`${cleanupBoundary}${path.sep}`)) {
+        try {
+          await fs.rmdir(currentDirectory)
+        } catch {
+          break
+        }
+        currentDirectory = path.dirname(currentDirectory)
+      }
+    }
     return true
   } catch {
     logAdminUploadCleanupSkipped({

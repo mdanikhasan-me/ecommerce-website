@@ -11,6 +11,7 @@ interface AdminImageFieldProps {
   helperText?: string
   previewClassName?: string
   uploadImage?: (file: File) => Promise<string>
+  removeImage?: (value: string) => Promise<void>
   rejectDataUrls?: boolean
   dataUrlErrorMessage?: string
 }
@@ -32,6 +33,7 @@ export function AdminImageField({
   helperText,
   previewClassName,
   uploadImage,
+  removeImage,
   rejectDataUrls = false,
   dataUrlErrorMessage = DEFAULT_DATA_URL_ERROR,
 }: AdminImageFieldProps) {
@@ -72,6 +74,20 @@ export function AdminImageField({
     onChange(nextValue)
   }
 
+  const handleRemove = async () => {
+    setError('')
+    setIsUploading(true)
+
+    try {
+      if (removeImage) await removeImage(value)
+      onChange('')
+    } catch (removeError) {
+      setError(getErrorMessage(removeError, 'Could not remove image'))
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   return (
     <div className="space-y-3">
       <div>
@@ -104,10 +120,8 @@ export function AdminImageField({
           {value && (
             <button
               type="button"
-              onClick={() => {
-                setError('')
-                onChange('')
-              }}
+              onClick={handleRemove}
+              disabled={isUploading}
               className="btn-outline gap-2 px-3 py-2 text-xs text-red-600"
             >
               <Trash2 className="h-4 w-4" />
