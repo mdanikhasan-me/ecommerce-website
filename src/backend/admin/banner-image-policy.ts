@@ -1,15 +1,13 @@
+import {
+  BANNER_IMAGE_ASPECT_RATIO_TOLERANCE,
+  BANNER_IMAGE_SPECS,
+  type BannerImageSlot,
+} from '@/shared/banner-image-specs'
+
 export const BANNER_IMAGE_DATA_URL_ERROR =
   'Banner images must be uploaded as files before saving. Base64 image data is not allowed.'
 
-export type AdminBannerImageSlot = 'desktop' | 'tablet' | 'mobile'
-
-const BANNER_IMAGE_ASPECT_RATIO_TOLERANCE = 0.05
-
-export const ADMIN_BANNER_IMAGE_ASPECTS = {
-  desktop: { label: 'Desktop image', preset: 'Ultrawide (21:9)', ratio: 21 / 9 },
-  tablet: { label: 'Tablet / iPad image', preset: 'Desktop (16:9)', ratio: 16 / 9 },
-  mobile: { label: 'Mobile image', preset: 'Mobile landscape (5:4)', ratio: 5 / 4 },
-} as const satisfies Record<AdminBannerImageSlot, { label: string; preset: string; ratio: number }>
+export type AdminBannerImageSlot = BannerImageSlot
 
 export function isAdminBannerImageSlot(value: string | null | undefined): value is AdminBannerImageSlot {
   return value === 'desktop' || value === 'tablet' || value === 'mobile'
@@ -24,7 +22,7 @@ export function validateAdminBannerImageAspectRatio(slot: AdminBannerImageSlot, 
     throw new Error('Banner image dimensions are invalid')
   }
 
-  const specification = ADMIN_BANNER_IMAGE_ASPECTS[slot]
+  const specification = BANNER_IMAGE_SPECS[slot]
   const uploadedRatio = width / height
   const relativeDifference = Math.abs(uploadedRatio - specification.ratio) / specification.ratio
 

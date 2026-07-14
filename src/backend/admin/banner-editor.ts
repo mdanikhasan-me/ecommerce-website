@@ -1,5 +1,11 @@
 import { z } from 'zod'
 import { BANNER_IMAGE_DATA_URL_ERROR, isImageDataUrl } from '@/backend/admin/banner-image-policy'
+import {
+  BANNER_BUTTON_STYLE_ACCEPTED_VALUES,
+  BANNER_IMAGE_SHADE_ACCEPTED_VALUES,
+  BANNER_TEXT_TONE_ACCEPTED_VALUES,
+  BANNER_TITLE_STYLE_ACCEPTED_VALUES,
+} from '@/shared/banner-presentation'
 
 const INLINE_BANNER_IMAGE_DATA_URL = '__INLINE_BANNER_IMAGE_DATA_URL__'
 
@@ -55,11 +61,11 @@ const bannerPayloadSchema = z
     mobileImageUrl: optionalBannerImageUrl,
     linkUrl: optionalTrimmedString(500),
     buttonLabel: optionalTrimmedString(48),
-    buttonStyle: z.enum(['obsidian', 'cobalt', 'ruby', 'emerald', 'violet', 'orange', 'outline']).optional().default('obsidian'),
-    titleStyle: z.enum(['modern', 'editorial', 'clean', 'statement']).optional().default('modern'),
+    buttonStyle: z.enum(BANNER_BUTTON_STYLE_ACCEPTED_VALUES).optional().default('solid-black'),
+    titleStyle: z.enum(BANNER_TITLE_STYLE_ACCEPTED_VALUES).optional().default('commerce'),
     textPosition: z.enum(['left', 'center', 'right']).optional().default('left'),
-    textTone: z.enum(['starlight', 'obsidian', 'cobalt', 'ruby', 'emerald', 'violet', 'orange']).optional().default('starlight'),
-    overlayStrength: z.enum(['none', 'soft', 'medium', 'strong']).optional().default('medium'),
+    textTone: z.enum(BANNER_TEXT_TONE_ACCEPTED_VALUES).optional().default('white'),
+    overlayStrength: z.enum(BANNER_IMAGE_SHADE_ACCEPTED_VALUES).optional().default('black-medium'),
     textShadow: z.boolean().optional().default(true),
     // Single banner placement for now: the homepage hero. Any legacy value is coerced.
     position: z.string().trim().max(80).optional().transform(() => 'hero' as const),

@@ -1,22 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react'
-import Link from 'next/link'
 import { cn } from '@/backend/utils'
+import { BannerCreative } from '@/frontend/components/banner/BannerCreative'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import {
-  BANNER_BUTTON_CLASSES,
-  BANNER_TEXT_CLASSES,
-  BANNER_TITLE_STYLE_CLASSES,
-  bannerToneUsesLightBackdrop,
-  normalizeBannerButtonStyle,
-  normalizeBannerTextTone,
-  normalizeBannerTitleStyle,
-  type BannerTextTone,
-} from '@/shared/banner-presentation'
-
-type BannerTextPosition = 'left' | 'center' | 'right'
-type BannerOverlayStrength = 'none' | 'soft' | 'medium' | 'strong'
 
 const HERO_ROTATION_INTERVAL_MS = 7_000
 
@@ -35,54 +22,6 @@ interface Banner {
   textTone?: string | null
   overlayStrength?: string | null
   textShadow?: boolean | null
-}
-
-function BannerImage({
-  desktopSrc,
-  tabletSrc,
-  mobileSrc,
-  alt,
-  className,
-}: {
-  desktopSrc: string
-  tabletSrc?: string
-  mobileSrc?: string
-  alt: string
-  className: string
-}) {
-  const imageClassName = cn('absolute inset-0 h-full w-full max-w-none', className)
-  const resolvedTabletSrc = tabletSrc || desktopSrc
-  const resolvedMobileSrc = mobileSrc || resolvedTabletSrc
-
-  if (resolvedTabletSrc === desktopSrc && resolvedMobileSrc === desktopSrc) {
-    return <img src={desktopSrc} alt={alt} className={imageClassName} decoding="sync" fetchPriority="high" />
-  }
-
-  return (
-    <picture className="absolute inset-0 block h-full w-full">
-      <source media="(max-width: 639px)" srcSet={resolvedMobileSrc} />
-      <source media="(max-width: 1279px)" srcSet={resolvedTabletSrc} />
-      <img src={desktopSrc} alt={alt} className={imageClassName} decoding="sync" fetchPriority="high" />
-    </picture>
-  )
-}
-
-function normalizeOption<T extends string>(value: string | null | undefined, options: readonly T[], fallback: T): T {
-  return options.includes(value as T) ? value as T : fallback
-}
-
-function overlayStyles(strength: BannerOverlayStrength, tone: BannerTextTone, position: BannerTextPosition) {
-  const alpha = { none: 0, soft: 0.24, medium: 0.46, strong: 0.68 }[strength]
-  if (!alpha) return { mobile: undefined, desktop: undefined }
-  const usesLightBackdrop = bannerToneUsesLightBackdrop(tone)
-  const rgb = usesLightBackdrop ? '255,255,255' : '15,23,42'
-  const direction = position === 'right' ? '270deg' : '90deg'
-  return {
-    mobile: { background: `linear-gradient(180deg, rgba(${rgb},0) 18%, rgba(${rgb},${alpha}) 100%)` },
-    desktop: position === 'center'
-      ? { background: `rgba(${rgb},${Math.max(0.12, alpha * 0.55)})` }
-      : { background: `linear-gradient(${direction}, rgba(${rgb},${alpha}) 0%, rgba(${rgb},${alpha * 0.48}) 42%, rgba(${rgb},0) 100%)` },
-  }
 }
 
 export function HeroBanner({ banners }: { banners: Banner[] }) {
@@ -183,98 +122,45 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   if (!banners.length) return null
 
   const banner = banners[current]
-  const title = banner.title.trim()
-  const subtitle = banner.subtitle?.trim() ?? ''
-  const desktopImageUrl = banner.imageUrl?.trim() ?? ''
-  const tabletImageUrl = banner.tabletImageUrl?.trim() ?? ''
-  const mobileImageUrl = banner.mobileImageUrl?.trim() ?? ''
-  const fallbackImageUrl = desktopImageUrl || tabletImageUrl || mobileImageUrl
-  const desktopImageSrc = desktopImageUrl || fallbackImageUrl
-  const tabletImageSrc = tabletImageUrl || desktopImageSrc
-  const mobileImageSrc = mobileImageUrl || tabletImageSrc
   const linkUrl = banner.linkUrl?.replace(/^\/categories\//, '/category/')
-  const buttonLabel = banner.buttonLabel?.trim() || 'Explore collection'
-  const textPosition = normalizeOption(banner.textPosition, ['left', 'center', 'right'] as const, 'left')
-  const textTone = normalizeBannerTextTone(banner.textTone)
-  const overlayStrength = normalizeOption(banner.overlayStrength, ['none', 'soft', 'medium', 'strong'] as const, 'medium')
-  const buttonStyle = normalizeBannerButtonStyle(banner.buttonStyle)
-  const titleStyle = normalizeBannerTitleStyle(banner.titleStyle)
-  const hasTextShadow = banner.textShadow !== false
-  const overlays = overlayStyles(overlayStrength, textTone, textPosition)
-  const positionClass = {
-    left: 'items-start text-left',
-    center: 'mx-auto items-center text-center',
-    right: 'ml-auto items-end text-right',
-  }[textPosition]
-  const usesLightBackdrop = bannerToneUsesLightBackdrop(textTone)
-  const toneClass = BANNER_TEXT_CLASSES[textTone]
-  const titleStyleClass = BANNER_TITLE_STYLE_CLASSES[titleStyle]
-  const titleShadow = hasTextShadow
-    ? usesLightBackdrop
-      ? '[text-shadow:0_1px_1px_rgba(255,255,255,0.9)]'
-      : '[text-shadow:0_1px_2px_rgba(0,0,0,0.72)]'
-    : ''
-  const buttonClass = buttonStyle === 'outline'
-    ? 'border border-current bg-transparent text-current'
-    : BANNER_BUTTON_CLASSES[buttonStyle]
 
   return (
     <section className="w-full">
-      <div ref={bannerRootRef} className="relative overflow-hidden bg-foreground">
-        <div
-          className="relative aspect-[5/4] w-full sm:aspect-video xl:aspect-[21/9]"
+      <div className="relative overflow-hidden bg-foreground">
+        <BannerCreative
+          ref={bannerRootRef}
+          key={banner.id}
+          title={banner.title}
+          subtitle={banner.subtitle}
+          desktopImageUrl={banner.imageUrl}
+          tabletImageUrl={banner.tabletImageUrl}
+          mobileImageUrl={banner.mobileImageUrl}
+          linkUrl={linkUrl}
+          buttonLabel={banner.buttonLabel}
+          buttonStyle={banner.buttonStyle}
+          titleStyle={banner.titleStyle}
+          textPosition={banner.textPosition}
+          textTone={banner.textTone}
+          imageShade={banner.overlayStrength}
+          textEdge={banner.textShadow}
+          mode="responsive"
+          priority
           role="region"
           aria-label="Homepage banner carousel"
           aria-roledescription="carousel"
+          className={cn(
+            'transition-opacity [transition-duration:180ms] motion-reduce:transition-none',
+            isTransitioning ? 'opacity-0' : 'opacity-100',
+          )}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={() => {
             touchStartX.current = null
             touchStartY.current = null
           }}
-        >
-          {fallbackImageUrl ? (
-            <BannerImage
-              key={banner.id}
-              desktopSrc={desktopImageSrc}
-              tabletSrc={tabletImageSrc}
-              mobileSrc={mobileImageSrc}
-              alt={title || 'Promotional banner'}
-              className={cn(
-                'object-cover transition-opacity [transition-duration:180ms] motion-reduce:transition-none',
-                isTransitioning ? 'opacity-0' : 'opacity-100',
-              )}
-            />
-          ) : null}
-          <div className="absolute inset-0 sm:hidden" style={overlays.mobile} />
-          <div className="absolute inset-0 hidden sm:block" style={overlays.desktop} />
+        />
 
-          <div className={cn('absolute inset-0 transition-opacity [transition-duration:180ms] motion-reduce:transition-none', isTransitioning ? 'opacity-0' : 'opacity-100')}>
-            <div className="storefront-frame flex h-full items-end py-6 sm:items-center sm:py-8 lg:py-10">
-              <div className={cn('flex w-1/2 min-w-0 max-w-[50%] flex-col sm:w-auto sm:max-w-[34rem] lg:max-w-[36rem]', positionClass, toneClass)}>
-                {title ? (
-                  <h2 className={cn('line-clamp-2 w-full min-w-0 break-words text-[1.28rem] leading-[0.9] sm:line-clamp-none sm:w-auto sm:text-[2.7rem] lg:text-[3.8rem]', titleStyleClass, titleShadow)}>
-                    {title}
-                  </h2>
-                ) : null}
-                {subtitle ? (
-                  <p className={cn(title ? 'mt-2 sm:mt-3.5' : 'mt-0', 'line-clamp-2 w-full min-w-0 max-w-xl break-words text-sm leading-6 sm:line-clamp-none sm:w-auto sm:text-base sm:leading-7', hasTextShadow && titleShadow)}>
-                    {subtitle}
-                  </p>
-                ) : null}
-                {linkUrl ? (
-                  <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-6">
-                    <Link href={linkUrl} prefetch={false} className={cn('inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-semibold sm:px-5 sm:text-sm', buttonClass)}>
-                      {buttonLabel}
-                      <LocalIcon name="chevron-right" className="h-4 w-4" />
-                    </Link>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-
-          {banners.length > 1 ? (
+        {banners.length > 1 ? (
             <>
               <button
                 type="button"
@@ -308,8 +194,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                 ))}
               </div>
             </>
-          ) : null}
-        </div>
+        ) : null}
       </div>
     </section>
   )
