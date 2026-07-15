@@ -20,11 +20,11 @@ import {
   BANNER_BUTTON_BASE_CLASS,
   BANNER_BUTTON_CLASSES,
   BANNER_BUTTON_LABELS,
-  BANNER_BUTTON_STYLE_VALUES,
+  BANNER_BUTTON_STYLE_OPTION_VALUES,
   BANNER_IMAGE_SHADE_LABELS,
   BANNER_TEXT_LABELS,
   BANNER_TEXT_SWATCHES,
-  BANNER_TEXT_TONE_VALUES,
+  BANNER_TEXT_TONE_OPTION_VALUES,
   BANNER_TITLE_STYLE_LABELS,
   BANNER_TITLE_STYLE_VALUES,
   normalizeBannerButtonStyle,
@@ -430,11 +430,11 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
 
         <section data-banner-editor-section="design" className="admin-card order-3 p-5 sm:p-6 xl:col-start-1 xl:row-start-2">
           <h2 className="admin-section-title">Banner design</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Control composition, contrast, and the call to action without editing the artwork.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Set placement, typography, contrast, and one clear call-to-action template.</p>
 
           <div className="mt-5 space-y-4">
             <div className="rounded-md bg-secondary/45 p-4">
-              <h3 className="text-sm font-semibold">Composition</h3>
+              <h3 className="text-sm font-semibold">Typography and placement</h3>
               <div className="mt-3 grid gap-4 lg:grid-cols-2">
                 <div>
                   <span className="mb-1.5 block text-sm font-medium">Content alignment</span>
@@ -463,7 +463,7 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                   <select data-banner-typography id={`${fieldIdPrefix}-title-style`} value={form.titleStyle} onChange={(event) => updateField('titleStyle', event.target.value)} className="input-base">
                     {BANNER_TITLE_STYLE_VALUES.map((value) => <option key={value} value={value}>{BANNER_TITLE_STYLE_LABELS[value]}</option>)}
                   </select>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Eight lightweight presets; each applies one font family to both title and subtitle.</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Eight system-font presets keep the title and subtitle in one family with no font download.</p>
                 </div>
               </div>
             </div>
@@ -471,13 +471,13 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
             <div className="rounded-md bg-secondary/45 p-4">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold">Text contrast</h3>
-                  <p className="mt-0.5 text-xs text-muted-foreground">Text color never changes the image shade.</p>
+                  <h3 className="text-sm font-semibold">Text and artwork contrast</h3>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Six clear text colors; image shading remains a separate choice.</p>
                 </div>
                 <span className="text-xs font-medium text-muted-foreground">{BANNER_TEXT_LABELS[previewTextTone]}</span>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
-                {BANNER_TEXT_TONE_VALUES.map((value) => (
+                {BANNER_TEXT_TONE_OPTION_VALUES.map((value) => (
                   <button
                     key={value}
                     type="button"
@@ -551,11 +551,11 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
             <div className="rounded-md bg-secondary/45 p-4">
               <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,0.7fr)] lg:items-end">
                 <div>
-                  <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Button template</label>
+                  <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Call-to-action template</label>
                   <select data-banner-button-template id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
-                    {BANNER_BUTTON_STYLE_VALUES.map((value) => <option key={value} value={value}>{BANNER_BUTTON_LABELS[value]}</option>)}
+                    {BANNER_BUTTON_STYLE_OPTION_VALUES.map((value) => <option key={value} value={value}>{BANNER_BUTTON_LABELS[value]}</option>)}
                   </select>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Twelve static templates change shape, emphasis, type treatment, and color with CSS only.</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Nine distinct CSS-only templates: dark, light, colorful, framed, and underlined.</p>
                 </div>
                 <div className={cn('flex min-h-20 items-center justify-center rounded-md px-4', buttonPreviewUsesDarkSurface ? 'bg-[#172033]' : 'bg-[#f4f1eb]')}>
                   <span className={cn(BANNER_BUTTON_BASE_CLASS, BANNER_BUTTON_CLASSES[previewButtonStyle])}>{form.buttonLabel || 'Explore collection'}</span>

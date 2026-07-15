@@ -12,37 +12,46 @@ export const BANNER_TEXT_TONE_VALUES = [
 ] as const
 export type BannerTextTone = (typeof BANNER_TEXT_TONE_VALUES)[number]
 
+export const BANNER_TEXT_TONE_OPTION_VALUES = [
+  'white',
+  'black',
+  'electric-blue',
+  'signal-red',
+  'performance-green',
+  'luxury-gold',
+] as const satisfies readonly BannerTextTone[]
+
 export const BANNER_TEXT_LABELS: Record<BannerTextTone, string> = {
-  white: 'Gallery white',
-  black: 'Carbon black',
-  'electric-blue': 'Electric blue',
-  'signal-red': 'Signal red',
-  'performance-green': 'Performance green',
-  'luxury-gold': 'Luxury gold',
-  'beauty-magenta': 'Beauty magenta',
-  'gaming-cyan': 'Gaming cyan',
+  white: 'White',
+  black: 'Black',
+  'electric-blue': 'Brand blue',
+  'signal-red': 'Crimson',
+  'performance-green': 'Emerald',
+  'luxury-gold': 'Amber',
+  'beauty-magenta': 'Magenta',
+  'gaming-cyan': 'Cyan',
 }
 
 export const BANNER_TEXT_CLASSES: Record<BannerTextTone, string> = {
   white: 'text-white',
-  black: 'text-[#05070b]',
-  'electric-blue': 'text-[#075bff]',
-  'signal-red': 'text-[#ff234f]',
-  'performance-green': 'text-[#00a86b]',
-  'luxury-gold': 'text-[#ffbd00]',
-  'beauty-magenta': 'text-[#ff2d95]',
-  'gaming-cyan': 'text-[#00c8ff]',
+  black: 'text-[#090b10]',
+  'electric-blue': 'text-[#0b63f6]',
+  'signal-red': 'text-[#dc1638]',
+  'performance-green': 'text-[#008d57]',
+  'luxury-gold': 'text-[#e7a600]',
+  'beauty-magenta': 'text-[#d81b76]',
+  'gaming-cyan': 'text-[#009ac5]',
 }
 
 export const BANNER_TEXT_SWATCHES: Record<BannerTextTone, string> = {
   white: '#ffffff',
-  black: '#05070b',
-  'electric-blue': '#075bff',
-  'signal-red': '#ff234f',
-  'performance-green': '#00a86b',
-  'luxury-gold': '#ffbd00',
-  'beauty-magenta': '#ff2d95',
-  'gaming-cyan': '#00c8ff',
+  black: '#090b10',
+  'electric-blue': '#0b63f6',
+  'signal-red': '#dc1638',
+  'performance-green': '#008d57',
+  'luxury-gold': '#e7a600',
+  'beauty-magenta': '#d81b76',
+  'gaming-cyan': '#009ac5',
 }
 
 export const BANNER_BUTTON_STYLE_VALUES = [
@@ -61,37 +70,49 @@ export const BANNER_BUTTON_STYLE_VALUES = [
 ] as const
 export type BannerButtonStyle = (typeof BANNER_BUTTON_STYLE_VALUES)[number]
 
+export const BANNER_BUTTON_STYLE_OPTION_VALUES = [
+  'solid-black',
+  'solid-white',
+  'brand-blue',
+  'signal-red',
+  'luxury-gold',
+  'outline-white',
+  'outline-black',
+  'editorial-white',
+  'editorial-black',
+] as const satisfies readonly BannerButtonStyle[]
+
 export const BANNER_BUTTON_LABELS: Record<BannerButtonStyle, string> = {
-  'solid-black': 'Black pill',
-  'solid-white': 'White pill',
-  'brand-blue': 'Brand blue',
-  'signal-red': 'Signal red',
-  'luxury-gold': 'Luxury gold',
-  'outline-white': 'White outline',
-  'outline-black': 'Black outline',
+  'solid-black': 'Black capsule',
+  'solid-white': 'White capsule',
+  'brand-blue': 'Blue action block',
+  'signal-red': 'Crimson action block',
+  'luxury-gold': 'Gold frame',
+  'outline-white': 'White frame',
+  'outline-black': 'Black frame',
   'soft-white': 'Soft white panel',
   'soft-black': 'Soft black panel',
-  'editorial-white': 'Editorial white',
-  'editorial-black': 'Editorial black',
+  'editorial-white': 'White underline',
+  'editorial-black': 'Black underline',
   'minimal-white': 'Minimal white link',
 }
 
 export const BANNER_BUTTON_BASE_CLASS =
-  'inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black/70 sm:text-sm'
+  'inline-flex min-h-[3.25em] items-center justify-center gap-[0.65em] whitespace-nowrap px-[1.45em] py-[0.68em] text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0b63f6] focus-visible:ring-offset-2 sm:min-h-[3em] sm:text-sm xl:text-[0.95rem]'
 
 export const BANNER_BUTTON_CLASSES: Record<BannerButtonStyle, string> = {
-  'solid-black': 'rounded-full bg-[#05070b] px-5 py-2.5 font-bold text-white',
-  'solid-white': 'rounded-full bg-white px-5 py-2.5 font-bold text-[#05070b]',
-  'brand-blue': 'rounded-md bg-[#075bff] px-5 py-2.5 font-bold text-white',
-  'signal-red': 'rounded-md bg-[#e80035] px-5 py-2.5 font-bold text-white',
-  'luxury-gold': 'rounded-sm bg-[#ffbd00] px-5 py-2.5 font-bold text-[#160f00]',
-  'outline-white': 'rounded-full border border-white bg-transparent px-5 py-2.5 font-semibold text-white',
-  'outline-black': 'rounded-full border border-[#05070b] bg-transparent px-5 py-2.5 font-semibold text-[#05070b]',
-  'soft-white': 'rounded-md bg-white/90 px-5 py-2.5 font-semibold text-[#05070b]',
-  'soft-black': 'rounded-md bg-black/75 px-5 py-2.5 font-semibold text-white',
-  'editorial-white': 'rounded-none border-b-2 border-white bg-transparent px-0 py-2 font-serif font-bold text-white',
-  'editorial-black': 'rounded-none border-b-2 border-[#05070b] bg-transparent px-0 py-2 font-serif font-bold text-[#05070b]',
-  'minimal-white': 'rounded-none bg-transparent px-0 py-2 font-semibold text-white underline decoration-2 underline-offset-4',
+  'solid-black': 'rounded-full border border-[#05070b] bg-[#05070b] font-bold text-white',
+  'solid-white': 'rounded-full border border-white bg-white font-bold text-[#05070b]',
+  'brand-blue': 'rounded-none border border-[#0b63f6] bg-[#0b63f6] font-extrabold uppercase tracking-[0.035em] text-white [&>svg]:border-l [&>svg]:border-white/45 [&>svg]:pl-[0.45em]',
+  'signal-red': 'rounded-sm border border-[#c91031] bg-[#dc1638] font-extrabold uppercase tracking-[0.035em] text-white',
+  'luxury-gold': 'rounded-none border-2 border-[#e7a600] bg-transparent font-bold text-[#e7a600]',
+  'outline-white': 'rounded-md border border-white bg-transparent font-semibold text-white',
+  'outline-black': 'rounded-md border border-[#05070b] bg-transparent font-semibold text-[#05070b]',
+  'soft-white': 'rounded-md border border-white/80 bg-white/90 font-semibold text-[#05070b]',
+  'soft-black': 'rounded-md border border-black/40 bg-black/80 font-semibold text-white',
+  'editorial-white': 'min-h-0 rounded-none border-b-2 border-white bg-transparent px-0 py-[0.35em] font-serif font-bold text-white',
+  'editorial-black': 'min-h-0 rounded-none border-b-2 border-[#05070b] bg-transparent px-0 py-[0.35em] font-serif font-bold text-[#05070b]',
+  'minimal-white': 'min-h-0 rounded-none border-l-2 border-white bg-transparent px-[0.85em] py-[0.25em] font-semibold text-white',
 }
 
 export const BANNER_TITLE_STYLE_VALUES = [
@@ -107,48 +128,48 @@ export const BANNER_TITLE_STYLE_VALUES = [
 export type BannerTitleStyle = (typeof BANNER_TITLE_STYLE_VALUES)[number]
 
 export const BANNER_TITLE_STYLE_LABELS: Record<BannerTitleStyle, string> = {
-  commerce: 'Commerce bold',
+  commerce: 'Retail sans',
   editorial: 'Editorial serif',
-  technology: 'Technology mono',
-  fashion: 'Fashion editorial',
-  wellness: 'Wellness clean',
+  technology: 'Tech display',
+  fashion: 'Fashion serif',
+  wellness: 'Wellness sans',
   performance: 'Performance italic',
   gaming: 'Gaming display',
-  collectible: 'Collectible campaign',
+  collectible: 'Collectible poster',
 }
 
 export const BANNER_TYPOGRAPHY_CLASSES: Record<BannerTitleStyle, { title: string; subtitle: string }> = {
   commerce: {
-    title: 'font-sans font-black tracking-[-0.045em]',
-    subtitle: 'font-sans font-medium tracking-[-0.01em]',
+    title: 'font-sans font-extrabold tracking-[-0.035em]',
+    subtitle: 'font-sans font-medium tracking-[-0.012em]',
   },
   editorial: {
-    title: 'font-serif font-bold tracking-[-0.035em]',
-    subtitle: 'font-serif font-normal tracking-[-0.01em]',
+    title: 'font-serif font-bold tracking-[-0.025em]',
+    subtitle: 'font-serif font-normal tracking-[-0.008em]',
   },
   technology: {
-    title: 'font-mono font-bold uppercase tracking-[-0.035em]',
-    subtitle: 'font-mono font-medium tracking-[-0.02em]',
+    title: 'font-sans font-black uppercase tracking-[-0.025em]',
+    subtitle: 'font-sans font-semibold tracking-[-0.012em]',
   },
   fashion: {
-    title: 'font-serif font-bold uppercase tracking-[0.015em]',
-    subtitle: 'font-serif font-normal tracking-[0.01em]',
+    title: 'font-serif font-semibold tracking-[-0.018em]',
+    subtitle: 'font-serif font-normal tracking-[0.002em]',
   },
   wellness: {
-    title: 'font-sans font-semibold tracking-[-0.03em]',
-    subtitle: 'font-sans font-normal tracking-normal',
+    title: 'font-sans font-semibold tracking-[-0.022em]',
+    subtitle: 'font-sans font-normal tracking-[-0.006em]',
   },
   performance: {
-    title: 'font-sans font-black italic uppercase tracking-[-0.035em]',
-    subtitle: 'font-sans font-semibold italic tracking-[-0.015em]',
+    title: 'font-sans font-black italic uppercase tracking-[-0.03em]',
+    subtitle: 'font-sans font-semibold italic tracking-[-0.012em]',
   },
   gaming: {
-    title: 'font-mono font-black uppercase tracking-[-0.045em]',
-    subtitle: 'font-mono font-semibold tracking-[-0.025em]',
+    title: 'font-sans font-black uppercase tracking-[-0.045em]',
+    subtitle: 'font-sans font-semibold uppercase tracking-[0.02em]',
   },
   collectible: {
-    title: 'font-sans font-extrabold uppercase tracking-[0.025em]',
-    subtitle: 'font-sans font-medium tracking-[0.01em]',
+    title: 'font-serif font-bold uppercase tracking-[0.012em]',
+    subtitle: 'font-serif font-normal tracking-[0.006em]',
   },
 }
 
@@ -254,11 +275,16 @@ export const BANNER_IMAGE_SHADE_ACCEPTED_VALUES = [
 ] as const
 
 export function normalizeBannerTextTone(value: string | null | undefined): BannerTextTone {
+  if (value === 'beauty-magenta') return 'signal-red'
+  if (value === 'gaming-cyan') return 'electric-blue'
   if (BANNER_TEXT_TONE_VALUES.includes(value as BannerTextTone)) return value as BannerTextTone
   return LEGACY_TEXT_TONES[value ?? ''] ?? 'white'
 }
 
 export function normalizeBannerButtonStyle(value: string | null | undefined): BannerButtonStyle {
+  if (value === 'soft-white') return 'solid-white'
+  if (value === 'soft-black') return 'solid-black'
+  if (value === 'minimal-white') return 'editorial-white'
   if (BANNER_BUTTON_STYLE_VALUES.includes(value as BannerButtonStyle)) return value as BannerButtonStyle
   return LEGACY_BUTTON_STYLES[value ?? ''] ?? 'solid-black'
 }
@@ -308,6 +334,8 @@ export function getBannerImageShadeStyle(
 export function getBannerTextEdgeClass(tone: BannerTextTone, enabled: boolean) {
   if (!enabled) return ''
   return tone === 'black'
-    ? '[text-shadow:0_1px_0_rgba(255,255,255,0.82)]'
-    : '[text-shadow:0_1px_0_rgba(0,0,0,0.82)]'
+    ? '[text-shadow:0_1px_0_rgba(255,255,255,0.32)]'
+    : tone === 'white'
+      ? '[text-shadow:0_1px_0_rgba(0,0,0,0.5)]'
+      : '[text-shadow:0_1px_0_rgba(0,0,0,0.38)]'
 }

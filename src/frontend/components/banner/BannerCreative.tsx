@@ -46,6 +46,41 @@ const FRAME_CLASSES: Record<BannerCreativeMode, string> = {
   mobile: 'aspect-[5/4]',
 }
 
+const TITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
+  responsive: 'text-[clamp(1.35rem,5.8cqw,1.7rem)] sm:text-[clamp(2rem,4.25cqw,3.25rem)] xl:text-[clamp(3.2rem,3.8cqw,4.75rem)]',
+  desktop: 'text-[clamp(3.2rem,3.8cqw,4.75rem)]',
+  tablet: 'text-[clamp(2rem,4.25cqw,3.25rem)]',
+  mobile: 'text-[clamp(1.35rem,5.8cqw,1.7rem)]',
+}
+
+const PREVIEW_TITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
+  responsive: '',
+  desktop: 'text-[3.8cqw]',
+  tablet: 'text-[4.25cqw]',
+  mobile: 'text-[5.8cqw]',
+}
+
+const SUBTITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
+  responsive: 'text-[clamp(0.76rem,3.1cqw,0.88rem)] sm:text-[clamp(0.85rem,1.45cqw,1rem)] xl:text-[clamp(0.95rem,1.05cqw,1.125rem)]',
+  desktop: 'text-[clamp(0.95rem,1.05cqw,1.125rem)]',
+  tablet: 'text-[clamp(0.85rem,1.45cqw,1rem)]',
+  mobile: 'text-[clamp(0.76rem,3.1cqw,0.88rem)]',
+}
+
+const PREVIEW_SUBTITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
+  responsive: '',
+  desktop: 'text-[1.05cqw]',
+  tablet: 'text-[1.45cqw]',
+  mobile: 'text-[3.1cqw]',
+}
+
+const PREVIEW_BUTTON_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
+  responsive: '',
+  desktop: '!text-[0.95cqw]',
+  tablet: '!text-[1.7cqw]',
+  mobile: '!text-[3.35cqw]',
+}
+
 function normalizePosition(value: string | null | undefined) {
   return value === 'center' || value === 'right' ? value : 'left'
 }
@@ -132,22 +167,19 @@ export const BannerCreative = forwardRef<HTMLDivElement, BannerCreativeProps>(fu
   }[position]
   const contentWidthClass = position === 'center' ? 'w-[74%] max-w-[44rem]' : 'w-[48%] max-w-[36rem]'
   const edgeClass = getBannerTextEdgeClass(tone, textEdge !== false)
-  const scaledPreview = preview && mode !== 'mobile'
-  const previewButtonScaleClass = mode === 'tablet'
-    ? '!min-h-[4.9cqw] !gap-[0.8cqw] !px-[2.45cqw] !py-[1.2cqw] !text-[1.7cqw]'
-    : '!min-h-[2.1cqw] !gap-[0.35cqw] !px-[1.1cqw] !py-[0.55cqw] !text-[0.72cqw]'
+  const scaledPreview = preview && mode !== 'responsive'
   const ctaClass = cn(
     BANNER_BUTTON_BASE_CLASS,
     BANNER_BUTTON_CLASSES[ctaStyle],
-    scaledPreview && previewButtonScaleClass,
+    scaledPreview && PREVIEW_BUTTON_SIZE_CLASSES[mode],
   )
   const contentPaddingClass = scaledPreview
-    ? '[padding-block:3cqw] [padding-inline:5cqw]'
-    : '[padding-block:clamp(1rem,3cqw,3rem)] [padding-inline:clamp(1.25rem,5cqw,6rem)]'
-  const titleSizeClass = scaledPreview ? 'text-[3.2cqw]' : 'text-[clamp(1.2rem,3.2cqw,3.8rem)]'
-  const subtitleSizeClass = scaledPreview
-    ? mode === 'tablet' ? 'text-[1.33cqw]' : 'text-[0.9cqw]'
-    : 'text-[clamp(0.68rem,0.9cqw,1rem)]'
+    ? mode === 'tablet'
+      ? '[padding-block:3cqw] [padding-inline:7cqw]'
+      : '[padding-block:3cqw] [padding-inline:5cqw]'
+    : '[padding-block:clamp(1rem,3cqw,3rem)] [padding-inline:clamp(1.25rem,5cqw,6rem)] sm:[padding-inline:clamp(4rem,6cqw,6rem)] xl:[padding-inline:clamp(4.5rem,5cqw,6rem)]'
+  const titleSizeClass = scaledPreview ? PREVIEW_TITLE_SIZE_CLASSES[mode] : TITLE_SIZE_CLASSES[mode]
+  const subtitleSizeClass = scaledPreview ? PREVIEW_SUBTITLE_SIZE_CLASSES[mode] : SUBTITLE_SIZE_CLASSES[mode]
   const ctaLabel = buttonLabel?.trim() || 'Explore collection'
   const titleLineLimitClass = mode === 'mobile' ? 'line-clamp-4' : mode === 'responsive' ? 'line-clamp-4 sm:line-clamp-none' : ''
   const subtitleLineLimitClass = mode === 'mobile' ? 'line-clamp-4' : mode === 'responsive' ? 'line-clamp-4 sm:line-clamp-none' : ''
@@ -157,7 +189,7 @@ export const BannerCreative = forwardRef<HTMLDivElement, BannerCreativeProps>(fu
       {ctaLabel}
       <LocalIcon
         name="chevron-right"
-        className={scaledPreview ? (mode === 'tablet' ? 'h-[1.95cqw] w-[1.95cqw]' : 'h-[0.85cqw] w-[0.85cqw]') : 'h-4 w-4'}
+        className="h-[1.15em] w-[1.15em]"
       />
     </>
   )
@@ -203,7 +235,7 @@ export const BannerCreative = forwardRef<HTMLDivElement, BannerCreativeProps>(fu
           className={cn('flex min-w-0 flex-col', contentWidthClass, contentPositionClass, BANNER_TEXT_CLASSES[tone], edgeClass)}
         >
           {cleanTitle ? (
-            <h2 data-banner-title className={cn('w-full min-w-0 break-words [overflow-wrap:anywhere] leading-[0.96]', titleSizeClass, titleLineLimitClass, typography.title)}>
+            <h2 data-banner-title className={cn('w-full min-w-0 break-words [overflow-wrap:anywhere] leading-[0.98]', titleSizeClass, titleLineLimitClass, typography.title)}>
               {cleanTitle}
             </h2>
           ) : null}
