@@ -71,6 +71,13 @@ export async function getClientSession() {
   return snapshot.data
 }
 
+export async function refreshClientSession() {
+  if (sessionRequest) await sessionRequest
+  await loadSession()
+
+  return snapshot.data
+}
+
 /** A single cached session request for public storefront islands. */
 export function useClientSession() {
   const [state, setState] = useState<SessionSnapshot>(snapshot)

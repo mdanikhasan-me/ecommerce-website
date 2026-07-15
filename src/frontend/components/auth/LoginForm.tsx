@@ -9,6 +9,7 @@ import toast from '@/frontend/lib/toast'
 import { GoogleSignInButton } from '@/frontend/components/auth/GoogleSignInButton'
 import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { refreshClientSession } from '@/frontend/hooks/useClientSession'
 
 interface LoginFormProps {
   callbackUrl: string
@@ -36,7 +37,13 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
         return
       }
       toast.success('Welcome back!')
-      router.push(callbackUrl)
+      const session = await refreshClientSession()
+      if (!session?.user) {
+        window.location.replace(callbackUrl)
+        return
+      }
+
+      router.replace(callbackUrl)
       router.refresh()
     } finally {
       setLoading(false)

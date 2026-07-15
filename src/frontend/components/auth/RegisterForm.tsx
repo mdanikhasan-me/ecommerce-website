@@ -10,6 +10,7 @@ import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
 import { GoogleSignInButton } from '@/frontend/components/auth/GoogleSignInButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
+import { refreshClientSession } from '@/frontend/hooks/useClientSession'
 
 const MIN_PASSWORD_LENGTH = 8
 
@@ -44,7 +45,13 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
       const result = await signIn('credentials', { email: form.email, password: form.password, redirect: false })
       if (result?.ok) {
         toast.success('Account created successfully')
-        router.push(callbackUrl)
+        const session = await refreshClientSession()
+        if (!session?.user) {
+          window.location.replace(callbackUrl)
+          return
+        }
+
+        router.replace(callbackUrl)
         router.refresh()
       }
     } finally { setLoading(false) }
