@@ -3,24 +3,24 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  Clock3,
-  Eye,
-  Image as ImageIcon,
-  Package,
+  CreditCard,
+  PackageX,
   Plus,
   RotateCcw,
-  ShoppingBag,
-  Star,
   TrendingUp,
-  Warehouse,
 } from 'lucide-react'
 
 import { db } from '@/backend/database'
 import { formatDate, formatPrice } from '@/backend/utils'
-import { AdminDashboardVisuals } from '@/frontend/components/admin/AdminDashboardVisuals'
+import {
+  AdminDashboardVisuals,
+  DashboardRangeSelector,
+  type DashboardRangeOption,
+} from '@/frontend/components/admin/AdminDashboardVisuals'
+import styles from '@/frontend/components/admin/AdminDashboard.module.css'
 
 const DAY_MS = 24 * 60 * 60 * 1000
-const CHART_RANGES = [7, 14, 30] as const
+const DASHBOARD_RANGES = [7, 14, 30] as const
 const ACTIVE_REVENUE_STATUSES = [
   'PENDING',
   'CONFIRMED',
@@ -31,8 +31,14 @@ const ACTIVE_REVENUE_STATUSES = [
   'REFUND_REQUESTED',
 ] as const
 
-type ChartRange = (typeof CHART_RANGES)[number]
-type ChartMetric = 'revenue' | 'orders'
+type DashboardRange = (typeof DASHBOARD_RANGES)[number]
+type ChartMetric = 'revenue' | 'orders' | 'aov'
+
+function startOfDay(date: Date) {
+  const value = new Date(date)
+  value.setHours(0, 0, 0, 0)
+  return value
+}
 
 function getDateKey(date: Date) {
   const year = date.getFullYear()
@@ -41,51 +47,99 @@ function getDateKey(date: Date) {
   return `${year}-${month}-${day}`
 }
 
-function parseChartRange(value: string | undefined): ChartRange {
+function parseDashboardRange(value: string | undefined): DashboardRange {
   const parsed = Number(value)
-  return CHART_RANGES.includes(parsed as ChartRange) ? parsed as ChartRange : 14
+  return DASHBOARD_RANGES.includes(parsed as DashboardRange) ? parsed as DashboardRange : 7
 }
 
 function parseChartMetric(value: string | undefined): ChartMetric {
-  return value === 'orders' ? 'orders' : 'revenue'
+  if (value === 'orders' || value === 'aov') return value
+  return 'revenue'
 }
 
-async function getDashboardData(chartDays: ChartRange, outcomeDays: ChartRange) {
+function periodLabel(start: Date, end: Date) {
+  const formatter = new Intl.DateTimeFormat('en-BD', { day: 'numeric', month: 'short' })
+  return `${formatter.format(start)} – ${formatter.format(end)}`
+}
+
+function metricComparison(current: number, previous: number, previousLabel: string) {
+  if (previous === 0) {
+    return current > 0
+      ? { label: `New vs ${previousLabel}`, direction: 'up' as const }
+      : { label: `No change vs ${previousLabel}`, direction: 'flat' as const }
+  }
+
+  const change = ((current - previous) / previous) * 100
+  const ratio = current / previous
+  const changeLabel = ratio >= 100
+    ? '100×+'
+    : ratio >= 10
+      ? `${Math.round(ratio)}×`
+      : `${Math.abs(change).toFixed(1)}%`
+
+  return {
+    label: `${changeLabel} vs ${previousLabel}`,
+    direction: change > 0 ? 'up' as const : change < 0 ? 'down' as const : 'flat' as const,
+  }
+}
+
+function formatCount(value: number) {
+  return new Intl.NumberFormat('en-BD', { notation: value >= 10_000 ? 'compact' : 'standard' }).format(value)
+}
+
+function MetricSparkline({ values, color }: { values: number[]; color: string }) {
+  const width = 96
+  const height = 42
+  const minimum = Math.min(...values, 0)
+  const maximum = Math.max(...values, 1)
+  const range = Math.max(maximum - minimum, 1)
+  const step = width / Math.max(values.length - 1, 1)
+  const points = values.map((value, index) => ({
+    x: values.length === 1 ? width / 2 : index * step,
+    y: height - 4 - ((value - minimum) / range) * (height - 10),
+  }))
+  const line = points.map((point) => `${point.x},${point.y}`).join(' ')
+  const area = points.length
+    ? `M ${points[0].x} ${height} L ${line.replaceAll(',', ' ')} L ${points.at(-1)?.x ?? width} ${height} Z`
+    : ''
+
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className={styles.metricSparkline} aria-hidden="true">
+      <path d={area} fill={color} opacity="0.08" />
+      <polyline points={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+    </svg>
+  )
+}
+
+async function getDashboardData(range: DashboardRange) {
   const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * DAY_MS)
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * DAY_MS)
-  const chartStart = new Date(now.getTime() - (chartDays - 1) * DAY_MS)
-  chartStart.setHours(0, 0, 0, 0)
-  const outcomeStart = new Date(now.getTime() - (outcomeDays - 1) * DAY_MS)
-  outcomeStart.setHours(0, 0, 0, 0)
+  const currentStart = startOfDay(new Date(now.getTime() - (range - 1) * DAY_MS))
+  const previousStart = startOfDay(new Date(currentStart.getTime() - range * DAY_MS))
+  const sevenDaysAgo = startOfDay(new Date(now.getTime() - 6 * DAY_MS))
 
   const [
-    currentOrders,
-    previousOrders,
-    productViews,
+    periodOrders,
+    currentProductViews,
     previousProductViews,
     totalProducts,
     recentOrders,
     lowStockCount,
     outOfStockCount,
-    ordersByStatus,
     orderOutcomes,
-    reviewAttention,
     returnRequests,
+    failedPayments,
+    weeklyDemandProducts,
+    dailyProductViewRows,
   ] = await Promise.all([
     db.order.findMany({
-      where: { createdAt: { gte: thirtyDaysAgo } },
+      where: { createdAt: { gte: previousStart } },
       select: { total: true, status: true, createdAt: true },
     }),
-    db.order.findMany({
-      where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
-      select: { total: true, status: true },
-    }),
-    db.productView.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    db.productView.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+    db.productView.count({ where: { createdAt: { gte: currentStart } } }),
+    db.productView.count({ where: { createdAt: { gte: previousStart, lt: currentStart } } }),
     db.product.count({ where: { isActive: true } }),
     db.order.findMany({
-      take: 6,
+      take: 5,
       orderBy: { createdAt: 'desc' },
       include: {
         user: { select: { name: true, email: true } },
@@ -94,81 +148,131 @@ async function getDashboardData(chartDays: ChartRange, outcomeDays: ChartRange) 
     }),
     db.product.count({ where: { isActive: true, stockQuantity: { gt: 0, lte: 5 } } }),
     db.product.count({ where: { isActive: true, stockQuantity: { lte: 0 } } }),
-    db.order.groupBy({ by: ['status'], _count: { id: true } }),
     db.order.groupBy({
       by: ['status', 'paymentStatus'],
-      where: { createdAt: { gte: outcomeStart } },
+      where: { createdAt: { gte: currentStart } },
       _count: { id: true },
     }),
-    db.review.count({ where: { OR: [{ status: 'PENDING' }, { rating: { lt: 5 } }] } }),
     db.returnRequest.count({ where: { status: 'REQUESTED' } }),
+    db.order.count({ where: { paymentStatus: 'FAILED', createdAt: { gte: sevenDaysAgo } } }),
+    db.orderItem.groupBy({
+      by: ['productId'],
+      where: {
+        order: {
+          createdAt: { gte: sevenDaysAgo },
+          status: { not: 'CANCELLED' },
+        },
+      },
+      _sum: { quantity: true },
+    }),
+    db.$queryRaw<Array<{ day: Date; views: bigint }>>`
+      SELECT DATE_TRUNC('day', "createdAt") AS "day", COUNT(*)::bigint AS "views"
+      FROM "ProductView"
+      WHERE "createdAt" >= ${previousStart}
+      GROUP BY DATE_TRUNC('day', "createdAt")
+      ORDER BY "day" ASC
+    `,
   ])
 
+  const currentOrders = periodOrders.filter((order) => order.createdAt >= currentStart)
+  const previousOrders = periodOrders.filter((order) => order.createdAt < currentStart)
   const currentRevenue = currentOrders
     .filter((order) => ACTIVE_REVENUE_STATUSES.includes(order.status as (typeof ACTIVE_REVENUE_STATUSES)[number]))
     .reduce((sum, order) => sum + order.total, 0)
   const previousRevenue = previousOrders
     .filter((order) => ACTIVE_REVENUE_STATUSES.includes(order.status as (typeof ACTIVE_REVENUE_STATUSES)[number]))
     .reduce((sum, order) => sum + order.total, 0)
-  const activeOrderCount = currentOrders.filter((order) => order.status !== 'CANCELLED').length
+  const currentOrderCount = currentOrders.filter((order) => order.status !== 'CANCELLED').length
   const previousOrderCount = previousOrders.filter((order) => order.status !== 'CANCELLED').length
+  const productViewsByDay = new Map(
+    dailyProductViewRows.map((row) => [getDateKey(new Date(row.day)), Number(row.views)]),
+  )
 
-  const dailyActivity = Array.from({ length: chartDays }, (_, index) => {
-    const date = new Date(chartStart.getTime() + index * DAY_MS)
-    const key = getDateKey(date)
-    const orders = currentOrders.filter(
-      (order) => getDateKey(order.createdAt) === key && order.status !== 'CANCELLED',
+  const dailyActivity = Array.from({ length: range }, (_, index) => {
+    const currentDate = new Date(currentStart.getTime() + index * DAY_MS)
+    const previousDate = new Date(previousStart.getTime() + index * DAY_MS)
+    const currentDayOrders = currentOrders.filter(
+      (order) => getDateKey(order.createdAt) === getDateKey(currentDate) && order.status !== 'CANCELLED',
     )
+    const previousDayOrders = previousOrders.filter(
+      (order) => getDateKey(order.createdAt) === getDateKey(previousDate) && order.status !== 'CANCELLED',
+    )
+    const revenue = currentDayOrders.reduce((sum, order) => sum + order.total, 0)
+    const previousRevenueForDay = previousDayOrders.reduce((sum, order) => sum + order.total, 0)
+
     return {
-      date,
-      revenue: orders.reduce((sum, order) => sum + order.total, 0),
-      orders: orders.length,
+      date: currentDate,
+      previousDate,
+      revenue,
+      previousRevenue: previousRevenueForDay,
+      orders: currentDayOrders.length,
+      previousOrders: previousDayOrders.length,
+      aov: currentDayOrders.length ? revenue / currentDayOrders.length : 0,
+      previousAov: previousDayOrders.length ? previousRevenueForDay / previousDayOrders.length : 0,
+      views: productViewsByDay.get(getDateKey(currentDate)) ?? 0,
+      previousViews: productViewsByDay.get(getDateKey(previousDate)) ?? 0,
     }
   })
 
   return {
+    now,
+    currentStart,
+    previousStart,
+    previousEnd: new Date(currentStart.getTime() - DAY_MS),
     currentRevenue,
     previousRevenue,
-    activeOrderCount,
+    currentOrderCount,
     previousOrderCount,
-    averageOrderValue: activeOrderCount ? currentRevenue / activeOrderCount : 0,
-    productViews,
+    currentAverageOrder: currentOrderCount ? currentRevenue / currentOrderCount : 0,
+    previousAverageOrder: previousOrderCount ? previousRevenue / previousOrderCount : 0,
+    currentProductViews,
     previousProductViews,
     totalProducts,
     recentOrders,
     lowStockCount,
     outOfStockCount,
-    ordersByStatus,
     orderOutcomes,
-    reviewAttention,
     returnRequests,
+    failedPayments,
+    highDemandProducts: weeklyDemandProducts.filter((product) => (product._sum.quantity ?? 0) >= 3).length,
     dailyActivity,
   }
 }
 
-function percentageChange(current: number, previous: number) {
-  if (previous === 0) return current > 0 ? 100 : 0
-  return Math.round(((current - previous) / previous) * 100)
-}
-
-function formatCount(value: number) {
-  return new Intl.NumberFormat('en-BD', { notation: value >= 10_000 ? 'compact' : 'standard' }).format(value)
-}
-
 interface AdminDashboardProps {
-  searchParams: Promise<{ range?: string; chartRange?: string; outcomeRange?: string; metric?: string }>
+  searchParams: Promise<{
+    range?: string
+    chartRange?: string
+    outcomeRange?: string
+    metric?: string
+  }>
 }
 
 export default async function AdminDashboard({ searchParams }: AdminDashboardProps) {
   const query = await searchParams
-  const chartDays = parseChartRange(query.chartRange ?? query.range)
-  const outcomeDays = parseChartRange(query.outcomeRange ?? query.range)
-  const chartMetric = parseChartMetric(query.metric)
-  const data = await getDashboardData(chartDays, outcomeDays)
-  const revenueChange = percentageChange(data.currentRevenue, data.previousRevenue)
-  const orderChange = percentageChange(data.activeOrderCount, data.previousOrderCount)
-  const viewsChange = percentageChange(data.productViews, data.previousProductViews)
-  const statusCounts = new Map<string, number>()
+  const range = parseDashboardRange(query.range ?? query.chartRange ?? query.outcomeRange)
+  const metric = parseChartMetric(query.metric)
+  const data = await getDashboardData(range)
+  const dateFormatter = new Intl.DateTimeFormat('en-BD', { day: 'numeric', month: 'short' })
+  const currentPeriodLabel = periodLabel(data.currentStart, data.now)
+  const previousPeriodLabel = periodLabel(data.previousStart, data.previousEnd)
+  const rangeOptions: DashboardRangeOption[] = DASHBOARD_RANGES.map((days) => ({
+    value: days,
+    label: periodLabel(startOfDay(new Date(data.now.getTime() - (days - 1) * DAY_MS)), data.now),
+  }))
+
+  const activity = data.dailyActivity.map((item) => ({
+    date: item.date.toISOString(),
+    label: dateFormatter.format(item.date),
+    previousLabel: dateFormatter.format(item.previousDate),
+    revenue: item.revenue,
+    previousRevenue: item.previousRevenue,
+    orders: item.orders,
+    previousOrders: item.previousOrders,
+    aov: item.aov,
+    previousAov: item.previousAov,
+  }))
+
   const outcomeCounts = new Map<string, number>([
     ['completed', 0],
     ['in-progress', 0],
@@ -177,9 +281,6 @@ export default async function AdminDashboard({ searchParams }: AdminDashboardPro
     ['partially-refunded', 0],
     ['cancelled', 0],
   ])
-  data.ordersByStatus.forEach((row) => {
-    statusCounts.set(row.status, row._count.id)
-  })
   data.orderOutcomes.forEach((row) => {
     let outcome = 'in-progress'
     if (row.paymentStatus === 'PARTIALLY_REFUNDED') outcome = 'partially-refunded'
@@ -189,257 +290,217 @@ export default async function AdminDashboard({ searchParams }: AdminDashboardPro
     else if (row.status === 'CANCELLED') outcome = 'cancelled'
     outcomeCounts.set(outcome, (outcomeCounts.get(outcome) ?? 0) + row._count.id)
   })
-  const chartDateFormatter = new Intl.DateTimeFormat('en-BD', { day: 'numeric', month: 'short' })
-  const chartActivity = data.dailyActivity.map((item) => ({
-    date: item.date.toISOString(),
-    label: chartDateFormatter.format(item.date),
-    revenue: item.revenue,
-    orders: item.orders,
-  }))
-  const orderOutcomes = [
-    {
-      id: 'completed',
-      label: 'Delivered',
-      description: 'Successfully completed',
-      count: outcomeCounts.get('completed') ?? 0,
-      color: '#2f7d5d',
-    },
-    {
-      id: 'in-progress',
-      label: 'In progress',
-      description: 'Pending through shipping',
-      count: outcomeCounts.get('in-progress') ?? 0,
-      color: '#426b99',
-    },
-    {
-      id: 'returned',
-      label: 'Returned',
-      description: 'Return or refund requested',
-      count: outcomeCounts.get('returned') ?? 0,
-      color: '#b47b2f',
-    },
-    {
-      id: 'refunded',
-      label: 'Refunded',
-      description: 'Full payment refunded',
-      count: outcomeCounts.get('refunded') ?? 0,
-      color: '#a24f5b',
-    },
-    {
-      id: 'partially-refunded',
-      label: 'Partial refund',
-      description: 'Part of payment returned',
-      count: outcomeCounts.get('partially-refunded') ?? 0,
-      color: '#725da0',
-    },
-    {
-      id: 'cancelled',
-      label: 'Cancelled',
-      description: 'Cancelled before completion',
-      count: outcomeCounts.get('cancelled') ?? 0,
-      color: '#6b7280',
-    },
+
+  const outcomes = [
+    { id: 'completed', label: 'Delivered', description: 'Successfully completed', count: outcomeCounts.get('completed') ?? 0, color: '#22a55b' },
+    { id: 'in-progress', label: 'In progress', description: 'Pending through shipping', count: outcomeCounts.get('in-progress') ?? 0, color: '#3f73d8' },
+    { id: 'returned', label: 'Returned', description: 'Return requested', count: outcomeCounts.get('returned') ?? 0, color: '#f0a421' },
+    { id: 'refunded', label: 'Refunded', description: 'Full payment refunded', count: outcomeCounts.get('refunded') ?? 0, color: '#e34c5a' },
+    { id: 'partially-refunded', label: 'Partial refund', description: 'Part of payment returned', count: outcomeCounts.get('partially-refunded') ?? 0, color: '#8457d8' },
+    { id: 'cancelled', label: 'Cancelled', description: 'Cancelled before completion', count: outcomeCounts.get('cancelled') ?? 0, color: '#8b94a2' },
   ]
-  const todayLabel = new Intl.DateTimeFormat('en-BD', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date())
 
   const metrics = [
     {
       label: 'Revenue',
-      detail: 'Last 30 days',
       value: formatPrice(data.currentRevenue),
-      change: revenueChange,
-      icon: TrendingUp,
+      comparison: metricComparison(data.currentRevenue, data.previousRevenue, previousPeriodLabel),
+      values: data.dailyActivity.map((item) => item.revenue),
+      color: '#38a169',
     },
     {
       label: 'Orders',
-      detail: 'Active and completed',
-      value: formatCount(data.activeOrderCount),
-      change: orderChange,
-      icon: ShoppingBag,
+      value: formatCount(data.currentOrderCount),
+      comparison: metricComparison(data.currentOrderCount, data.previousOrderCount, previousPeriodLabel),
+      values: data.dailyActivity.map((item) => item.orders),
+      color: '#4f7ddd',
     },
     {
       label: 'Product views',
-      detail: 'Unique first-party views',
-      value: formatCount(data.productViews),
-      change: viewsChange,
-      icon: Eye,
+      value: formatCount(data.currentProductViews),
+      comparison: metricComparison(data.currentProductViews, data.previousProductViews, previousPeriodLabel),
+      values: data.dailyActivity.map((item) => item.views),
+      color: '#60758f',
     },
     {
-      label: 'Average order',
-      detail: `${data.totalProducts} active products`,
-      value: formatPrice(data.averageOrderValue),
-      change: null,
-      icon: Package,
+      label: 'Average order value',
+      value: formatPrice(data.currentAverageOrder),
+      comparison: metricComparison(data.currentAverageOrder, data.previousAverageOrder, previousPeriodLabel),
+      values: data.dailyActivity.map((item) => item.aov),
+      color: '#9b59d0',
     },
   ]
 
-  const workQueue = [
+  const businessPulse = [
     {
-      label: 'Pending orders',
-      detail: 'Need confirmation',
-      value: statusCounts.get('PENDING') ?? 0,
-      href: '/admin/orders?status=PENDING',
-      icon: Clock3,
-      tone: 'warning',
-    },
-    {
-      label: 'Stock attention',
-      detail: `${data.outOfStockCount} out, ${data.lowStockCount} low`,
-      value: data.outOfStockCount + data.lowStockCount,
+      label: 'Low stock products',
+      detail: `${data.outOfStockCount + data.lowStockCount} products need inventory attention.`,
+      severity: data.outOfStockCount > 0 ? 'High' : 'Medium',
+      action: 'View all',
       href: '/admin/inventory',
-      icon: Warehouse,
-      tone: data.outOfStockCount ? 'critical' : 'warning',
+      icon: PackageX,
+      tone: 'orange',
     },
     {
-      label: 'Review attention',
-      detail: 'Pending or below 5 stars',
-      value: data.reviewAttention,
-      href: '/admin/reviews',
-      icon: Star,
-      tone: data.reviewAttention ? 'warning' : 'neutral',
-    },
-    {
-      label: 'Return requests',
-      detail: 'Waiting for a decision',
-      value: data.returnRequests,
+      label: 'Pending returns',
+      detail: `${data.returnRequests} return requests need your attention.`,
+      severity: data.returnRequests > 0 ? 'Medium' : 'Clear',
+      action: 'Review',
       href: '/admin/returns?status=REQUESTED',
       icon: RotateCcw,
-      tone: data.returnRequests ? 'warning' : 'neutral',
+      tone: 'blue',
+    },
+    {
+      label: 'Failed payments',
+      detail: `${data.failedPayments} payments failed in the last 7 days.`,
+      severity: data.failedPayments > 0 ? 'High' : 'Clear',
+      action: 'View',
+      href: '/admin/orders?paymentStatus=FAILED',
+      icon: CreditCard,
+      tone: 'red',
+    },
+    {
+      label: 'High-demand products',
+      detail: `${data.highDemandProducts} products are trending with high demand.`,
+      severity: data.highDemandProducts > 0 ? 'Medium' : 'Clear',
+      action: 'See list',
+      href: '/admin/products',
+      icon: TrendingUp,
+      tone: 'purple',
     },
   ]
 
-  const statusStyle: Record<string, string> = {
-    DELIVERED: 'text-green-700',
-    PENDING: 'text-amber-700',
-    CANCELLED: 'text-red-700',
+  const fulfillmentLabel = (status: string) => {
+    if (status === 'DELIVERED') return 'Fulfilled'
+    if (status === 'RETURNED' || status === 'RETURN_REQUESTED') return 'Returned'
+    if (status === 'REFUNDED' || status === 'REFUND_REQUESTED') return 'Refunded'
+    if (status === 'CANCELLED') return 'Cancelled'
+    return 'Processing'
+  }
+
+  const statusTone = (status: string) => {
+    if (status === 'DELIVERED' || status === 'PAID') return 'green'
+    if (status === 'RETURNED' || status === 'RETURN_REQUESTED') return 'amber'
+    if (status === 'REFUNDED' || status === 'CANCELLED' || status === 'FAILED') return 'red'
+    return 'blue'
   }
 
   return (
-    <div className="space-y-5 sm:space-y-6">
-      <header className="admin-page-header items-center">
+    <div className={styles.dashboard}>
+      <header className={styles.pageHeader}>
         <div>
-          <h1 className="admin-page-title">Dashboard</h1>
-          <p className="admin-page-description">A concise view of demand, fulfilment, and work that needs a decision.</p>
+          <h1>Operations Dashboard</h1>
+          <p>Live view of revenue, orders, fulfilment, and actions that need attention.</p>
         </div>
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          <span className="rounded-md bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">{todayLabel}</span>
-          <Link href="/admin/products/new" className="btn-primary flex-1 gap-2 sm:flex-none">
-            <Plus className="h-4 w-4" /> Add product
+        <div className={styles.headerActions}>
+          <DashboardRangeSelector value={range} options={rangeOptions} />
+          <Link href="/admin/products/new" className={styles.primaryButton}>
+            <Plus aria-hidden="true" /> Add product
           </Link>
         </div>
       </header>
 
-      <section className="grid grid-cols-2 gap-3 xl:grid-cols-4" aria-label="Business summary">
-        {metrics.map((metric) => {
-          const Icon = metric.icon
-          return (
-            <article key={metric.label} className="admin-card min-w-0 p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-muted-foreground">{metric.label}</p>
-                  <p className="mt-2 font-display text-lg font-bold tracking-tight sm:text-2xl">{metric.value}</p>
-                </div>
-                <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-              </div>
-              <div className="mt-2 min-h-5 text-[11px] sm:text-xs">
-                {metric.change === null ? (
-                  <span className="text-muted-foreground">{metric.detail}</span>
-                ) : (
-                  <span className={`inline-flex items-center gap-1 font-semibold ${metric.change >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                    {metric.change >= 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
-                    {Math.abs(metric.change)}% <span className="hidden text-muted-foreground sm:inline">vs prior period</span>
+      <section className={styles.metricGrid} aria-label="Business summary">
+        {metrics.map((item) => (
+          <article key={item.label} className={styles.metricCard}>
+            <div className={styles.metricCopy}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <small data-direction={item.comparison.direction}>
+                {item.comparison.direction === 'up' ? <ArrowUpRight aria-hidden="true" /> : null}
+                {item.comparison.direction === 'down' ? <ArrowDownRight aria-hidden="true" /> : null}
+                {item.comparison.label}
+              </small>
+            </div>
+            <MetricSparkline values={item.values} color={item.color} />
+          </article>
+        ))}
+      </section>
+
+      <AdminDashboardVisuals
+        activity={activity}
+        metric={metric}
+        range={range}
+        rangeOptions={rangeOptions}
+        currentPeriodLabel={currentPeriodLabel}
+        previousPeriodLabel={previousPeriodLabel}
+        summaries={{
+          revenue: { current: data.currentRevenue, previous: data.previousRevenue },
+          orders: { current: data.currentOrderCount, previous: data.previousOrderCount },
+          aov: { current: data.currentAverageOrder, previous: data.previousAverageOrder },
+        }}
+        outcomes={outcomes}
+      />
+
+      <div className={styles.lowerGrid}>
+        <section className={styles.panel} aria-labelledby="business-pulse-heading">
+          <div className={styles.panelHeader}>
+            <div>
+              <h2 id="business-pulse-heading">Business pulse</h2>
+              <p>Key issues and opportunities that need your attention.</p>
+            </div>
+          </div>
+          <div className={styles.pulseList}>
+            {businessPulse.map((item) => {
+              const Icon = item.icon
+              return (
+                <div key={item.label} className={styles.pulseRow} data-tone={item.tone}>
+                  <span className={styles.pulseIcon}><Icon aria-hidden="true" /></span>
+                  <span className={styles.pulseCopy}>
+                    <strong>{item.label}</strong>
+                    <small>{item.detail}</small>
                   </span>
-                )}
-              </div>
-            </article>
-          )
-        })}
-      </section>
+                  <span className={styles.severity} data-level={item.severity.toLowerCase()}>{item.severity}</span>
+                  <Link href={item.href}>{item.action}</Link>
+                </div>
+              )
+            })}
+          </div>
+        </section>
 
-      <section className="admin-card overflow-hidden" aria-labelledby="sales-trend-heading">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border/70 px-4 py-4 sm:px-5 lg:px-6">
-          <div>
-            <h2 id="sales-trend-heading" className="admin-section-title">
-              Performance and order outcomes
-            </h2>
-            <p className="mt-1 text-xs text-muted-foreground">Two independent views for activity and fulfilment quality.</p>
+        <section className={styles.panel} aria-labelledby="recent-orders-heading">
+          <div className={styles.panelHeader}>
+            <div>
+              <h2 id="recent-orders-heading">Recent orders</h2>
+              <p>Latest customer activity</p>
+            </div>
+            <Link href="/admin/orders" className={styles.viewAllLink}>View all orders <ArrowRight aria-hidden="true" /></Link>
           </div>
-          <Link href="/admin/reports?tab=sales" className="admin-action-link">
-            Full analytics <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        <AdminDashboardVisuals
-          activity={chartActivity}
-          chartDays={chartDays}
-          metric={chartMetric}
-          outcomeDays={outcomeDays}
-          outcomes={orderOutcomes}
-        />
-      </section>
-
-      <section className="admin-card p-4 sm:p-5" aria-labelledby="operations-heading">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 id="operations-heading" className="admin-section-title">Operations queue</h2>
-            <p className="mt-1 text-xs text-muted-foreground">Every item that currently needs an admin decision.</p>
-          </div>
-          <div className="flex gap-2 text-xs font-semibold">
-            <Link href="/admin/inventory" className="admin-compact-link"><Warehouse className="h-3.5 w-3.5" /> Inventory</Link>
-            <Link href="/admin/banners/new" className="admin-compact-link"><ImageIcon className="h-3.5 w-3.5" /> New banner</Link>
-          </div>
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {workQueue.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link key={item.label} href={item.href} className="admin-work-item" data-tone={item.tone}>
-                <Icon className="h-4 w-4 shrink-0" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold">{item.label}</span>
-                  <span className="block truncate text-xs text-muted-foreground">{item.detail}</span>
-                </span>
-                <strong className="font-display text-xl">{item.value}</strong>
-              </Link>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="admin-card overflow-hidden" aria-labelledby="recent-orders-heading">
-        <div className="admin-card-header">
-          <div>
-            <h2 id="recent-orders-heading" className="admin-section-title">Recent orders</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">Latest customer activity</p>
-          </div>
-          <Link href="/admin/orders" className="admin-action-link">
-            View orders <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        <div className="grid gap-2 p-3 sm:p-4">
-          {data.recentOrders.length ? data.recentOrders.map((order) => (
-            <Link key={order.id} href={`/admin/orders/${order.id}`} className="admin-order-row">
-              <span className="min-w-0">
-                <span className="block font-mono text-xs font-bold">{order.orderNumber}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">{order.user?.name ?? order.guestEmail}</span>
-              </span>
-              <span className="hidden truncate text-xs text-muted-foreground sm:block">{order.items[0]?.productName ?? 'Order items'}</span>
-              <span className="text-right">
-                <span className="block text-xs font-bold">{formatPrice(order.total)}</span>
-                <span className="block text-[11px] text-muted-foreground">{formatDate(order.createdAt)}</span>
-              </span>
-              <span className={`text-right text-[11px] font-semibold ${statusStyle[order.status] ?? 'text-muted-foreground'}`}>
-                {order.status.replaceAll('_', ' ')}
-              </span>
-            </Link>
-          )) : (
-            <p className="px-4 py-10 text-center text-sm text-muted-foreground">No recent orders.</p>
-          )}
-        </div>
-      </section>
+          {data.recentOrders.length ? (
+            <div className={styles.orderTableWrap}>
+              <table className={styles.orderTable}>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Fulfilment</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recentOrders.map((order) => {
+                    const fulfilment = fulfillmentLabel(order.status)
+                    return (
+                      <tr key={order.id}>
+                        <td data-label="Order ID"><Link href={`/admin/orders/${order.id}`}>{order.orderNumber}</Link></td>
+                        <td data-label="Customer">{order.user?.name ?? order.guestEmail ?? 'Guest customer'}</td>
+                        <td data-label="Date">{formatDate(order.createdAt)}</td>
+                        <td data-label="Status"><span className={styles.statusPill} data-tone={statusTone(order.status)}>{order.status.replaceAll('_', ' ')}</span></td>
+                        <td data-label="Payment"><span className={styles.statusPill} data-tone={statusTone(order.paymentStatus)}>{order.paymentStatus.replaceAll('_', ' ')}</span></td>
+                        <td data-label="Fulfilment"><span className={styles.statusPill} data-tone={statusTone(fulfilment.toUpperCase())}>{fulfilment}</span></td>
+                        <td data-label="Total">{formatPrice(order.total)}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : <p className={styles.emptyState}>No recent orders.</p>}
+        </section>
+      </div>
     </div>
   )
 }
