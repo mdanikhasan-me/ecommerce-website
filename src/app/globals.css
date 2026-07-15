@@ -99,8 +99,22 @@
     color: inherit;
   }
 
-  :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]):focus,
+  :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]):focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+  }
+
+  :where(input, select, textarea):focus,
+  :where(input, select, textarea):focus-visible {
+    border-color: hsl(var(--foreground) / 0.32) !important;
+  }
+
+  a:focus-visible {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
 
   /* Firefox + Chrome 121+. Webkit fallback below. */
@@ -254,7 +268,7 @@
   .input-base {
     @apply w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm ring-offset-background
     placeholder:text-muted-foreground
-    focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-ring
+    focus:outline-none focus:border-foreground/30
     disabled:cursor-not-allowed disabled:opacity-50
     transition-colors duration-150;
   }
