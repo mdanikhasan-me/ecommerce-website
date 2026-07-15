@@ -332,6 +332,34 @@
   padding: 0.15rem 0.85rem 0.9rem;
 }
 
+.chartCanvas {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+}
+
+.chartYAxis {
+  position: relative;
+  min-width: 0;
+  color: var(--dash-muted);
+  font-size: 0.75rem;
+  font-weight: 610;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.chartYAxis span {
+  position: absolute;
+  right: 0.72rem;
+  transform: translateY(-50%);
+}
+
+.chartPlot {
+  position: relative;
+  min-width: 0;
+}
+
 .chart {
   display: block;
   width: 100%;
@@ -342,11 +370,6 @@
 .gridLine {
   stroke: var(--dash-border);
   stroke-width: 1;
-}
-
-.axisText {
-  fill: var(--dash-muted);
-  font-size: 10px;
 }
 
 .currentLine,
@@ -384,31 +407,46 @@
   outline: none;
 }
 
-.chartTooltip rect {
-  fill: var(--dash-tooltip);
+.chartTooltip {
+  position: absolute;
+  z-index: 2;
+  top: clamp(3.35rem, var(--chart-tooltip-top), calc(100% - 0.5rem));
+  left: clamp(3.55rem, var(--chart-tooltip-left), calc(100% - 3.55rem));
+  min-width: 6.35rem;
+  transform: translate(-50%, calc(-100% - 0.52rem));
+  border-radius: 0.42rem;
+  padding: 0.48rem 0.62rem;
+  background: var(--dash-tooltip);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 650;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
-.chartTooltip text {
-  fill: hsl(var(--background));
-  font-size: 10px;
-  font-weight: 610;
+:global(.admin-ui[data-admin-theme='dark']) .chartTooltip {
+  color: #171b22;
 }
 
-:global(.admin-ui[data-admin-theme='dark']) .chartTooltip text {
-  fill: #171b22;
+.chartTooltip span,
+.chartTooltip strong {
+  display: block;
 }
 
-.chartTooltip text:last-child {
-  font-size: 13px;
-  font-weight: 780;
+.chartTooltip strong {
+  margin-top: 0.18rem;
+  font-size: 0.88rem;
+  font-weight: 790;
 }
 
 .chartAxisLabels {
+  grid-column: 2;
   display: flex;
   justify-content: space-between;
-  padding: 0 0.45rem 0 3.2rem;
+  padding: 0 0.45rem;
   color: var(--dash-muted);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 610;
 }
 
@@ -950,12 +988,31 @@
     padding: 0.15rem 0.32rem 0.8rem;
   }
 
-  .axisText {
-    display: none;
+  .chartCanvas {
+    grid-template-columns: 4.85rem minmax(0, 1fr);
+  }
+
+  .chartYAxis {
+    font-size: 0.7rem;
+  }
+
+  .chartYAxis span {
+    right: 0.55rem;
   }
 
   .chartAxisLabels {
-    padding-left: 0.3rem;
+    padding-inline: 0.15rem;
+    font-size: 0.69rem;
+  }
+
+  .chartTooltip {
+    min-width: 5.75rem;
+    padding: 0.42rem 0.52rem;
+    font-size: 0.66rem;
+  }
+
+  .chartTooltip strong {
+    font-size: 0.82rem;
   }
 
   .outcomeHeader,
@@ -1030,6 +1087,14 @@
 
   .chartLegend {
     grid-template-columns: 1fr;
+  }
+
+  .chartCanvas {
+    grid-template-columns: 4.45rem minmax(0, 1fr);
+  }
+
+  .chartYAxis {
+    font-size: 0.68rem;
   }
 
   .outcomeHeader {

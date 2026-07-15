@@ -162,9 +162,8 @@ export function AdminDashboardVisuals({
   const currentPath = buildLinearPath(currentPoints)
   const previousPath = buildLinearPath(previousPoints)
   const selectedPoint = currentPoints[selectedIndex]
-  const tooltipWidth = 128
-  const tooltipX = Math.min(Math.max(selectedPoint.x - tooltipWidth / 2, CHART_LEFT), CHART_WIDTH - CHART_RIGHT - tooltipWidth)
-  const tooltipY = Math.max(CHART_TOP, selectedPoint.y - 70)
+  const tooltipLeft = ((selectedPoint.x - CHART_LEFT) / (CHART_WIDTH - CHART_LEFT)) * 100
+  const tooltipTop = (selectedPoint.y / CHART_HEIGHT) * 100
   const summary = summaries[metric]
   const difference = summary.current - summary.previous
   const differenceDirection = difference > 0 ? 'up' : difference < 0 ? 'down' : 'flat'
@@ -207,58 +206,89 @@ export function AdminDashboardVisuals({
         </div>
 
         <div className={styles.chartStage}>
-          <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} className={styles.chart} role="img" aria-label={`Interactive ${metricLabels[metric]} comparison chart`}>
-            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
-              const y = CHART_TOP + ratio * chartHeight
-              return (
-                <g key={ratio}>
-                  <line x1={CHART_LEFT} x2={CHART_WIDTH - CHART_RIGHT} y1={y} y2={y} className={styles.gridLine} vectorEffect="non-scaling-stroke" />
-                  <text x={CHART_LEFT - 12} y={y + 4} textAnchor="end" className={styles.axisText}>
+          <div className={styles.chartCanvas}>
+            <div className={styles.chartYAxis} aria-hidden="true">
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                const y = CHART_TOP + ratio * chartHeight
+                return (
+                  <span key={ratio} style={{ top: `${(y / CHART_HEIGHT) * 100}%` }}>
                     {formatMetricValue(metric, maximum * (1 - ratio))}
-                  </text>
-                </g>
-              )
-            })}
+                  </span>
+                )
+              })}
+            </div>
 
-            <path d={previousPath} className={styles.previousLine} vectorEffect="non-scaling-stroke" />
-            <path d={currentPath} className={styles.currentLine} vectorEffect="non-scaling-stroke" />
+            <div className={styles.chartPlot}>
+              <svg
+                viewBox={`${CHART_LEFT} 0 ${CHART_WIDTH - CHART_LEFT} ${CHART_HEIGHT}`}
+                className={styles.chart}
+                role="img"
+                aria-label={`Interactive ${metricLabels[metric]} comparison chart`}
+              >
+                {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                  const y = CHART_TOP + ratio * chartHeight
+                  return (
+                    <line
+                      key={ratio}
+                      x1={CHART_LEFT}
+                      x2={CHART_WIDTH - CHART_RIGHT}
+                      y1={y}
+                      y2={y}
+                      className={styles.gridLine}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  )
+                })}
 
-            {safeActivity.map((point, index) => {
-              const plottedPoint = currentPoints[index]
-              const hitWidth = Math.max(step, 24)
-              const select = () => setSelectedActivityIndex(index)
-              return (
-                <g
-                  key={point.date}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${point.label}: ${formatMetricValue(metric, point[metric])}`}
-                  onMouseEnter={select}
-                  onFocus={select}
-                  onClick={select}
-                  onKeyDown={(event) => selectWithKeyboard(event, select)}
-                  className={styles.chartHitTarget}
-                >
-                  <rect x={plottedPoint.x - hitWidth / 2} y={CHART_TOP} width={hitWidth} height={chartHeight} fill="transparent" />
-                </g>
-              )
-            })}
+                <path d={previousPath} className={styles.previousLine} vectorEffect="non-scaling-stroke" />
+                <path d={currentPath} className={styles.currentLine} vectorEffect="non-scaling-stroke" />
 
-            <line x1={selectedPoint.x} x2={selectedPoint.x} y1={selectedPoint.y} y2={baseline} className={styles.selectionGuide} vectorEffect="non-scaling-stroke" />
-            <circle cx={selectedPoint.x} cy={selectedPoint.y} r="5" className={styles.selectionPoint} vectorEffect="non-scaling-stroke" />
-            <g transform={`translate(${tooltipX} ${tooltipY})`} className={styles.chartTooltip}>
-              <rect width={tooltipWidth} height="54" rx="7" />
-              <text x="12" y="20">{selectedActivity.label}</text>
-              <text x="12" y="41">{formatMetricValue(metric, selectedActivity[metric])}</text>
-            </g>
-          </svg>
-          <div
-            className={styles.chartAxisLabels}
-            data-chart-inspection={`${selectedActivity.label}: ${formatMetricValue(metric, selectedActivity[metric])}`}
-          >
-            <span>{safeActivity[0]?.label}</span>
-            <span>{safeActivity[Math.floor((safeActivity.length - 1) / 2)]?.label}</span>
-            <span>{safeActivity.at(-1)?.label}</span>
+                {safeActivity.map((point, index) => {
+                  const plottedPoint = currentPoints[index]
+                  const hitWidth = Math.max(step, 24)
+                  const select = () => setSelectedActivityIndex(index)
+                  return (
+                    <g
+                      key={point.date}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${point.label}: ${formatMetricValue(metric, point[metric])}`}
+                      onMouseEnter={select}
+                      onFocus={select}
+                      onClick={select}
+                      onKeyDown={(event) => selectWithKeyboard(event, select)}
+                      className={styles.chartHitTarget}
+                    >
+                      <rect x={plottedPoint.x - hitWidth / 2} y={CHART_TOP} width={hitWidth} height={chartHeight} fill="transparent" />
+                    </g>
+                  )
+                })}
+
+                <line x1={selectedPoint.x} x2={selectedPoint.x} y1={selectedPoint.y} y2={baseline} className={styles.selectionGuide} vectorEffect="non-scaling-stroke" />
+                <circle cx={selectedPoint.x} cy={selectedPoint.y} r="5" className={styles.selectionPoint} vectorEffect="non-scaling-stroke" />
+              </svg>
+
+              <div
+                className={styles.chartTooltip}
+                style={{
+                  '--chart-tooltip-left': `${tooltipLeft}%`,
+                  '--chart-tooltip-top': `${tooltipTop}%`,
+                } as CSSProperties}
+                aria-live="polite"
+              >
+                <span>{selectedActivity.label}</span>
+                <strong>{formatMetricValue(metric, selectedActivity[metric])}</strong>
+              </div>
+            </div>
+
+            <div
+              className={styles.chartAxisLabels}
+              data-chart-inspection={`${selectedActivity.label}: ${formatMetricValue(metric, selectedActivity[metric])}`}
+            >
+              <span>{safeActivity[0]?.label}</span>
+              <span>{safeActivity[Math.floor((safeActivity.length - 1) / 2)]?.label}</span>
+              <span>{safeActivity.at(-1)?.label}</span>
+            </div>
           </div>
         </div>
       </section>
