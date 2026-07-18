@@ -1,3 +1,5 @@
+import { getProductSearchAliases } from './product-search-tags'
+
 type SearchRankCandidate = {
   name: string
   soldCount?: number | null
@@ -57,6 +59,7 @@ function getNameTokenWeight(token: string, index: number) {
 
 export function getProductSearchRelevanceScore(query: string, product: SearchRankCandidate) {
   const normalizedQuery = normalizeSearchText(query)
+  const normalizedAliases = getProductSearchAliases(query).map(normalizeSearchText)
   const queryTokens = getTokens(query)
   if (!normalizedQuery || queryTokens.length === 0) return 0
 
@@ -72,6 +75,8 @@ export function getProductSearchRelevanceScore(query: string, product: SearchRan
   if (normalizedName === normalizedQuery) score += 900
   if (normalizedName.startsWith(normalizedQuery)) score += 620
   if (normalizedName.includes(normalizedQuery)) score += 520
+  if (normalizedAliases.some((alias) => normalizedName.includes(alias))) score += 500
+  if (normalizedAliases.some((alias) => normalizedCategory.includes(alias))) score += 320
 
   let exactNameMatches = 0
   for (const [index, token] of queryTokens.entries()) {

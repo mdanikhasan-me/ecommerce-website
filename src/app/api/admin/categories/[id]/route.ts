@@ -14,6 +14,7 @@ import {
 import { assertValidCategoryParent, parseAdminCategoryPayload } from '@/backend/admin/category-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 interface RouteContext {
@@ -53,7 +54,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
-    const parsed = parseAdminCategoryPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminCategoryPayload(body.data)
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
     await assertValidCategoryParent(payload.parentId, existingCategory.id)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { parsePublicId } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const productId = parsePublicId(req.nextUrl.searchParams.get('productId'))
   if (!productId) return NextResponse.json({ error: 'productId required' }, { status: 400 })
 
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) return NextResponse.json(emptyAccess)
 
   const [deliveredOrder, existingReview] = await Promise.all([

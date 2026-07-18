@@ -2,14 +2,15 @@
 
 import { useWishlistStore } from '@/frontend/stores/wishlist'
 import { ProductCard } from '@/frontend/components/product/ProductCard'
+import type { ProductCardData } from '@/backend/types'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export default function WishlistPage() {
-  const { items } = useWishlistStore()
+  const items = useWishlistStore((state) => state.items)
   const [isHydrated, setIsHydrated] = useState(false)
-  const [products, setProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<ProductCardData[]>([])
   const [loading, setLoading] = useState(true)
   const visibleItems = isHydrated ? items : []
 

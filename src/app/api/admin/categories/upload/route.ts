@@ -7,6 +7,10 @@ import { persistAdminSubcategoryIconFile } from '@/backend/admin/category-icon-u
 import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { rejectDeclaredBodyLargerThan } from '@/backend/security/request-body'
+import { MAX_IMAGE_UPLOAD_BYTES } from '@/backend/admin/image-processing'
+
+const MAX_MULTIPART_BODY_BYTES = MAX_IMAGE_UPLOAD_BYTES + 128 * 1024
 
 function getStringValue(formData: FormData, key: string) {
   const value = formData.get(key)
@@ -29,6 +33,9 @@ export async function POST(req: NextRequest) {
     if (blocked) return blocked
 
     await requireAdminSession()
+
+    const oversized = rejectDeclaredBodyLargerThan(req, MAX_MULTIPART_BODY_BYTES)
+    if (oversized) return oversized
 
     const formData = await req.formData()
     const file = formData.get('file')

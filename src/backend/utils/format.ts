@@ -55,8 +55,8 @@ export function getStockStatus(quantity: number, isPreOrder = false): {
   color: string
   inStock: boolean
 } {
-  if (quantity <= 0) return { label: 'Out of Stock', color: 'text-red-500', inStock: false }
+  if (quantity <= 0) return { label: 'Out of Stock', color: 'text-red-700', inStock: false }
   if (isPreOrder) return { label: 'Available for pre-order', color: 'text-sky-700', inStock: true }
-  if (quantity <= 5) return { label: `Only ${quantity} left`, color: 'text-amber-500', inStock: true }
-  return { label: 'In Stock', color: 'text-green-600', inStock: true }
+  if (quantity <= 5) return { label: `Only ${quantity} left`, color: 'text-amber-700', inStock: true }
+  return { label: 'In Stock', color: 'text-green-700', inStock: true }
 }

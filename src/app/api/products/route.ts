@@ -9,6 +9,8 @@ import {
 import { productCardSelect } from '@/backend/catalog/product-card-select'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseProductApiParams } from '@/backend/catalog/search-params'
+import { PRODUCT_DESCRIPTION_IMAGE_GROUP, PRODUCT_FAQ_GROUP } from '@/shared/product-content'
+import { getProductSearchAliases } from '@/backend/catalog/product-search-tags'
 
 export async function GET(req: NextRequest) {
   const params = parseProductApiParams(req.nextUrl.searchParams)
@@ -22,11 +24,12 @@ export async function GET(req: NextRequest) {
   if (params.ids.length > 0) andClauses.push({ id: { in: params.ids } })
 
   if (params.q) {
+    const searchPhrases = [params.q, ...getProductSearchAliases(params.q)]
     andClauses.push({
-      OR: [
-        { name: { contains: params.q, mode: 'insensitive' } },
-        { tags: { has: params.q.toLowerCase() } },
-      ],
+      OR: searchPhrases.flatMap((phrase) => [
+        { name: { contains: phrase, mode: 'insensitive' as const } },
+        { tags: { has: phrase.toLowerCase() } },
+      ]),
     })
   }
   if (params.category) andClauses.push({ category: { slug: params.category } })
@@ -47,7 +50,7 @@ export async function GET(req: NextRequest) {
   else if (params.sort === 'rating') orderBy = { rating: 'desc' }
 
   // Opt-in extra detail (specs + attributes) used by the compare page.
-  const includeDetails = req.nextUrl.searchParams.get('details') === '1'
+  const includeDetails = req.nextUrl.searchParams.get('details') === '1' && params.ids.length > 0 && params.ids.length <= 4
   const productSelect = {
     ...productCardSelect,
     ...(includeDetails
@@ -55,7 +58,16 @@ export async function GET(req: NextRequest) {
           description: true,
           shortDescription: true,
           attributes: { select: { id: true, name: true, value: true }, orderBy: { sortOrder: 'asc' } },
-          specifications: { select: { group: true, name: true, value: true, sortOrder: true }, orderBy: { sortOrder: 'asc' } },
+          specifications: {
+            where: {
+              OR: [
+                { group: null },
+                { group: { notIn: [PRODUCT_FAQ_GROUP, PRODUCT_DESCRIPTION_IMAGE_GROUP] } },
+              ],
+            },
+            select: { group: true, name: true, value: true, sortOrder: true },
+            orderBy: { sortOrder: 'asc' },
+          },
         }
       : {}),
   } satisfies Prisma.ProductSelect
@@ -71,11 +83,18 @@ export async function GET(req: NextRequest) {
     db.product.count({ where }),
   ])
 
-  return NextResponse.json({
-    items: products,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
-  })
+  return NextResponse.json(
+    {
+      items: products,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    },
+  )
 }

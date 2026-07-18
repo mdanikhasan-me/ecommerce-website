@@ -7,7 +7,6 @@ import { cn } from '@/backend/utils'
 interface ProductGridProps {
   title: string
   subtitle?: string
-  eyebrow?: string
   products: ProductCardData[]
   viewAllHref?: string
   className?: string
@@ -19,7 +18,6 @@ const HOME_PRODUCT_IMAGE_SIZES = '(max-width: 639px) 44vw, (max-width: 1023px) 3
 export function ProductGrid({
   title,
   subtitle,
-  eyebrow,
   products,
   viewAllHref,
   className,
@@ -28,11 +26,10 @@ export function ProductGrid({
   const viewAllLabel = `View all ${title.toLowerCase()}`
 
   return (
-    <div className={cn('product-list-scope product-section-rhythm w-full', className)}>
+    <div className={cn('home-product-grid product-list-scope product-section-rhythm w-full', className)}>
       <div className="product-section-header">
         <div className="min-w-0">
-          {eyebrow ? <p className="section-kicker">{eyebrow}</p> : null}
-          <h2 className={cn('section-title', eyebrow && 'mt-2')}>{title}</h2>
+          <h2 className="section-title">{title}</h2>
           {subtitle ? <p className="mt-2 max-w-[40rem] text-sm leading-6 text-muted-foreground">{subtitle}</p> : null}
         </div>
         {viewAllHref && (
@@ -51,7 +48,7 @@ export function ProductGrid({
         gridClassName,
       )}>
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} imageSizes={HOME_PRODUCT_IMAGE_SIZES} />
+          <ProductCard key={product.id} product={product} className="home-product-card" imageSizes={HOME_PRODUCT_IMAGE_SIZES} titleHeadingLevel={3} />
         ))}
       </div>
     </div>

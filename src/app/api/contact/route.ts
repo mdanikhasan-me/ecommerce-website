@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/backend/database'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 const SUBJECTS = new Set([
   'Order Issue',
@@ -24,11 +25,13 @@ export async function POST(req: NextRequest) {
     const limited = rateLimit(req, { key: 'contact:create', limit: 5, windowMs: 60_000 })
     if (limited) return limited
 
-    const body = await req.json()
-    const name = clean(body.name, 120)
-    const email = clean(body.email, 254)
-    const subject = clean(body.subject, 120)
-    const message = clean(body.message, 4000)
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const input = body.data as Record<string, unknown>
+    const name = clean(input?.name, 120)
+    const email = clean(input?.email, 254)
+    const subject = clean(input?.subject, 120)
+    const message = clean(input?.message, 4000)
 
     if (!name || !email || !subject || !message) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })

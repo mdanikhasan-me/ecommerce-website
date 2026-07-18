@@ -22,6 +22,7 @@ import {
   generateProductMetadata,
   noIndexNoFollowRobots,
 } from '@/backend/seo'
+import { splitProductStructuredContent } from '@/shared/product-content'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -110,6 +111,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) return { title: 'Product Not Found', robots: noIndexNoFollowRobots }
 
+  const structuredContent = splitProductStructuredContent(product.specifications)
+
   return generateProductMetadata({
     name: product.name,
     slug: product.slug,
@@ -124,8 +127,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     rating: product.rating,
     reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
-    tags: product.tags,
     sku: product.sku,
+    attributes: product.attributes,
+    specifications: structuredContent.specifications,
+    variantOptions: product.variants.flatMap((variant) => variant.options),
   })
 }
 
@@ -217,6 +222,7 @@ async function RelatedProductsSection({
             key={relatedProduct.id}
             product={relatedProduct}
             imageSizes="(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw"
+            titleHeadingLevel={3}
           />
         ))}
       </div>
@@ -229,6 +235,8 @@ export default async function ProductPage({ params }: Props) {
   const product = await getProduct(slug)
 
   if (!product) notFound()
+
+  const structuredContent = splitProductStructuredContent(product.specifications)
 
   const productJsonLd = generateProductJsonLd({
     name: product.name,
@@ -243,7 +251,7 @@ export default async function ProductPage({ params }: Props) {
     reviewCount: product.reviewCount,
     stockQuantity: product.stockQuantity,
     attributes: product.attributes,
-    specifications: product.specifications,
+    specifications: structuredContent.specifications,
   })
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
@@ -251,10 +259,24 @@ export default async function ProductPage({ params }: Props) {
     { name: product.category.name, url: `/category/${product.category.slug}` },
     { name: product.name, url: `/products/${product.slug}` },
   ])
+  const faqJsonLd = structuredContent.faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: structuredContent.faqs.map((faq) => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.answer,
+          },
+        })),
+      }
+    : null
 
   return (
     <div className="container-site py-5 sm:py-6 lg:py-8">
-      <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
+      <JsonLd data={faqJsonLd ? [productJsonLd, breadcrumbJsonLd, faqJsonLd] : [productJsonLd, breadcrumbJsonLd]} />
 
       <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground sm:mb-5 sm:gap-2 sm:text-sm">
         <Link href="/" className="whitespace-nowrap transition-colors min-[1025px]:hover:text-foreground">
@@ -268,7 +290,14 @@ export default async function ProductPage({ params }: Props) {
         <span className="hidden max-w-[260px] truncate text-foreground sm:inline">{product.name}</span>
       </nav>
 
-      <ProductDetailClient product={product} />
+      <ProductDetailClient
+        product={{
+          ...product,
+          specifications: structuredContent.specifications,
+          faqs: structuredContent.faqs,
+          descriptionImages: structuredContent.descriptionImages,
+        }}
+      />
 
       <Suspense fallback={<ReviewsFallback />}>
         <ProductReviewsSection

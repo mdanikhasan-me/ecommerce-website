@@ -220,16 +220,16 @@ function FooterAppBadges({
 export function Footer() {
   return (
     <footer className="storefront-footer border-t border-black/8 text-foreground">
-      <div className="container-site">
+      <div className="storefront-frame">
         <div className="w-full pb-5 pt-4 min-[560px]:py-3 xl:py-8">
           <div className="hidden gap-10 xl:grid xl:grid-cols-[minmax(15rem,0.9fr)_minmax(0,2.3fr)_minmax(16rem,0.85fr)] xl:items-start">
             <section aria-label="Boilabin contact" className="max-w-[18rem]">
               <Link
                 href="/"
-                className="inline-flex items-center gap-3"
+                className="inline-flex w-fit items-center leading-none"
                 aria-label="Boilabin home"
               >
-                <BrandWordmark variant="art" className="h-[2.35rem]" />
+                <BrandWordmark variant="art" className="h-[44px]" />
               </Link>
               <p className="mt-2.5 max-w-[28rem] text-sm leading-6 text-muted-foreground lg:max-w-[17rem]">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -330,10 +330,10 @@ export function Footer() {
                   <div className="min-w-0">
                     <Link
                       href="/"
-                      className="inline-flex"
+                      className="inline-flex w-fit items-center leading-none"
                       aria-label="Boilabin home"
                     >
-                      <BrandWordmark variant="art" className="h-[2.15rem]" />
+                      <BrandWordmark variant="art" className="h-[38px]" />
                     </Link>
                     <p className="mt-3 max-w-[13.5rem] text-sm leading-6 text-muted-foreground">
                       Everyday finds. Best deals. Delivered across Bangladesh.
@@ -471,10 +471,10 @@ export function Footer() {
             <section aria-label="Boilabin contact" className="text-center">
               <Link
                 href="/"
-                className="inline-flex justify-center"
+                className="inline-flex w-fit justify-center leading-none"
                 aria-label="Boilabin home"
               >
-                <BrandWordmark variant="art" className="h-[2.1rem]" />
+                <BrandWordmark variant="art" className="h-[34px]" />
               </Link>
               <p className="mx-auto mt-2.5 max-w-[17.5rem] text-[15px] leading-6 text-muted-foreground">
                 Everyday finds. Best deals. Delivered across Bangladesh.
@@ -531,7 +531,7 @@ export function Footer() {
                   key={section.title}
                   className="group border-b border-black/10"
                 >
-                  <summary className="relative flex cursor-pointer list-none items-center justify-center py-4 text-center text-sm font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
+                  <summary className="relative flex min-h-14 cursor-pointer list-none items-center justify-center text-center text-sm font-medium text-foreground/90 focus:outline-none [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-center gap-3">
                       <LocalIcon
                         name={MOBILE_FOOTER_SECTION_ICONS[section.title]}

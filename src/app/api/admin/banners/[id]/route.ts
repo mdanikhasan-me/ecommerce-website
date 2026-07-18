@@ -10,6 +10,7 @@ import {
 import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 interface RouteContext {
@@ -29,7 +30,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Banner not found' }, { status: 404 })
     }
 
-    const parsed = parseAdminBannerPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminBannerPayload(body.data)
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
     const bannerOwner = existingBanner.id || payload.title || payload.position || 'banner'

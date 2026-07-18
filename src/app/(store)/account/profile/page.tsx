@@ -1,4 +1,4 @@
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
 import { ProfileForm } from '@/frontend/components/account/ProfileForm'
@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Boilabin Profile' }
 
 export default async function ProfilePage() {
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) redirect('/auth/login')
 
   const user = await db.user.findUnique({

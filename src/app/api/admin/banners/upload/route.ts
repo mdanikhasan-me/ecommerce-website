@@ -11,6 +11,10 @@ import {
 import { isAdminBannerImageSlot } from '@/backend/admin/banner-image-policy'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody, rejectDeclaredBodyLargerThan } from '@/backend/security/request-body'
+import { MAX_IMAGE_UPLOAD_BYTES } from '@/backend/admin/image-processing'
+
+const MAX_MULTIPART_BODY_BYTES = MAX_IMAGE_UPLOAD_BYTES + 128 * 1024
 
 function getStringValue(formData: FormData, key: string) {
   const value = formData.get(key)
@@ -33,6 +37,9 @@ export async function POST(req: NextRequest) {
     if (blocked) return blocked
 
     await requireAdminSession()
+
+    const oversized = rejectDeclaredBodyLargerThan(req, MAX_MULTIPART_BODY_BYTES)
+    if (oversized) return oversized
 
     const formData = await req.formData()
     const slot = getStringValue(formData, 'slot')
@@ -66,8 +73,10 @@ export async function DELETE(req: NextRequest) {
 
     await requireAdminSession()
 
-    const body = await req.json().catch(() => null)
-    const url = typeof body?.url === 'string' ? body.url.trim() : ''
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const input = body.data as Record<string, unknown>
+    const url = typeof input?.url === 'string' ? input.url.trim() : ''
     if (!url) throw new Error('Banner image URL is required')
 
     const deleted = await deleteManagedAdminUpload(url)

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getEmailProcessorSecret } from '@/backend/email/config'
 import { processDueEmails } from '@/backend/email/processor'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +26,9 @@ function isAuthorized(req: NextRequest): boolean {
  * aggregate counts — no recipients, order details, or provider errors.
  */
 export async function POST(req: NextRequest) {
+  const limited = rateLimit(req, { key: 'email:processor', limit: 30, windowMs: 60_000 })
+  if (limited) return limited
+
   if (!isAuthorized(req)) {
     logSecurityEvent({
       type: 'email_processor_unauthorized',

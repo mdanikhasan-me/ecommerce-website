@@ -7,13 +7,17 @@ import { sortByProductSearchRelevance } from '@/backend/catalog/search-relevance
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
 import { getPublicSearchWords, parsePublicSearchQuery } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
+import { getProductSearchAliases } from '@/backend/catalog/product-search-tags'
 
 const getCachedSuggestions = unstable_cache(async (q: string) => {
   const words = getPublicSearchWords(q)
+  const aliases = getProductSearchAliases(q)
+  const searchWords = [...new Set([...words, ...aliases.flatMap(getPublicSearchWords)])]
+  const searchPhrases = [...new Set([q, ...aliases])]
 
   const nameOR = [
-    { name: { contains: q, mode: 'insensitive' as const } },
-    ...words.map((w) => ({ name: { contains: w, mode: 'insensitive' as const } })),
+    ...searchPhrases.map((phrase) => ({ name: { contains: phrase, mode: 'insensitive' as const } })),
+    ...searchWords.map((word) => ({ name: { contains: word, mode: 'insensitive' as const } })),
   ]
 
   const matchedCategories = await db.category.findMany({
@@ -25,9 +29,9 @@ const getCachedSuggestions = unstable_cache(async (q: string) => {
 
   const productOR: Prisma.ProductWhereInput[] = []
   if (categoryIds.length > 0) productOR.push({ categoryId: { in: categoryIds } })
-  productOR.push({ name: { contains: q, mode: 'insensitive' } })
-  for (const w of words) productOR.push({ name: { contains: w, mode: 'insensitive' } })
-  if (words.length > 0) productOR.push({ tags: { hasSome: words } })
+  for (const phrase of searchPhrases) productOR.push({ name: { contains: phrase, mode: 'insensitive' } })
+  for (const word of searchWords) productOR.push({ name: { contains: word, mode: 'insensitive' } })
+  if (searchWords.length > 0) productOR.push({ tags: { hasSome: searchWords } })
   productOR.push({ shortDescription: { contains: q, mode: 'insensitive' } })
 
   const products = await db.product.findMany({

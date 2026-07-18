@@ -51,7 +51,7 @@ export default async function AdminCategoriesPage() {
                     </span>
                   </td>
                   <td data-mobile data-action className="px-4 py-3 text-right">
-                    <Link href={`/admin/categories/${cat.id}`} className="p-1.5 rounded-md inline-flex">
+                    <Link href={`/admin/categories/${cat.id}`} className="admin-icon-button" aria-label={`Edit ${cat.name}`} title={`Edit ${cat.name}`}>
                       <Pencil className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   </td>
@@ -70,7 +70,7 @@ export default async function AdminCategoriesPage() {
                       </span>
                     </td>
                     <td data-mobile data-action className="px-4 py-2.5 text-right">
-                      <Link href={`/admin/categories/${sub.id}`} className="p-1.5 rounded-md inline-flex">
+                      <Link href={`/admin/categories/${sub.id}`} className="admin-icon-button" aria-label={`Edit ${sub.name}`} title={`Edit ${sub.name}`}>
                         <Pencil className="h-4 w-4 text-muted-foreground" />
                       </Link>
                     </td>

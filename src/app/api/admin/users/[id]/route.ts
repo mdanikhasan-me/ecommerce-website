@@ -5,6 +5,7 @@ import { isSuperAdminRole, logAdminAudit, requireAdminSession } from '@/backend/
 import { ADMIN_USER_DETAIL_SELECT, parseAdminUserPayload } from '@/backend/admin/user-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -34,7 +35,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const session = await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminUserPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseAdminUserPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -125,16 +128,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'user',
       entityId: user.id,
       oldValues: {
-        name: existingUser.name,
-        phone: existingUser.phone,
         role: existingUser.role,
         isActive: existingUser.isActive,
       },
       newValues: {
-        name: user.name,
-        phone: user.phone,
         role: user.role,
         isActive: user.isActive,
+        nameChanged: existingUser.name !== user.name,
+        phoneChanged: existingUser.phone !== user.phone,
       },
     })
 

@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCartStore, type CartCoupon, type CartItem } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { formatPrice, calculateShipping, applyCoupon, cn } from '@/backend/utils'
+import { formatPrice, calculateShipping, cn } from '@/backend/utils'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 import toast from '@/frontend/lib/toast'
 
@@ -454,7 +454,12 @@ function TrustRow() {
 
 export function CheckoutClient() {
   const router = useRouter()
-  const { items, appliedCoupon, getSubtotal, setAppliedCoupon, clearAppliedCoupon, clearCart } = useCartStore()
+  const items = useCartStore((state) => state.items)
+  const appliedCoupon = useCartStore((state) => state.appliedCoupon)
+  const getSubtotal = useCartStore((state) => state.getSubtotal)
+  const setAppliedCoupon = useCartStore((state) => state.setAppliedCoupon)
+  const clearAppliedCoupon = useCartStore((state) => state.clearAppliedCoupon)
+  const clearCart = useCartStore((state) => state.clearCart)
   const [step, setStep] = useState(0)
   const [selectedPayment, setSelectedPayment] = useState('CASH_ON_DELIVERY')
   const [submitting, setSubmitting] = useState(false)
@@ -473,7 +478,7 @@ export function CheckoutClient() {
 
   const subtotal = getSubtotal()
   const shippingFee = calculateShipping(subtotal)
-  const discount = appliedCoupon ? applyCoupon(subtotal, appliedCoupon) : 0
+  const discount = Math.min(appliedCoupon?.discount ?? 0, subtotal)
   const total = subtotal + shippingFee - discount
   const selectedSavedAddress = deliveryMode === 'saved'
     ? savedAddresses.find((address) => address.id === selectedAddressId) ?? null
@@ -551,10 +556,18 @@ export function CheckoutClient() {
 
     setApplyingCoupon(true)
     try {
-      const productIds = items.map((item) => item.productId).join(',')
-      const response = await fetch(
-        `/api/coupons/validate?code=${encodeURIComponent(code)}&amount=${subtotal}&productIds=${encodeURIComponent(productIds)}`,
-      )
+      const response = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          items: items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId ?? null,
+            quantity: item.quantity,
+          })),
+        }),
+      })
       const data = await response.json()
 
       if (!response.ok || !data.success) {
@@ -564,7 +577,7 @@ export function CheckoutClient() {
 
       setAppliedCoupon(data.coupon)
       setCouponCode(data.coupon.code)
-      toast.success(`Coupon applied. You save ${formatPrice(applyCoupon(subtotal, data.coupon))}`)
+      toast.success(`Coupon applied. You save ${formatPrice(data.coupon.discount)}`)
     } catch {
       toast.error('Failed to validate coupon')
     } finally {

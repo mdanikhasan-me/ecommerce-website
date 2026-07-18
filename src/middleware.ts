@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { getCspReportOnlyHeader } from '@/backend/security/csp'
+import { getCspEnforcedHeader, getCspReportOnlyHeader } from '@/backend/security/csp'
 
 const SESSION_COOKIE_PREFIXES = [
   'authjs.session-token',
@@ -10,6 +10,11 @@ const SESSION_COOKIE_PREFIXES = [
 ]
 
 function withOptionalCspReportOnly(req: NextRequest, response: NextResponse) {
+  const enforcedCspHeader = getCspEnforcedHeader(req.nextUrl.pathname)
+  if (enforcedCspHeader) {
+    response.headers.set(enforcedCspHeader.key, enforcedCspHeader.value)
+  }
+
   const cspHeader = getCspReportOnlyHeader(req.nextUrl.pathname)
   if (cspHeader) {
     response.headers.set(cspHeader.key, cspHeader.value)

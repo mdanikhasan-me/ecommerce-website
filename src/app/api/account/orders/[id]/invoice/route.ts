@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { buildInvoiceDownloadFilename, generateOrderInvoicePdf, getOwnedOrderInvoiceContext } from '@/backend/orders/order-invoice'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }

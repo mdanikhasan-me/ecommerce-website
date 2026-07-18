@@ -4,6 +4,7 @@ import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminCouponPayload, resolveCouponMutationError, validateCouponRelations } from '@/backend/admin/coupon-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -22,7 +23,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Coupon not found' }, { status: 404 })
     }
 
-    const parsed = parseAdminCouponPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminCouponPayload(body.data)
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
     await validateCouponRelations(payload.categoryIds, payload.productIds)

@@ -1,9 +1,9 @@
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
+import { expandCouponCategoryIds } from '@/backend/coupons/category-scope'
+import { siteConfig } from '@/backend/config/site'
 import { enqueueOrderPlacedEmails, type EmailEnqueueTx } from '@/backend/email/outbox'
 import type { ParsedBuyerOrderAddress, ParsedBuyerOrderPayload } from '@/backend/orders/buyer-validation'
-
-const SHIPPING_FEE_FLAT = 60
-const FREE_SHIPPING_THRESHOLD = 2000
+import { evaluateCouponForLines } from '@/shared/coupon-math'
 
 type ProductRecord = {
   id: string
@@ -23,6 +23,7 @@ type VariantRecord = {
   price: number
   salePrice: number | null
   stockQuantity: number
+  isActive: boolean
 }
 
 type CouponRecord = {
@@ -57,8 +58,9 @@ export type BuyerOrderDb = {
   product: { findMany: (args: unknown) => Promise<ProductRecord[]> }
   productVariant: { findMany: (args: unknown) => Promise<VariantRecord[]> }
   coupon: { findUnique: (args: unknown) => Promise<CouponRecord | null> }
+  category: { findMany: (args: unknown) => Promise<Array<{ id: string; parentId: string | null }>> }
   order: { count: (args: unknown) => Promise<number> }
-  user: { findUnique: (args: unknown) => Promise<{ email: string; name: string | null } | null> }
+  user: { findUnique: (args: unknown) => Promise<{ email: string; name: string | null; isActive: boolean } | null> }
   $transaction: <T>(callback: (tx: BuyerOrderTx) => Promise<T>) => Promise<T>
   notification: { create: (args: unknown) => Promise<unknown> }
 }
@@ -97,7 +99,7 @@ export type BuyerOrderCreateResult =
     }
 
 export function computeBuyerOrderShipping(subtotal: number) {
-  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE_FLAT
+  return subtotal >= siteConfig.shipping.freeShippingMin ? 0 : siteConfig.shipping.baseFee
 }
 
 const MAX_ORDER_NUMBER_COLLISION_RETRIES = 10
@@ -122,9 +124,9 @@ export async function createBuyerOrder({
 
   const customer = await database.user.findUnique({
     where: { id: userId },
-    select: { email: true, name: true },
+    select: { email: true, name: true, isActive: true },
   })
-  if (!customer) {
+  if (!customer?.isActive) {
     return {
       success: false,
       status: 401,
@@ -140,7 +142,7 @@ export async function createBuyerOrder({
     variantIds.length
       ? database.productVariant.findMany({
           where: { id: { in: variantIds } },
-          select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true },
+          select: { id: true, productId: true, name: true, price: true, salePrice: true, stockQuantity: true, isActive: true },
         })
       : Promise.resolve([]),
   ])
@@ -166,7 +168,7 @@ export async function createBuyerOrder({
 
     if (raw.variantId) {
       const variant = variantMap.get(raw.variantId)
-      if (!variant || variant.productId !== product.id) {
+      if (!variant || variant.productId !== product.id || !variant.isActive) {
         return { success: false, status: 400, error: 'Invalid product variant' }
       }
       if (variant.stockQuantity < qty) {
@@ -211,21 +213,26 @@ export async function createBuyerOrder({
     if (coupon.usageLimit && coupon.usageCount >= coupon.usageLimit) {
       return { success: false, status: 400, error: 'Coupon usage limit reached' }
     }
-    if (subtotal < coupon.minOrderAmount) {
-      return { success: false, status: 400, error: `Minimum order amount is Tk ${coupon.minOrderAmount.toLocaleString('en-BD')}` }
+    const expandedCategoryIds = await expandCouponCategoryIds(
+      () => database.category.findMany({ select: { id: true, parentId: true } }),
+      coupon.categoryIds,
+    )
+    const couponEvaluation = evaluateCouponForLines(
+      { ...coupon, categoryIds: expandedCategoryIds },
+      preparedItems,
+    )
+
+    if (!couponEvaluation.hasEligibleItems) {
+      return { success: false, status: 400, error: 'This coupon does not apply to the items in your cart' }
     }
 
-    const productIdSet = new Set(coupon.productIds)
-    const categoryIdSet = new Set(coupon.categoryIds)
-    const hasRestrictions = productIdSet.size > 0 || categoryIdSet.size > 0
-    const eligibleSubtotal = hasRestrictions
-      ? preparedItems.reduce((sum, item) => (
-          productIdSet.has(item.productId) || categoryIdSet.has(item.categoryId) ? sum + item.total : sum
-        ), 0)
-      : subtotal
-
-    if (hasRestrictions && eligibleSubtotal <= 0) {
-      return { success: false, status: 400, error: 'This coupon does not apply to the items in your cart' }
+    if (!couponEvaluation.meetsMinimum) {
+      const minimumLabel = couponEvaluation.hasRestrictions ? 'Minimum eligible item amount' : 'Minimum order amount'
+      return {
+        success: false,
+        status: 400,
+        error: `${minimumLabel} is Tk ${couponEvaluation.minimumOrderAmount.toLocaleString('en-BD')}`,
+      }
     }
 
     if (coupon.perUserLimit) {
@@ -237,12 +244,7 @@ export async function createBuyerOrder({
       }
     }
 
-    if (coupon.type === 'PERCENTAGE') {
-      discount = (eligibleSubtotal * coupon.value) / 100
-      if (coupon.maxDiscount) discount = Math.min(discount, coupon.maxDiscount)
-    } else if (coupon.type === 'FIXED') {
-      discount = Math.min(coupon.value, eligibleSubtotal)
-    }
+    discount = couponEvaluation.discount
     couponId = coupon.id
   }
 

@@ -36,7 +36,16 @@ export default async function AdminInventoryPage({
         : {}),
     },
     orderBy: { stockQuantity: 'asc' },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      sku: true,
+      basePrice: true,
+      salePrice: true,
+      stockQuantity: true,
+      lowStockThreshold: true,
+      viewCount: true,
+      soldCount: true,
       category: { select: { name: true } },
       variants: {
         orderBy: { sortOrder: 'asc' },

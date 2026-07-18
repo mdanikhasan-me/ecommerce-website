@@ -8,7 +8,8 @@ import type { Metadata } from 'next'
 import { SEO } from './constants'
 import { canonicalUrl, toAbsoluteUrl } from './urls'
 import { noIndexFollowRobots } from './robots'
-import { buildProductSearchCopy } from './product-copy'
+import { buildProductSearchCopy, isLegacyGeneratedProductDescription } from './product-copy'
+import { buildAutomaticProductTags } from '@/backend/catalog/product-search-tags'
 
 interface ProductMeta {
   name: string
@@ -24,8 +25,10 @@ interface ProductMeta {
   rating?: number
   reviewCount?: number
   stockQuantity?: number
-  tags?: string[]
   sku?: string | null
+  attributes?: { name: string; value: string }[]
+  specifications?: { name: string; value: string }[]
+  variantOptions?: { name: string; value: string }[]
 }
 
 export function generateProductMetadata(product: ProductMeta): Metadata {
@@ -42,22 +45,35 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     sku: product.sku,
     shortDescription: product.shortDescription,
     description: product.description,
-    tags: product.tags,
+    tags: buildAutomaticProductTags({
+      name: product.name,
+      sku: product.sku,
+      categoryName: product.category.name,
+      attributes: product.attributes,
+      specifications: product.specifications,
+      variantOptions: product.variantOptions,
+    }),
+    attributes: product.attributes,
+    specifications: product.specifications,
+    variantOptions: product.variantOptions,
+    stockQuantity: product.stockQuantity,
   })
-  const desc = product.shortDescription?.trim() || product.description?.trim() || generated.description
   const seoTitle = product.metaTitle?.trim() || generated.title
-  const seoDescription = product.metaDescription?.trim() || generated.description
+  const storedMetaDescription = product.metaDescription?.trim()
+  const seoDescription = storedMetaDescription && !isLegacyGeneratedProductDescription(storedMetaDescription, product.name)
+    ? storedMetaDescription
+    : generated.description
 
   return {
-    title: seoTitle,
+    title: { absolute: seoTitle },
     description: seoDescription,
     keywords: generated.searchTerms,
     alternates: {
       canonical: url,
     },
     openGraph: {
-      title: `${product.name}, Tk ${price.toLocaleString('en-BD')}, ${SEO.siteName}`,
-      description: desc,
+      title: seoTitle,
+      description: seoDescription,
       url,
       siteName: SEO.siteName,
       locale: SEO.locale,
@@ -75,8 +91,8 @@ export function generateProductMetadata(product: ProductMeta): Metadata {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name}, Tk ${price.toLocaleString('en-BD')}`,
-      description: desc,
+      title: seoTitle,
+      description: seoDescription,
       images: primaryImage ? [primaryImage] : undefined,
     },
     robots: SEO.robots,

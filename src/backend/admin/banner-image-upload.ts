@@ -5,6 +5,7 @@ import {
   IMAGE_UPLOAD_ERROR_MESSAGES,
   MAX_DECODED_IMAGE_PIXELS,
   MAX_IMAGE_UPLOAD_BYTES,
+  validateImageUploadPayload,
 } from '@/backend/admin/image-processing'
 import {
   isAdminBannerImageSlot,
@@ -51,6 +52,9 @@ export async function persistAdminBannerImageFile(
     throw new Error(IMAGE_UPLOAD_ERROR_MESSAGES.uploadTooLarge)
   }
 
+  const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`
+  await validateImageUploadPayload(dataUrl)
+
   try {
     const metadata = await sharp(buffer, {
       failOn: 'error',
@@ -68,7 +72,6 @@ export async function persistAdminBannerImageFile(
     throw new Error(IMAGE_UPLOAD_ERROR_MESSAGES.safeUpload)
   }
 
-  const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`
   const publicUrl = await persistAdminUpload(dataUrl, {
     purpose: 'banners',
     ownerSlugOrId: input.ownerSlugOrId,

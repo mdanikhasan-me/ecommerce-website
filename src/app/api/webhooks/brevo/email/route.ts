@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getEmailWebhookCredentials } from '@/backend/email/config'
 import { db } from '@/backend/database'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { readBoundedJsonBody } from '@/backend/security/request-body'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,6 +78,9 @@ function readField(payload: Record<string, unknown>, key: string): string | null
  * the authenticated provider-message-id lookup.
  */
 export async function POST(req: NextRequest) {
+  const limited = rateLimit(req, { key: 'email:webhook', limit: 120, windowMs: 60_000 })
+  if (limited) return limited
+
   const credentials = getEmailWebhookCredentials()
   if (!credentials) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -93,21 +98,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const bodyText = await req.text()
-  if (new TextEncoder().encode(bodyText).byteLength > MAX_BODY_BYTES) {
-    return NextResponse.json({ error: 'Payload too large' }, { status: 413 })
+  const body = await readBoundedJsonBody(req, MAX_BODY_BYTES)
+  if (!body.success) return body.response
+  if (!body.data || typeof body.data !== 'object' || Array.isArray(body.data)) {
+    return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
   }
-
-  let payload: Record<string, unknown>
-  try {
-    const parsed = JSON.parse(bodyText) as unknown
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
-    }
-    payload = parsed as Record<string, unknown>
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
-  }
+  const payload = body.data as Record<string, unknown>
 
   const event = readField(payload, 'event')
   const providerMessageId = readField(payload, 'message-id')

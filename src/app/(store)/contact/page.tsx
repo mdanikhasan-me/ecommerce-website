@@ -16,7 +16,7 @@ export const metadata: Metadata = generatePageMetadata(
 
 export default function ContactPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-[#fdfdfc]">
       <JsonLd
         data={[
           generateWebPageJsonLd({
@@ -32,17 +32,19 @@ export default function ContactPage() {
           generateOrganizationJsonLd(),
         ]}
       />
-      <div className="container-site py-12 sm:py-14 lg:py-20">
-        <header className="mx-auto max-w-[48rem] text-center">
-          <h1 className="font-display text-[2.2rem] font-medium leading-tight tracking-normal text-[#20232d] sm:text-[2.85rem]">
-            Get In Touch
-          </h1>
-          <p className="mt-4 text-[15px] leading-7 text-[#4b5563] sm:text-base">
-            Whether it is a question about products, shipping, returns, or anything else, our team is happy to help.
-          </p>
-        </header>
+      <div className="container-site py-10 sm:py-14 lg:py-[4.75rem]">
+        <div className="mx-auto w-full max-w-[84rem]">
+          <header className="mx-auto max-w-[40rem] text-center">
+            <h1 className="font-display text-[2.25rem] font-semibold leading-tight tracking-[-0.035em] text-[#111318] sm:text-[2.75rem]">
+              Get In Touch
+            </h1>
+            <p className="mx-auto mt-3 max-w-[30rem] text-[15px] leading-6 text-[#68707d] sm:text-base">
+              We are here to help with anything you need. Choose the best way to reach us.
+            </p>
+          </header>
 
-        <ContactForm />
+          <ContactForm />
+        </div>
       </div>
     </div>
   )

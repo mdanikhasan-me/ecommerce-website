@@ -36,7 +36,7 @@ function syncActionState(root: ParentNode) {
     const productName = button.dataset.productName ?? 'product'
     const isActive = wishlist.has(productId)
     button.dataset.active = isActive ? 'true' : ''
-    button.setAttribute('aria-label', `${isActive ? 'Remove' : 'Add'} ${productName} ${isActive ? 'from' : 'to'} wishlist`)
+    button.setAttribute('aria-label', `${isActive ? 'In Wishlist' : 'Add to Wishlist'} ${productName}`)
     button.title = button.getAttribute('aria-label') ?? ''
   })
 
@@ -46,7 +46,7 @@ function syncActionState(root: ParentNode) {
     const isActive = compare.has(productId)
     button.dataset.active = isActive ? 'true' : ''
     button.setAttribute('aria-label', isActive ? `Open compare for ${productName}` : `Compare ${productName}`)
-    button.title = button.getAttribute('aria-label') ?? ''
+    button.removeAttribute('title')
   })
 }
 

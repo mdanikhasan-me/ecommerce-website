@@ -1,4 +1,4 @@
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import {
   getOrderProgressState,
@@ -105,12 +105,20 @@ function getEstimatedDeliveryLabel(order: {
 }
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) redirect('/auth/login')
   const { id } = await params
+  const session = await getActiveUserSession()
+  if (!session?.user) {
+    redirect(`/auth/login?callbackUrl=${encodeURIComponent(`/account/orders/${id}`)}`)
+  }
 
   const order = await db.order.findFirst({
-    where: { id, userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      OR: [
+        { id },
+        { orderNumber: id.toUpperCase() },
+      ],
+    },
     include: {
       items: {
         include: {
@@ -123,7 +131,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     },
   })
 
-  if (!order) notFound()
+  if (!order) {
+    if (id.toUpperCase().startsWith('BLB-')) {
+      redirect('/track-order?error=order-not-found')
+    }
+    notFound()
+  }
 
   const progress = getOrderProgressState(order.status)
   const reviewStatuses = order.status === 'DELIVERED' && order.items.length > 0

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { parseAddressPayload } from '@/backend/account/address'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function GET() {
   try {
-    const session = await auth()
+    const session = await getActiveUserSession()
     if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const addresses = await db.address.findMany({
@@ -37,10 +38,12 @@ export async function POST(request: NextRequest) {
     const blocked = protectMutationRequest(request)
     if (blocked) return blocked
 
-    const session = await auth()
+    const session = await getActiveUserSession()
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const parsed = parseAddressPayload(await request.json())
+    const body = await readBoundedJsonBody(request, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseAddressPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }

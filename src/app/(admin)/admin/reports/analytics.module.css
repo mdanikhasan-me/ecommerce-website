@@ -1,0 +1,723 @@
+.page {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding-bottom: 1rem;
+}
+
+.heading {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  padding-block: 0.15rem 0.4rem;
+}
+
+.headingCopy {
+  min-width: 0;
+  padding-bottom: 0.15rem;
+}
+
+.title {
+  color: hsl(var(--foreground));
+  font-size: clamp(1.75rem, 1.55rem + 0.45vw, 2rem);
+  font-weight: 780;
+  letter-spacing: -0.04em;
+  line-height: 1.18;
+}
+
+.description {
+  margin-top: 0.85rem;
+  max-width: 44rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.controls {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 10.625rem 10.375rem 7.125rem 8.625rem;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.filterForm {
+  display: contents;
+}
+
+.filterField {
+  display: block;
+  min-width: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.filterField > span {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.dateInput {
+  width: 100%;
+  min-width: 0;
+  height: 3rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.625rem;
+  background: hsl(var(--card));
+  padding-inline: 0.95rem;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dateInput:focus-visible,
+.applyButton:focus-visible,
+.exportMenu > summary:focus-visible,
+.tab:focus-visible {
+  outline: 3px solid rgb(26 106 247 / 0.28);
+  outline-offset: 2px;
+}
+
+.applyButton,
+.exportMenu > summary {
+  display: inline-flex;
+  width: 100%;
+  min-width: 0;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 720;
+}
+
+.applyButton {
+  border: 1px solid #1a6af7;
+  background: #1a6af7;
+  color: #fff;
+}
+
+.exportMenu {
+  position: relative;
+  min-width: 0;
+}
+
+.exportMenu > summary {
+  cursor: pointer;
+  list-style: none;
+  gap: 0.55rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+.exportMenu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.metrics {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.metricCard {
+  --metric-color: #1a6af7;
+  display: flex;
+  min-width: 0;
+  min-height: 9.75rem;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0.55rem;
+  background: hsl(var(--card));
+  padding: 1.35rem 1.55rem 1rem;
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 2px 8px rgb(15 23 42 / 0.055);
+}
+
+.metricCard[data-tone='blue'] {
+  --metric-color: #1a6af7;
+}
+
+.metricCard[data-tone='mint'] {
+  --metric-color: #42bfa1;
+}
+
+.metricCard[data-tone='purple'] {
+  --metric-color: #8b5cf6;
+}
+
+.metricCard[data-tone='amber'] {
+  --metric-color: #e9a93f;
+}
+
+.metricCard[data-tone='teal'] {
+  --metric-color: #43b4b4;
+}
+
+.metricTop {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.metricLabel {
+  overflow: hidden;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-weight: 760;
+  letter-spacing: 0.075em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.metricIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  color: hsl(var(--foreground));
+}
+
+.metricValue {
+  overflow: hidden;
+  margin-top: 0.95rem;
+  color: hsl(var(--foreground));
+  font-size: clamp(1.35rem, 1.15rem + 0.45vw, 1.65rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 790;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metricSparkline {
+  display: block;
+  width: 100%;
+  height: 3.15rem;
+  margin-top: auto;
+  color: var(--metric-color);
+}
+
+.tabFrame {
+  min-width: 0;
+  overflow: hidden;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.035);
+}
+
+.tabs {
+  display: flex;
+  min-width: max-content;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  min-width: 6.15rem;
+  min-height: 3.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.tab::after {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0;
+  left: 0.65rem;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: transparent;
+  content: '';
+}
+
+.tabActive {
+  color: #1a6af7;
+  font-weight: 730;
+}
+
+.tabActive::after {
+  background: #1a6af7;
+}
+
+.chartGrid,
+.lowerGrid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.chartCard,
+.lowerCard {
+  min-width: 0;
+  border-radius: 0.55rem;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 2px 8px rgb(15 23 42 / 0.05);
+}
+
+.chartCard {
+  display: flex;
+  min-height: 28.65rem;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.35rem 1.4rem 1rem;
+}
+
+.chartHeader {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.chartTitle {
+  color: hsl(var(--foreground));
+  font-size: 1.0625rem;
+  font-weight: 760;
+  letter-spacing: -0.018em;
+  line-height: 1.3;
+}
+
+.chartDescription {
+  margin-top: 0.3rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.chartInspection {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 0.35rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.chartInspection strong {
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-weight: 760;
+}
+
+.chartStage {
+  min-width: 0;
+  margin-top: 1.2rem;
+}
+
+.chartCanvas {
+  position: relative;
+  min-width: 0;
+  height: 16.7rem;
+}
+
+.chartSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chartSvg g:focus-visible .selectedGuide {
+  stroke: #1a6af7;
+  stroke-width: 2;
+}
+
+.gridLine {
+  stroke: hsl(var(--border) / 0.62);
+  stroke-width: 1;
+}
+
+.averageLine {
+  stroke: #99a4b3;
+  stroke-width: 1;
+}
+
+.lineArea {
+  fill: #1a6af7;
+  opacity: 0.075;
+}
+
+.lineTrace {
+  fill: none;
+  stroke: #1a6af7;
+  stroke-width: 2.5;
+}
+
+.bar {
+  fill: #1a6af7;
+  opacity: 0.92;
+}
+
+.barSelected {
+  fill: #1259d4;
+  opacity: 1;
+}
+
+.selectedGuide {
+  stroke: #8aa4cf;
+  stroke-width: 1;
+}
+
+.selectedPoint {
+  fill: hsl(var(--card));
+  stroke: #1a6af7;
+  stroke-width: 2.5;
+}
+
+.yAxis {
+  position: absolute;
+  top: 8%;
+  bottom: 8.8%;
+  left: 0;
+  display: flex;
+  width: 10.2632%;
+  flex-direction: column;
+  justify-content: space-between;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.averageLabel {
+  position: absolute;
+  right: 2.3684%;
+  z-index: 1;
+  padding-left: 0.3rem;
+  background: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.xAxis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.15rem 2.3684% 0 10.2632%;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.chartFacts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: auto;
+  padding: 1.1rem 0.75rem 0.05rem 10.2632%;
+}
+
+.chartFacts > div {
+  min-width: 0;
+}
+
+.chartFacts dt {
+  overflow: hidden;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-weight: 560;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chartFacts dd {
+  overflow: hidden;
+  margin-top: 0.35rem;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 760;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lowerCard {
+  overflow: hidden;
+  padding: 1.15rem 1.25rem 1.25rem;
+}
+
+.lowerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lowerTitle {
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  font-weight: 760;
+  letter-spacing: -0.015em;
+}
+
+.lowerDescription {
+  margin-top: 0.25rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.lowerRows {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+:global(.admin-ui[data-admin-theme='dark']) .metricCard,
+:global(.admin-ui[data-admin-theme='dark']) .chartCard,
+:global(.admin-ui[data-admin-theme='dark']) .lowerCard,
+:global(.admin-ui[data-admin-theme='dark']) .tabFrame {
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.18);
+}
+
+:global(.admin-ui[data-admin-theme='dark']) .lineArea {
+  opacity: 0.13;
+}
+
+:global(.admin-ui[data-admin-theme='dark']) .averageLabel {
+  background: hsl(var(--card));
+}
+
+@media (max-width: 1535px) {
+  .heading {
+    display: grid;
+    align-items: start;
+  }
+
+  .controls {
+    width: min(100%, 48rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 7.125rem 8.625rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .heading {
+    padding-bottom: 0.975rem;
+  }
+
+  .headingCopy {
+    transform: translateY(-1.05rem);
+  }
+
+  .controls {
+    margin-right: 0.75rem;
+    margin-top: 1.1875rem;
+  }
+
+  .chartGrid {
+    margin-top: -1rem;
+  }
+}
+
+@media (max-width: 1279px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metricCard:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartCard {
+    min-height: 27rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    gap: 0.875rem;
+  }
+
+  .heading {
+    gap: 1rem;
+    padding-bottom: 0.15rem;
+  }
+
+  .title {
+    font-size: 1.7rem;
+  }
+
+  .description {
+    margin-top: 0.55rem;
+    font-size: 0.8125rem;
+  }
+
+  .controls {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .filterField {
+    font-size: 0.75rem;
+  }
+
+  .applyButton,
+  .exportMenu > summary,
+  .dateInput {
+    height: 2.875rem;
+  }
+
+  .metrics {
+    gap: 0.75rem;
+  }
+
+  .metricCard {
+    min-height: 8.9rem;
+    padding: 1rem 0.95rem 0.75rem;
+  }
+
+  .metricLabel {
+    font-size: 0.675rem;
+  }
+
+  .metricValue {
+    margin-top: 0.7rem;
+    font-size: 1.25rem;
+  }
+
+  .metricSparkline {
+    height: 2.55rem;
+  }
+
+  .tabFrame {
+    overflow-x: auto;
+  }
+
+  .tab {
+    min-width: 5.8rem;
+    min-height: 3.1rem;
+    padding-inline: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .chartGrid,
+  .lowerGrid {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .chartCard {
+    min-height: 25rem;
+    padding: 1.05rem 0.9rem 0.85rem;
+  }
+
+  .chartHeader {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .chartInspection {
+    justify-content: flex-start;
+  }
+
+  .chartStage {
+    margin-top: 0.75rem;
+  }
+
+  .chartCanvas {
+    height: 13.75rem;
+  }
+
+  .yAxis {
+    width: 10.2632%;
+    font-size: 0.6875rem;
+  }
+
+  .averageLabel {
+    font-size: 0.6875rem;
+  }
+
+  .xAxis {
+    padding-left: 10.2632%;
+    font-size: 0.6875rem;
+  }
+
+  .chartFacts {
+    gap: 0.45rem;
+    padding: 0.9rem 0.1rem 0 10.2632%;
+  }
+
+  .chartFacts dt {
+    font-size: 0.675rem;
+  }
+
+  .chartFacts dd {
+    font-size: 0.775rem;
+  }
+
+  .lowerCard {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .dateInput {
+    padding-inline: 0.7rem;
+    font-size: 0.8125rem;
+  }
+
+  .applyButton,
+  .exportMenu > summary {
+    font-size: 0.8125rem;
+  }
+
+  .chartFacts {
+    padding-left: 0;
+  }
+
+  .tab {
+    min-width: 3.75rem;
+    padding-inline: 0.3rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page *,
+  .page *::before,
+  .page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

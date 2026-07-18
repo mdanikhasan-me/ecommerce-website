@@ -6,6 +6,7 @@ import { logAdminAudit, requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminInventoryPayload } from '@/backend/admin/inventory-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -14,7 +15,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const session = await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminInventoryPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminInventoryPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -93,14 +96,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         lowStockThreshold: product.lowStockThreshold,
         variants: product.variants.map((variant) => ({
           id: variant.id,
-          name: variant.name,
           stockQuantity: variant.stockQuantity,
         })),
       },
       newValues: {
         stockQuantity: payload.stockQuantity,
         lowStockThreshold: payload.lowStockThreshold,
-        note: payload.note,
+        noteProvided: Boolean(payload.note),
         variants: payload.variants.map((variant) => ({
           id: variant.id,
           stockQuantity: variant.stockQuantity,

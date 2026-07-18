@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { protectMutationRequest } from '@/backend/security/request-guard'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { logSecurityEvent } from '@/backend/security/security-log'
 import { parseBuyerReturnRequestPayload } from '@/backend/orders/buyer-validation'
 import { createBuyerReturnRequest, type BuyerReturnDb } from '@/backend/orders/buyer-return-request'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,19 +17,14 @@ export async function POST(req: NextRequest) {
     const limited = rateLimit(req, { key: 'returns:create', limit: 10, windowMs: 60_000 })
     if (limited) return limited
 
-    const session = await auth()
+    const session = await getActiveUserSession()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Please sign in to request a return' }, { status: 401 })
     }
 
-    let body: unknown
-    try {
-      body = await req.json()
-    } catch {
-      return NextResponse.json({ error: 'Invalid return request' }, { status: 400 })
-    }
-
-    const parsed = parseBuyerReturnRequestPayload(body)
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseBuyerReturnRequestPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }

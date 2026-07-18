@@ -35,8 +35,16 @@ export default async function AdminProductsPage({ searchParams }: Props) {
     db.product.findMany({
       where, skip, take: limit,
       orderBy: { createdAt: 'desc' },
-      include: {
-        images: { where: { isPrimary: true }, take: 1 },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        sku: true,
+        basePrice: true,
+        salePrice: true,
+        stockQuantity: true,
+        isActive: true,
+        images: { where: { isPrimary: true }, take: 1, select: { url: true } },
         category: { select: { name: true } },
       },
     }),
@@ -141,10 +149,10 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                   </td>
                   <td data-mobile data-action className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-md text-muted-foreground" title="View">
+                      <Link href={`/products/${p.slug}`} target="_blank" className="admin-icon-button" aria-label={`View ${p.name} on the storefront`} title={`View ${p.name}`}>
                         <Eye className="h-4 w-4" />
                       </Link>
-                      <Link href={`/admin/products/${p.id}`} className="p-1.5 rounded-md text-muted-foreground" title="Edit">
+                      <Link href={`/admin/products/${p.id}`} className="admin-icon-button" aria-label={`Edit ${p.name}`} title={`Edit ${p.name}`}>
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </div>

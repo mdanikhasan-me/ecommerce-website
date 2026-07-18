@@ -286,7 +286,7 @@ export default function ReturnsPage() {
 
           <div className="mx-auto w-full max-w-[19rem] sm:max-w-[27rem] md:max-w-[32rem] lg:max-w-[38rem]">
             <Image
-              src="/assets/returns/returns-box.webp"
+              src="/assets/content/returns/returns-box.webp"
               alt="Boilabin package box for returns"
               width={600}
               height={400}
@@ -350,7 +350,7 @@ export default function ReturnsPage() {
         <section className="mt-6 grid w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-[#f7f7f4] md:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)] md:items-center">
           <div className="relative min-h-[13rem] overflow-hidden bg-[#ece9e3] sm:min-h-[16rem] md:min-h-[14rem]">
             <Image
-              src="/assets/returns/refund-replacement.webp"
+              src="/assets/content/returns/refund-replacement.webp"
               alt="Refund and replacement illustration"
               fill
               sizes="(min-width: 768px) 42vw, 100vw"

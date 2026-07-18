@@ -1,4 +1,4 @@
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import {
   buildInvoiceDownloadFilename,
   formatOrderInvoiceEnumLabel,
@@ -15,7 +15,7 @@ import { notFound, redirect } from 'next/navigation'
 export const metadata: Metadata = { title: 'Boilabin Order Invoice' }
 
 export default async function OrderInvoicePage({ params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) redirect('/auth/login')
   const userId = session.user.id
   if (!userId) redirect('/auth/login')

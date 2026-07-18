@@ -8,6 +8,7 @@ import { parsePublicId } from '@/backend/api/public-input'
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 const VIEWER_COOKIE = 'boilabin_viewer'
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
@@ -23,17 +24,15 @@ function parseViewerCookie(value: string | undefined) {
 }
 
 async function readAttribution(req: NextRequest) {
-  try {
-    const length = Number(req.headers.get('content-length') ?? 0)
-    if (length > 2048) return { referrer: null, landingUrl: null }
-    const body = await req.json()
+  const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.tiny)
+  if (body.success) {
+    const input = body.data as Record<string, unknown>
     return {
-      referrer: typeof body?.referrer === 'string' ? body.referrer.slice(0, 1000) : null,
-      landingUrl: typeof body?.landingUrl === 'string' ? body.landingUrl.slice(0, 1000) : null,
+      referrer: typeof input?.referrer === 'string' ? input.referrer.slice(0, 1000) : null,
+      landingUrl: typeof input?.landingUrl === 'string' ? input.landingUrl.slice(0, 1000) : null,
     }
-  } catch {
-    return { referrer: null, landingUrl: null }
   }
+  return { referrer: null, landingUrl: null }
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

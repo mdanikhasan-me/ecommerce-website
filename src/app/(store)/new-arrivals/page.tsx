@@ -56,21 +56,28 @@ const getNewArrivalFilterCategories = unstable_cache(
   { revalidate: 300, tags: [STOREFRONT_CACHE_TAGS.categories] },
 )
 
-function getNewArrivalsCacheKey(rawParams: RawSearchParams) {
-  return JSON.stringify(rawParams)
-}
-
 function hasExplicitSort(rawParams: RawSearchParams) {
   const rawSort = rawParams.sort
   return Array.isArray(rawSort) ? Boolean(rawSort[0]) : Boolean(rawSort)
 }
 
-const getNewArrivalPageData = unstable_cache(async (cacheKey: string) => {
-  const rawParams = JSON.parse(cacheKey) as RawSearchParams
+function getNewArrivalsCacheKey(rawParams: RawSearchParams) {
   const parsedParams = parseSearchParams(rawParams)
-  const sort = hasExplicitSort(rawParams) ? parsedParams.sort : 'newest'
-  const queryParams = { ...parsedParams.queryParams }
-  if (hasExplicitSort(rawParams)) queryParams.sort = sort
+
+  return JSON.stringify({
+    queryParams: parsedParams.queryParams,
+    sort: hasExplicitSort(rawParams) ? parsedParams.sort : 'newest',
+  })
+}
+
+const getNewArrivalPageData = unstable_cache(async (cacheKey: string) => {
+  const cachedParams = JSON.parse(cacheKey) as {
+    queryParams: Record<string, string | undefined>
+    sort: SearchSort
+  }
+  const parsedParams = parseSearchParams(cachedParams.queryParams)
+  const sort = cachedParams.sort
+  const queryParams = parsedParams.queryParams
   const page = parsedParams.page
   const skip = (page - 1) * NEW_ARRIVALS_LIMIT
   const andClauses: Prisma.ProductWhereInput[] = [getBuyerVisibleProductWhere({ isNew: true })]
@@ -192,8 +199,7 @@ export default async function NewArrivalsPage({ searchParams }: Props) {
 
           {products.length === 0 ? (
             <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center sm:px-8 sm:py-16">
-              <p className="section-kicker">Empty shelf</p>
-              <h2 className="mt-3 font-display text-xl font-semibold">No new arrivals found</h2>
+              <h2 className="font-display text-xl font-semibold">No new arrivals found</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try adjusting your filters.</p>
             </div>
           ) : (

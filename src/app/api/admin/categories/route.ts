@@ -11,6 +11,7 @@ import {
 import { assertValidCategoryParent, parseAdminCategoryPayload } from '@/backend/admin/category-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 function revalidateCategorySurfaces(categoryId?: string | null, slug?: string | null) {
   revalidateStorefrontCategorySurfaces({ categorySlugs: slug ? [slug] : [] })
@@ -28,7 +29,9 @@ export async function POST(req: NextRequest) {
 
     await requireAdminSession()
 
-    const parsed = parseAdminCategoryPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminCategoryPayload(body.data)
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
     await assertValidCategoryParent(payload.parentId)

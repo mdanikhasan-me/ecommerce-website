@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
@@ -8,27 +7,28 @@ import { MOBILE_SUPPORT_LINKS, NAV_CATEGORIES } from './header-navigation-data'
 
 export function MobileNavigationDrawer({
   isOpen,
-  isVisible,
   onClose,
 }: {
   isOpen: boolean
-  isVisible: boolean
   onClose: () => void
 }) {
   return (
     <div
       aria-hidden={!isOpen}
+      inert={isOpen ? undefined : true}
       className={cn(
-        'fixed inset-x-0 bottom-0 top-16 z-50 lg:hidden',
-        isVisible ? 'pointer-events-auto' : 'pointer-events-none'
+        'fixed inset-x-0 bottom-0 top-16 z-50 overflow-hidden overscroll-none transition-[visibility] duration-0 lg:hidden motion-reduce:transition-none',
+        isOpen
+          ? 'visible pointer-events-auto delay-0'
+          : 'invisible pointer-events-none delay-100'
       )}
     >
       <button
         type="button"
         aria-label="Close menu overlay"
         className={cn(
-          'absolute inset-0 bg-foreground/20 transition-opacity duration-150 ease-out motion-reduce:transition-none',
-          isVisible ? 'opacity-100' : 'opacity-0'
+          'absolute inset-0 touch-none bg-[#111318]/35 transition-opacity duration-100 ease-out motion-reduce:transition-none',
+          isOpen ? 'opacity-100' : 'opacity-0'
         )}
         onClick={onClose}
       />
@@ -38,8 +38,8 @@ export function MobileNavigationDrawer({
         aria-modal="true"
         aria-label="Mobile navigation"
         className={cn(
-          'absolute left-0 top-0 h-full w-[calc(100vw-0.5rem)] max-w-[20.625rem] overflow-hidden bg-white outline-none transition-transform duration-150 ease-out focus:outline-none motion-reduce:transition-none',
-          isVisible ? 'translate-x-0' : '-translate-x-full'
+          'absolute left-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] -translate-x-full overflow-hidden bg-white outline-none transition-transform duration-100 ease-out focus:outline-none motion-reduce:transition-none',
+          isOpen && 'translate-x-0'
         )}
       >
         <div className="h-full overflow-y-auto overscroll-contain px-[1.375rem] pb-5 pt-8">
@@ -52,7 +52,7 @@ export function MobileNavigationDrawer({
                 <Link
                   key={category.slug}
                   href={`/category/${category.slug}`}
-                  className="flex min-w-0 items-center justify-between gap-3 border-b border-[#f1f1f1] px-3.5 py-[0.96rem] text-[13px] font-[450] leading-[1.2rem] text-[#242129] last:border-b-0"
+                  className="flex min-h-14 min-w-0 items-center justify-between gap-3 border-b border-[#f1f1f1] px-4 text-[13px] font-[450] leading-[1.2rem] text-[#242129] last:border-b-0"
                   onClick={onClose}
                 >
                   <span className="flex min-w-0 items-center gap-3">
@@ -63,6 +63,14 @@ export function MobileNavigationDrawer({
                 </Link>
               ))}
             </div>
+            <Link
+              href="/category"
+              className="mt-3 flex min-h-14 items-center justify-between rounded-[0.65rem] bg-[#f5f6f8] px-4 text-[13px] font-semibold text-[#201e26]"
+              onClick={onClose}
+            >
+              View all categories
+              <LocalIcon name="arrow-right" className="h-3.5 w-3.5" />
+            </Link>
           </section>
 
           <section className="mt-4">
@@ -74,7 +82,7 @@ export function MobileNavigationDrawer({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-[0.58rem] border border-[#eeeeee] bg-white px-2 py-[0.7rem] text-left text-[10.75px] font-medium leading-[1rem] text-[#201e26] min-[320px]:px-2.5 min-[320px]:text-[11.5px] min-[360px]:gap-2 min-[360px]:text-[12px]"
+                  className="grid min-h-14 min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 rounded-[0.58rem] border border-[#eeeeee] bg-white px-2.5 text-left text-[10.75px] font-medium leading-[1rem] text-[#201e26] min-[320px]:px-3 min-[320px]:text-[11.5px] min-[360px]:gap-2 min-[360px]:text-[12px]"
                   onClick={onClose}
                 >
                   <LocalIcon name={item.icon} className="h-[0.9rem] w-[0.9rem] shrink-0 text-[#292630] min-[320px]:h-4 min-[320px]:w-4" />
@@ -85,31 +93,6 @@ export function MobileNavigationDrawer({
             </div>
           </section>
 
-          <section
-            aria-label="Authenticity promise"
-            className="relative mt-4 h-[7.05rem] overflow-hidden rounded-[0.72rem] bg-[radial-gradient(circle_at_78%_45%,rgba(82,106,145,0.28),transparent_34%),linear-gradient(135deg,#070a10_0%,#111824_58%,#06070b_100%)] min-[360px]:h-[6.35rem]"
-          >
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.045),transparent_58%)]" />
-            <div className="relative z-10 flex h-full items-center px-4 pr-[4.65rem] text-white min-[360px]:pr-[4.85rem] min-[390px]:pr-[5.45rem]">
-              <div className="min-w-0">
-                <p className="whitespace-nowrap text-[16px] font-semibold leading-[1.05] tracking-normal min-[390px]:text-[20px]">
-                  100% Authentic
-                </p>
-                <p className="mt-1.5 max-w-[6.5rem] text-[10.5px] font-normal leading-[0.95rem] text-white/82 min-[360px]:max-w-none">
-                  Quality you can rely on.
-                </p>
-              </div>
-            </div>
-            <div className="absolute right-3 top-1/2 h-[3.65rem] w-[3.65rem] -translate-y-1/2 min-[360px]:h-[3.85rem] min-[360px]:w-[3.85rem] min-[390px]:h-[4.65rem] min-[390px]:w-[4.65rem]">
-              <Image
-                src="/assets/banners/mobile-menu-authentic-shield.webp"
-                alt=""
-                fill
-                sizes="5rem"
-                className="object-contain"
-              />
-            </div>
-          </section>
         </div>
       </aside>
     </div>

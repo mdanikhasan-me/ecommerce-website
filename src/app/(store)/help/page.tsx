@@ -28,17 +28,9 @@ type PopularQuestion = {
   answer: string
 }
 
-const POPULAR_SEARCHES = [
-  { label: 'track order', href: '/track-order' },
-  { label: 'returns', href: '/returns' },
-  { label: 'shipping', href: '/shipping' },
-  { label: 'payment', href: '/payments' },
-  { label: 'account', href: '/account' },
-]
-
 const HELP_TOPICS: HelpTopic[] = [
   {
-    title: 'Tracking',
+    title: 'Track order',
     description: 'Track order status',
     href: '/track-order',
     icon: 'package',
@@ -56,7 +48,7 @@ const HELP_TOPICS: HelpTopic[] = [
     icon: 'refresh-ccw',
   },
   {
-    title: 'Payments',
+    title: 'Payment',
     description: 'COD and payment help',
     href: '/payments',
     icon: 'credit-card',
@@ -106,19 +98,10 @@ function TopicCard({ topic }: { topic: HelpTopic }) {
   return (
     <Link
       href={topic.href}
-      className="grid min-h-[4.85rem] grid-cols-[1.5rem_minmax(0,1fr)_1rem] items-center gap-3 rounded-lg border border-border bg-white px-4 py-3 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring min-[1180px]:flex min-[1180px]:min-h-[10.35rem] min-[1180px]:flex-col min-[1180px]:items-stretch min-[1180px]:p-5"
+      className="inline-flex h-11 min-w-28 items-center justify-center gap-2 rounded-full border border-[#dce5f0] bg-white/95 px-4 text-xs font-medium text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <LocalIcon name={topic.icon} className="h-5 w-5 text-foreground min-[1180px]:h-6 min-[1180px]:w-6" />
-      <div className="min-w-0 min-[1180px]:mt-7">
-        <h3 className="text-sm font-semibold leading-5 text-foreground">{topic.title}</h3>
-        <p className="hidden text-sm leading-6 text-muted-foreground min-[1180px]:mt-2 min-[1180px]:block min-[1180px]:max-w-[10rem]">
-          {topic.description}
-        </p>
-      </div>
-      <LocalIcon
-        name="arrow-right"
-        className="h-4 w-4 justify-self-end text-foreground min-[1180px]:mt-auto min-[1180px]:self-end"
-      />
+      <LocalIcon name={topic.icon} className="h-4 w-4" />
+      <span className="truncate">{topic.title}</span>
     </Link>
   )
 }
@@ -158,59 +141,44 @@ export default function HelpPage() {
         ]}
       />
 
-      <section className="bg-[#111118] text-white">
-        <div className="container-site flex min-h-[20rem] flex-col items-center justify-center py-12 text-center sm:min-h-[25rem]">
-          <h1 className="font-display text-[2.6rem] font-bold leading-none tracking-normal sm:text-5xl">
-            Help Center
+      <section className="bg-[linear-gradient(135deg,#f9fbff_0%,#edf5ff_50%,#f8fbff_100%)]">
+        <div className="container-site flex min-h-[22rem] flex-col items-center justify-center py-10 text-center sm:min-h-[25rem] sm:py-12 lg:min-h-[26rem]">
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-[-0.025em] sm:text-[2rem]">
+            How can we help you?
           </h1>
-          <p className="mt-5 max-w-[28rem] text-base leading-7 text-white/82 sm:text-lg">
-            Find answers, guides and support for a smooth shopping experience.
+          <p className="mt-4 text-xs leading-5 text-muted-foreground sm:text-sm">
+            Find helpful answers and resources for a smooth shopping experience.
           </p>
 
-          <form action="/help" className="mt-9 grid w-full max-w-[36rem] grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-white/25 bg-white text-foreground focus-within:border-white/45">
-            <label className="grid grid-cols-[1.25rem_minmax(0,1fr)] items-center gap-3 px-5" htmlFor="help-search">
-              <LocalIcon name="search" className="h-5 w-5 text-muted-foreground" />
+          <form action="/help" className="mt-8 grid h-12 w-full max-w-2xl grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-[#d7e1ed] bg-white text-foreground focus-within:border-[#9ebdf1]">
+            <label className="grid min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] items-center gap-3 px-4" htmlFor="help-search">
+              <LocalIcon name="search" className="h-[1.125rem] w-[1.125rem] text-muted-foreground" />
               <input
                 id="help-search"
                 name="q"
                 type="search"
                 placeholder="Search for help articles..."
-                className="h-14 min-w-0 appearance-none border-0 bg-transparent text-sm outline-none shadow-none ring-0 ring-offset-0 placeholder:text-muted-foreground focus:border-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="h-full min-w-0 appearance-none border-0 bg-transparent text-xs outline-none shadow-none ring-0 ring-offset-0 placeholder:text-muted-foreground focus:border-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:text-sm"
               />
             </label>
             <button
               type="submit"
-              className="m-1.5 rounded-md bg-foreground px-6 text-sm font-semibold text-background outline-none ring-0 ring-offset-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="m-1.5 min-w-[5.5rem] rounded-md bg-[#075df7] px-4 text-xs font-semibold text-white outline-none ring-0 ring-offset-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#075df7] sm:min-w-24"
             >
               Search
             </button>
           </form>
 
-          <p className="mt-5 text-sm leading-6 text-white/55">
-            Popular searches:{' '}
-            {POPULAR_SEARCHES.map((search, index) => (
-              <span key={search.href}>
-                <Link href={search.href} className="text-white/68">
-                  {search.label}
-                </Link>
-                {index < POPULAR_SEARCHES.length - 1 ? ', ' : null}
-              </span>
+          <nav aria-label="Help shortcuts" className="mt-8 flex w-full flex-wrap justify-center gap-2.5 sm:gap-3">
+            {HELP_TOPICS.map((topic) => (
+              <TopicCard key={topic.title} topic={topic} />
             ))}
-          </p>
+          </nav>
         </div>
       </section>
 
       <main className="container-site py-10 sm:py-12 lg:py-16">
         <section>
-          <h2 className="font-display text-2xl font-semibold leading-8">Support shortcuts</h2>
-          <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 md:grid-cols-3 min-[1180px]:grid-cols-6 min-[1180px]:gap-4">
-            {HELP_TOPICS.map((topic) => (
-              <TopicCard key={topic.title} topic={topic} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-14">
           <h2 className="font-display text-2xl font-semibold leading-8">Popular articles</h2>
           <div className="mt-6 overflow-hidden rounded-lg border border-border bg-white">
             {POPULAR_QUESTIONS.map((item, index) => (

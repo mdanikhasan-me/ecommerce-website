@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { useCartStore } from '@/frontend/stores/cart'
@@ -12,6 +11,7 @@ import { formatPrice, calculateDiscount, getStockStatus, cn } from '@/backend/ut
 import type { ProductDetailData, VariantData } from '@/backend/types'
 import toast from '@/frontend/lib/toast'
 import { useClientSession } from '@/frontend/hooks/useClientSession'
+import { ProductRichContent } from './ProductRichContent'
 
 type ProductDetailClientData = Omit<
   ProductDetailData,
@@ -20,11 +20,12 @@ type ProductDetailClientData = Omit<
   images: Array<{ url: string; alt?: string | null; isPrimary: boolean; sortOrder?: number }>
   attributes: Array<{ id?: string; name: string; value: string }>
   specifications: Array<{ group?: string | null; name: string; value: string; sortOrder?: number }>
+  faqs: Array<{ question: string; answer: string; sortOrder?: number }>
+  descriptionImages: Array<{ url: string; alt: string; sortOrder?: number }>
 }
 
 type VariantGroupOption = {
   value: string
-  variant: VariantData
 }
 
 const VIEW_TRACKING_STORAGE_KEY = 'boilabin_viewed_products_v1'
@@ -130,12 +131,15 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   const [isHydrated, setIsHydrated] = useState(false)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
   const [quantity, setQuantity] = useState(1)
   const hasGallery = product.images.length > 0
 
-  const { addItem } = useCartStore()
-  const { toggle, has } = useWishlistStore()
-  const { add: addCompare, has: hasCompare } = useCompareStore()
+  const addItem = useCartStore((state) => state.addItem)
+  const toggle = useWishlistStore((state) => state.toggle)
+  const has = useWishlistStore((state) => state.has)
+  const addCompare = useCompareStore((state) => state.add)
+  const hasCompare = useCompareStore((state) => state.has)
 
   const price = selectedVariant?.salePrice ?? selectedVariant?.price ?? product.salePrice ?? product.basePrice
   const originalPrice = selectedVariant?.price ?? product.basePrice
@@ -174,10 +178,10 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   }, [product.id])
 
   useEffect(() => {
-    if (!selectedVariant && product.variants.length > 0) {
-      setSelectedVariant(product.variants[0])
-    }
-  }, [product.variants, selectedVariant])
+    const firstVariant = product.variants[0] ?? null
+    setSelectedVariant(firstVariant)
+    setSelectedOptions(Object.fromEntries(firstVariant?.options.map((option) => [option.name, option.value]) ?? []))
+  }, [product.id, product.variants])
 
   useEffect(() => {
     setQuantity((current) => Math.max(1, Math.min(current, Math.max(stock, 1))))
@@ -217,7 +221,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
       if (typeof navigator.share === 'function') {
         await navigator.share({
           title: product.name,
-          text: product.shortDescription?.trim() || product.name,
+          text: product.name,
           url,
         })
         return
@@ -299,8 +303,50 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   for (const variant of product.variants) {
     for (const opt of variant.options) {
       if (!variantGroups[opt.name]) variantGroups[opt.name] = []
-      variantGroups[opt.name].push({ value: opt.value, variant })
+      if (!variantGroups[opt.name].some((entry) => entry.value === opt.value)) {
+        variantGroups[opt.name].push({ value: opt.value })
+      }
     }
+  }
+
+  const selectVariantOption = (groupName: string, value: string) => {
+    const nextOptions = { ...selectedOptions, [groupName]: value }
+    const matchingVariant = product.variants.find((variant) => (
+      Object.entries(nextOptions).every(([name, selectedValue]) => (
+        variant.options.some((option) => option.name === name && option.value === selectedValue)
+      ))
+    )) ?? product.variants.find((variant) => (
+      variant.options.some((option) => option.name === groupName && option.value === value)
+    ))
+
+    if (matchingVariant) {
+      setSelectedVariant(matchingVariant)
+      setSelectedOptions(Object.fromEntries(matchingVariant.options.map((option) => [option.name, option.value])))
+      return
+    }
+
+    setSelectedOptions(nextOptions)
+  }
+
+  const isVariantOptionAvailable = (groupName: string, value: string) => product.variants.some((variant) => (
+    variant.options.some((option) => option.name === groupName && option.value === value) &&
+    Object.entries(selectedOptions).every(([name, selectedValue]) => (
+      name === groupName || variant.options.some((option) => option.name === name && option.value === selectedValue)
+    ))
+  ))
+
+  const specificationGroups: Array<{
+    name: string | null
+    items: ProductDetailClientData['specifications']
+  }> = []
+  for (const specification of product.specifications) {
+    const groupName = specification.group?.trim() || null
+    let group = specificationGroups.find((entry) => entry.name === groupName)
+    if (!group) {
+      group = { name: groupName, items: [] }
+      specificationGroups.push(group)
+    }
+    group.items.push(specification)
   }
 
   const renderActionButtons = (compact = false) => (
@@ -491,33 +537,31 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
             )}
           </div>
 
-          {product.shortDescription && (
-            <p className="min-w-0 break-words text-sm leading-relaxed text-muted-foreground sm:text-base">
-              {product.shortDescription}
-            </p>
-          )}
-
           {Object.entries(variantGroups).map(([groupName, opts]) => (
             <div key={groupName}>
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
                 <p className="font-semibold">
                   {groupName}:
-                  {selectedVariant && (
+                  {selectedOptions[groupName] && (
                     <span className="ml-1 font-normal text-muted-foreground">
-                      {selectedVariant.options.find((option) => option.name === groupName)?.value}
+                      {selectedOptions[groupName]}
                     </span>
                   )}
                 </p>
               </div>
               <div className="flex max-w-full flex-wrap gap-2">
-                {opts.map(({ value, variant }) => (
+                {opts.map(({ value }) => {
+                  const available = isVariantOptionAvailable(groupName, value)
+                  return (
                   <button
                     type="button"
-                    key={variant.id}
-                    onClick={() => setSelectedVariant(variant)}
+                    key={`${groupName}-${value}`}
+                    onClick={() => selectVariantOption(groupName, value)}
+                    disabled={!available}
+                    aria-pressed={selectedOptions[groupName] === value}
                     className={cn(
-                      'min-h-10 rounded-lg border px-3 py-2 text-sm font-semibold leading-tight sm:px-4',
-                      selectedVariant?.id === variant.id
+                      'min-h-10 rounded-lg border px-3 py-2 text-sm font-semibold leading-tight disabled:cursor-not-allowed disabled:opacity-40 sm:px-4',
+                      selectedOptions[groupName] === value
                         ? 'border-foreground bg-foreground text-background'
                         : 'border-border bg-background text-foreground min-[1025px]:hover:border-foreground/35',
                     )}
@@ -525,7 +569,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                     <span className="sm:hidden">{compactVariantLabel(value)}</span>
                     <span className="hidden sm:inline">{value}</span>
                   </button>
-                ))}
+                )})}
               </div>
             </div>
           ))}
@@ -612,54 +656,87 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
 
           <p className="break-words text-xs leading-relaxed text-muted-foreground">
             SKU: <span className="font-mono">{selectedVariant?.sku ?? product.sku}</span>
-            {product.tags.length > 0 && (
-              <>
-                {' '}Tags:{' '}
-                {product.tags.map((tag) => (
-                  <Link key={tag} href={`/search?q=${tag}`} className="mr-1 min-[1025px]:hover:text-foreground">
-                    {tag}
-                  </Link>
-                ))}
-              </>
-            )}
           </p>
           </div>
         </section>
       </div>
 
-      <div className="mt-5 grid min-w-0 gap-5 xl:grid-cols-2">
-        {product.description && (
-          <section className="overflow-hidden rounded-2xl border border-border bg-background">
-            <div className="border-b border-border px-4 py-3 sm:px-5">
-              <h2 className="font-display text-base font-semibold">Product Description</h2>
-            </div>
-            <div className="space-y-3 px-4 py-4 text-sm leading-relaxed text-muted-foreground sm:px-5">
-              {product.description.split('\n').map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
-            </div>
-          </section>
-        )}
-
+      <div className="mt-5 min-w-0 space-y-5">
         {product.specifications.length > 0 && (
           <section className="overflow-hidden rounded-2xl border border-border bg-background">
-            <div className="border-b border-border px-4 py-3 sm:px-5">
-              <h2 className="font-display text-base font-semibold">Specifications</h2>
+            <div className="border-b border-border px-4 py-4 sm:px-6">
+              <h2 className="font-display text-xl font-bold tracking-tight">Specifications</h2>
             </div>
-            <div className="divide-y divide-border">
-              {product.specifications.slice(0, 10).map((specification, index) => (
-                <div
-                  key={`${specification.name}-${index}`}
-                  className="grid grid-cols-[minmax(6rem,0.42fr)_1fr] gap-3 px-4 py-2.5 text-sm sm:px-5"
-                >
-                  <span className="font-medium text-muted-foreground">{specification.name}</span>
-                  <span className="font-medium">{specification.value}</span>
+            <div>
+              {specificationGroups.map((group, groupIndex) => (
+                <div key={group.name ?? `general-${groupIndex}`}>
+                  {group.name && (
+                    <h3 className="border-b border-border bg-secondary/45 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:px-6">
+                      {group.name}
+                    </h3>
+                  )}
+                  <div className="divide-y divide-border">
+                    {group.items.map((specification, index) => (
+                      <div
+                        key={`${specification.name}-${index}`}
+                        className="grid grid-cols-[minmax(7rem,0.38fr)_minmax(0,1fr)] gap-4 px-4 py-3 text-sm sm:px-6 sm:py-3.5"
+                      >
+                        <span className="font-medium text-muted-foreground">{specification.name}</span>
+                        <span className="min-w-0 break-words font-semibold text-foreground">{specification.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
           </section>
         )}
 
+        {product.description && (
+          <section className="overflow-hidden rounded-2xl border border-border bg-background">
+            <div className="border-b border-border px-4 py-4 sm:px-6">
+              <h2 className="font-display text-xl font-bold tracking-tight">Product description</h2>
+            </div>
+            <div className="px-4 py-5 sm:px-6 sm:py-6">
+              <ProductRichContent content={product.description} />
+
+              {product.descriptionImages.length > 0 && (
+                <div className="mt-7 grid gap-5">
+                  {product.descriptionImages.map((image, index) => (
+                    <figure key={`${image.url}-${index}`} className="overflow-hidden rounded-xl bg-secondary/35">
+                      <div className="aspect-[3/2] overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={image.url} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full object-contain" />
+                      </div>
+                      {image.alt && <figcaption className="px-4 py-3 text-xs text-muted-foreground">{image.alt}</figcaption>}
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {product.faqs.length > 0 && (
+          <section className="overflow-hidden rounded-2xl border border-border bg-background">
+            <div className="border-b border-border px-4 py-4 sm:px-6">
+              <h2 className="font-display text-xl font-bold tracking-tight">Frequently asked questions</h2>
+            </div>
+            <div className="divide-y divide-border px-4 sm:px-6">
+              {product.faqs.map((faq, index) => (
+                <details key={`${faq.question}-${index}`} className="group py-4">
+                  <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+                    <span>{faq.question}</span>
+                    <span aria-hidden="true" className="text-xl font-normal text-muted-foreground group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="pb-2 pr-8">
+                    <ProductRichContent content={faq.answer} />
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <div className="sticky bottom-0 z-30 -mx-4 mt-5 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">

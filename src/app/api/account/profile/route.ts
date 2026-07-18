@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { parseProfilePayload } from '@/backend/account/profile'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function PUT(req: NextRequest) {
   try {
     const blocked = protectMutationRequest(req)
     if (blocked) return blocked
 
-    const session = await auth()
+    const session = await getActiveUserSession()
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const parsed = parseProfilePayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseProfilePayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }

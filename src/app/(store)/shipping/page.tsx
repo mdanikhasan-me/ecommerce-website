@@ -31,7 +31,7 @@ const OPTIONS: ReadonlyArray<{
   tone: string
 }> = [
   {
-    iconSrc: '/assets/shipping/icons/inside-dhaka-point-map.svg',
+    iconSrc: '/assets/content/shipping/icons/inside-dhaka-point-map.svg',
     iconAlt: 'Blue map location',
     title: 'Inside Dhaka',
     price: dhakaFee,
@@ -39,7 +39,7 @@ const OPTIONS: ReadonlyArray<{
     tone: 'text-[#2f80ff]',
   },
   {
-    iconSrc: '/assets/shipping/icons/outside-dhaka-point-map.svg',
+    iconSrc: '/assets/content/shipping/icons/outside-dhaka-point-map.svg',
     iconAlt: 'Gold map location',
     title: 'Outside Dhaka',
     price: outsideFee,
@@ -47,7 +47,7 @@ const OPTIONS: ReadonlyArray<{
     tone: 'text-[#d69a22]',
   },
   {
-    iconSrc: '/assets/shipping/icons/express-delivery.svg',
+    iconSrc: '/assets/content/shipping/icons/express-delivery.svg',
     iconAlt: 'Express delivery truck',
     title: 'Express delivery',
     price: 'By location',
@@ -55,7 +55,7 @@ const OPTIONS: ReadonlyArray<{
     tone: 'text-[#6d5cf6]',
   },
   {
-    iconSrc: '/assets/shipping/icons/free-standard-tag.svg',
+    iconSrc: '/assets/content/shipping/icons/free-standard-tag.svg',
     iconAlt: 'Green free delivery tag',
     title: 'Free standard delivery',
     price: `Free over ${freeOver}`,
@@ -118,7 +118,7 @@ export default function ShippingPage() {
 
           <div className="pointer-events-none absolute right-[-2.25rem] top-1/2 aspect-square w-[12.25rem] -translate-y-1/2 opacity-70 sm:right-7 sm:w-[17.5rem] sm:opacity-85 lg:right-14 lg:w-[24rem]">
             <Image
-              src="/assets/shipping/bangladesh-delivery-map-fixed-pins.webp"
+              src="/assets/content/shipping/bangladesh-delivery-map-fixed-pins.webp"
               alt="Delivery route map across Bangladesh"
               fill
               priority

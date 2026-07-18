@@ -6,6 +6,8 @@ import {
   sanitizeCspReportPayload,
 } from '@/backend/security/csp-report'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import { readBoundedTextBody } from '@/backend/security/request-body'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 const ACCEPTED_CONTENT_TYPES = [
   'application/csp-report',
@@ -18,34 +20,24 @@ function isAcceptedContentType(value: string | null) {
   return ACCEPTED_CONTENT_TYPES.includes(normalized)
 }
 
-async function readBoundedBody(req: NextRequest) {
-  const body = await req.text()
-  const byteLength = new TextEncoder().encode(body).byteLength
-
-  if (byteLength > MAX_CSP_REPORT_BODY_BYTES) {
-    return { tooLarge: true as const, body: '' }
-  }
-
-  return { tooLarge: false as const, body }
-}
-
 export async function POST(req: NextRequest) {
   if (!isCspReportCollectionEnabled()) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
+  const limited = rateLimit(req, { key: 'security:csp-report', limit: 60, windowMs: 60_000 })
+  if (limited) return limited
+
   if (!isAcceptedContentType(req.headers.get('content-type'))) {
     return NextResponse.json({ error: 'Unsupported content type' }, { status: 415 })
   }
 
-  const { tooLarge, body } = await readBoundedBody(req)
-  if (tooLarge) {
-    return NextResponse.json({ error: 'Payload too large' }, { status: 413 })
-  }
+  const body = await readBoundedTextBody(req, MAX_CSP_REPORT_BODY_BYTES)
+  if (!body.success) return body.response
 
   let parsed: unknown
   try {
-    parsed = JSON.parse(body)
+    parsed = JSON.parse(body.data)
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }

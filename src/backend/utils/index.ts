@@ -12,7 +12,6 @@ export {
 export {
   generateOrderNumber,
   calculateShipping,
-  applyCoupon,
 } from './commerce'
 
 export {

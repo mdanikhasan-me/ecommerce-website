@@ -31,14 +31,13 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
   if (visibleCategories.length === 0) return null
 
   return (
-    <section className="w-full bg-white py-9 sm:py-11 lg:py-14">
-      <div className="home-category-frame">
-        <div className="category-tile-scope w-full">
-          <div className="flex items-end justify-between gap-4">
+    <section className="w-full bg-white">
+      <div className="storefront-frame home-category-frame">
+        <div className="category-tile-scope product-section-rhythm w-full">
+          <div className="product-section-header">
             <div className="min-w-0">
-              <p className="section-kicker">Shop by</p>
-              <h2 className="section-title mt-2">Category</h2>
-              <p className="mt-4 max-w-[42rem] text-[0.98rem] leading-6 text-muted-foreground sm:text-base">
+              <h2 className="section-title">Category</h2>
+              <p className="mt-2 max-w-[42rem] text-sm leading-6 text-muted-foreground sm:text-base">
                 Explore our wide range of products across all categories.
               </p>
             </div>
@@ -46,14 +45,14 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
             <Link
               href="/category"
               prefetch={false}
-              className="hidden shrink-0 items-center gap-5 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:inline-flex lg:text-base"
+              className="editorial-link hidden w-fit shrink-0 sm:inline-flex"
             >
               View all categories
-              <LocalIcon name="arrow-right" className="h-4 w-4" />
+              <LocalIcon name="chevron-right" className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="category-tile-grid mt-7">
+          <div className="category-tile-grid">
             {visibleCategories.map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
@@ -62,10 +61,10 @@ export function FeaturedCategories({ categories }: { categories: Category[] }) {
           <Link
             href="/category"
             prefetch={false}
-            className="mt-5 inline-flex items-center gap-4 border-b border-foreground/45 pb-2 text-sm font-semibold text-foreground sm:hidden"
+            className="editorial-link inline-flex w-fit sm:hidden"
           >
             View all categories
-            <LocalIcon name="arrow-right" className="h-4 w-4" />
+            <LocalIcon name="chevron-right" className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -81,8 +80,7 @@ function CategoryCard({ category }: { category: Category }) {
       href={`/category/${category.slug}`}
       prefetch={false}
       aria-label={`Shop ${category.name}`}
-      title={category.name}
-      className="group block overflow-hidden rounded-lg border border-border/70 bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group block overflow-hidden rounded-xl border border-border/60 bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <div className="relative aspect-[5/4] overflow-hidden bg-white">
         <Image
@@ -90,12 +88,12 @@ function CategoryCard({ category }: { category: Category }) {
           alt={category.name}
           fill
           className="object-cover"
-          sizes="(min-width: 1536px) 18.5rem, (min-width: 1024px) 18rem, (min-width: 768px) 15.5rem, (max-width: 559px) 44vw, 33vw"
-          quality={90}
+          sizes="(max-width: 767px) 44vw, (max-width: 1023px) 31vw, 25vw"
+          quality={75}
         />
       </div>
 
-      <div className="flex min-h-[3.9rem] items-center justify-between gap-2 border-t border-border/65 bg-white px-3 py-3 sm:min-h-[4.15rem] sm:gap-3 sm:px-5 sm:py-3.5">
+      <div className="flex h-16 items-center justify-between gap-2 border-t border-border/55 bg-white px-3 sm:h-[4.5rem] sm:gap-3 sm:px-5">
         <span className="flex min-w-0 items-center gap-3">
           <LocalIcon
             name={CATEGORY_ICON_NAMES[category.slug] ?? 'category-view-all'}

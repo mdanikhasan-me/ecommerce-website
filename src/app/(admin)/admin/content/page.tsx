@@ -61,7 +61,7 @@ export default async function AdminContentPage() {
                     {formatDate(section.updatedAt)}
                   </td>
                   <td data-mobile data-action className="px-4 py-3 text-right">
-                    <Link href={`/admin/content/${section.id}`} className="p-1.5 rounded-md inline-flex">
+                    <Link href={`/admin/content/${section.id}`} className="admin-icon-button" aria-label={`Edit ${section.title || section.type}`} title={`Edit ${section.title || section.type}`}>
                       <Pencil className="h-4 w-4 text-muted-foreground" />
                     </Link>
                   </td>

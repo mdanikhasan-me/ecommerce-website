@@ -19,7 +19,7 @@ function isLocalHostname(hostname: string) {
   return LOCAL_HOSTNAMES.has(hostname)
 }
 
-export function normalizeSiteUrl(value: string | null | undefined, env: SeoUrlEnv = process.env) {
+export function normalizeSiteUrl(value: string | null | undefined) {
   const candidate = value?.trim() || DEFAULT_SITE_URL
 
   try {
@@ -33,7 +33,7 @@ export function normalizeSiteUrl(value: string | null | undefined, env: SeoUrlEn
 }
 
 export function getSiteUrl(env: SeoUrlEnv = process.env) {
-  return normalizeSiteUrl(env.NEXT_PUBLIC_SITE_URL, env)
+  return normalizeSiteUrl(env.NEXT_PUBLIC_SITE_URL)
 }
 
 export function toAbsoluteUrl(value: string | null | undefined, siteUrl = getSiteUrl()) {

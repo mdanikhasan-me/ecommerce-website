@@ -6,6 +6,7 @@ import { parseAdminPaymentStatusPayload } from '@/backend/admin/order-update-edi
 import { enqueuePaymentConfirmedEmail } from '@/backend/email/outbox'
 import { toSafeClientErrorMessage } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -14,7 +15,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const session = await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminPaymentStatusPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseAdminPaymentStatusPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -100,7 +103,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'order',
       entityId: order.id,
       oldValues: { paymentStatus: order.paymentStatus },
-      newValues: { paymentStatus: status, note },
+      newValues: { paymentStatus: status, noteProvided: Boolean(note) },
     })
 
     revalidatePath('/admin/orders')

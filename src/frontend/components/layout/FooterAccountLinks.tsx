@@ -30,7 +30,7 @@ export function FooterAccountLinks({
   variant: FooterAccountLinksVariant
   isInitiallyAuthenticated?: boolean
 }) {
-  const { status } = useClientSession()
+  const { status } = useClientSession({ delayMs: 3200 })
   const isSignedIn = isInitiallyAuthenticated || status === 'authenticated'
   const links = ACCOUNT_LINKS.filter((link) => !link.signedOutOnly || (!isSignedIn && status === 'unauthenticated'))
 

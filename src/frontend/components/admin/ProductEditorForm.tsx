@@ -8,7 +8,18 @@ import type {
   AdminEditableProduct,
 } from '@/backend/admin/product-editor'
 import { createRowId, readFileAsDataUrl, toSlug } from './form-utils'
-import { buildProductSearchCopy } from '@/backend/seo/product-copy'
+import {
+  buildProductSearchCopy,
+  isLegacyGeneratedProductDescription,
+} from '@/backend/seo/product-copy'
+import {
+  ProductStructuredContentEditor,
+  type ProductAttributeEditorValue,
+  type ProductDescriptionImageEditorValue,
+  type ProductFaqEditorValue,
+  type ProductSpecificationEditorValue,
+} from './ProductStructuredContentEditor'
+import { splitProductStructuredContent } from '@/shared/product-content'
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
@@ -24,8 +35,11 @@ interface ProductVariantValue {
   id: string
   name: string
   sku: string
-  optionName: string
-  optionValue: string
+  options: Array<{
+    id: string
+    name: string
+    value: string
+  }>
   price: string
   salePrice: string
   stockQuantity: string
@@ -48,6 +62,7 @@ export function ProductEditorForm({
   const router = useRouter()
   const isEditing = Boolean(product)
   const isSetupReady = categories.length > 0 && Boolean(officialStoreName)
+  const initialStructuredContent = splitProductStructuredContent(product?.specifications ?? [])
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -59,7 +74,6 @@ export function ProductEditorForm({
     name: product?.name ?? '',
     slug: product?.slug ?? '',
     description: product?.description ?? '',
-    shortDescription: product?.shortDescription ?? '',
     sku: product?.sku ?? '',
     basePrice: product?.basePrice?.toString() ?? '',
     salePrice: product?.salePrice?.toString() ?? '',
@@ -68,9 +82,10 @@ export function ProductEditorForm({
     lowStockThreshold: product?.lowStockThreshold?.toString() ?? '5',
     weight: product?.weight?.toString() ?? '',
     categoryId: product?.categoryId ?? '',
-    tags: Array.isArray(product?.tags) ? product.tags.join(', ') : '',
     metaTitle: product?.metaTitle ?? '',
-    metaDescription: product?.metaDescription ?? '',
+    metaDescription: isLegacyGeneratedProductDescription(product?.metaDescription, product?.name ?? '')
+      ? ''
+      : product?.metaDescription ?? '',
     isActive: product?.isActive ?? true,
     isFeatured: product?.isFeatured ?? false,
     isNew: product?.isNew ?? true,
@@ -93,13 +108,46 @@ export function ProductEditorForm({
       id: variant.id ?? createRowId(),
       name: variant.name ?? '',
       sku: variant.sku ?? '',
-      optionName: variant.options?.[0]?.name ?? '',
-      optionValue: variant.options?.[0]?.value ?? '',
+      options: variant.options?.map((option) => ({
+        id: option.id ?? createRowId(),
+        name: option.name ?? '',
+        value: option.value ?? '',
+      })) ?? [],
       price: variant.price?.toString() ?? '',
       salePrice: variant.salePrice?.toString() ?? '',
       stockQuantity: variant.stockQuantity?.toString() ?? '0',
       isActive: variant.isActive ?? true,
     })) ?? []
+  )
+
+  const [attributes, setAttributes] = useState<ProductAttributeEditorValue[]>(
+    product?.attributes?.map((attribute) => ({
+      id: attribute.id ?? createRowId(),
+      name: attribute.name,
+      value: attribute.value,
+    })) ?? [],
+  )
+  const [specifications, setSpecifications] = useState<ProductSpecificationEditorValue[]>(
+    initialStructuredContent.specifications.map((specification) => ({
+      id: createRowId(),
+      group: specification.group ?? '',
+      name: specification.name,
+      value: specification.value,
+    })),
+  )
+  const [faqs, setFaqs] = useState<ProductFaqEditorValue[]>(
+    initialStructuredContent.faqs.map((faq) => ({
+      id: createRowId(),
+      question: faq.question,
+      answer: faq.answer,
+    })),
+  )
+  const [descriptionImages, setDescriptionImages] = useState<ProductDescriptionImageEditorValue[]>(
+    initialStructuredContent.descriptionImages.map((image) => ({
+      id: createRowId(),
+      url: image.url,
+      alt: image.alt,
+    })),
   )
 
   const topLevelCategories = useMemo(
@@ -108,17 +156,33 @@ export function ProductEditorForm({
   )
 
   const generatedSeo = useMemo(() => {
-    const categoryName = categories.find((category) => category.id === form.categoryId)?.name
+    const category = categories.find((item) => item.id === form.categoryId)
     return buildProductSearchCopy({
       name: form.name || 'Product',
       price: Number(form.salePrice || form.basePrice || 0),
-      categoryName,
+      categoryName: category?.name,
       sku: form.sku,
-      shortDescription: form.shortDescription,
       description: form.description,
-      tags: form.tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+      stockQuantity: Number(form.stockQuantity || 0),
+      attributes: attributes.map(({ name, value }) => ({ name, value })),
+      specifications: specifications.map(({ name, value }) => ({ name, value })),
+      variantOptions: variants.flatMap((variant) =>
+        variant.options.map(({ name, value }) => ({ name, value })),
+      ),
     })
-  }, [categories, form.basePrice, form.categoryId, form.description, form.name, form.salePrice, form.shortDescription, form.sku, form.tags])
+  }, [
+    attributes,
+    categories,
+    form.basePrice,
+    form.categoryId,
+    form.description,
+    form.name,
+    form.salePrice,
+    form.sku,
+    form.stockQuantity,
+    specifications,
+    variants,
+  ])
 
   useEffect(() => {
     if (!manualSlug) {
@@ -189,8 +253,7 @@ export function ProductEditorForm({
         id: createRowId(),
         name: '',
         sku: '',
-        optionName: '',
-        optionValue: '',
+        options: [{ id: createRowId(), name: '', value: '' }],
         price: '',
         salePrice: '',
         stockQuantity: '0',
@@ -199,10 +262,37 @@ export function ProductEditorForm({
     ])
   }
 
-  const updateVariant = (id: string, field: keyof ProductVariantValue, value: string | boolean) => {
+  const updateVariant = (id: string, patch: Partial<ProductVariantValue>) => {
     setVariants((current) =>
-      current.map((variant) => (variant.id === id ? { ...variant, [field]: value } : variant))
+      current.map((variant) => (variant.id === id ? { ...variant, ...patch } : variant))
     )
+  }
+
+  const addVariantOption = (variantId: string) => {
+    setVariants((current) => current.map((variant) => (
+      variant.id === variantId
+        ? { ...variant, options: [...variant.options, { id: createRowId(), name: '', value: '' }] }
+        : variant
+    )))
+  }
+
+  const updateVariantOption = (variantId: string, optionId: string, patch: { name?: string; value?: string }) => {
+    setVariants((current) => current.map((variant) => (
+      variant.id === variantId
+        ? {
+            ...variant,
+            options: variant.options.map((option) => (option.id === optionId ? { ...option, ...patch } : option)),
+          }
+        : variant
+    )))
+  }
+
+  const removeVariantOption = (variantId: string, optionId: string) => {
+    setVariants((current) => current.map((variant) => (
+      variant.id === variantId
+        ? { ...variant, options: variant.options.filter((option) => option.id !== optionId) }
+        : variant
+    )))
   }
 
   const removeVariant = (id: string) => {
@@ -213,7 +303,7 @@ export function ProductEditorForm({
     name: form.name.trim(),
     slug: form.slug.trim(),
     description: form.description.trim(),
-    shortDescription: form.shortDescription.trim() || null,
+    shortDescription: null,
     sku: form.sku.trim(),
     basePrice: Number(form.basePrice),
     salePrice: form.salePrice ? Number(form.salePrice) : null,
@@ -222,10 +312,6 @@ export function ProductEditorForm({
     lowStockThreshold: Number(form.lowStockThreshold || 5),
     weight: form.weight ? Number(form.weight) : null,
     categoryId: form.categoryId,
-    tags: form.tags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean),
     metaTitle: form.metaTitle.trim() || null,
     metaDescription: form.metaDescription.trim() || null,
     isActive: form.isActive,
@@ -243,16 +329,33 @@ export function ProductEditorForm({
       .filter((image) => image.url),
     variants: variants
       .map((variant) => ({
-        name: variant.name.trim(),
+        name: variant.name.trim() || null,
         sku: variant.sku.trim(),
-        optionName: variant.optionName.trim(),
-        optionValue: variant.optionValue.trim(),
+        options: variant.options
+          .map((option) => ({ name: option.name.trim(), value: option.value.trim() }))
+          .filter((option) => option.name && option.value),
         price: variant.price ? Number(variant.price) : null,
         salePrice: variant.salePrice ? Number(variant.salePrice) : null,
         stockQuantity: Number(variant.stockQuantity || 0),
         isActive: variant.isActive,
       }))
-      .filter((variant) => variant.name && variant.sku),
+      .filter((variant) => variant.sku && (variant.name || variant.options.length > 0)),
+    attributes: attributes
+      .map((attribute) => ({ name: attribute.name.trim(), value: attribute.value.trim() }))
+      .filter((attribute) => attribute.name && attribute.value),
+    specifications: specifications
+      .map((specification) => ({
+        group: specification.group.trim() || null,
+        name: specification.name.trim(),
+        value: specification.value.trim(),
+      }))
+      .filter((specification) => specification.name && specification.value),
+    faqs: faqs
+      .map((faq) => ({ question: faq.question.trim(), answer: faq.answer.trim() }))
+      .filter((faq) => faq.question && faq.answer),
+    descriptionImages: descriptionImages
+      .map((image) => ({ url: image.url.trim(), alt: image.alt.trim() }))
+      .filter((image) => image.url && image.alt),
   })
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -372,26 +475,22 @@ export function ProductEditorForm({
                 </div>
               </div>
 
-              <div>
-                <label className="mb-1.5 block text-sm font-medium">Short description</label>
-                <input aria-label="Form input" title="Form input"
-                  value={form.shortDescription}
-                  onChange={(event) => updateField('shortDescription', event.target.value)}
-                  className="input-base"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-sm font-medium">Description</label>
-                <textarea aria-label="Text area" title="Text area"
-                  value={form.description}
-                  onChange={(event) => updateField('description', event.target.value)}
-                  className="input-base min-h-[160px] resize-y"
-                  required
-                />
-              </div>
             </div>
           </section>
+
+          <ProductStructuredContentEditor
+            description={form.description}
+            onDescriptionChange={(value) => updateField('description', value)}
+            attributes={attributes}
+            onAttributesChange={setAttributes}
+            specifications={specifications}
+            onSpecificationsChange={setSpecifications}
+            faqs={faqs}
+            onFaqsChange={setFaqs}
+            descriptionImages={descriptionImages}
+            onDescriptionImagesChange={setDescriptionImages}
+            onError={setError}
+          />
 
           <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Pricing and Inventory</h2>
@@ -571,86 +670,133 @@ export function ProductEditorForm({
           </section>
 
           <section className="admin-card p-5">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold">Variants</h2>
-              <button type="button" onClick={addVariant} className="btn-outline gap-2 px-3 py-2 text-xs">
-                <Plus className="h-4 w-4" />
-                Add variant
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-lg font-semibold">Options and variants</h2>
+                <p className="mt-1 max-w-3xl text-xs leading-5 text-muted-foreground">
+                  Each card is one purchasable combination. Add one option row for each axis—for example Color: Black,
+                  Storage: 256GB, and Region: USA. Create another card for every combination you sell.
+                </p>
+              </div>
+              <button type="button" onClick={addVariant} className="btn-outline min-h-10 gap-2 px-3 text-xs">
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                Add combination
               </button>
             </div>
 
             {variants.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">No variants added.</p>
+              <p className="mt-4 rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
+                No variants. Leave this empty for a product with one price and stock value.
+              </p>
             ) : (
               <div className="mt-4 space-y-4">
-                {variants.map((variant) => (
-                  <div key={variant.id} className="rounded-lg bg-secondary/45 p-4">
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      <input aria-label="Form input" title="Form input"
-                        value={variant.name}
-                        onChange={(event) => updateVariant(variant.id, 'name', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Variant name"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        value={variant.sku}
-                        onChange={(event) => updateVariant(variant.id, 'sku', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Variant SKU"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        value={variant.optionName}
-                        onChange={(event) => updateVariant(variant.id, 'optionName', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Option name"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        value={variant.optionValue}
-                        onChange={(event) => updateVariant(variant.id, 'optionValue', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Option value"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={variant.price}
-                        onChange={(event) => updateVariant(variant.id, 'price', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Price override"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={variant.salePrice}
-                        onChange={(event) => updateVariant(variant.id, 'salePrice', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Sale price"
-                      />
-                      <input aria-label="Form input" title="Form input"
-                        type="number"
-                        min="0"
-                        value={variant.stockQuantity}
-                        onChange={(event) => updateVariant(variant.id, 'stockQuantity', event.target.value)}
-                        className="input-base text-sm"
-                        placeholder="Stock"
-                      />
-                      <label className="flex items-center gap-2 admin-card px-3 text-sm">
-                        <input aria-label="Form input" title="Form input"
-                          type="checkbox"
-                          checked={variant.isActive}
-                          onChange={(event) => updateVariant(variant.id, 'isActive', event.target.checked)}
-                          className="size-4 rounded border-input"
-                        />
-                        Active
-                      </label>
+                {variants.map((variant, variantIndex) => (
+                  <div key={variant.id} className="rounded-xl border border-border/70 bg-secondary/35 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-3">
+                      <div>
+                        <p className="text-sm font-semibold">Combination {variantIndex + 1}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {variant.options.filter((option) => option.name && option.value).map((option) => `${option.name}: ${option.value}`).join(' • ') || 'Add the option values for this combination.'}
+                        </p>
+                      </div>
+                      <button type="button" onClick={() => removeVariant(variant.id)} className="inline-flex min-h-10 items-center gap-2 px-2 text-xs font-medium text-red-600">
+                        <Trash2 className="h-4 w-4" aria-hidden="true" /> Remove combination
+                      </button>
                     </div>
 
-                    <div className="mt-3 flex justify-end">
-                      <button type="button" onClick={() => removeVariant(variant.id)} className="btn-outline px-3 py-2 text-xs text-red-600">
-                        Remove variant
-                      </button>
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Combination label (optional)</label>
+                        <input
+                          value={variant.name}
+                          onChange={(event) => updateVariant(variant.id, { name: event.target.value })}
+                          className="input-base text-sm"
+                          placeholder="Black / 256GB / USA"
+                        />
+                        <p className="mt-1 text-[11px] text-muted-foreground">Generated from option values when left blank.</p>
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Variant SKU</label>
+                        <input
+                          value={variant.sku}
+                          onChange={(event) => updateVariant(variant.id, { sku: event.target.value })}
+                          className="input-base text-sm"
+                          placeholder="PHONE-BLK-256-USA"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-5 rounded-lg bg-background/70 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Option values</p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">Group is the selector name; value is what the customer chooses.</p>
+                        </div>
+                        <button type="button" onClick={() => addVariantOption(variant.id)} className="btn-outline min-h-10 gap-2 px-3 text-xs">
+                          <Plus className="h-4 w-4" aria-hidden="true" /> Add option
+                        </button>
+                      </div>
+
+                      <div className="mt-3 space-y-3">
+                        {variant.options.map((option) => (
+                          <div key={option.id} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                            <div>
+                              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Option group</label>
+                              <input
+                                value={option.name}
+                                onChange={(event) => updateVariantOption(variant.id, option.id, { name: event.target.value })}
+                                className="input-base text-sm"
+                                placeholder="Color"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Option value</label>
+                              <input
+                                value={option.value}
+                                onChange={(event) => updateVariantOption(variant.id, option.id, { value: event.target.value })}
+                                className="input-base text-sm"
+                                placeholder="Titanium Black"
+                                required
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              aria-label="Remove variant option"
+                              title="Remove variant option"
+                              onClick={() => removeVariantOption(variant.id, option.id)}
+                              className="btn-outline min-h-11 self-end px-3 text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Price override</label>
+                        <input type="number" min="0" step="0.01" value={variant.price} onChange={(event) => updateVariant(variant.id, { price: event.target.value })} className="input-base text-sm" placeholder="Uses base price" />
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Sale price</label>
+                        <input type="number" min="0" step="0.01" value={variant.salePrice} onChange={(event) => updateVariant(variant.id, { salePrice: event.target.value })} className="input-base text-sm" placeholder="Optional" />
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Variant stock</label>
+                        <input type="number" min="0" value={variant.stockQuantity} onChange={(event) => updateVariant(variant.id, { stockQuantity: event.target.value })} className="input-base text-sm" />
+                      </div>
+                      <label className="flex min-h-11 items-center gap-2 self-end rounded-lg border border-border bg-background px-3 text-sm font-medium">
+                        <input
+                          type="checkbox"
+                          checked={variant.isActive}
+                          onChange={(event) => updateVariant(variant.id, { isActive: event.target.checked })}
+                          className="size-4 rounded border-input"
+                        />
+                        Available to customers
+                      </label>
                     </div>
                   </div>
                 ))}
@@ -662,6 +808,9 @@ export function ProductEditorForm({
         <div className="space-y-6">
           <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Classification</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              Search terms are generated automatically from the product name, SKU, and category. They stay hidden from customers and do not need manual maintenance.
+            </p>
             <div className="mt-4 grid gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Category</label>
@@ -687,15 +836,6 @@ export function ProductEditorForm({
                 </select>
               </div>
 
-              <div>
-                <label className="mb-1.5 block text-sm font-medium">Tags</label>
-                <input aria-label="Form input" title="Form input"
-                  value={form.tags}
-                  onChange={(event) => updateField('tags', event.target.value)}
-                  className="input-base"
-                  placeholder="comma, separated, tags"
-                />
-              </div>
             </div>
           </section>
 
@@ -800,15 +940,20 @@ export function ProductEditorForm({
                 }))}
                 className="btn-outline px-3 py-2 text-xs"
               >
-                Use generated copy
+                Regenerate SEO copy
               </button>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Uses real product facts and structured data, not bulk keyword lists. Only override when you need clearer customer-facing wording.
+              Automatically builds Bangladesh-focused search copy from the product name, price, category, SKU, highlights, specifications, variants, and stock.
             </p>
             <div className="mt-4 space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Meta title (optional)</label>
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <label className="block text-sm font-medium">Meta title (optional override)</label>
+                  <span className="text-[11px] text-muted-foreground">
+                    {(form.metaTitle.trim() || generatedSeo.title).length}/70
+                  </span>
+                </div>
                 <input aria-label="Form input" title="Form input"
                   value={form.metaTitle}
                   onChange={(event) => updateField('metaTitle', event.target.value)}
@@ -818,7 +963,12 @@ export function ProductEditorForm({
               </div>
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Meta description (optional)</label>
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <label className="block text-sm font-medium">Meta description (optional override)</label>
+                  <span className="text-[11px] text-muted-foreground">
+                    {(form.metaDescription.trim() || generatedSeo.description).length}/180
+                  </span>
+                </div>
                 <textarea aria-label="Text area" title="Text area"
                   value={form.metaDescription}
                   onChange={(event) => updateField('metaDescription', event.target.value)}
@@ -845,12 +995,35 @@ export function ProductEditorForm({
                           : 'Not set')}
                     </span>
                   </p>
-                  <p>
-                    <span className="font-semibold">Search terms: </span>
-                    <span className="text-muted-foreground">
-                      {form.name ? generatedSeo.searchTerms.join(', ') : 'Not set'}
+                </div>
+              </div>
+
+              <div className="rounded-md border border-border bg-background/60 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-semibold">Automatic discovery terms</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Generated for product discovery and metadata; never shown on the storefront.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                    {generatedSeo.searchTerms.length} terms
+                  </span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {generatedSeo.searchTerms.slice(0, 14).map((term) => (
+                    <span
+                      key={term}
+                      className="rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-foreground/80"
+                    >
+                      {term}
                     </span>
-                  </p>
+                  ))}
+                  {generatedSeo.searchTerms.length > 14 ? (
+                    <span className="rounded-full border border-dashed border-border px-2.5 py-1 text-[11px] text-muted-foreground">
+                      +{generatedSeo.searchTerms.length - 14} more
+                    </span>
+                  ) : null}
                 </div>
               </div>
             </div>

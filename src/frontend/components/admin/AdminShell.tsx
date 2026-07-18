@@ -16,9 +16,16 @@ export function AdminShell({ user, unreadCount, initialTheme, children }: AdminS
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [theme, setTheme] = useState<AdminTheme>(initialTheme)
   const drawerRef = useRef<HTMLDivElement>(null)
+  const menuTriggerRef = useRef<HTMLElement | null>(null)
 
-  const openMenu = () => setIsMenuOpen(true)
-  const closeMenu = () => setIsMenuOpen(false)
+  const openMenu = () => {
+    menuTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    setIsMenuOpen(true)
+  }
+  const closeMenu = () => {
+    setIsMenuOpen(false)
+    window.requestAnimationFrame(() => menuTriggerRef.current?.focus({ preventScroll: true }))
+  }
 
   const toggleTheme = () => {
     setTheme((currentTheme) => {
@@ -47,14 +54,41 @@ export function AdminShell({ user, unreadCount, initialTheme, children }: AdminS
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeMenu()
+    const handleDrawerKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeMenu()
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      const drawer = drawerRef.current
+      if (!drawer) return
+      const focusableElements = Array.from(drawer.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.getClientRects().length > 0)
+      const first = focusableElements[0]
+      const last = focusableElements.at(-1)
+      if (!first || !last) {
+        event.preventDefault()
+        drawer.focus({ preventScroll: true })
+        return
+      }
+
+      const activeElement = document.activeElement
+      if (event.shiftKey && (activeElement === first || activeElement === drawer || !drawer.contains(activeElement))) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (activeElement === last || !drawer.contains(activeElement))) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleDrawerKeyDown)
     return () => {
       document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleDrawerKeyDown)
     }
   }, [isMenuOpen])
 

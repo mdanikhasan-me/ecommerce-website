@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { cn } from '@/backend/utils'
 import { AccountAvatar } from '@/frontend/components/account/AccountAvatar'
@@ -10,11 +9,11 @@ import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { MOBILE_ACCOUNT_LINKS } from './header-navigation-data'
 
 export function MobileAccountDrawer({
-  isVisible,
+  isOpen,
   session,
   onClose,
 }: {
-  isVisible: boolean
+  isOpen: boolean
   session: Session
   onClose: () => void
 }) {
@@ -24,24 +23,28 @@ export function MobileAccountDrawer({
   const isAdminAccount = session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN'
 
   useEffect(() => {
-    if (isVisible) {
-      panelRef.current?.focus()
+    if (isOpen) {
+      panelRef.current?.focus({ preventScroll: true })
     }
-  }, [isVisible])
+  }, [isOpen])
 
   return (
     <div
+      aria-hidden={!isOpen}
+      inert={isOpen ? undefined : true}
       className={cn(
-        'fixed inset-x-0 bottom-0 top-16 z-50 lg:hidden',
-        isVisible ? 'pointer-events-auto' : 'pointer-events-none'
+        'fixed inset-x-0 bottom-0 top-16 z-50 overflow-hidden overscroll-none transition-[visibility] duration-0 lg:hidden motion-reduce:transition-none',
+        isOpen
+          ? 'visible pointer-events-auto delay-0'
+          : 'invisible pointer-events-none delay-100'
       )}
     >
       <button
         type="button"
         aria-label="Close account overlay"
         className={cn(
-          'absolute inset-0 bg-foreground/20 transition-opacity duration-150 ease-out motion-reduce:transition-none',
-          isVisible ? 'opacity-100' : 'opacity-0'
+          'absolute inset-0 touch-none bg-foreground/20 transition-opacity duration-100 ease-out motion-reduce:transition-none',
+          isOpen ? 'opacity-100' : 'opacity-0'
         )}
         onClick={onClose}
       />
@@ -53,8 +56,8 @@ export function MobileAccountDrawer({
         aria-label="Account menu"
         tabIndex={-1}
         className={cn(
-          'absolute right-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] transform-gpu overflow-hidden border-l border-black/10 bg-white transition-transform duration-150 ease-out will-change-transform motion-reduce:transition-none',
-          isVisible ? 'translate-x-0' : 'translate-x-full'
+          'absolute right-0 top-0 h-full w-[calc(100vw-4rem)] max-w-[20.5rem] translate-x-full overflow-hidden border-l border-black/10 bg-white transition-transform duration-100 ease-out motion-reduce:transition-none',
+          isOpen && 'translate-x-0'
         )}
       >
         <div className="h-full overflow-y-auto overscroll-contain px-3.5 py-4">
@@ -89,7 +92,7 @@ export function MobileAccountDrawer({
                 <Link
                   key={`${item.label}-${item.href}`}
                   href={item.href}
-                  className="flex items-center gap-3 px-3.5 py-3"
+                  className="flex min-h-[4.75rem] items-center gap-3 px-3.5 py-3"
                   onClick={onClose}
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center text-foreground">
@@ -111,9 +114,10 @@ export function MobileAccountDrawer({
 
           <button
             type="button"
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-destructive/35 bg-transparent px-4 py-3 text-[0.88rem] font-normal text-destructive"
-            onClick={() => {
+            className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-destructive/35 bg-transparent px-4 text-[0.88rem] font-normal text-destructive"
+            onClick={async () => {
               onClose()
+              const { signOut } = await import('next-auth/react')
               signOut({ callbackUrl: '/' })
             }}
           >

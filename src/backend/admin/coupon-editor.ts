@@ -17,6 +17,11 @@ const optionalPositiveNumber = (message: string) =>
     .union([z.coerce.number().positive(message), z.literal(null), z.literal(''), z.undefined()])
     .transform((value) => (value === '' || value === undefined ? null : value))
 
+const optionalPositiveInteger = (message: string) =>
+  z
+    .union([z.coerce.number().int(message).positive(message), z.literal(null), z.literal(''), z.undefined()])
+    .transform((value) => (value === '' || value === undefined ? null : value))
+
 const optionalDate = (message: string) =>
   z
     .union([z.coerce.date(), z.literal(null), z.literal(''), z.undefined()])
@@ -28,20 +33,25 @@ const optionalDate = (message: string) =>
 
 const couponPayloadSchema = z
   .object({
-    code: z.string().trim().min(1, 'Coupon code is required').max(40, 'Coupon code is too long'),
+    code: z
+      .string()
+      .trim()
+      .min(1, 'Coupon code is required')
+      .max(40, 'Coupon code is too long')
+      .regex(/^[A-Za-z0-9_-]+$/, 'Coupon code can use letters, numbers, underscores, and hyphens only'),
     name: z.string().trim().min(1, 'Coupon name is required').max(120, 'Coupon name is too long'),
     description: optionalTrimmedString(500),
     type: z.nativeEnum(CouponType, { errorMap: () => ({ message: 'Discount type is invalid' }) }),
-    value: z.coerce.number().positive('Discount value is required'),
-    minOrderAmount: z.coerce.number().min(0, 'Minimum order amount cannot be negative').default(0),
+    value: z.coerce.number().positive('Discount value is required').max(10_000_000, 'Discount value is too large'),
+    minOrderAmount: z.coerce.number().min(0, 'Minimum order amount cannot be negative').max(10_000_000, 'Minimum order amount is too large').default(0),
     maxDiscount: optionalPositiveNumber('Max discount must be greater than zero'),
-    usageLimit: optionalPositiveNumber('Usage limit must be greater than zero'),
+    usageLimit: optionalPositiveInteger('Usage limit must be a whole number greater than zero'),
     perUserLimit: z.coerce.number().int('Per user limit must be a whole number').min(1, 'Per user limit must be at least 1').default(1),
     isActive: z.boolean().optional().default(true),
     startsAt: optionalDate('Start date is invalid'),
     expiresAt: optionalDate('Expiry date is invalid'),
-    categoryIds: z.array(z.string().trim().min(1)).optional().default([]),
-    productIds: z.array(z.string().trim().min(1)).optional().default([]),
+    categoryIds: z.array(z.string().trim().min(1)).max(500, 'Too many categories selected').optional().default([]),
+    productIds: z.array(z.string().trim().min(1)).max(500, 'Too many products selected').optional().default([]),
   })
   .superRefine((payload, ctx) => {
     if (payload.type === 'PERCENTAGE' && payload.value > 100) {
@@ -52,11 +62,27 @@ const couponPayloadSchema = z
       })
     }
 
-    if (payload.startsAt && payload.expiresAt && payload.startsAt > payload.expiresAt) {
+    if (payload.startsAt && payload.expiresAt && payload.startsAt >= payload.expiresAt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['expiresAt'],
         message: 'Expiry date must be later than the start date',
+      })
+    }
+
+    if (payload.maxDiscount && payload.maxDiscount > 10_000_000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['maxDiscount'],
+        message: 'Maximum discount is too large',
+      })
+    }
+
+    if (payload.usageLimit && payload.perUserLimit > payload.usageLimit) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['perUserLimit'],
+        message: 'Per customer limit cannot exceed the total usage limit',
       })
     }
   })
@@ -78,6 +104,7 @@ export function parseAdminCouponPayload(input: unknown) {
     data: {
       ...parsed.data,
       code: parsed.data.code.toUpperCase(),
+      maxDiscount: parsed.data.type === 'PERCENTAGE' ? parsed.data.maxDiscount : null,
       categoryIds: Array.from(new Set(parsed.data.categoryIds)),
       productIds: Array.from(new Set(parsed.data.productIds)),
     },

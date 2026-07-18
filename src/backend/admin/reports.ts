@@ -379,7 +379,12 @@ export async function buildAdminReportCsv(
         createdAt: { gte: range.from, lte: range.to },
       },
       orderBy: { createdAt: 'desc' },
-      include: {
+      select: {
+        orderNumber: true,
+        status: true,
+        paymentStatus: true,
+        total: true,
+        createdAt: true,
         user: {
           select: { name: true, email: true },
         },
@@ -402,7 +407,12 @@ export async function buildAdminReportCsv(
   if (type === 'products') {
     const products = await db.product.findMany({
       orderBy: { soldCount: 'desc' },
-      include: {
+      select: {
+        name: true,
+        sku: true,
+        stockQuantity: true,
+        soldCount: true,
+        isActive: true,
         category: { select: { name: true } },
       },
     })
@@ -421,7 +431,13 @@ export async function buildAdminReportCsv(
 
   const customers = await db.user.findMany({
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      name: true,
+      email: true,
+      phone: true,
+      role: true,
+      isActive: true,
+      createdAt: true,
       _count: {
         select: {
           orders: true,

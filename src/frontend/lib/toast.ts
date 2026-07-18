@@ -6,7 +6,7 @@ function showToast(kind: ToastKind, message: string) {
   }
 
   void import('react-hot-toast').then(({ default: toast }) => {
-    toast[kind](message, { id: `${kind}:${message}` })
+    toast[kind](message, { id: 'boilabin-feedback' })
   })
 }
 

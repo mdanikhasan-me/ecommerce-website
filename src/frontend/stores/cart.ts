@@ -20,9 +20,12 @@ export interface CartCoupon {
   id: string
   code: string
   name: string
-  type: string
+  type: 'PERCENTAGE' | 'FIXED'
   value: number
   maxDiscount?: number | null
+  discount: number
+  qualifyingSubtotal: number
+  hasRestrictions: boolean
 }
 
 interface CartState {
@@ -112,7 +115,11 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'boilabin-cart',
-      version: 1,
+      version: 2,
+      migrate: (persistedState) => ({
+        ...(persistedState as Partial<CartState>),
+        appliedCoupon: null,
+      }),
     }
   )
 )

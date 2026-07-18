@@ -1,26 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { IBM_Plex_Sans, DM_Mono } from 'next/font/google'
 import { BRAND_ASSETS } from '@/shared/assets'
 import { getSiteUrl } from '@/backend/seo'
 import { DeferredToaster } from '@/frontend/components/ui/DeferredToaster'
 import './globals.css'
-
-// Body + titles: a clean, professional text sans. Reads like normal standard text; titles use the
-// same face at bold weight (see --font-display in globals.css).
-const fontSans = IBM_Plex_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-  weight: 'variable',
-})
-
-const fontMono = DM_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-  weight: ['400', '500'],
-  preload: false,
-})
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -104,7 +86,6 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontSans.variable} ${fontMono.variable}`}
       suppressHydrationWarning
     >
       <body

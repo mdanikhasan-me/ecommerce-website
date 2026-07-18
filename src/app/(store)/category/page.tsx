@@ -37,10 +37,15 @@ const getCategories = unstable_cache(
   async () => db.category.findMany({
     where: { isActive: true, parentId: null },
     orderBy: { sortOrder: 'asc' },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
       children: {
         where: { isActive: true },
         orderBy: { sortOrder: 'asc' },
+        select: { id: true, name: true, slug: true, icon: true },
       },
     },
   }),
@@ -167,7 +172,6 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
             {allProductsPreview.products.length > 0 && (
               <section className="mt-8 sm:mt-10 lg:mt-12">
                 <ProductGrid
-                  eyebrow="Catalog"
                   title="All Products"
                   subtitle={`Showing ${allProductsPreview.products.length} of ${allProductsPreview.total} public products.`}
                   products={allProductsPreview.products}
@@ -206,11 +210,11 @@ function CategoryRail({
               href={`/category?department=${category.slug}`}
               prefetch={false}
               {...ariaCurrentPage(isSelected)}
-              className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left sm:transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
-                isSelected ? 'bg-secondary/75 text-foreground' : 'text-foreground/88 min-[1025px]:hover:bg-secondary/45'
+              className={`group relative flex min-h-[54px] items-center gap-3 rounded-xl px-3 py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
+                isSelected ? 'bg-foreground/[0.045] text-foreground' : 'text-foreground/88 min-[1025px]:hover:bg-foreground/[0.025]'
               }`}
             >
-              {isSelected && <span className="absolute left-0 top-3 h-7 w-0.5 rounded-r-full bg-primary/70" />}
+              {isSelected && <span className="absolute left-0 top-3 h-7 w-0.5 rounded-r-full bg-foreground/65" />}
               <LocalIcon name={iconName} className="h-5 w-5 shrink-0 text-foreground/88" />
               <span className="min-w-0 flex-1 text-sm font-medium leading-5">{category.name}</span>
               <LocalIcon name="chevron-right" className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -230,10 +234,8 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
       aria-labelledby={`category-panel-${category.slug}`}
       className="flex flex-col rounded-[1.35rem] border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
     >
-      <div className="flex items-center gap-4 border-b border-border/70 pb-5">
-        <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/75 text-foreground">
-          <LocalIcon name={iconName} className="h-7 w-7" />
-        </span>
+      <div className="flex items-center gap-3 border-b border-border/70 pb-5">
+        <LocalIcon name={iconName} className="h-8 w-8 shrink-0 text-foreground/85" />
         <div className="min-w-0">
           <h2 id={`category-panel-${category.slug}`} className="font-display text-[1.55rem] font-semibold leading-tight text-foreground sm:text-[1.85rem]">
             {category.name}

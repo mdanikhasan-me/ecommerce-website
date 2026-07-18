@@ -7,6 +7,7 @@ import { db } from '@/backend/database'
 import { authConfig } from '@/backend/auth/config'
 import { getGoogleOAuthCredentials } from '@/backend/auth/google-oauth'
 import type { NextAuthConfig } from 'next-auth'
+import { rateLimit } from '@/backend/security/rate-limit'
 
 type AuthEvents = NonNullable<NextAuthConfig['events']>
 type SignInEventParams = Parameters<NonNullable<AuthEvents['signIn']>>[0]
@@ -24,6 +25,13 @@ export function normalizeCredentialsEmail(value: unknown): string | null {
   return normalized
 }
 
+function normalizeCredentialsPassword(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  if (value.length < 8 || value.length > 72) return null
+  if (Buffer.byteLength(value, 'utf8') > 72) return null
+  return value
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
@@ -34,23 +42,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null
 
         const email = normalizeCredentialsEmail(credentials.email)
-        if (!email) return null
+        const password = normalizeCredentialsPassword(credentials.password)
+        if (!email || !password) return null
+
+        const limited = rateLimit(request, {
+          key: 'auth:credentials',
+          limit: 10,
+          windowMs: 60_000,
+        })
+        if (limited) return null
 
         const user = await db.user.findUnique({
           where: { email },
         })
 
         if (!user || !user.password || !user.isActive) {
-          await bcrypt.compare(credentials.password as string, TIMING_EQUALIZATION_HASH)
+          await bcrypt.compare(password, TIMING_EQUALIZATION_HASH)
           return null
         }
 
         const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
+          password,
           user.password
         )
 
@@ -69,8 +85,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   events: {
     async signIn({ user, isNewUser }: SignInEventParams) {
       if (isNewUser && user.id) {
-        await db.cart.create({ data: { userId: user.id } })
-        await db.wishlist.create({ data: { userId: user.id } })
+        await Promise.all([
+          db.cart.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id },
+            update: {},
+          }),
+          db.wishlist.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id },
+            update: {},
+          }),
+        ])
       }
     },
   },

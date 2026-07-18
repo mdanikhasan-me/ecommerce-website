@@ -12,6 +12,7 @@ import { logSecurityEvent } from '@/backend/security/security-log'
 import { parseBuyerOrderPayload } from '@/backend/orders/buyer-validation'
 import { createBuyerOrder, type BuyerOrderDb } from '@/backend/orders/buyer-order-create'
 import { ORDER_LIST_PAGE_SIZE, parseOrderListPage } from '@/backend/orders/buyer-order-list'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 const AVAILABLE_PAYMENT_METHODS = new Set(
   PAYMENT_GATEWAYS.filter((gateway) => gateway.isAvailable).map((gateway) => gateway.id)
@@ -29,7 +30,10 @@ export async function GET(req: NextRequest) {
     where: { id: session.user.id },
     select: { role: true, isActive: true },
   })
-  const isAdmin = Boolean(currentUser?.isActive && ['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role))
+  if (!currentUser?.isActive) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role)
   const sp = req.nextUrl.searchParams
   const page = parseOrderListPage(sp.get('page'))
   const limit = ORDER_LIST_PAGE_SIZE
@@ -67,14 +71,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please sign in or create an account before placing an order' }, { status: 401 })
     }
 
-    let body: unknown
-    try {
-      body = await req.json()
-    } catch {
-      return NextResponse.json({ error: 'Invalid order request' }, { status: 400 })
-    }
-
-    const parsedPayload = parseBuyerOrderPayload(body, AVAILABLE_PAYMENT_METHODS)
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsedPayload = parseBuyerOrderPayload(body.data, AVAILABLE_PAYMENT_METHODS)
     if (!parsedPayload.success) {
       return NextResponse.json({ error: parsedPayload.error }, { status: 400 })
     }

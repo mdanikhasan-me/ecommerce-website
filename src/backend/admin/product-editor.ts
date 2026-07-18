@@ -18,6 +18,10 @@ import {
   planAdminMediaDeletionWithReferences,
 } from '@/backend/admin/media-reference-guard'
 import { logSecurityEvent } from '@/backend/security/security-log'
+import {
+  PRODUCT_DESCRIPTION_IMAGE_GROUP,
+  PRODUCT_FAQ_GROUP,
+} from '@/shared/product-content'
 import { z } from 'zod'
 
 export { requireAdminSession } from '@/backend/admin/admin-utils'
@@ -28,7 +32,7 @@ type ProductImageInput = {
 }
 
 type ProductVariantInput = {
-  name?: string
+  name?: string | null
   sku?: string
   price?: number | null
   salePrice?: number | null
@@ -36,7 +40,32 @@ type ProductVariantInput = {
   image?: string | null
   optionName?: string | null
   optionValue?: string | null
+  options?: Array<{
+    name?: string | null
+    value?: string | null
+  }>
   isActive?: boolean
+}
+
+type ProductAttributeInput = {
+  name?: string | null
+  value?: string | null
+}
+
+type ProductSpecificationInput = {
+  group?: string | null
+  name?: string | null
+  value?: string | null
+}
+
+type ProductFaqInput = {
+  question?: string | null
+  answer?: string | null
+}
+
+type ProductDescriptionImageInput = {
+  url?: string | null
+  alt?: string | null
 }
 
 export type AdminProductPayload = {
@@ -64,6 +93,10 @@ export type AdminProductPayload = {
   isPreOrder?: boolean
   images?: ProductImageInput[]
   variants?: ProductVariantInput[]
+  attributes?: ProductAttributeInput[]
+  specifications?: ProductSpecificationInput[]
+  faqs?: ProductFaqInput[]
+  descriptionImages?: ProductDescriptionImageInput[]
 }
 
 const optionalTrimmedString = (max: number) =>
@@ -103,7 +136,7 @@ const productImagePayloadSchema = z.object({
 
 const productVariantPayloadSchema = z
   .object({
-    name: z.string().trim().min(1, 'Variant name is required').max(120),
+    name: optionalTrimmedString(120),
     sku: z.string().trim().min(1, 'Variant SKU is required').max(80),
     price: optionalNonNegativeNumber('Variant price'),
     salePrice: optionalNonNegativeNumber('Variant sale price'),
@@ -111,6 +144,10 @@ const productVariantPayloadSchema = z
     image: optionalTrimmedString(500),
     optionName: optionalTrimmedString(80),
     optionValue: optionalTrimmedString(120),
+    options: z.array(z.object({
+      name: z.string().trim().min(1, 'Option group is required').max(80),
+      value: z.string().trim().min(1, 'Option value is required').max(120),
+    })).max(8).optional().default([]),
     isActive: z.boolean().optional().default(true),
   })
   .superRefine((variant, ctx) => {
@@ -129,7 +166,50 @@ const productVariantPayloadSchema = z
         message: 'Variant option name and value must be filled together',
       })
     }
+
+    const optionNames = new Set<string>()
+    for (const [index, option] of variant.options.entries()) {
+      const optionName = option.name.toLocaleLowerCase('en')
+      if (optionNames.has(optionName)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['options', index, 'name'],
+          message: 'Each option group can appear only once in a variant',
+        })
+        return
+      }
+      optionNames.add(optionName)
+    }
+
+    if (!variant.name && variant.options.length === 0 && !variant.optionName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['options'],
+        message: 'Add at least one option, such as Color or Storage',
+      })
+    }
   })
+
+const productAttributePayloadSchema = z.object({
+  name: z.string().trim().min(1, 'Highlight label is required').max(80),
+  value: z.string().trim().min(1, 'Highlight details are required').max(500),
+})
+
+const productSpecificationPayloadSchema = z.object({
+  group: optionalTrimmedString(80),
+  name: z.string().trim().min(1, 'Specification name is required').max(120),
+  value: z.string().trim().min(1, 'Specification value is required').max(2_000),
+})
+
+const productFaqPayloadSchema = z.object({
+  question: z.string().trim().min(1, 'FAQ question is required').max(240),
+  answer: z.string().trim().min(1, 'FAQ answer is required').max(4_000),
+})
+
+const productDescriptionImagePayloadSchema = z.object({
+  url: imageUrlSchema,
+  alt: z.string().trim().min(1, 'Description image alt text is required').max(160),
+})
 
 const productPayloadSchema = z
   .object({
@@ -157,6 +237,10 @@ const productPayloadSchema = z
     isPreOrder: z.boolean().optional().default(false),
     images: z.array(productImagePayloadSchema).max(20).optional().default([]),
     variants: z.array(productVariantPayloadSchema).max(100).optional().default([]),
+    attributes: z.array(productAttributePayloadSchema).max(40).optional().default([]),
+    specifications: z.array(productSpecificationPayloadSchema).max(120).optional().default([]),
+    faqs: z.array(productFaqPayloadSchema).max(40).optional().default([]),
+    descriptionImages: z.array(productDescriptionImagePayloadSchema).max(20).optional().default([]),
   })
   .superRefine((payload, ctx) => {
     if (payload.salePrice !== null && payload.salePrice > payload.basePrice) {
@@ -251,6 +335,19 @@ export interface AdminEditableProduct {
       value: string
     }>
   }>
+  attributes: Array<{
+    id: string
+    name: string
+    value: string
+    sortOrder: number
+  }>
+  specifications: Array<{
+    id: string
+    group: string | null
+    name: string
+    value: string
+    sortOrder: number
+  }>
 }
 
 export async function ensureUniqueProductSlug(rawSlug: string, excludeId?: string) {
@@ -277,7 +374,7 @@ async function persistImage(
   url: string,
   slug: string,
   taxonomy: ProductMediaTaxonomy | undefined,
-  index: number,
+  mediaId: string,
 ) {
   if (!url.startsWith('data:image/')) {
     return url.trim()
@@ -287,7 +384,7 @@ async function persistImage(
     categorySlug: taxonomy?.categorySlug,
     subcategorySlug: taxonomy?.subcategorySlug,
     productSlugOrId: slug,
-    mediaId: `image-${index + 1}`,
+    mediaId,
   })
 
   return persistOptimizedImageUpload({
@@ -451,7 +548,7 @@ export async function normalizeProductImages(
 
   const normalized = []
   for (const [index, image] of cleanedInputs.entries()) {
-    const persistedUrl = await persistImage(image.url, slug, taxonomy, index)
+    const persistedUrl = await persistImage(image.url, slug, taxonomy, `image-${index + 1}`)
     normalized.push({
       url: persistedUrl,
       alt: image.alt || null,
@@ -480,17 +577,28 @@ export function normalizeTags(tags: string[] | undefined) {
 
 export function normalizeVariants(variants: ProductVariantInput[] | undefined) {
   return (variants ?? [])
-    .map((variant) => ({
-      name: variant.name?.trim() ?? '',
+    .map((variant) => {
+      const options = (variant.options?.length
+        ? variant.options
+        : variant.optionName && variant.optionValue
+          ? [{ name: variant.optionName, value: variant.optionValue }]
+          : [])
+        .map((option) => ({
+          name: option.name?.trim() ?? '',
+          value: option.value?.trim() ?? '',
+        }))
+        .filter((option) => option.name && option.value)
+
+      return {
+      name: variant.name?.trim() || options.map((option) => option.value).join(' / '),
       sku: variant.sku?.trim() ?? '',
       price: variant.price ?? null,
       salePrice: variant.salePrice ?? null,
       stockQuantity: variant.stockQuantity ?? 0,
       image: variant.image?.trim() || null,
-      optionName: variant.optionName?.trim() ?? '',
-      optionValue: variant.optionValue?.trim() ?? '',
+      options,
       isActive: variant.isActive ?? true,
-    }))
+    }})
     .filter((variant) => variant.name && variant.sku)
     .map((variant, index) => ({
       name: variant.name,
@@ -501,17 +609,68 @@ export function normalizeVariants(variants: ProductVariantInput[] | undefined) {
       image: variant.image,
       isActive: variant.isActive,
       sortOrder: index,
-      options: variant.optionName && variant.optionValue
+      options: variant.options.length
         ? {
-            create: [
-              {
-                name: variant.optionName,
-                value: variant.optionValue,
-              },
-            ],
+            create: variant.options,
           }
         : undefined,
     }))
+}
+
+export function normalizeProductAttributes(attributes: ProductAttributeInput[] | undefined) {
+  return (attributes ?? [])
+    .map((attribute) => ({
+      name: attribute.name?.trim() ?? '',
+      value: attribute.value?.trim() ?? '',
+    }))
+    .filter((attribute) => attribute.name && attribute.value)
+    .map((attribute, index) => ({ ...attribute, sortOrder: index }))
+}
+
+export function normalizeProductSpecifications(
+  specifications: ProductSpecificationInput[] | undefined,
+  faqs: ProductFaqInput[] | undefined,
+) {
+  const specificationRows = (specifications ?? [])
+    .map((specification) => ({
+      group: specification.group?.trim() || null,
+      name: specification.name?.trim() ?? '',
+      value: specification.value?.trim() ?? '',
+    }))
+    .filter((specification) => specification.name && specification.value)
+    .map((specification, index) => ({ ...specification, sortOrder: index }))
+
+  const faqRows = (faqs ?? [])
+    .map((faq) => ({
+      group: PRODUCT_FAQ_GROUP,
+      name: faq.question?.trim() ?? '',
+      value: faq.answer?.trim() ?? '',
+    }))
+    .filter((faq) => faq.name && faq.value)
+    .map((faq, index) => ({ ...faq, sortOrder: 10_000 + index }))
+
+  return [...specificationRows, ...faqRows]
+}
+
+export async function normalizeProductDescriptionImages(
+  images: ProductDescriptionImageInput[] | undefined,
+  slug: string,
+  taxonomy?: ProductMediaTaxonomy,
+) {
+  const cleaned = (images ?? [])
+    .map((image) => ({ url: image.url?.trim() ?? '', alt: image.alt?.trim() ?? '' }))
+    .filter((image) => image.url && image.alt)
+
+  const rows = []
+  for (const [index, image] of cleaned.entries()) {
+    rows.push({
+      group: PRODUCT_DESCRIPTION_IMAGE_GROUP,
+      name: image.alt,
+      value: await persistImage(image.url, slug, taxonomy, `description-${index + 1}`),
+      sortOrder: 20_000 + index,
+    })
+  }
+  return rows
 }
 
 export function validateProductPayload(payload: AdminProductPayload) {
@@ -542,9 +701,10 @@ export async function validateProductRelations(payload: AdminProductPayload) {
       where: { id: payload.categoryId },
       select: {
         id: true,
+        name: true,
         slug: true,
         parent: {
-          select: { slug: true },
+          select: { name: true, slug: true },
         },
       },
     }),
@@ -558,6 +718,8 @@ export async function validateProductRelations(payload: AdminProductPayload) {
     officialStoreName: officialSeller.storeName,
     categorySlug: category.slug,
     parentCategorySlug: category.parent?.slug ?? null,
+    categoryName: category.name,
+    parentCategoryName: category.parent?.name ?? null,
     mediaTaxonomy: {
       categorySlug: category.parent?.slug ?? category.slug,
       subcategorySlug: category.parent ? category.slug : 'general',
@@ -643,6 +805,25 @@ export async function getAdminEditableProduct(id: string) {
               value: true,
             },
           },
+        },
+      },
+      attributes: {
+        orderBy: { sortOrder: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          value: true,
+          sortOrder: true,
+        },
+      },
+      specifications: {
+        orderBy: { sortOrder: 'asc' },
+        select: {
+          id: true,
+          group: true,
+          name: true,
+          value: true,
+          sortOrder: true,
         },
       },
     },

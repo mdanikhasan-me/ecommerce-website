@@ -6,6 +6,7 @@ import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminHomepageSectionPayload } from '@/backend/admin/homepage-section-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -24,7 +25,9 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 })
     }
 
-    const parsed = parseAdminHomepageSectionPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminHomepageSectionPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }

@@ -11,6 +11,7 @@ interface ProductCardProps {
   layout?: 'grid' | 'list'
   priority?: boolean
   imageSizes?: string
+  titleHeadingLevel?: 2 | 3
 }
 
 const DEFAULT_GRID_IMAGE_SIZES = '(max-width: 339px) 100vw, (max-width: 559px) 50vw, (max-width: 1279px) 33vw, (max-width: 1535px) 25vw, 20vw'
@@ -21,6 +22,7 @@ export function ProductCard({
   layout = 'grid',
   priority = false,
   imageSizes = DEFAULT_GRID_IMAGE_SIZES,
+  titleHeadingLevel = 2,
 }: ProductCardProps) {
   const primaryImage = product.images.find((i) => i.isPrimary)?.url ?? product.images[0]?.url
   const isPreOrder = product.isPreOrder ?? false
@@ -41,11 +43,12 @@ export function ProductCard({
     isPreOrder,
     primaryImage,
   }
+  const ProductTitle = titleHeadingLevel === 2 ? 'h2' : 'h3'
 
   if (layout === 'list') {
     return (
       <div className={cn('product-card flex gap-2.5 p-2.5 sm:gap-4 sm:p-4 md:p-5', className)}>
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[1rem] bg-white sm:h-28 sm:w-28">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[0.4rem] bg-white sm:h-28 sm:w-28">
           {primaryImage && (
             <Image
               src={primaryImage}
@@ -59,13 +62,13 @@ export function ProductCard({
           )}
         </Link>
         <div className="flex min-w-0 flex-1 flex-col">
-          <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="sm:transition-colors min-[1025px]:hover:text-primary">
-            <h3 className="mt-0.5 min-h-[2.55rem] line-clamp-2 text-[14.5px] font-medium leading-[1.32rem] text-foreground sm:mt-1 sm:text-[15px] sm:leading-6">{product.name}</h3>
+          <Link href={`/products/${product.slug}`} prefetch={false}>
+            <ProductTitle className="mt-0.5 min-h-[2.55rem] line-clamp-2 text-[14.5px] font-medium leading-[1.32rem] text-foreground sm:mt-1 sm:text-[15px] sm:leading-6">{product.name}</ProductTitle>
           </Link>
           <div className="mt-1 flex min-h-[1rem] items-center gap-1" role="img" aria-label={ratingLabel}>
             <LocalIcon name="star-filled" className="h-3 w-3 star-filled" />
             <span className="text-[13.5px] font-semibold text-foreground/80">{product.rating.toFixed(1)}</span>
-            <span className="text-[13.5px] font-medium text-foreground/55">
+            <span className="text-[13.5px] font-medium text-muted-foreground">
               {product.reviewCount > 0 ? `(${product.reviewCount})` : '(No reviews yet)'}
             </span>
           </div>
@@ -91,15 +94,15 @@ export function ProductCard({
           New
         </span>
       ) : null}
-      <div className="relative overflow-hidden rounded-t-[0.7rem] bg-white">
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative block aspect-[3/2] min-w-0">
+      <div className="product-card-media-shell relative overflow-hidden rounded-t-[0.4rem] bg-white">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="product-card-media-link relative block aspect-[3/2] min-w-0">
           {primaryImage ? (
             <Image
               src={primaryImage}
               alt={product.name}
               fill
               priority={priority}
-              className="object-contain p-2.5"
+              className="product-card-media-image object-contain p-2.5"
               quality={75}
               sizes={imageSizes}
             />
@@ -109,28 +112,27 @@ export function ProductCard({
             </div>
           )}
 
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.01)_30%,rgba(15,23,42,0.06)_100%)] opacity-0" />
         </Link>
       </div>
 
-      <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="flex min-w-0 flex-col px-3 pb-2 pt-2.5 sm:px-3.5 sm:pb-2 sm:pt-2.5">
-        <h3 className="min-h-[2.35rem] line-clamp-2 text-[13.5px] font-semibold leading-[1.18rem] text-foreground sm:min-h-[2.5rem] sm:text-[14px] sm:leading-5 sm:transition-colors min-[1025px]:group-hover:text-primary">
+      <Link href={`/products/${product.slug}`} prefetch={false} className="product-card-copy flex min-w-0 flex-col px-3 pb-2 pt-2.5 sm:px-3.5 sm:pb-2 sm:pt-2.5">
+        <ProductTitle className="product-card-title min-h-[2.35rem] line-clamp-2 text-[13.5px] font-semibold leading-[1.18rem] text-foreground sm:min-h-[2.5rem] sm:text-[14px] sm:leading-5">
           {product.name}
-        </h3>
+        </ProductTitle>
 
-        <div className="mt-2 flex min-h-[0.9rem] items-center gap-1 sm:gap-1.5" role="img" aria-label={ratingLabel}>
+        <div className="product-card-rating mt-2 flex min-h-[0.9rem] items-center gap-1 sm:gap-1.5" role="img" aria-label={ratingLabel}>
           <LocalIcon name="star-filled" className="h-2.5 w-2.5 star-filled sm:h-3 sm:w-3" />
           <span className="text-[12px] font-semibold text-foreground/75 sm:text-[12px]" aria-hidden="true">
             {product.rating.toFixed(1)}
           </span>
-          <span className="truncate text-[12px] font-medium text-foreground/55 sm:text-[12px]" aria-hidden="true">
+          <span className="truncate text-[12px] font-medium text-muted-foreground sm:text-[12px]" aria-hidden="true">
             {product.reviewCount > 0 ? `${product.reviewCount} reviews` : 'No reviews yet'}
           </span>
         </div>
 
         <div className="mt-2 h-px w-full bg-border/55" aria-hidden="true" />
 
-        <div className="mt-2 flex min-h-[1.65rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+        <div className="product-card-price mt-2 flex min-h-[1.65rem] flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
           <span className="text-[1.15rem] font-semibold leading-tight tabular-nums text-foreground sm:text-[1.25rem] lg:text-[1.34rem]">
             {formatPrice(price)}
           </span>
@@ -139,7 +141,7 @@ export function ProductCard({
           )}
         </div>
 
-        <p className={cn('mt-1.5 text-[12.5px] font-medium sm:text-[13px]', stockColor)}>
+        <p className={cn('product-card-stock mt-1.5 text-[12.5px] font-medium sm:text-[13px]', stockColor)}>
           {stockLabel}
         </p>
       </Link>
@@ -157,7 +159,7 @@ export function ProductCard({
 export function ProductCardSkeleton() {
   return (
     <div className="product-card">
-      <div className="aspect-square skeleton rounded-t-xl" />
+      <div className="aspect-[4/3] skeleton rounded-t-xl" />
       <div className="p-3 space-y-2">
         <div className="h-3 skeleton rounded w-1/3" />
         <div className="h-4 skeleton rounded w-5/6" />

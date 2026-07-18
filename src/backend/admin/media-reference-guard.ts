@@ -69,6 +69,13 @@ export const ADMIN_MEDIA_REFERENCE_FIELDS = [
     referenceKind: 'active-record',
   },
   {
+    key: 'ProductSpec.value',
+    model: 'ProductSpec',
+    field: 'value',
+    valueKind: 'scalar',
+    referenceKind: 'active-record',
+  },
+  {
     key: 'Category.image',
     model: 'Category',
     field: 'image',

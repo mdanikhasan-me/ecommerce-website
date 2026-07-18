@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { revalidateProductSurfaces } from '@/backend/catalog/storefront-revalidation'
 import { parseReviewPayload, syncProductReviewStats } from '@/backend/reviews'
 import { parsePublicId } from '@/backend/api/public-input'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,10 +16,12 @@ export async function POST(req: NextRequest) {
     const limited = rateLimit(req, { key: 'reviews:create', limit: 6, windowMs: 60_000 })
     if (limited) return limited
 
-    const session = await auth()
+    const session = await getActiveUserSession()
     if (!session?.user) return NextResponse.json({ error: 'Sign in to leave a review' }, { status: 401 })
 
-    const parsed = parseReviewPayload(await req.json())
+    const bodyResult = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!bodyResult.success) return bodyResult.response
+    const parsed = parseReviewPayload(bodyResult.data)
     if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 })
 
     const { productId, rating, title, body } = parsed.data

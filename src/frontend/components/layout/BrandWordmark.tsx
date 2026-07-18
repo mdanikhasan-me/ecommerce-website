@@ -1,5 +1,4 @@
 import type { HTMLAttributes } from 'react'
-import Image from 'next/image'
 import { cn } from '@/backend/utils'
 import { BRAND_ASSETS } from '@/shared/assets'
 
@@ -16,14 +15,13 @@ export function BrandWordmark({
   if (variant === 'art') {
     return (
       <span {...props} className={cn('brand-wordmark-art', className)}>
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={BRAND_ASSETS.wordmark}
           alt=""
           aria-hidden="true"
-          width={2380}
-          height={560}
-          sizes="(max-width: 559px) 9rem, (max-width: 1279px) 10rem, 11rem"
-          unoptimized
+          width={466}
+          height={94.25}
           decoding="async"
           draggable={false}
           className="block h-full w-auto max-w-none"

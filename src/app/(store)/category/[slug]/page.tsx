@@ -32,10 +32,7 @@ interface Props {
 }
 
 export const revalidate = 300
-
-export async function generateStaticParams() {
-  return []
-}
+export const dynamic = 'force-dynamic'
 
 const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
@@ -248,8 +245,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
           {products.length === 0 ? (
             <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center shadow-[0_16px_36px_rgba(23,18,15,0.05)] sm:px-8 sm:py-16">
-              <p className="section-kicker">Empty shelf</p>
-              <h2 className="mt-3 font-display text-xl font-semibold">No products found</h2>
+              <h2 className="font-display text-xl font-semibold">No products found</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try adjusting your filters.</p>
             </div>
           ) : (

@@ -6,6 +6,7 @@ import {
   AlignCenter,
   AlignLeft,
   AlignRight,
+  ChevronRight,
   Eye,
   Loader2,
   Monitor,
@@ -21,6 +22,7 @@ import {
   BANNER_BUTTON_CLASSES,
   BANNER_BUTTON_LABELS,
   BANNER_BUTTON_STYLE_OPTION_VALUES,
+  BANNER_CREATIVE_PRESETS,
   BANNER_IMAGE_SHADE_LABELS,
   BANNER_TEXT_LABELS,
   BANNER_TEXT_SWATCHES,
@@ -316,11 +318,32 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
     updateField('overlayStrength', `${shadeColor === 'none' ? 'black' : shadeColor}-${strength}`)
   }
 
+  const activeCreativePreset = BANNER_CREATIVE_PRESETS.find((preset) => (
+    preset.titleStyle === form.titleStyle
+    && preset.textTone === form.textTone
+    && preset.buttonStyle === form.buttonStyle
+    && preset.imageShade === form.overlayStrength
+    && preset.textEdge === form.textShadow
+  ))
+
+  const applyCreativePreset = (value: string) => {
+    const preset = BANNER_CREATIVE_PRESETS.find((option) => option.value === value)
+    if (!preset) return
+    setForm((current) => ({
+      ...current,
+      titleStyle: preset.titleStyle,
+      textTone: preset.textTone,
+      buttonStyle: preset.buttonStyle,
+      overlayStrength: preset.imageShade,
+      textShadow: preset.textEdge,
+    }))
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5 pb-20 sm:pb-0" data-banner-editor>
       {error ? <div className="rounded-md bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</div> : null}
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.65fr)] xl:items-start">
         <section data-banner-editor-section="content" className="admin-card order-1 p-5 sm:p-6 xl:col-start-1 xl:row-start-1">
           <h2 className="admin-section-title">Content</h2>
           <p className="mt-1 text-xs text-muted-foreground">Write the message and choose exactly where the call to action goes.</p>
@@ -396,7 +419,7 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
           </div>
         </section>
 
-        <section data-banner-editor-section="preview" className="admin-card order-2 p-4 sm:p-5 xl:col-start-2 xl:row-start-1 xl:self-start">
+        <section data-banner-editor-section="preview" className="admin-card order-2 p-4 sm:p-5 xl:sticky xl:top-4 xl:col-start-2 xl:row-start-1 xl:self-start">
           <div className="flex items-center justify-between gap-3">
             <span className="flex items-center gap-2 text-sm font-semibold"><Eye className="h-4 w-4" /> Live storefront preview</span>
             <div className="flex rounded-md bg-secondary p-1" aria-label="Preview viewport">
@@ -430,92 +453,115 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
 
         <section data-banner-editor-section="design" className="admin-card order-3 p-5 sm:p-6 xl:col-start-1 xl:row-start-2">
           <h2 className="admin-section-title">Banner design</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Set placement, typography, contrast, and one clear call-to-action template.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Start with a coordinated direction, then adjust only what the artwork needs.</p>
 
-          <div className="mt-5 space-y-4">
-            <div className="rounded-md bg-secondary/45 p-4">
-              <h3 className="text-sm font-semibold">Typography and placement</h3>
-              <div className="mt-3 grid gap-4 lg:grid-cols-2">
-                <div>
-                  <span className="mb-1.5 block text-sm font-medium">Content alignment</span>
-                  <div className="grid grid-cols-3 gap-2">
-                    {ALIGNMENT_OPTIONS.map(({ value, label, icon: Icon }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        data-banner-alignment={value}
-                        aria-pressed={form.textPosition === value}
-                        onClick={() => updateField('textPosition', value)}
-                        className={cn(
-                          'flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium',
-                          form.textPosition === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-background text-muted-foreground',
-                        )}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">The same horizontal and vertical placement is used on every device.</p>
-                </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div>
+              <label htmlFor={`${fieldIdPrefix}-creative-preset`} className="mb-1.5 block text-sm font-medium">Creative direction</label>
+              <select
+                id={`${fieldIdPrefix}-creative-preset`}
+                value={activeCreativePreset?.value ?? 'custom'}
+                onChange={(event) => applyCreativePreset(event.target.value)}
+                className="input-base"
+              >
+                <option value="custom">Custom combination</option>
+                {BANNER_CREATIVE_PRESETS.map((preset) => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
+              </select>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                {activeCreativePreset?.description ?? 'Your current settings are individually customized.'}
+              </p>
+            </div>
+            <div>
+              <span className="mb-1.5 block text-sm font-medium">Content alignment</span>
+              <div className="grid grid-cols-3 gap-2">
+                {ALIGNMENT_OPTIONS.map(({ value, label, icon: Icon }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    data-banner-alignment={value}
+                    aria-pressed={form.textPosition === value}
+                    onClick={() => updateField('textPosition', value)}
+                    className={cn(
+                      'flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium',
+                      form.textPosition === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-secondary text-muted-foreground',
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">The same center-height alignment is used on desktop, tablet, and mobile.</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 rounded-md bg-secondary/55 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,0.75fr)] lg:items-center">
+            <div>
+              <p className="text-sm font-semibold">Current call to action</p>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">The preview uses the storefront renderer, including its icon and exact label treatment.</p>
+            </div>
+            <div className={cn('flex min-h-20 items-center justify-center rounded-md px-4', buttonPreviewUsesDarkSurface ? 'bg-[#172033]' : 'bg-[#f4f1eb]')}>
+              <span className={cn(BANNER_BUTTON_BASE_CLASS, BANNER_BUTTON_CLASSES[previewButtonStyle])}>
+                {form.buttonLabel || 'Explore collection'}
+                <ChevronRight className="h-[1.15em] w-[1.15em]" />
+              </span>
+            </div>
+          </div>
+
+          <details className="mt-4 rounded-md bg-secondary/45" data-banner-advanced>
+            <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">Advanced styling</summary>
+            <div className="grid gap-5 px-4 pb-4 pt-2">
+              <div className="grid gap-4 lg:grid-cols-2">
                 <div>
                   <label htmlFor={`${fieldIdPrefix}-title-style`} className="mb-1.5 block text-sm font-medium">Title and subtitle typography</label>
                   <select data-banner-typography id={`${fieldIdPrefix}-title-style`} value={form.titleStyle} onChange={(event) => updateField('titleStyle', event.target.value)} className="input-base">
                     {BANNER_TITLE_STYLE_VALUES.map((value) => <option key={value} value={value}>{BANNER_TITLE_STYLE_LABELS[value]}</option>)}
                   </select>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Eight system-font presets keep the title and subtitle in one family with no font download.</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Each pair uses one system font family and adds no font download.</p>
                 </div>
-              </div>
-            </div>
-
-            <div className="rounded-md bg-secondary/45 p-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold">Text and artwork contrast</h3>
-                  <p className="mt-0.5 text-xs text-muted-foreground">Six clear text colors; image shading remains a separate choice.</p>
+                  <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Call-to-action template</label>
+                  <select data-banner-button-template id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
+                    {BANNER_BUTTON_STYLE_OPTION_VALUES.map((value) => <option key={value} value={value}>{BANNER_BUTTON_LABELS[value]}</option>)}
+                  </select>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Twelve CSS-only treatments with no image, animation, or extra library.</p>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground">{BANNER_TEXT_LABELS[previewTextTone]}</span>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
-                {BANNER_TEXT_TONE_OPTION_VALUES.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    data-banner-text-tone={value}
-                    aria-pressed={previewTextTone === value}
-                    onClick={() => updateField('textTone', value)}
-                    className={cn(
-                      'flex min-h-11 items-center gap-2 rounded-md border px-3 text-left text-xs font-medium',
-                      previewTextTone === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-background text-muted-foreground',
-                    )}
-                  >
-                    <span className="h-4 w-4 shrink-0 rounded-full border border-black/20" style={{ backgroundColor: BANNER_TEXT_SWATCHES[value] }} />
-                    <span className="min-w-0 break-words leading-tight">{BANNER_TEXT_LABELS[value]}</span>
-                  </button>
-                ))}
               </div>
 
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium">Title and subtitle color</span>
+                  <span className="text-xs text-muted-foreground">{BANNER_TEXT_LABELS[previewTextTone]}</span>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {BANNER_TEXT_TONE_OPTION_VALUES.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      data-banner-text-tone={value}
+                      aria-pressed={previewTextTone === value}
+                      onClick={() => updateField('textTone', value)}
+                      className={cn(
+                        'flex min-h-11 items-center gap-2 rounded-md border px-3 text-left text-xs font-medium',
+                        previewTextTone === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-secondary text-muted-foreground',
+                      )}
+                    >
+                      <span className="h-4 w-4 shrink-0 rounded-full border border-black/20" style={{ backgroundColor: BANNER_TEXT_SWATCHES[value] }} />
+                      <span className="min-w-0 break-words leading-tight">{BANNER_TEXT_LABELS[value]}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
                 <div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-medium">Image shade</span>
+                    <span className="text-sm font-medium">Image shade color</span>
                     <span className="text-xs text-muted-foreground">{BANNER_IMAGE_SHADE_LABELS[previewImageShade]}</span>
                   </div>
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     {SHADE_COLOR_OPTIONS.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        data-banner-shade-color={value}
-                        aria-pressed={shadeColor === value}
-                        onClick={() => setShadeColor(value)}
-                        className={cn(
-                          'min-h-10 rounded-md border px-3 text-xs font-medium capitalize',
-                          shadeColor === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-background text-muted-foreground',
-                        )}
-                      >
-                        {value}
-                      </button>
+                      <button key={value} type="button" data-banner-shade-color={value} aria-pressed={shadeColor === value} onClick={() => setShadeColor(value)} className={cn('min-h-10 rounded-md border px-3 text-xs font-medium capitalize', shadeColor === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-secondary text-muted-foreground')}>{value}</button>
                     ))}
                   </div>
                 </div>
@@ -523,49 +569,21 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
                   <span className="text-sm font-medium">Shade intensity</span>
                   <div className="mt-2 grid grid-cols-3 gap-2">
                     {SHADE_STRENGTH_OPTIONS.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        data-banner-shade-strength={value}
-                        disabled={shadeColor === 'none'}
-                        aria-pressed={shadeColor !== 'none' && shadeStrength === value}
-                        onClick={() => setShadeStrength(value)}
-                        className={cn(
-                          'min-h-10 rounded-md border px-3 text-xs font-medium capitalize disabled:cursor-not-allowed disabled:opacity-40',
-                          shadeColor !== 'none' && shadeStrength === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-background text-muted-foreground',
-                        )}
-                      >
-                        {value}
-                      </button>
+                      <button key={value} type="button" data-banner-shade-strength={value} disabled={shadeColor === 'none'} aria-pressed={shadeColor !== 'none' && shadeStrength === value} onClick={() => setShadeStrength(value)} className={cn('min-h-10 rounded-md border px-3 text-xs font-medium capitalize disabled:cursor-not-allowed disabled:opacity-40', shadeColor !== 'none' && shadeStrength === value ? 'border-foreground bg-card text-foreground' : 'border-transparent bg-secondary text-muted-foreground')}>{value}</button>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <label htmlFor={`${fieldIdPrefix}-text-shadow`} className="mt-4 flex items-center justify-between gap-4 rounded-md bg-background px-4 py-3 text-sm">
-                <span><span className="block font-semibold">Crisp text edge</span><span className="block text-xs text-muted-foreground">Adds a one-pixel contrast edge without blur or filter effects.</span></span>
+              <label htmlFor={`${fieldIdPrefix}-text-shadow`} className="flex items-center justify-between gap-4 rounded-md bg-secondary px-4 py-3 text-sm">
+                <span><span className="block font-semibold">Crisp text edge</span><span className="block text-xs text-muted-foreground">A one-pixel contrast edge is applied only to the title and subtitle, never the button.</span></span>
                 <input id={`${fieldIdPrefix}-text-shadow`} type="checkbox" checked={form.textShadow} onChange={(event) => updateField('textShadow', event.target.checked)} className="size-4 rounded border-input" />
               </label>
             </div>
-
-            <div className="rounded-md bg-secondary/45 p-4">
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,0.7fr)] lg:items-end">
-                <div>
-                  <label htmlFor={`${fieldIdPrefix}-button-style`} className="mb-1.5 block text-sm font-medium">Call-to-action template</label>
-                  <select data-banner-button-template id={`${fieldIdPrefix}-button-style`} value={form.buttonStyle} onChange={(event) => updateField('buttonStyle', event.target.value)} className="input-base">
-                    {BANNER_BUTTON_STYLE_OPTION_VALUES.map((value) => <option key={value} value={value}>{BANNER_BUTTON_LABELS[value]}</option>)}
-                  </select>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">Nine distinct CSS-only templates: dark, light, colorful, framed, and underlined.</p>
-                </div>
-                <div className={cn('flex min-h-20 items-center justify-center rounded-md px-4', buttonPreviewUsesDarkSurface ? 'bg-[#172033]' : 'bg-[#f4f1eb]')}>
-                  <span className={cn(BANNER_BUTTON_BASE_CLASS, BANNER_BUTTON_CLASSES[previewButtonStyle])}>{form.buttonLabel || 'Explore collection'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          </details>
         </section>
 
-        <section data-banner-editor-section="artwork" className="admin-card order-4 p-5 sm:p-6 xl:col-span-2 xl:row-start-3">
+        <section data-banner-editor-section="artwork" className="admin-card order-5 p-5 sm:p-6 xl:col-start-1 xl:row-start-3">
           <h2 className="admin-section-title">Responsive artwork</h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">Each upload is checked against its required ratio. Pixel dimensions are balanced recommendations, not fixed resolution requirements.</p>
           <div className="mt-5 grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
@@ -575,7 +593,7 @@ export function BannerEditorForm({ banner, destinations = [], redirectTo = '/adm
           </div>
         </section>
 
-        <section data-banner-editor-section="publishing" className="admin-card order-5 p-5 sm:p-6 xl:col-start-2 xl:row-start-2 xl:self-start">
+        <section data-banner-editor-section="publishing" className="admin-card order-4 p-5 sm:p-6 xl:col-start-2 xl:row-start-2 xl:self-start">
           <h2 className="admin-section-title">Publishing</h2>
           <div className="mt-4 space-y-4">
             <div>

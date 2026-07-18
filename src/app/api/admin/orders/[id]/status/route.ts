@@ -8,6 +8,7 @@ import { syncProductSoldCounts } from '@/backend/commerce-stats'
 import { parseAdminOrderStatusPayload } from '@/backend/admin/order-update-editor'
 import { enqueueOrderStatusEmail } from '@/backend/email/outbox'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 const ALLOWED_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ['CONFIRMED', 'CANCELLED'],
@@ -33,7 +34,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const session = await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminOrderStatusPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseAdminOrderStatusPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -129,7 +132,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       entity: 'order',
       entityId: order.id,
       oldValues: { status: order.status },
-      newValues: { status, note },
+      newValues: { status, noteProvided: Boolean(note) },
     })
 
     await syncProductSoldCounts(order.items.map((item) => item.productId))

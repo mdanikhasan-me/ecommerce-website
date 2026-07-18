@@ -30,7 +30,6 @@ export default function PaymentsPage() {
         ]}
       />
       <ContentPageShell
-        eyebrow="Payments"
         title="Simple cash on delivery payment."
         description="Boilabin currently supports cash on delivery. You place the order online, confirm your delivery details, and pay when the order reaches you."
         updatedAt="July 2026"

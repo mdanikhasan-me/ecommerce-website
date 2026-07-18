@@ -1,4 +1,4 @@
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { redirect } from 'next/navigation'
 import { db } from '@/backend/database'
 import Link from 'next/link'
@@ -22,7 +22,7 @@ export default async function AccountOrdersPage({
 }: {
   searchParams: Promise<{ orderNumber?: string }>
 }) {
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) redirect('/auth/login?callbackUrl=/account/orders')
 
   const params = await searchParams
@@ -48,8 +48,7 @@ export default async function AccountOrdersPage({
       <div className="max-w-5xl">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="section-kicker">Account</p>
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-[-0.04em]">My Orders</h1>
+            <h1 className="font-display text-3xl font-bold tracking-[-0.04em]">My Orders</h1>
           </div>
           <p className="text-sm text-muted-foreground">{orders.length} order{orders.length === 1 ? '' : 's'} shown</p>
         </div>
@@ -59,7 +58,6 @@ export default async function AccountOrdersPage({
             <Link href="/account/orders" className="text-primary underline">clear filter</Link>
           </p>
         )}
-
         {orders.length === 0 ? (
           <div className="text-center py-20">
             <LocalIcon name="package" className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-40" />

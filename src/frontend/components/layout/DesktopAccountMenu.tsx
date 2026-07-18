@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import type { Session } from 'next-auth'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
@@ -63,7 +62,10 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
         <button
           type="button"
           role="menuitem"
-          onClick={() => signOut({ callbackUrl: '/' })}
+          onClick={async () => {
+            const { signOut } = await import('next-auth/react')
+            signOut({ callbackUrl: '/' })
+          }}
           className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="log-out" className="h-4 w-4" />

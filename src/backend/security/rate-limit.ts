@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { logSecurityEvent } from '@/backend/security/security-log'
 
 type RateLimitEntry = {
   count: number
   resetAt: number
+  reported: boolean
 }
 
 type RateLimitOptions = {
@@ -24,7 +25,7 @@ function sanitizeClientIdentifier(value: string | null | undefined) {
   return cleaned
 }
 
-function getClientIp(req: NextRequest) {
+function getClientIp(req: Request) {
   const forwardedFor = sanitizeClientIdentifier(req.headers.get('x-forwarded-for')?.split(',')[0])
   const realIp = sanitizeClientIdentifier(req.headers.get('x-real-ip'))
   return forwardedFor || realIp || 'unknown'
@@ -46,7 +47,15 @@ function enforceBucketLimit() {
   }
 }
 
-export function rateLimit(req: NextRequest, options: RateLimitOptions) {
+function getRequestPathname(req: Request) {
+  try {
+    return new URL(req.url).pathname
+  } catch {
+    return '/unknown'
+  }
+}
+
+export function rateLimit(req: Request, options: RateLimitOptions) {
   const now = Date.now()
   pruneExpired(now)
 
@@ -54,26 +63,29 @@ export function rateLimit(req: NextRequest, options: RateLimitOptions) {
   const current = buckets.get(bucketKey)
 
   if (!current || current.resetAt <= now) {
-    buckets.set(bucketKey, { count: 1, resetAt: now + options.windowMs })
+    buckets.set(bucketKey, { count: 1, resetAt: now + options.windowMs, reported: false })
     enforceBucketLimit()
     return null
   }
 
   if (current.count >= options.limit) {
     const retryAfter = Math.ceil((current.resetAt - now) / 1000)
-    logSecurityEvent({
-      type: 'rate_limit_exceeded',
-      severity: 'warn',
-      route: req.nextUrl.pathname,
-      method: req.method,
-      statusCode: 429,
-      errorCode: 'rate_limit_exceeded',
-      metadata: {
-        key: options.key,
-        limit: options.limit,
-        windowMs: options.windowMs,
-      },
-    })
+    if (!current.reported) {
+      current.reported = true
+      logSecurityEvent({
+        type: 'rate_limit_exceeded',
+        severity: 'warn',
+        route: getRequestPathname(req),
+        method: req.method,
+        statusCode: 429,
+        errorCode: 'rate_limit_exceeded',
+        metadata: {
+          key: options.key,
+          limit: options.limit,
+          windowMs: options.windowMs,
+        },
+      })
+    }
 
     return NextResponse.json(
       { error: 'Too many requests. Please try again shortly.' },

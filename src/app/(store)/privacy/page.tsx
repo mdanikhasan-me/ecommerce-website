@@ -30,7 +30,6 @@ export default function PrivacyPage() {
         ]}
       />
       <ContentPageShell
-      eyebrow="Privacy policy"
       title="What we collect, and why."
       description="The information Boilabin collects when you shop, how we use it to get your order to you, and how we keep it safe."
       updatedAt="January 2025"

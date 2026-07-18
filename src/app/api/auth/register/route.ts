@@ -4,12 +4,13 @@ import { db } from '@/backend/database'
 import { z } from 'zod'
 import { rateLimit } from '@/backend/security/rate-limit'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 const registerSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().trim().min(2).max(120),
   email: z.string().trim().toLowerCase().email().max(254),
-  password: z.string().min(8),
-  phone: z.string().optional(),
+  password: z.string().min(8).max(72),
+  phone: z.string().trim().max(20).optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -20,8 +21,9 @@ export async function POST(req: NextRequest) {
     const limited = rateLimit(req, { key: 'auth:register', limit: 5, windowMs: 60_000 })
     if (limited) return limited
 
-    const body = await req.json()
-    const { name, email, password, phone } = registerSchema.parse(body)
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const { name, email, password, phone } = registerSchema.parse(body.data)
 
     const existing = await db.user.findUnique({ where: { email } })
     if (existing) return NextResponse.json({ error: 'Email already registered' }, { status: 400 })
@@ -29,14 +31,17 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 12)
 
     const user = await db.user.create({
-      data: { name, email, password: hashedPassword, phone, role: 'CUSTOMER' },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        role: 'CUSTOMER',
+        cart: { create: {} },
+        wishlist: { create: {} },
+      },
+      select: { id: true },
     })
-
-    // Create cart and wishlist
-    await Promise.all([
-      db.cart.create({ data: { userId: user.id } }),
-      db.wishlist.create({ data: { userId: user.id } }),
-    ])
 
     return NextResponse.json({ success: true, userId: user.id }, { status: 201 })
   } catch (error) {

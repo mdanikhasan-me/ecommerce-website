@@ -6,6 +6,7 @@ import { parseAdminReturnPayload, resolveReturnOrderStatus } from '@/backend/adm
 import { enqueueReturnStatusCustomerEmail } from '@/backend/email/outbox'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -57,7 +58,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const session = await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminReturnPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.standard)
+    if (!body.success) return body.response
+    const parsed = parseAdminReturnPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -147,12 +150,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       oldValues: {
         status: existingRequest.status,
         refundAmount: existingRequest.refundAmount,
-        notes: existingRequest.notes,
       },
       newValues: {
         status: requestRecord.status,
         refundAmount: requestRecord.refundAmount,
-        notes: requestRecord.notes,
+        notesChanged: existingRequest.notes !== requestRecord.notes,
       },
     })
 

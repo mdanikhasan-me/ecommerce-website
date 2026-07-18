@@ -5,25 +5,23 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCartStore } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { formatPrice, calculateShipping, applyCoupon } from '@/backend/utils'
+import { formatPrice, calculateShipping } from '@/backend/utils'
 import toast from '@/frontend/lib/toast'
 
 export default function CartPage() {
-  const {
-    items,
-    appliedCoupon,
-    removeItem,
-    updateQuantity,
-    getSubtotal,
-    setAppliedCoupon,
-    clearAppliedCoupon,
-  } = useCartStore()
+  const items = useCartStore((state) => state.items)
+  const appliedCoupon = useCartStore((state) => state.appliedCoupon)
+  const removeItem = useCartStore((state) => state.removeItem)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const getSubtotal = useCartStore((state) => state.getSubtotal)
+  const setAppliedCoupon = useCartStore((state) => state.setAppliedCoupon)
+  const clearAppliedCoupon = useCartStore((state) => state.clearAppliedCoupon)
   const [couponCode, setCouponCode] = useState(appliedCoupon?.code ?? '')
   const [applyingCoupon, setApplyingCoupon] = useState(false)
 
   const subtotal = getSubtotal()
   const shippingFee = calculateShipping(subtotal)
-  const discount = appliedCoupon ? applyCoupon(subtotal, appliedCoupon) : 0
+  const discount = Math.min(appliedCoupon?.discount ?? 0, subtotal)
   const total = subtotal + shippingFee - discount
 
   const handleApplyCoupon = async () => {
@@ -31,8 +29,18 @@ export default function CartPage() {
     if (!code) return
     setApplyingCoupon(true)
     try {
-      const productIds = items.map((item) => item.productId).join(',')
-      const res = await fetch(`/api/coupons/validate?code=${encodeURIComponent(code)}&amount=${subtotal}&productIds=${encodeURIComponent(productIds)}`)
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          items: items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId ?? null,
+            quantity: item.quantity,
+          })),
+        }),
+      })
       const data = await res.json()
       if (!res.ok || !data.success) {
         toast.error(data.error || 'Invalid coupon')
@@ -40,7 +48,7 @@ export default function CartPage() {
       }
       setAppliedCoupon(data.coupon)
       setCouponCode(data.coupon.code)
-      toast.success(`Coupon applied! You save ${formatPrice(applyCoupon(subtotal, data.coupon))}`)
+      toast.success(`Coupon applied. You save ${formatPrice(data.coupon.discount)}`)
     } catch {
       toast.error('Failed to validate coupon')
     } finally {

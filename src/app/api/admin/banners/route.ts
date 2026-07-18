@@ -9,6 +9,7 @@ import {
 import { parseAdminBannerPayload } from '@/backend/admin/banner-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +18,9 @@ export async function POST(req: NextRequest) {
 
     await requireAdminSession()
 
-    const parsed = parseAdminBannerPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.collection)
+    if (!body.success) return body.response
+    const parsed = parseAdminBannerPayload(body.data)
     if (!parsed.success) throw new Error(parsed.error)
     const payload = parsed.data
     const bannerOwner = payload.title || payload.position || 'banner'

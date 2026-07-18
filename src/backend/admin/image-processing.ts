@@ -152,6 +152,23 @@ function outputFormatForExtension(extension: string): 'jpeg' | 'png' | 'webp' | 
   return 'png'
 }
 
+function hasExpectedImageSignature(buffer: Buffer, format: string) {
+  if (format === 'jpeg') {
+    return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff
+  }
+  if (format === 'png') {
+    return buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+  }
+  if (format === 'webp') {
+    return buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP'
+  }
+  if (format === 'gif') {
+    const signature = buffer.toString('ascii', 0, 6)
+    return signature === 'GIF87a' || signature === 'GIF89a'
+  }
+  return false
+}
+
 export function getImageUploadProfile(kind: string): UploadProfile {
   return IMAGE_UPLOAD_PROFILES[kind as ImageUploadProfileName] ?? DEFAULT_PROFILE
 }
@@ -174,6 +191,9 @@ export async function validateImageUploadPayload(dataUrl: string) {
 
   const expectedFormat = ALLOWED_IMAGE_FORMATS_BY_MIME.get(parsed.mimeType)
   if (!expectedFormat) {
+    throw new Error(UNSUPPORTED_IMAGE_ERROR)
+  }
+  if (!hasExpectedImageSignature(parsed.buffer, expectedFormat)) {
     throw new Error(UNSUPPORTED_IMAGE_ERROR)
   }
 

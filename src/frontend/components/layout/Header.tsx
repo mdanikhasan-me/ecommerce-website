@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -21,37 +22,45 @@ const HeaderSearchPanel = dynamic(
   { loading: () => null, ssr: false }
 )
 
-const DesktopCategoriesMenu = dynamic(
-  () =>
-    import('@/frontend/components/layout/DesktopCategoriesMenu').then(
-      (mod) => mod.DesktopCategoriesMenu
-    ),
-  { loading: () => null, ssr: false }
-)
+const loadDesktopCategoriesMenu = () =>
+  import('@/frontend/components/layout/DesktopCategoriesMenu').then(
+    (mod) => mod.DesktopCategoriesMenu
+  )
 
-const DesktopAccountMenu = dynamic(
-  () =>
-    import('@/frontend/components/layout/DesktopAccountMenu').then(
-      (mod) => mod.DesktopAccountMenu
-    ),
-  { loading: () => null, ssr: false }
-)
+const DesktopCategoriesMenu = dynamic(loadDesktopCategoriesMenu, {
+  loading: () => null,
+  ssr: false,
+})
 
-const MobileNavigationDrawer = dynamic(
-  () =>
-    import('@/frontend/components/layout/MobileNavigationDrawer').then(
-      (mod) => mod.MobileNavigationDrawer
-    ),
-  { loading: () => null, ssr: false }
-)
+const loadDesktopAccountMenu = () =>
+  import('@/frontend/components/layout/DesktopAccountMenu').then(
+    (mod) => mod.DesktopAccountMenu
+  )
 
-const MobileAccountDrawer = dynamic(
-  () =>
-    import('@/frontend/components/layout/MobileAccountDrawer').then(
-      (mod) => mod.MobileAccountDrawer
-    ),
-  { loading: () => null, ssr: false }
-)
+const DesktopAccountMenu = dynamic(loadDesktopAccountMenu, {
+  loading: () => null,
+  ssr: false,
+})
+
+const loadMobileNavigationDrawer = () =>
+  import('@/frontend/components/layout/MobileNavigationDrawer').then(
+    (mod) => mod.MobileNavigationDrawer
+  )
+
+const MobileNavigationDrawer = dynamic(loadMobileNavigationDrawer, {
+  loading: () => null,
+  ssr: false,
+})
+
+const loadMobileAccountDrawer = () =>
+  import('@/frontend/components/layout/MobileAccountDrawer').then(
+    (mod) => mod.MobileAccountDrawer
+  )
+
+const MobileAccountDrawer = dynamic(loadMobileAccountDrawer, {
+  loading: () => null,
+  ssr: false,
+})
 
 const DESKTOP_NAV_LINKS = [
   { label: 'New Arrivals', href: '/new-arrivals' },
@@ -62,15 +71,11 @@ const DESKTOP_NAV_LINKS = [
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false)
-  const [isCategoriesPresent, setIsCategoriesPresent] = useState(false)
-  const [isCategoriesVisible, setIsCategoriesVisible] = useState(false)
   const [isAccountOpen, setIsAccountOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isMobileMenuPresent, setIsMobileMenuPresent] = useState(false)
-  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false)
   const [isMobileAccountOpen, setIsMobileAccountOpen] = useState(false)
-  const [isMobileAccountPresent, setIsMobileAccountPresent] = useState(false)
-  const [isMobileAccountVisible, setIsMobileAccountVisible] = useState(false)
+  const [shouldLoadMobileMenu, setShouldLoadMobileMenu] = useState(false)
+  const [shouldLoadMobileAccount, setShouldLoadMobileAccount] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { data: session, status: sessionStatus } = useClientSession()
@@ -83,17 +88,9 @@ export function Header() {
   const searchButtonRef = useRef<HTMLButtonElement>(null)
   const mobileSearchButtonRef = useRef<HTMLButtonElement>(null)
   const categoriesRootRef = useRef<HTMLDivElement>(null)
-  const categoriesFrameRef = useRef<number | null>(null)
-  const categoriesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const accountRootRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
-  const mobileMenuFrameRef = useRef<number | null>(null)
-  const mobileMenuTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mobileAccountButtonRef = useRef<HTMLButtonElement>(null)
-  const mobileAccountFrameRef = useRef<number | null>(null)
-  const mobileAccountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  )
   const cartCount = mounted ? storedCartCount : 0
   const activeSession =
     session ?? (sessionStatus === 'loading' ? lastAuthenticatedSession : null)
@@ -117,39 +114,6 @@ export function Header() {
   }, [session, sessionStatus])
 
   useEffect(() => {
-    if (categoriesTimerRef.current !== null) {
-      clearTimeout(categoriesTimerRef.current)
-      categoriesTimerRef.current = null
-    }
-
-    if (isCategoriesOpen) {
-      setIsCategoriesPresent(true)
-      setIsCategoriesVisible(false)
-
-      if (categoriesFrameRef.current !== null) {
-        window.cancelAnimationFrame(categoriesFrameRef.current)
-      }
-
-      categoriesFrameRef.current = window.requestAnimationFrame(() => {
-        setIsCategoriesVisible(true)
-        categoriesFrameRef.current = null
-      })
-      return
-    }
-
-    if (categoriesFrameRef.current !== null) {
-      window.cancelAnimationFrame(categoriesFrameRef.current)
-      categoriesFrameRef.current = null
-    }
-
-    setIsCategoriesVisible(false)
-    categoriesTimerRef.current = setTimeout(() => {
-      setIsCategoriesPresent(false)
-      categoriesTimerRef.current = null
-    }, 90)
-  }, [isCategoriesOpen])
-
-  useEffect(() => {
     if (!isCategoriesOpen) return
 
     const closeCategoriesOnScroll = () => {
@@ -161,136 +125,6 @@ export function Header() {
     })
     return () => window.removeEventListener('scroll', closeCategoriesOnScroll)
   }, [isCategoriesOpen])
-
-  useEffect(() => {
-    if (mobileMenuTimerRef.current !== null) {
-      clearTimeout(mobileMenuTimerRef.current)
-      mobileMenuTimerRef.current = null
-    }
-
-    if (isMobileMenuOpen) {
-      setIsMobileMenuPresent(true)
-      setIsMobileMenuVisible(false)
-      return
-    }
-
-    if (mobileMenuFrameRef.current !== null) {
-      window.cancelAnimationFrame(mobileMenuFrameRef.current)
-      mobileMenuFrameRef.current = null
-    }
-
-    setIsMobileMenuVisible(false)
-    mobileMenuTimerRef.current = setTimeout(() => {
-      setIsMobileMenuPresent(false)
-      mobileMenuTimerRef.current = null
-    }, 170)
-  }, [isMobileMenuOpen])
-
-  useEffect(() => {
-    if (!isMobileMenuPresent || !isMobileMenuOpen) return
-
-    mobileMenuFrameRef.current = window.requestAnimationFrame(() => {
-      mobileMenuFrameRef.current = window.requestAnimationFrame(() => {
-        setIsMobileMenuVisible(true)
-        mobileMenuFrameRef.current = null
-      })
-    })
-
-    return () => {
-      if (mobileMenuFrameRef.current !== null) {
-        window.cancelAnimationFrame(mobileMenuFrameRef.current)
-        mobileMenuFrameRef.current = null
-      }
-    }
-  }, [isMobileMenuOpen, isMobileMenuPresent])
-
-  useEffect(() => {
-    if (mobileAccountTimerRef.current !== null) {
-      clearTimeout(mobileAccountTimerRef.current)
-      mobileAccountTimerRef.current = null
-    }
-
-    if (isMobileAccountOpen) {
-      setIsMobileAccountPresent(true)
-      setIsMobileAccountVisible(false)
-      return
-    }
-
-    if (mobileAccountFrameRef.current !== null) {
-      window.cancelAnimationFrame(mobileAccountFrameRef.current)
-      mobileAccountFrameRef.current = null
-    }
-
-    setIsMobileAccountVisible(false)
-    mobileAccountTimerRef.current = setTimeout(() => {
-      setIsMobileAccountPresent(false)
-      mobileAccountTimerRef.current = null
-    }, 170)
-  }, [isMobileAccountOpen])
-
-  useEffect(() => {
-    if (!isMobileAccountPresent || !isMobileAccountOpen) return
-
-    mobileAccountFrameRef.current = window.requestAnimationFrame(() => {
-      mobileAccountFrameRef.current = window.requestAnimationFrame(() => {
-        setIsMobileAccountVisible(true)
-        mobileAccountFrameRef.current = null
-      })
-    })
-
-    return () => {
-      if (mobileAccountFrameRef.current !== null) {
-        window.cancelAnimationFrame(mobileAccountFrameRef.current)
-        mobileAccountFrameRef.current = null
-      }
-    }
-  }, [isMobileAccountOpen, isMobileAccountPresent])
-
-  useEffect(() => {
-    if (!isMobileMenuPresent && !isMobileAccountPresent) return
-
-    const root = document.documentElement
-    const { body } = document
-    const previousRootOverflow = root.style.overflow
-    const previousRootOverscrollBehavior = root.style.overscrollBehavior
-    const previousBodyOverflow = body.style.overflow
-    const previousBodyOverscrollBehavior = body.style.overscrollBehavior
-
-    root.style.overflow = 'hidden'
-    root.style.overscrollBehavior = 'none'
-    body.style.overflow = 'hidden'
-    body.style.overscrollBehavior = 'none'
-
-    return () => {
-      root.style.overflow = previousRootOverflow
-      root.style.overscrollBehavior = previousRootOverscrollBehavior
-      body.style.overflow = previousBodyOverflow
-      body.style.overscrollBehavior = previousBodyOverscrollBehavior
-    }
-  }, [isMobileMenuPresent, isMobileAccountPresent])
-
-  useEffect(() => {
-    return () => {
-      if (categoriesFrameRef.current !== null) {
-        window.cancelAnimationFrame(categoriesFrameRef.current)
-      }
-      if (categoriesTimerRef.current !== null) {
-        clearTimeout(categoriesTimerRef.current)
-      }
-      if (mobileMenuFrameRef.current !== null) {
-        window.cancelAnimationFrame(mobileMenuFrameRef.current)
-      }
-      if (mobileMenuTimerRef.current !== null) {
-        clearTimeout(mobileMenuTimerRef.current)
-      }
-      if (mobileAccountFrameRef.current !== null) {
-        window.cancelAnimationFrame(mobileAccountFrameRef.current)
-      }
-      if (mobileAccountTimerRef.current !== null) {
-        clearTimeout(mobileAccountTimerRef.current)
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -382,38 +216,29 @@ export function Header() {
     closeMobileAccount()
   }
 
-  const keepMobileHeaderVisible = isMobileMenuPresent || isMobileAccountPresent
-
   return (
     <header
-      className={cn(
-        'top-0 w-full bg-white',
-        keepMobileHeaderVisible
-          ? 'fixed inset-x-0 z-[60] lg:sticky lg:z-40'
-          : 'sticky z-40'
-      )}
+      className="sticky top-0 z-[60] w-full border-b border-[rgba(15,23,42,0.08)] bg-white text-[#111827] shadow-[0_1px_2px_rgba(15,23,42,0.04)] lg:z-40"
     >
-      <div className="container-site">
-        <div className="relative hidden min-h-[76px] items-center justify-between gap-8 lg:flex">
+      <div className="storefront-frame">
+        <div className="relative hidden h-[71px] grid-cols-[1fr_auto_1fr] items-center gap-8 lg:grid">
           <Link
             href="/"
-            className="flex shrink-0 items-center"
+            className="inline-flex shrink-0 items-center justify-self-start leading-none"
             aria-label="Boilabin home"
           >
-            <BrandWordmark variant="art" className="h-[2.15rem]" />
+            <BrandWordmark variant="art" className="h-[35px]" />
           </Link>
 
           <nav
             aria-label="Primary navigation"
-            className="flex items-center justify-center gap-8 text-sm font-medium"
+            className="flex items-center justify-center gap-8 text-sm font-medium tracking-[-0.01em]"
           >
             <Link
               href="/new-arrivals"
               className={cn(
-                'transition-colors min-[1025px]:hover:text-foreground',
-                isActive('/new-arrivals')
-                  ? 'text-foreground'
-                  : 'text-foreground/72'
+                'focus-visible:outline-none',
+                isActive('/new-arrivals') ? 'text-[#111827]' : 'text-[#111827]/70'
               )}
             >
               New Arrivals
@@ -427,25 +252,24 @@ export function Header() {
                 aria-controls="desktop-categories-menu"
                 onClick={toggleCategoriesDropdown}
                 className={cn(
-                  'flex h-[76px] items-center gap-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring',
+                  'flex h-[71px] items-center gap-1.5 focus-visible:outline-none',
                   isCategoriesOpen || pathname?.startsWith('/category')
-                    ? 'text-foreground'
-                    : 'text-foreground/72 min-[1025px]:hover:text-foreground'
+                    ? 'text-[#111827]'
+                    : 'text-[#111827]/70'
                 )}
               >
                 Categories
                 <LocalIcon
                   name="chevron-down"
                   className={cn(
-                    'h-3.5 w-3.5 transition-transform',
+                    'h-3.5 w-3.5',
                     isCategoriesOpen && 'rotate-180'
                   )}
                 />
               </AriaExpandedButton>
 
-              {isCategoriesPresent ? (
+              {isCategoriesOpen ? (
                 <DesktopCategoriesMenu
-                  isVisible={isCategoriesVisible}
                   onClose={() => setIsCategoriesOpen(false)}
                 />
               ) : null}
@@ -456,8 +280,8 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'transition-colors min-[1025px]:hover:text-foreground',
-                  isActive(item.href) ? 'text-foreground' : 'text-foreground/72'
+                  'focus-visible:outline-none',
+                  isActive(item.href) ? 'text-[#111827]' : 'text-[#111827]/70'
                 )}
               >
                 {item.label}
@@ -465,7 +289,7 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="relative flex shrink-0 items-center justify-end gap-4">
+          <div className="relative flex shrink-0 items-center justify-end gap-4 justify-self-end">
             <AriaExpandedButton
               ref={searchButtonRef}
               type="button"
@@ -545,7 +369,7 @@ export function Header() {
 
         <div
           data-testid="mobile-header"
-          className="grid h-16 grid-cols-[5.25rem_minmax(7.85rem,1fr)_5.25rem] items-center min-[390px]:grid-cols-[5.75rem_minmax(8.35rem,1fr)_5.75rem] lg:hidden"
+          className="grid h-16 grid-cols-[4.5rem_minmax(0,1fr)_4.5rem] items-center min-[390px]:grid-cols-[5.75rem_minmax(8.35rem,1fr)_5.75rem] lg:hidden"
         >
           <div className="flex items-center justify-self-start">
             <AriaExpandedButton
@@ -557,13 +381,18 @@ export function Header() {
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               title={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => {
+                setShouldLoadMobileMenu(true)
                 setIsMobileMenuOpen((open) => !open)
                 setIsMobileAccountOpen(false)
                 setIsSearchOpen(false)
               }}
+              onPointerDown={() => {
+                setShouldLoadMobileMenu(true)
+                void loadMobileNavigationDrawer()
+              }}
               className={cn(
-                'flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary',
-                isMobileMenuOpen && 'border border-black/10 bg-card'
+                'flex h-9 w-9 items-center justify-center rounded-full min-[390px]:h-10 min-[390px]:w-10',
+                isMobileMenuOpen && 'bg-card'
               )}
             >
               {isMobileMenuOpen ? (
@@ -586,7 +415,7 @@ export function Header() {
                 setIsMobileAccountOpen(false)
                 setIsSearchOpen((open) => !open)
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
+              className="flex h-9 w-9 items-center justify-center rounded-full min-[390px]:h-10 min-[390px]:w-10"
             >
               <LocalIcon name="search" className="h-5 w-5" />
             </AriaExpandedButton>
@@ -596,11 +425,11 @@ export function Header() {
             href="/"
             data-testid="mobile-brand-link"
             aria-label="Boilabin home"
-            className="flex min-w-0 justify-self-center"
+            className="inline-flex min-w-0 justify-self-center leading-none"
           >
             <BrandWordmark
               variant="art"
-              className="h-[1.95rem] min-[390px]:h-[2.05rem]"
+              className="h-[25px] min-[340px]:h-[30px] min-[390px]:h-[32px]"
             />
           </Link>
 
@@ -615,7 +444,7 @@ export function Header() {
                 setIsMobileAccountOpen(false)
                 openCart()
               }}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full transition-colors min-[1025px]:hover:bg-secondary"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full min-[390px]:h-10 min-[390px]:w-10"
             >
               <LocalIcon name="cart" className="h-5 w-5" />
               {cartCount > 0 ? (
@@ -643,15 +472,20 @@ export function Header() {
                     : 'Open account menu'
                 }
                 onClick={() => {
+                  setShouldLoadMobileAccount(true)
                   setIsMobileAccountOpen((open) => !open)
                   setIsMobileMenuOpen(false)
                   setIsSearchOpen(false)
                 }}
+                onPointerDown={() => {
+                  setShouldLoadMobileAccount(true)
+                  void loadMobileAccountDrawer()
+                }}
                 className={cn(
-                  'flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border transition-colors',
+                  'flex h-9 w-9 items-center justify-center overflow-hidden rounded-full min-[390px]:h-10 min-[390px]:w-10',
                   isMobileAccountOpen
-                    ? 'border-foreground bg-secondary text-foreground'
-                    : 'border-transparent min-[1025px]:hover:bg-secondary'
+                    ? 'bg-secondary text-foreground'
+                    : ''
                 )}
               >
                 {isMobileAccountOpen ? (
@@ -667,7 +501,7 @@ export function Header() {
                 aria-label="Loading account"
                 title="Loading account"
                 disabled
-                className="flex h-10 w-10 cursor-default items-center justify-center overflow-hidden rounded-full text-muted-foreground"
+                className="flex h-9 w-9 cursor-default items-center justify-center overflow-hidden rounded-full text-muted-foreground min-[390px]:h-10 min-[390px]:w-10"
               >
                 <HeaderAvatar />
               </button>
@@ -677,7 +511,7 @@ export function Header() {
                 data-testid="mobile-profile-link"
                 aria-label="Sign in"
                 title="Sign in"
-                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors min-[1025px]:hover:bg-secondary"
+                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full min-[390px]:h-10 min-[390px]:w-10"
               >
                 <HeaderAvatar />
               </Link>
@@ -695,21 +529,26 @@ export function Header() {
         ) : null}
       </div>
 
-      {isMobileMenuPresent ? (
-        <MobileNavigationDrawer
-          isOpen={isMobileMenuOpen}
-          isVisible={isMobileMenuVisible}
-          onClose={closeMobileMenu}
-        />
-      ) : null}
-
-      {isMobileAccountPresent && activeSession ? (
-        <MobileAccountDrawer
-          isVisible={isMobileAccountVisible}
-          session={activeSession}
-          onClose={closeMobileAccount}
-        />
-      ) : null}
+      {mounted
+        ? createPortal(
+            <>
+              {shouldLoadMobileMenu ? (
+                <MobileNavigationDrawer
+                  isOpen={isMobileMenuOpen}
+                  onClose={closeMobileMenu}
+                />
+              ) : null}
+              {activeSession && shouldLoadMobileAccount ? (
+                <MobileAccountDrawer
+                  isOpen={isMobileAccountOpen}
+                  session={activeSession}
+                  onClose={closeMobileAccount}
+                />
+              ) : null}
+            </>,
+            document.body
+          )
+        : null}
     </header>
   )
 }

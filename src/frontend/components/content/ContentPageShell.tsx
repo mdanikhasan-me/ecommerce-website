@@ -14,7 +14,6 @@ type PageSection = {
 }
 
 type ContentPageShellProps = {
-  eyebrow: string
   title: string
   description: string
   updatedAt?: string
@@ -29,7 +28,6 @@ const proseClass =
   'space-y-4 text-[15px] leading-7 text-muted-foreground [&_a]:font-medium [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-2 min-[1025px]:[&_a:hover]:text-accent [&_li]:pl-1.5 [&_ol>li]:marker:font-semibold [&_ol>li]:marker:text-foreground/70 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-foreground [&_ul>li]:marker:text-accent [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5'
 
 export function ContentPageShell({
-  eyebrow,
   title,
   description,
   updatedAt,
@@ -43,8 +41,7 @@ export function ContentPageShell({
     <div className="container-site py-10 lg:py-16">
       {/* Header */}
       <header className="max-w-2xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>
-        <h1 className="mt-3 font-display text-[2rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-[2.5rem]">
+        <h1 className="font-display text-[2rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-[2.5rem]">
           {title}
         </h1>
         <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-[17px] sm:leading-8">{description}</p>

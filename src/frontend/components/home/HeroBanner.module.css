@@ -1,0 +1,27 @@
+.root {
+  --hero-arrow-fade-duration: 180ms;
+}
+
+.arrowControl {
+  transition: opacity var(--hero-arrow-fade-duration) ease-out;
+}
+
+@media (min-width: 640px) and (hover: hover) and (pointer: fine) {
+  .root[data-arrow-controls-visible='false'] .arrowControl {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .root[data-arrow-controls-visible='true'] .arrowControl,
+  .root:has(.arrowControl:focus-visible) .arrowControl,
+  .arrowControl:focus-visible {
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    --hero-arrow-fade-duration: 0ms;
+  }
+}

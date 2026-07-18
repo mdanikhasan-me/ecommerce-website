@@ -58,7 +58,16 @@ export default async function AdminNotificationsPage({
       where,
       take: 50,
       orderBy: { createdAt: 'desc' },
-      include: { user: { select: { name: true, email: true } } },
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        message: true,
+        link: true,
+        isRead: true,
+        createdAt: true,
+        user: { select: { name: true, email: true } },
+      },
     }),
     db.user.findMany({
       where: { isActive: true },

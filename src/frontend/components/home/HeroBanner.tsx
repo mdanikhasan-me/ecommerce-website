@@ -1,11 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type TouchEvent } from 'react'
 import { cn } from '@/backend/utils'
 import { BannerCreative } from '@/frontend/components/banner/BannerCreative'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import styles from './HeroBanner.module.css'
 
-const HERO_ROTATION_INTERVAL_MS = 7_000
+const HERO_AUTOMATIC_ROTATION_INTERVAL_MS = 9_000
+const HERO_AUTOMATIC_ROTATION_AFTER_MANUAL_MS = 8_000
+const HERO_ARROW_CONTROLS_IDLE_MS = 2_000
+const HERO_MANUAL_NAVIGATION_COOLDOWN_MS = 900
 
 interface Banner {
   id: string
@@ -30,31 +34,142 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   const [isInView, setIsInView] = useState(false)
   const [isPageVisible, setIsPageVisible] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [areArrowControlsVisible, setAreArrowControlsVisible] = useState(false)
+  const [automaticRotationScheduleVersion, setAutomaticRotationScheduleVersion] = useState(0)
   const bannerRootRef = useRef<HTMLDivElement | null>(null)
+  const automaticRotationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nextAutomaticRotationDelayMsRef = useRef(HERO_AUTOMATIC_ROTATION_INTERVAL_MS)
   const transitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const arrowControlsIdleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const arrowControlsVisibleRef = useRef(false)
+  const isArrowControlHoveredRef = useRef(false)
+  const lastPointerActivityRef = useRef(0)
+  const lastManualNavigationAtRef = useRef<number | null>(null)
   const touchStartX = useRef<number | null>(null)
   const touchStartY = useRef<number | null>(null)
 
-  const goTo = useCallback((index: number) => {
-    if (banners.length <= 1 || isTransitioning) return
-    const nextIndex = (index + banners.length) % banners.length
-
+  const startTransition = useCallback(() => {
     if (prefersReducedMotion) {
-      setCurrent(nextIndex)
+      if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
+      transitionTimerRef.current = null
+      setIsTransitioning(false)
       return
     }
 
     setIsTransitioning(true)
-    setCurrent(nextIndex)
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
     transitionTimerRef.current = setTimeout(() => {
       setIsTransitioning(false)
       transitionTimerRef.current = null
     }, 180)
-  }, [banners.length, isTransitioning, prefersReducedMotion])
+  }, [prefersReducedMotion])
 
-  const previous = useCallback(() => goTo(current - 1), [current, goTo])
-  const next = useCallback(() => goTo(current + 1), [current, goTo])
+  const goTo = useCallback((index: number) => {
+    if (banners.length <= 1) return
+    setCurrent((index + banners.length) % banners.length)
+    startTransition()
+  }, [banners.length, startTransition])
+
+  const moveBy = useCallback((offset: number) => {
+    if (banners.length <= 1) return
+    setCurrent((index) => (index + offset + banners.length) % banners.length)
+    startTransition()
+  }, [banners.length, startTransition])
+
+  const clearAutomaticRotationTimer = useCallback(() => {
+    if (automaticRotationTimerRef.current === null) return
+    clearTimeout(automaticRotationTimerRef.current)
+    automaticRotationTimerRef.current = null
+  }, [])
+
+  const claimManualNavigation = useCallback(() => {
+    const now = performance.now()
+    const lastNavigationAt = lastManualNavigationAtRef.current
+    if (lastNavigationAt !== null && now - lastNavigationAt < HERO_MANUAL_NAVIGATION_COOLDOWN_MS) return false
+    lastManualNavigationAtRef.current = now
+    clearAutomaticRotationTimer()
+    nextAutomaticRotationDelayMsRef.current = HERO_AUTOMATIC_ROTATION_AFTER_MANUAL_MS
+    setAutomaticRotationScheduleVersion((version) => version + 1)
+    return true
+  }, [clearAutomaticRotationTimer])
+
+  const previous = useCallback(() => {
+    if (!claimManualNavigation()) return
+    moveBy(-1)
+  }, [claimManualNavigation, moveBy])
+
+  const next = useCallback(() => {
+    if (!claimManualNavigation()) return
+    moveBy(1)
+  }, [claimManualNavigation, moveBy])
+
+  const rotateNext = useCallback(() => {
+    nextAutomaticRotationDelayMsRef.current = HERO_AUTOMATIC_ROTATION_INTERVAL_MS
+    moveBy(1)
+  }, [moveBy])
+
+  const selectBanner = useCallback((index: number) => {
+    if (!claimManualNavigation()) return
+    goTo(index)
+  }, [claimManualNavigation, goTo])
+
+  const updateArrowControlsVisibility = useCallback((visible: boolean) => {
+    if (arrowControlsVisibleRef.current === visible) return
+    arrowControlsVisibleRef.current = visible
+    setAreArrowControlsVisible(visible)
+  }, [])
+
+  const clearArrowControlsIdleTimer = useCallback(() => {
+    if (!arrowControlsIdleTimerRef.current) return
+    clearTimeout(arrowControlsIdleTimerRef.current)
+    arrowControlsIdleTimerRef.current = null
+  }, [])
+
+  const scheduleArrowControlsHide = useCallback(() => {
+    if (arrowControlsIdleTimerRef.current) return
+
+    const hideAfterIdle = () => {
+      const remaining = HERO_ARROW_CONTROLS_IDLE_MS - (performance.now() - lastPointerActivityRef.current)
+      if (remaining > 0) {
+        arrowControlsIdleTimerRef.current = setTimeout(hideAfterIdle, remaining)
+        return
+      }
+
+      arrowControlsIdleTimerRef.current = null
+      if (isArrowControlHoveredRef.current) return
+      updateArrowControlsVisibility(false)
+    }
+
+    arrowControlsIdleTimerRef.current = setTimeout(hideAfterIdle, HERO_ARROW_CONTROLS_IDLE_MS)
+  }, [updateArrowControlsVisibility])
+
+  const handlePointerActivity = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch' || banners.length <= 1) return
+    lastPointerActivityRef.current = performance.now()
+    updateArrowControlsVisibility(true)
+    scheduleArrowControlsHide()
+  }, [banners.length, scheduleArrowControlsHide, updateArrowControlsVisibility])
+
+  const handlePointerLeave = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') return
+    isArrowControlHoveredRef.current = false
+    clearArrowControlsIdleTimer()
+    updateArrowControlsVisibility(false)
+  }, [clearArrowControlsIdleTimer, updateArrowControlsVisibility])
+
+  const handleArrowControlPointerEnter = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === 'touch') return
+    isArrowControlHoveredRef.current = true
+    clearArrowControlsIdleTimer()
+    updateArrowControlsVisibility(true)
+  }, [clearArrowControlsIdleTimer, updateArrowControlsVisibility])
+
+  const handleArrowControlPointerLeave = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === 'touch') return
+    isArrowControlHoveredRef.current = false
+    lastPointerActivityRef.current = performance.now()
+    scheduleArrowControlsHide()
+  }, [scheduleArrowControlsHide])
 
   const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
     if (banners.length <= 1) return
@@ -98,7 +213,11 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
   }, [banners.length])
 
   useEffect(() => {
-    if (banners.length <= 1 || !bannerRootRef.current || !('IntersectionObserver' in window)) return
+    if (banners.length <= 1 || !bannerRootRef.current) return
+    if (!('IntersectionObserver' in window)) {
+      setIsInView(true)
+      return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry.isIntersecting),
@@ -111,13 +230,24 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
   useEffect(() => {
     if (banners.length <= 1 || !isPageVisible || !isInView || prefersReducedMotion) return
-    const timer = setInterval(next, HERO_ROTATION_INTERVAL_MS)
-    return () => clearInterval(timer)
-  }, [banners.length, isInView, isPageVisible, next, prefersReducedMotion])
+    clearAutomaticRotationTimer()
+    const timer = setTimeout(() => {
+      if (automaticRotationTimerRef.current !== timer) return
+      automaticRotationTimerRef.current = null
+      rotateNext()
+    }, nextAutomaticRotationDelayMsRef.current)
+    automaticRotationTimerRef.current = timer
+
+    return () => {
+      clearTimeout(timer)
+      if (automaticRotationTimerRef.current === timer) automaticRotationTimerRef.current = null
+    }
+  }, [automaticRotationScheduleVersion, banners.length, clearAutomaticRotationTimer, current, isInView, isPageVisible, prefersReducedMotion, rotateNext])
 
   useEffect(() => () => {
     if (transitionTimerRef.current) clearTimeout(transitionTimerRef.current)
-  }, [])
+    clearArrowControlsIdleTimer()
+  }, [clearArrowControlsIdleTimer])
 
   if (!banners.length) return null
 
@@ -126,9 +256,15 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
 
   return (
     <section className="w-full">
-      <div className="relative overflow-hidden bg-foreground">
+      <div
+        ref={bannerRootRef}
+        data-arrow-controls-visible={areArrowControlsVisible ? 'true' : 'false'}
+        className={cn(styles.root, 'relative overflow-hidden bg-foreground')}
+        onPointerEnter={handlePointerActivity}
+        onPointerMove={handlePointerActivity}
+        onPointerLeave={handlePointerLeave}
+      >
         <BannerCreative
-          ref={bannerRootRef}
           key={banner.id}
           title={banner.title}
           subtitle={banner.subtitle}
@@ -164,17 +300,23 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
             <>
               <button
                 type="button"
+                data-hero-arrow-control
                 aria-label="Previous banner"
                 onClick={previous}
-                className="absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white sm:flex"
+                onPointerEnter={handleArrowControlPointerEnter}
+                onPointerLeave={handleArrowControlPointerLeave}
+                className={cn(styles.arrowControl, 'absolute left-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white sm:flex')}
               >
                 <LocalIcon name="arrow-left" className="h-5 w-5" />
               </button>
               <button
                 type="button"
+                data-hero-arrow-control
                 aria-label="Next banner"
                 onClick={next}
-                className="absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white sm:flex"
+                onPointerEnter={handleArrowControlPointerEnter}
+                onPointerLeave={handleArrowControlPointerLeave}
+                className={cn(styles.arrowControl, 'absolute right-5 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white sm:flex')}
               >
                 <LocalIcon name="arrow-right" className="h-5 w-5" />
               </button>
@@ -185,7 +327,7 @@ export function HeroBanner({ banners }: { banners: Banner[] }) {
                     type="button"
                     aria-label={`Show banner ${index + 1}`}
                     aria-current={index === current ? 'true' : undefined}
-                    onClick={() => goTo(index)}
+                    onClick={() => selectBanner(index)}
                     className={cn(
                       'rounded-full bg-white/45',
                       index === current ? 'h-1.5 w-6 bg-[hsl(var(--buttermilk))] sm:h-2 sm:w-7' : 'h-1.5 w-1.5 sm:h-2 sm:w-2',

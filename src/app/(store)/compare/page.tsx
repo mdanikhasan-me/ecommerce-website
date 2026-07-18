@@ -117,8 +117,10 @@ const ATTRIBUTES: Attribute[] = [
 export default function ComparePage() {
   const router = useRouter()
   const { status: sessionStatus } = useClientSession()
-  const { items, remove, clear } = useCompareStore()
-  const { addItem } = useCartStore()
+  const items = useCompareStore((state) => state.items)
+  const remove = useCompareStore((state) => state.remove)
+  const clear = useCompareStore((state) => state.clear)
+  const addItem = useCartStore((state) => state.addItem)
   const [isHydrated, setIsHydrated] = useState(false)
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState<CompareProduct[]>([])

@@ -33,6 +33,7 @@ const PRISMA_DELEGATE_BY_MODEL = {
   Brand: 'brand',
   ProductImage: 'productImage',
   ProductVariant: 'productVariant',
+  ProductSpec: 'productSpec',
   OrderItem: 'orderItem',
   ReturnRequest: 'returnRequest',
   Review: 'review',

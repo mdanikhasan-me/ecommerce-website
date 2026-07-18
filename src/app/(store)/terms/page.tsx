@@ -30,7 +30,6 @@ export default function TermsPage() {
         ]}
       />
       <ContentPageShell
-      eyebrow="Terms of service"
       title="The rules for shopping on Boilabin."
       description="What you agree to when you use Boilabin: your account, placing orders, cash-on-delivery payment, returns, and the legal basics."
       updatedAt="January 2025"

@@ -47,17 +47,17 @@ const FRAME_CLASSES: Record<BannerCreativeMode, string> = {
 }
 
 const TITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
-  responsive: 'text-[clamp(1.35rem,5.8cqw,1.7rem)] sm:text-[clamp(2rem,4.25cqw,3.25rem)] xl:text-[clamp(3.2rem,3.8cqw,4.75rem)]',
-  desktop: 'text-[clamp(3.2rem,3.8cqw,4.75rem)]',
-  tablet: 'text-[clamp(2rem,4.25cqw,3.25rem)]',
-  mobile: 'text-[clamp(1.35rem,5.8cqw,1.7rem)]',
+  responsive: 'text-[clamp(1.3rem,5.2cqw,1.75rem)] sm:text-[clamp(1.85rem,3.8cqw,3rem)] xl:text-[clamp(2.55rem,3.2cqw,4.1rem)]',
+  desktop: 'text-[clamp(2.55rem,3.2cqw,4.1rem)]',
+  tablet: 'text-[clamp(1.85rem,3.8cqw,3rem)]',
+  mobile: 'text-[clamp(1.3rem,5.2cqw,1.75rem)]',
 }
 
 const PREVIEW_TITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
   responsive: '',
-  desktop: 'text-[3.8cqw]',
-  tablet: 'text-[4.25cqw]',
-  mobile: 'text-[5.8cqw]',
+  desktop: 'text-[3.2cqw]',
+  tablet: 'text-[3.8cqw]',
+  mobile: 'text-[5.2cqw]',
 }
 
 const SUBTITLE_SIZE_CLASSES: Record<BannerCreativeMode, string> = {
@@ -232,15 +232,23 @@ export const BannerCreative = forwardRef<HTMLDivElement, BannerCreativeProps>(fu
       <div className={cn('absolute inset-0 flex items-center', contentPaddingClass, contentClassName)}>
         <div
           data-banner-content
-          className={cn('flex min-w-0 flex-col', contentWidthClass, contentPositionClass, BANNER_TEXT_CLASSES[tone], edgeClass)}
+          className={cn('flex min-w-0 flex-col', contentWidthClass, contentPositionClass, BANNER_TEXT_CLASSES[tone])}
         >
           {cleanTitle ? (
-            <h2 data-banner-title className={cn('w-full min-w-0 break-words [overflow-wrap:anywhere] leading-[0.98]', titleSizeClass, titleLineLimitClass, typography.title)}>
+            <h2
+              data-banner-title
+              className={cn('w-full min-w-0 break-words [overflow-wrap:anywhere]', titleSizeClass, titleLineLimitClass, typography.title, edgeClass)}
+              style={{ lineHeight: 1.02 }}
+            >
               {cleanTitle}
             </h2>
           ) : null}
           {cleanSubtitle ? (
-            <p data-banner-subtitle className={cn(cleanTitle ? (scaledPreview ? 'mt-[0.8cqw]' : 'mt-[clamp(0.45rem,0.8cqw,0.875rem)]') : 'mt-0', 'w-full min-w-0 break-words [overflow-wrap:anywhere] leading-[1.45]', subtitleSizeClass, subtitleLineLimitClass, typography.subtitle)}>
+            <p
+              data-banner-subtitle
+              className={cn(cleanTitle ? (scaledPreview ? 'mt-[0.8cqw]' : 'mt-[clamp(0.45rem,0.8cqw,0.875rem)]') : 'mt-0', 'w-full min-w-0 break-words [overflow-wrap:anywhere]', subtitleSizeClass, subtitleLineLimitClass, typography.subtitle, edgeClass)}
+              style={{ lineHeight: 1.42 }}
+            >
               {cleanSubtitle}
             </p>
           ) : null}

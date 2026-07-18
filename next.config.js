@@ -20,8 +20,12 @@ function buildSecurityHeaders() {
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'X-Frame-Options', value: 'DENY' },
     { key: 'X-DNS-Prefetch-Control', value: 'on' },
+    { key: 'X-XSS-Protection', value: '0' },
     { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+    { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+    { key: 'Origin-Agent-Cluster', value: '?1' },
     {
       key: 'Permissions-Policy',
       value: 'camera=(), microphone=(), geolocation=(), payment=()',
@@ -40,11 +44,23 @@ function buildSecurityHeaders() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: process.env.NEXT_DIST_DIR?.trim() || '.next',
   allowedDevOrigins: getAllowedDevOrigins(),
   htmlLimitedBots: /.*/,
   poweredByHeader: false,
   async headers() {
+    const privateNoStoreHeaders = [
+      { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
+    ]
+
     return [
+      { source: '/admin/:path*', headers: privateNoStoreHeaders },
+      { source: '/account/:path*', headers: privateNoStoreHeaders },
+      { source: '/order/:path*', headers: privateNoStoreHeaders },
+      { source: '/checkout', headers: privateNoStoreHeaders },
+      { source: '/api/admin/:path*', headers: privateNoStoreHeaders },
+      { source: '/api/account/:path*', headers: privateNoStoreHeaders },
+      { source: '/api/auth/:path*', headers: privateNoStoreHeaders },
       {
         source: '/uploads/:path*',
         headers: [
@@ -69,9 +85,6 @@ const nextConfig = {
       { pathname: '/uploads/**' },
     ],
     remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'uploadthing.com' },
-      { protocol: 'https', hostname: 'utfs.io' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
     // Keep image optimizer variants tight to avoid repeated paid transforms.
@@ -82,13 +95,11 @@ const nextConfig = {
     // Optimize caching
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for static images
     // Faster image optimization in dev
-    dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
-    serverActions: { bodySizeLimit: '10mb' },
   },
 }
 

@@ -5,6 +5,7 @@ import { requireAdminSession } from '@/backend/admin/admin-utils'
 import { parseAdminNotificationReadPayload } from '@/backend/admin/notification-editor'
 import { toSafeClientError } from '@/backend/security/client-error'
 import { protectMutationRequest } from '@/backend/security/request-guard'
+import { JSON_BODY_LIMITS, readBoundedJsonBody } from '@/backend/security/request-body'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -13,7 +14,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     await requireAdminSession()
     const { id } = await params
-    const parsed = parseAdminNotificationReadPayload(await req.json())
+    const body = await readBoundedJsonBody(req, JSON_BODY_LIMITS.tiny)
+    if (!body.success) return body.response
+    const parsed = parseAdminNotificationReadPayload(body.data)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }

@@ -15,9 +15,11 @@ import { sortByProductSearchRelevance } from '@/backend/catalog/search-relevance
 import { getBuyerVisibleProductWhere } from '@/backend/catalog/product-visibility'
 import { parseSearchParams, type RawSearchParams } from '@/backend/catalog/search-params'
 import { STOREFRONT_CACHE_TAGS } from '@/backend/catalog/storefront-revalidation'
+import { getProductSearchAliases } from '@/backend/catalog/product-search-tags'
 import { generateSearchMetadata } from '@/backend/seo'
 import type { Metadata } from 'next'
 import { Prisma } from '@prisma/client'
+import { getPublicSearchWords } from '@/backend/api/public-input'
 
 interface Props {
   searchParams: Promise<RawSearchParams>
@@ -55,14 +57,15 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
   if (!normalized) return {}
 
   // All unique words >= 2 chars that we want to match
-  const words = Array.from(
-    new Set(normalized.toLowerCase().split(/\s+/).filter((w) => w.length >= 2))
-  )
+  const words = getPublicSearchWords(normalized)
+  const aliases = getProductSearchAliases(normalized)
+  const searchWords = [...new Set([...words, ...aliases.flatMap(getPublicSearchWords)])]
+  const searchPhrases = [...new Set([normalized, ...aliases])]
 
   // Build OR for category names: same approach
   const catNameOR = [
-    { name: { contains: normalized, mode: 'insensitive' as const } },
-    ...words.map((w) => ({ name: { contains: w, mode: 'insensitive' as const } })),
+    ...searchPhrases.map((phrase) => ({ name: { contains: phrase, mode: 'insensitive' as const } })),
+    ...searchWords.map((word) => ({ name: { contains: word, mode: 'insensitive' as const } })),
   ]
 
   const matchedCategories = await db.category.findMany({
@@ -85,13 +88,15 @@ async function resolveTextWhere(q: string): Promise<Prisma.ProductWhereInput> {
   if (categoryIds.length > 0) productOR.push({ categoryId: { in: categoryIds } })
 
   // Name; full phrase first, then each word
-  productOR.push({ name: { contains: normalized, mode: 'insensitive' } })
-  for (const w of words) {
-    productOR.push({ name: { contains: w, mode: 'insensitive' } } satisfies Prisma.ProductWhereInput)
+  for (const phrase of searchPhrases) {
+    productOR.push({ name: { contains: phrase, mode: 'insensitive' } } satisfies Prisma.ProductWhereInput)
+  }
+  for (const word of searchWords) {
+    productOR.push({ name: { contains: word, mode: 'insensitive' } } satisfies Prisma.ProductWhereInput)
   }
 
   // Tags; exact word set match
-  if (words.length > 0) productOR.push({ tags: { hasSome: words } })
+  if (searchWords.length > 0) productOR.push({ tags: { hasSome: searchWords } })
 
   // Description fields; full phrase only, never individual words
   productOR.push({ shortDescription: { contains: normalized, mode: 'insensitive' } })
@@ -166,7 +171,7 @@ async function getUncachedSearchResults(rawParams: RawSearchParams) {
         select: productCardSelect,
       })
 
-  return { products, total, categories, page, totalPages: Math.ceil(total / limit), params }
+  return { products, categories, page, totalPages: Math.ceil(total / limit), params }
 }
 
 const getCachedSearchResults = unstable_cache(
@@ -183,7 +188,7 @@ const getCachedSearchResults = unstable_cache(
 
 export default async function SearchPage({ searchParams }: Props) {
   const rawParams = await searchParams
-  const { products, total, categories, page, totalPages, params } = await getCachedSearchResults(getSearchCacheKey(rawParams))
+  const { products, categories, page, totalPages, params } = await getCachedSearchResults(getSearchCacheKey(rawParams))
   const listingTitle = params.bestSeller ? 'Best Sellers' : params.featured ? 'Featured Products' : 'All Products'
 
   const SORT_OPTIONS = [
@@ -230,8 +235,7 @@ export default async function SearchPage({ searchParams }: Props) {
 
           {products.length === 0 ? (
             <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center shadow-[0_16px_36px_rgba(23,18,15,0.05)] sm:px-8 sm:py-16">
-              <p className="section-kicker">No results</p>
-              <h2 className="mt-3 font-display text-xl font-semibold">No products found</h2>
+              <h2 className="font-display text-xl font-semibold">No products found</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try a different search term or remove some filters.</p>
             </div>
           ) : (

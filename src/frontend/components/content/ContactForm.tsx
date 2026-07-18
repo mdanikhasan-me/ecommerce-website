@@ -1,38 +1,34 @@
-'use client'
-
-import { useState } from 'react'
-import toast from '@/frontend/lib/toast'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 import { CONTACT_ADDRESS, CONTACT_EMAIL, CONTACT_PHONE, WHATSAPP_URL } from '@/shared/contact'
 
-const INITIAL_FORM = { name: '', email: '', subject: '', message: '' }
 const CONTACT_PHONE_HREF = `tel:${CONTACT_PHONE.replace(/[^\d+]/g, '')}`
+const CONTACT_PHONE_DISPLAY = '+880 1570 208 986'
 
 const CONTACT_ACTIONS = [
   {
     icon: 'whatsapp',
-    title: 'Message us',
-    value: 'WhatsApp support',
+    title: 'WhatsApp Support',
+    value: '',
     detail: 'Fast help for orders, products, and returns.',
     href: WHATSAPP_URL,
-    actionLabel: 'Message now',
+    actionLabel: 'Chat on WhatsApp',
   },
   {
     icon: 'phone',
-    title: CONTACT_PHONE,
-    value: 'Call support',
-    detail: 'Saturday to Thursday, 9am to 9pm.',
+    title: 'Call Support',
+    value: CONTACT_PHONE_DISPLAY,
+    detail: 'Saturday to Thursday\n9:00 AM \u2013 9:00 PM',
     href: CONTACT_PHONE_HREF,
-    actionLabel: 'Call now',
+    actionLabel: 'Call Now',
   },
   {
     icon: 'mail',
-    title: CONTACT_EMAIL,
-    value: 'Email support',
+    title: 'Email Support',
+    value: CONTACT_EMAIL,
     detail: 'Send your order details or question.',
     href: `mailto:${CONTACT_EMAIL}`,
-    actionLabel: 'Email us',
+    actionLabel: 'Send Email',
   },
 ] as const satisfies ReadonlyArray<{
   icon: StorefrontIconName
@@ -43,138 +39,48 @@ const CONTACT_ACTIONS = [
   actionLabel: string
 }>
 
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : 'Could not send message'
-}
+const SUPPORT_DETAILS = [
+  {
+    icon: 'clock',
+    title: 'Support Hours',
+    primary: 'Saturday to Thursday',
+    secondary: '9:00 AM \u2013 9:00 PM',
+  },
+  {
+    icon: 'map-pin',
+    title: 'Our Location',
+    primary: CONTACT_ADDRESS,
+    secondary: 'Dhaka, Bangladesh',
+  },
+  {
+    icon: 'shield',
+    title: 'Quick Response',
+    primary: 'We typically respond',
+    secondary: 'within 24 hours',
+  },
+] as const satisfies ReadonlyArray<{
+  icon: StorefrontIconName
+  title: string
+  primary: string
+  secondary: string
+}>
 
 export function ContactForm() {
-  const [form, setForm] = useState(INITIAL_FORM)
-  const [sending, setSending] = useState(false)
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    setSending(true)
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      const data = await response.json().catch(() => ({}))
-
-      if (!response.ok) throw new Error(data.error || 'Could not send message')
-
-      toast.success("Message sent! We'll review it and follow up.")
-      setForm(INITIAL_FORM)
-    } catch (error) {
-      toast.error(getErrorMessage(error))
-    } finally {
-      setSending(false)
-    }
-  }
-
   return (
-    <div className="mt-10 space-y-12 sm:mt-12 lg:mt-14 lg:space-y-16">
-      <section aria-label="Contact options" className="grid gap-6 sm:grid-cols-3">
+    <div className="mt-10 space-y-5 sm:mt-12 sm:space-y-6 lg:mt-14">
+      <section aria-label="Contact options" className="grid gap-3 md:grid-cols-3 lg:gap-4">
         {CONTACT_ACTIONS.map((item) => (
           <ContactActionCard key={item.actionLabel} {...item} />
         ))}
       </section>
 
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-[0.45rem] border border-[#e5e7eb] bg-white px-6 py-12 sm:px-10 lg:px-16 lg:py-20"
+      <section
+        aria-label="Support information"
+        className="grid rounded-[0.45rem] border border-[#efede8] bg-[#faf9f6] px-5 py-3 md:grid-cols-3 md:px-2 md:py-5"
       >
-        <div className="mx-auto max-w-[49rem] text-center">
-          <h2 className="font-display text-[2rem] font-medium leading-tight text-[#20232d] sm:text-[2.4rem]">
-            Send Us
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-[#4b5563] sm:text-[15px]">
-            Have a question or need help? We are just a message away.
-          </p>
-          <div className="mx-auto mt-10 h-px max-w-[42rem] bg-[#e5e7eb]" />
-        </div>
-
-        <div className="mx-auto mt-10 grid max-w-[49rem] gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="contact-name" className="mb-2.5 block text-sm font-medium text-[#374151]">Your name *</label>
-            <input
-              id="contact-name"
-              value={form.name}
-              onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-              required
-              className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
-            />
-          </div>
-          <div>
-            <label htmlFor="contact-email" className="mb-2.5 block text-sm font-medium text-[#374151]">Your email *</label>
-            <input
-              id="contact-email"
-              type="email"
-              value={form.email}
-              onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-              required
-              className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
-            />
-          </div>
-        </div>
-
-        <div className="mx-auto mt-5 max-w-[49rem]">
-          <label htmlFor="contact-subject" className="mb-2.5 block text-sm font-medium text-[#374151]">Subject *</label>
-          <select
-            id="contact-subject"
-            value={form.subject}
-            onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))}
-            required
-            className="h-12 w-full rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
-          >
-            <option value="">Select a subject</option>
-            <option>Order Issue</option>
-            <option>Return Request</option>
-            <option>Product Query</option>
-            <option>Payment Issue</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div className="mx-auto mt-5 max-w-[49rem]">
-          <label htmlFor="contact-message" className="mb-2.5 block text-sm font-medium text-[#374151]">Your message</label>
-          <textarea
-            id="contact-message"
-            value={form.message}
-            onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))}
-            rows={5}
-            required
-            className="min-h-[10.5rem] w-full resize-none rounded-[0.18rem] border border-transparent bg-[#f4f5f8] px-4 py-3.5 text-[15px] text-[#111827] outline-none focus:border-[#cfd4dc]"
-          />
-        </div>
-
-        <div className="mx-auto max-w-[49rem]">
-          <button
-            type="submit"
-            disabled={sending}
-            className="mt-6 inline-flex h-12 min-w-[10.5rem] items-center justify-center gap-2 rounded-[0.18rem] bg-[#064e3b] px-6 text-[15px] font-semibold text-white disabled:pointer-events-none disabled:opacity-50"
-          >
-            <LocalIcon name="send" className="h-4 w-4" />
-            {sending ? 'Sending...' : 'Send Message'}
-          </button>
-        </div>
-      </form>
-
-      <section aria-label="Support information" className="grid gap-6 sm:grid-cols-2">
-        <ContactInfoBlock
-          icon="clock"
-          title="Support Hours"
-          primary="Saturday to Thursday: 9am to 9pm"
-          secondary="Friday: 2pm to 9pm"
-        />
-        <ContactInfoBlock
-          icon="map-pin"
-          title="Our Location"
-          primary={CONTACT_ADDRESS}
-          secondary="Visit or contact us for order and product support."
-        />
+        {SUPPORT_DETAILS.map((item, index) => (
+          <SupportDetail key={item.title} {...item} separated={index > 0} />
+        ))}
       </section>
     </div>
   )
@@ -196,44 +102,50 @@ function ContactActionCard({
   actionLabel: string
 }) {
   return (
-    <article className="grid min-h-[17.5rem] grid-rows-[auto_auto_auto_auto_1fr_auto] justify-items-center rounded-[0.35rem] border border-[#e5e7eb] bg-[#f4f5f8] px-6 py-8 text-center">
-      <LocalIcon name={icon} className="h-9 w-9 text-[#111827]" />
-      <h2 className="mt-6 text-base font-semibold leading-6 text-[#111827]">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-[#111827]">{value}</p>
-      <p className="mt-1 max-w-[14.5rem] text-sm leading-6 text-[#4b5563]">{detail}</p>
-      <span aria-hidden="true" />
-      <a
-        href={href}
-        target={href.startsWith('http') ? '_blank' : undefined}
-        rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className="mt-6 inline-flex h-10 min-w-[9.5rem] items-center justify-center rounded-[0.18rem] border border-[#064e3b] px-5 text-sm font-semibold text-[#064e3b] outline-none"
-      >
-        {actionLabel}
-      </a>
+    <article className="flex items-start gap-4 rounded-[0.45rem] border border-[#efede8] bg-[#faf9f6] px-4 py-5 text-left sm:min-h-[16rem] sm:flex-col sm:items-center sm:gap-0 sm:px-6 sm:py-7 sm:text-center lg:min-h-[17rem]">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-[#111318] sm:h-16 sm:w-16">
+        <LocalIcon name={icon} className="h-6 w-6 sm:h-7 sm:w-7" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col sm:w-full sm:items-center">
+        <h2 className="text-[1.05rem] font-semibold text-[#111318] sm:mt-5">{title}</h2>
+        {value ? <p className="mt-1.5 text-[15px] font-semibold text-[#111318] sm:mt-2">{value}</p> : null}
+        <p className="mt-1.5 max-w-[14.5rem] whitespace-pre-line text-sm leading-6 text-[#6d7480] sm:mt-2">{detail}</p>
+        <a
+          href={href}
+          target={href.startsWith('http') ? '_blank' : undefined}
+          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+          className="mt-3 inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-[#dfdcd5] bg-white px-4 text-[13px] font-medium text-[#111318] outline-none focus-visible:ring-2 focus-visible:ring-[#111318] focus-visible:ring-offset-2 sm:mt-auto sm:h-11 lg:gap-3 lg:px-5 lg:text-sm"
+        >
+          {actionLabel}
+          <LocalIcon name="arrow-right" className="h-4 w-4" />
+        </a>
+      </div>
     </article>
   )
 }
 
-function ContactInfoBlock({
+function SupportDetail({
   icon,
   title,
   primary,
   secondary,
+  separated,
 }: {
   icon: StorefrontIconName
   title: string
   primary: string
   secondary: string
+  separated: boolean
 }) {
   return (
-    <article className="flex items-start gap-5 bg-white py-3">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f4f5f8] text-[#111827]">
+    <article className={`flex items-start gap-4 py-4 md:px-6 md:py-1 ${separated ? 'border-t border-[#e8e5de] md:border-l md:border-t-0' : ''}`}>
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#111318]">
         <LocalIcon name={icon} className="h-5 w-5" />
       </span>
       <div className="min-w-0">
-        <h2 className="text-base font-semibold text-[#111827]">{title}</h2>
-        <p className="mt-1.5 text-[15px] leading-6 text-[#374151]">{primary}</p>
-        <p className="text-sm leading-6 text-[#6b7280]">{secondary}</p>
+        <h2 className="text-sm font-semibold text-[#111318]">{title}</h2>
+        <p className="mt-1.5 text-sm leading-5 text-[#666e79]">{primary}</p>
+        <p className="text-sm leading-5 text-[#666e79]">{secondary}</p>
       </div>
     </article>
   )

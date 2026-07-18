@@ -1,4 +1,4 @@
-import { auth } from '@/backend/auth'
+import { getActiveUserSession } from '@/backend/auth/active-user'
 import { db } from '@/backend/database'
 import { AddressManager } from '@/frontend/components/account/AddressManager'
 import { ProfileForm } from '@/frontend/components/account/ProfileForm'
@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 export const metadata = { title: 'Boilabin Account' }
 
 export default async function AccountPage() {
-  const session = await auth()
+  const session = await getActiveUserSession()
   if (!session?.user) redirect('/auth/login?callbackUrl=/account')
 
   const [user, addresses] = await Promise.all([

@@ -1,6 +1,7 @@
 type CspEnv = Record<string, string | undefined>
 
 export const CSP_REPORT_ONLY_HEADER = 'Content-Security-Policy-Report-Only'
+export const CSP_ENFORCED_HEADER = 'Content-Security-Policy'
 export const CSP_REPORT_ENDPOINT_PATH = '/api/security/csp-report'
 
 export type CspRouteFamily =
@@ -14,11 +15,7 @@ export type CspRouteFamily =
 
 const TRUE_VALUES = new Set(['1', 'true', 'yes'])
 const CURRENT_IMAGE_SOURCES = [
-  'https://images.unsplash.com',
-  'https://uploadthing.com',
-  'https://utfs.io',
   'https://lh3.googleusercontent.com',
-  'https://placehold.co',
 ] as const
 
 const LOCAL_CONNECT_SOURCES = [
@@ -120,10 +117,18 @@ function withReportUri(
 function buildPagePolicy(
   family: Exclude<CspRouteFamily, 'api' | 'metadata'>,
   options: { includeReportUri?: boolean } = {},
+  env: CspEnv = process.env,
 ) {
   const formSources = family === 'auth'
     ? ["'self'", 'https://accounts.google.com']
     : ["'self'"]
+  const isProduction = env.NODE_ENV === 'production'
+  const connectSources = isProduction
+    ? ["'self'"]
+    : ["'self'", ...LOCAL_CONNECT_SOURCES]
+  const scriptSources = isProduction
+    ? ["'self'", "'unsafe-inline'"]
+    : ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
 
   const directives: Array<[string, string[]]> = [
     ['default-src', ["'self'"]],
@@ -131,14 +136,16 @@ function buildPagePolicy(
     ['object-src', ["'none'"]],
     ['frame-ancestors', ["'none'"]],
     ['form-action', formSources],
-    ['script-src', ["'self'", "'unsafe-inline'"]],
+    ['script-src', scriptSources],
+    ['script-src-attr', ["'none'"]],
     ['style-src', ["'self'", "'unsafe-inline'"]],
     ['img-src', ["'self'", 'data:', 'blob:', ...CURRENT_IMAGE_SOURCES]],
     ['font-src', ["'self'", 'data:']],
-    ['connect-src', ["'self'", ...LOCAL_CONNECT_SOURCES]],
+    ['connect-src', connectSources],
     ['media-src', ["'self'", 'blob:']],
     ['manifest-src', ["'self'"]],
     ['worker-src', ["'self'", 'blob:']],
+    ['frame-src', ["'none'"]],
   ]
 
   return serializeCsp(withReportUri(directives, options))
@@ -167,10 +174,11 @@ function buildMetadataPolicy(options: { includeReportUri?: boolean } = {}) {
 export function buildCspReportOnlyPolicyForFamily(
   family: CspRouteFamily,
   options: { includeReportUri?: boolean } = {},
+  env: CspEnv = process.env,
 ) {
   if (family === 'api') return buildMinimalApiPolicy(options)
   if (family === 'metadata') return buildMetadataPolicy(options)
-  return buildPagePolicy(family, options)
+  return buildPagePolicy(family, options, env)
 }
 
 export function getCspReportOnlyPolicy(pathname: string, env: CspEnv = process.env) {
@@ -178,7 +186,7 @@ export function getCspReportOnlyPolicy(pathname: string, env: CspEnv = process.e
   return family
     ? buildCspReportOnlyPolicyForFamily(family, {
         includeReportUri: isCspReportOnlyEnabled(env) && isCspReportCollectionEnabled(env),
-      })
+      }, env)
     : null
 }
 
@@ -190,6 +198,19 @@ export function getCspReportOnlyHeader(pathname: string, env: CspEnv = process.e
 
   return {
     key: CSP_REPORT_ONLY_HEADER,
+    value,
+  }
+}
+
+export function getCspEnforcedHeader(pathname: string, env: CspEnv = process.env) {
+  const family = classifyCspRoute(pathname)
+  const value = family
+    ? buildCspReportOnlyPolicyForFamily(family, { includeReportUri: false }, env)
+    : null
+  if (!value) return null
+
+  return {
+    key: CSP_ENFORCED_HEADER,
     value,
   }
 }

@@ -41,7 +41,7 @@ export function ProductCardActions({
   const buyLabel = isPreOrder ? 'Pre-order' : 'Add to Cart'
   const addToCartActionLabel = isPreOrder
     ? `Pre-order ${product.name}`
-    : `Add ${product.name} to cart`
+    : `Add to Cart ${product.name}`
   const buyButtonClassName = isPreOrder
     ? 'product-card-preorder-button'
     : 'product-card-add-button border-[hsl(270_18%_8%)] bg-[hsl(270_18%_8%)] text-primary-foreground'
@@ -71,10 +71,10 @@ export function ProductCardActions({
           data-product-id={inStock ? undefined : product.id}
           data-product-name={inStock ? undefined : product.name}
           aria-label={
-            inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`
+            inStock ? addToCartActionLabel : `Add to Wishlist ${product.name}`
           }
           title={
-            inStock ? addToCartActionLabel : `Add ${product.name} to wishlist`
+            inStock ? addToCartActionLabel : `Add to Wishlist ${product.name}`
           }
           className={
             inStock
@@ -98,7 +98,7 @@ export function ProductCardActions({
 
   return (
     <div className="min-w-0" data-product-actions data-product={productData}>
-      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1 opacity-100 sm:gap-1.5">
+      <div className="product-card-action-stack absolute right-2 top-2 z-10 flex flex-col gap-1 opacity-100 sm:gap-1.5">
         <button
           type="button"
           data-product-action="compare"
@@ -113,28 +113,28 @@ export function ProductCardActions({
       </div>
 
       {inStock ? (
-        <div className="min-w-0 bg-white px-3 pb-3 pt-2 sm:px-3.5 sm:pb-3.5 sm:pt-2">
+        <div className="product-card-action-shell min-w-0 bg-white px-3 pb-3 pt-2 sm:px-3.5 sm:pb-3.5 sm:pt-2">
           <button
             type="button"
             data-product-action="cart"
             aria-label={addToCartActionLabel}
-            className={`flex h-9 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border text-xs font-semibold md:transition-colors sm:h-10 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring ${buyButtonClassName}`}
+            className={`product-card-cta flex h-9 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border text-xs font-semibold md:transition-colors sm:h-10 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring ${buyButtonClassName}`}
           >
             <LocalIcon name="cart" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {buyLabel}
           </button>
         </div>
       ) : (
-        <div className="min-w-0 bg-white px-3 pb-3 pt-2 sm:px-3.5 sm:pb-3.5 sm:pt-2">
+        <div className="product-card-action-shell min-w-0 bg-white px-3 pb-3 pt-2 sm:px-3.5 sm:pb-3.5 sm:pt-2">
           <button
             type="button"
             data-product-action="wishlist"
             data-kind="wishlist"
             data-product-id={product.id}
             data-product-name={product.name}
-            aria-label={`Add ${product.name} to wishlist`}
-            title={`Add ${product.name} to wishlist`}
-            className="product-card-wishlist-button flex h-9 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border text-xs font-semibold sm:h-10 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
+            aria-label={`Add to Wishlist ${product.name}`}
+            title={`Add to Wishlist ${product.name}`}
+            className="product-card-cta product-card-wishlist-button flex h-9 w-full min-w-0 items-center justify-center gap-1.5 rounded-md border text-xs font-semibold sm:h-10 sm:gap-2 sm:text-sm md:focus-visible:outline-none md:focus-visible:ring-2 md:focus-visible:ring-ring"
           >
             <WishlistActionIcons />
             <span data-wishlist-label="add">Add to Wishlist</span>
