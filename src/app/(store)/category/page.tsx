@@ -181,7 +181,7 @@ export default async function CategoriesPage({ searchParams }: CategoriesPagePro
             )}
           </>
         ) : (
-          <div className="rounded-[1.25rem] border border-border bg-card px-5 py-12 text-center text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-border bg-card px-5 py-12 text-center text-sm text-muted-foreground">
             Categories are not available right now.
           </div>
         )}
@@ -198,7 +198,7 @@ function CategoryRail({
   selectedSlug: string
 }) {
   return (
-    <aside className="rounded-[1.15rem] border border-border/80 bg-card p-2.5 shadow-[0_12px_30px_rgba(23,18,15,0.045)]">
+    <aside className="rounded-2xl border border-border/80 bg-card p-2.5 shadow-[0_12px_30px_rgba(23,18,15,0.045)]">
       <nav aria-label="Category departments" className="space-y-1">
         {categories.map((category) => {
           const isSelected = category.slug === selectedSlug
@@ -232,7 +232,7 @@ function CategoryDetailPanel({ category }: { category: CategoryItem }) {
   return (
     <section
       aria-labelledby={`category-panel-${category.slug}`}
-      className="flex flex-col rounded-[1.35rem] border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
+      className="flex flex-col rounded-2xl border border-border/80 bg-card p-4 shadow-[0_12px_30px_rgba(23,18,15,0.045)] sm:p-5 2xl:p-6"
     >
       <div className="flex items-center gap-3 border-b border-border/70 pb-5">
         <LocalIcon name={iconName} className="h-8 w-8 shrink-0 text-foreground/85" />
@@ -303,7 +303,7 @@ function MobileCategoryAccordion({
   selectedSlug: string
 }) {
   return (
-    <section className="overflow-hidden rounded-[1.15rem] border border-border/80 bg-card shadow-[0_12px_30px_rgba(23,18,15,0.045)]">
+    <section className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_12px_30px_rgba(23,18,15,0.045)]">
       {categories.map((category) => {
         const iconName = getCategoryIconName(category.slug)
         const isOpen = category.slug === selectedSlug

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
@@ -24,7 +24,12 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
   const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'))
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +80,7 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
             Join <BrandWordmark className="text-sm text-foreground">Boilabin</BrandWordmark> to start shopping
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action="/auth/register" method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="register-name" className="text-sm font-medium mb-1.5 block">Full name</label>
               <input id="register-name" name="name" type="text" title="Full name" value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your full name" required className="input-base" autoComplete="name" />
@@ -100,7 +105,7 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
               </div>
               <p className="text-xs text-muted-foreground mt-1">Minimum {MIN_PASSWORD_LENGTH} characters</p>
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full h-11 gap-2">
+            <button type="submit" disabled={!isHydrated || loading} className="btn-primary w-full h-11 gap-2">
               {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</> : 'Create Account'}
             </button>
           </form>

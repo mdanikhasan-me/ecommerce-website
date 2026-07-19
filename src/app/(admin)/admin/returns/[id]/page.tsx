@@ -106,9 +106,9 @@ export default async function AdminReturnDetailPage({
             <div className="divide-y divide-border">
               {request.order.items.map((item) => (
                 <div key={item.id} className="flex gap-4 p-4">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-md bg-secondary">
+                  <div className="product-media-frame relative w-16 overflow-hidden rounded-md bg-secondary">
                     {item.imageUrl && (
-                      <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="64px" />
+                      <Image src={item.imageUrl} alt={item.productName} fill className="object-contain p-0.5" sizes="64px" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">

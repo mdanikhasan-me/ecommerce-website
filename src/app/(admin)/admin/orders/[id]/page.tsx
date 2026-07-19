@@ -46,13 +46,13 @@ export default async function AdminOrderDetailPage({ params }: Props) {
             <div className="divide-y divide-border">
               {order.items.map((item) => (
                 <div key={item.id} className="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-4">
-                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md bg-secondary">
+                  <div className="product-media-frame relative w-14 flex-shrink-0 overflow-hidden rounded-md bg-secondary">
                     {item.imageUrl && (
                       <Image
                         src={item.imageUrl}
                         alt={item.productName}
                         fill
-                        className="object-cover"
+                        className="object-contain p-0.5"
                         sizes="56px"
                       />
                     )}

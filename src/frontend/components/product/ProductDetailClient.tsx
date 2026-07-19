@@ -159,6 +159,10 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   }, [])
 
   useEffect(() => {
+    setSelectedImage(0)
+  }, [product.id])
+
+  useEffect(() => {
     if (hasTrackedViewRef(product.id)) return
 
     fetch(`/api/products/${product.id}/view`, {
@@ -350,14 +354,14 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
   }
 
   const renderActionButtons = (compact = false) => (
-    <div className={cn('grid gap-2', compact ? 'grid-cols-2' : 'grid-cols-1 min-[1160px]:grid-cols-2')}>
+    <div className={cn('grid gap-2', compact ? 'grid-cols-2' : 'grid-cols-1 min-[1024px]:grid-cols-2')}>
       <button
         type="button"
         onClick={handleAddToCart}
         disabled={!inStock}
         className={cn(
-          'store-add-to-cart-button flex items-center justify-center gap-2 rounded-xl border border-foreground/25 bg-background font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50',
-          compact ? 'h-12 text-sm' : 'h-12 text-[15px] min-[1025px]:hover:border-foreground/40',
+          'flex items-center justify-center gap-2 rounded-lg bg-secondary/55 font-semibold text-foreground focus-visible:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-50',
+          compact ? 'h-12 text-sm' : 'h-12 text-[15px] min-[1025px]:hover:bg-secondary/80',
         )}
       >
         <LocalIcon name="shopping-bag" className="h-[18px] w-[18px]" />
@@ -368,7 +372,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
         onClick={handleBuyNow}
         disabled={!inStock}
         className={cn(
-          'flex items-center justify-center gap-2 rounded-xl bg-foreground font-semibold text-background disabled:cursor-not-allowed disabled:opacity-50',
+          'flex items-center justify-center gap-2 rounded-lg bg-foreground font-semibold text-background focus-visible:bg-foreground/85 disabled:cursor-not-allowed disabled:opacity-50',
           compact ? 'h-12 text-sm' : 'h-12 text-[15px] min-[1025px]:hover:bg-foreground/90',
         )}
       >
@@ -380,43 +384,15 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
 
   return (
     <div className="min-w-0 max-w-full overflow-x-hidden pb-3 md:overflow-visible md:pb-0">
-      <div className="grid min-w-0 gap-5 min-[980px]:grid-cols-[minmax(0,1.08fr)_minmax(24rem,0.92fr)] min-[1280px]:gap-7">
-        <section className="min-w-0 rounded-[1.35rem] bg-background">
+      <div data-product-detail-layout className="mx-auto grid min-w-0 max-w-[90rem] gap-5 min-[1024px]:grid-cols-2 min-[1024px]:items-stretch min-[1280px]:gap-7">
+        <section data-product-media-column className="min-w-0 bg-background">
           <div
-            className={cn(
-              'grid gap-3 rounded-[1.35rem] border border-border/70 bg-background p-2.5 sm:p-3 min-[768px]:p-4',
-              galleryImages.length > 1 && 'min-[768px]:grid-cols-[5.4rem_minmax(0,1fr)]',
-            )}
+            data-product-media-panel
+            data-product-media-frame="primary"
+            className="product-media-frame w-full overflow-hidden rounded-lg bg-background"
           >
-            {galleryImages.length > 1 && (
-              <div className="hidden min-[768px]:flex min-[768px]:flex-col min-[768px]:gap-3">
-                {galleryImages.map((img, index) => (
-                  <button
-                    type="button"
-                    key={img.url}
-                    aria-label={`View image ${index + 1}`}
-                    title={`View image ${index + 1}`}
-                    onClick={() => setSelectedImage(index)}
-                    className={cn(
-                      'relative aspect-square overflow-hidden rounded-xl border bg-background',
-                      selectedImage === index ? 'border-foreground' : 'border-border/65',
-                    )}
-                  >
-                    <Image
-                      src={img.url}
-                      alt=""
-                      fill
-                      className="object-contain p-1"
-                      quality={75}
-                      sizes="86px"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-
             <div
-              className="relative flex aspect-[3/2] w-full touch-pan-y items-center justify-center overflow-hidden rounded-[1.15rem] bg-secondary/25"
+              className="relative flex h-full min-h-0 w-full touch-pan-y items-center justify-center overflow-hidden bg-background"
               onTouchStart={handleGalleryTouchStart}
               onTouchEnd={handleGalleryTouchEnd}
               onTouchCancel={() => {
@@ -430,8 +406,8 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                   fill
                   priority
                   quality={90}
-                  className="object-contain p-3 sm:p-5 min-[768px]:p-7"
-                  sizes="(max-width: 767px) 100vw, (max-width: 979px) 80vw, 50vw"
+                  className="object-contain"
+                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 90vw, (max-width: 1599px) 45vw, 720px"
                 />
               ) : (
                 <div className="text-sm text-muted-foreground">No product image</div>
@@ -450,54 +426,43 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                   rel="noreferrer"
                   aria-label="Open product image"
                   title="Open product image"
-                  className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background text-foreground min-[1025px]:hover:border-foreground/35"
+                  className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm focus-visible:bg-secondary/70 min-[1025px]:hover:bg-secondary/70"
                 >
                   <LocalIcon name="eye" className="h-4 w-4" />
                 </a>
               )}
 
-              {galleryImages.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5 min-[768px]:hidden">
-                  {galleryImages.map((img, index) => (
-                    <button
-                      type="button"
-                      key={`dot-${img.url}`}
-                      aria-label={`View image ${index + 1}`}
-                      onClick={() => setSelectedImage(index)}
-                      className={cn(
-                        'h-2 w-2 rounded-full border border-background',
-                        selectedImage === index ? 'bg-foreground' : 'bg-border',
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
-          {galleryImages.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto px-1 pb-1 [scroll-snap-type:x_mandatory] min-[768px]:hidden">
+          {hasGallery && (
+            <div
+              role="group"
+              className="mt-3 flex gap-2 overflow-x-auto pb-1 [scroll-snap-type:x_mandatory]"
+              aria-label="Product image thumbnails"
+            >
               {galleryImages.map((img, index) => (
                 <button
                   type="button"
-                  key={`mobile-${img.url}`}
+                  key={`thumbnail-${img.url}`}
                   aria-label={`View image ${index + 1}`}
                   title={`View image ${index + 1}`}
+                  aria-pressed={selectedImage === index}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    'relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl border bg-background [scroll-snap-align:start]',
-                    selectedImage === index ? 'border-foreground' : 'border-border/65',
+                    'product-media-frame relative w-20 flex-shrink-0 overflow-hidden rounded-md bg-background focus-visible:opacity-65 [scroll-snap-align:start]',
+                    selectedImage === index ? 'opacity-100' : 'opacity-55 min-[1025px]:hover:opacity-85',
                   )}
                 >
-                  <Image src={img.url} alt="" fill className="object-contain p-1" quality={75} sizes="80px" />
+                  <Image src={img.url} alt="" fill className="object-contain" quality={75} sizes="80px" />
                 </button>
               ))}
             </div>
           )}
         </section>
 
-        <section className="min-w-0 overflow-hidden rounded-[1.35rem] border border-border/70 bg-background p-4 sm:p-5 min-[1280px]:p-6">
-          <div className="flex min-w-0 flex-col gap-4">
+        <section data-product-purchase-panel className="min-w-0 overflow-hidden rounded-lg bg-background p-4 sm:p-5 min-[1024px]:h-full min-[1024px]:px-5 min-[1024px]:py-2.5">
+          <div className="flex min-w-0 flex-col gap-4 min-[1024px]:h-full min-[1024px]:justify-between min-[1024px]:gap-2.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h1 className="font-display text-[1.9rem] font-bold leading-[1.08] sm:text-3xl min-[1280px]:text-[2rem]">
@@ -560,10 +525,10 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                     disabled={!available}
                     aria-pressed={selectedOptions[groupName] === value}
                     className={cn(
-                      'min-h-10 rounded-lg border px-3 py-2 text-sm font-semibold leading-tight disabled:cursor-not-allowed disabled:opacity-40 sm:px-4',
+                      'min-h-10 rounded-lg px-3 py-2 text-sm font-semibold leading-tight focus-visible:opacity-70 disabled:cursor-not-allowed disabled:opacity-40 sm:px-4',
                       selectedOptions[groupName] === value
-                        ? 'border-foreground bg-foreground text-background'
-                        : 'border-border bg-background text-foreground min-[1025px]:hover:border-foreground/35',
+                        ? 'bg-foreground text-background'
+                        : 'bg-secondary/55 text-foreground min-[1025px]:hover:bg-secondary/80',
                     )}
                   >
                     <span className="sm:hidden">{compactVariantLabel(value)}</span>
@@ -577,13 +542,13 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
           <div>
             <p className="mb-2 text-sm font-semibold">Quantity</p>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex h-11 items-center overflow-hidden rounded-xl border border-border bg-background">
+              <div className="flex h-11 items-center overflow-hidden rounded-lg bg-secondary/55">
                 <button
                   type="button"
                   aria-label="Decrease quantity"
                   title="Decrease quantity"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="flex h-full w-11 items-center justify-center min-[1025px]:hover:bg-secondary"
+                  className="flex h-full w-11 items-center justify-center focus-visible:bg-secondary min-[1025px]:hover:bg-secondary"
                 >
                   <LocalIcon name="minus" className="h-4 w-4" />
                 </button>
@@ -593,7 +558,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
                   aria-label="Increase quantity"
                   title="Increase quantity"
                   onClick={() => setQuantity(Math.min(stock, quantity + 1))}
-                  className="flex h-full w-11 items-center justify-center min-[1025px]:hover:bg-secondary"
+                  className="flex h-full w-11 items-center justify-center focus-visible:bg-secondary min-[1025px]:hover:bg-secondary"
                 >
                   <LocalIcon name="plus" className="h-4 w-4" />
                 </button>
@@ -609,10 +574,10 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               type="button"
               onClick={handleWishlist}
               className={cn(
-                'flex h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium',
+                'flex h-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium focus-visible:opacity-70',
                 isWished
-                  ? 'border-red-200 bg-red-50 text-red-500'
-                  : 'border-border bg-background min-[1025px]:hover:border-red-200 min-[1025px]:hover:text-red-500',
+                  ? 'bg-red-50 text-red-500'
+                  : 'bg-secondary/55 min-[1025px]:hover:bg-secondary/80 min-[1025px]:hover:text-red-500',
               )}
             >
               <LocalIcon name={isWished ? 'bookmark-check' : 'bookmark-plus'} className="h-4 w-4" />
@@ -622,10 +587,10 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               type="button"
               onClick={handleCompare}
               className={cn(
-                'hidden h-11 items-center justify-center gap-1.5 rounded-xl border text-[13px] font-medium sm:flex',
+                'hidden h-11 items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium focus-visible:opacity-70 sm:flex',
                 isCompared
-                  ? 'border-primary/30 bg-primary/5 text-primary'
-                  : 'border-border bg-background min-[1025px]:hover:border-foreground/35',
+                  ? 'bg-primary/10 text-primary'
+                  : 'bg-secondary/55 min-[1025px]:hover:bg-secondary/80',
               )}
             >
               <LocalIcon name="bar-chart-2" className="h-4 w-4" />
@@ -636,7 +601,7 @@ export function ProductDetailClient({ product }: { product: ProductDetailClientD
               aria-label="Share product"
               title="Share product"
               onClick={handleShare}
-              className="col-span-2 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border bg-background text-[13px] font-medium sm:col-span-1 min-[1025px]:hover:border-foreground/35"
+              className="col-span-2 flex h-11 items-center justify-center gap-1.5 rounded-lg bg-secondary/55 text-[13px] font-medium focus-visible:bg-secondary/80 sm:col-span-1 min-[1025px]:hover:bg-secondary/80"
             >
               <LocalIcon name="share" className="h-4 w-4" />
               Share

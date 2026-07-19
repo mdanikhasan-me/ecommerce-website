@@ -266,7 +266,7 @@ export default function ComparePage() {
                       <LocalIcon name="trash-2" className="h-4 w-4" />
                     </button>
                     <Link href={`/products/${product.slug}`} className="group block">
-                      <div className="relative mx-auto aspect-square w-full max-w-[200px] overflow-hidden rounded-xl bg-card">
+                      <div className="product-media-frame relative mx-auto w-full max-w-[200px] overflow-hidden rounded-xl bg-card">
                         {primaryImage ? (
                           <Image
                             src={primaryImage}
@@ -362,7 +362,7 @@ function MobileCompareCard({
       <div className="flex gap-3 border-b border-border p-3">
         <Link
           href={`/products/${product.slug}`}
-          className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-secondary/60"
+          className="product-media-frame relative w-24 shrink-0 overflow-hidden rounded-xl bg-secondary/60"
         >
           {primaryImage ? (
             <Image src={primaryImage} alt={product.name} fill className="object-contain p-1.5" sizes="96px" quality={75} />

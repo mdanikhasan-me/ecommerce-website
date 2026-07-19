@@ -48,14 +48,14 @@ export function ProductCard({
   if (layout === 'list') {
     return (
       <div className={cn('product-card flex gap-2.5 p-2.5 sm:gap-4 sm:p-4 md:p-5', className)}>
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="relative h-[5.5rem] w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[0.4rem] bg-white sm:h-28 sm:w-28">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="product-media-frame relative w-[5.5rem] flex-shrink-0 overflow-hidden rounded-[0.4rem] bg-white sm:w-28">
           {primaryImage && (
             <Image
               src={primaryImage}
               alt={product.name}
               fill
               priority={priority}
-              className="object-cover"
+              className="object-contain p-1.5"
               quality={75}
               sizes="112px"
             />
@@ -95,7 +95,7 @@ export function ProductCard({
         </span>
       ) : null}
       <div className="product-card-media-shell relative overflow-hidden rounded-t-[0.4rem] bg-white">
-        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="product-card-media-link relative block aspect-[3/2] min-w-0">
+        <Link href={`/products/${product.slug}`} prefetch={false} aria-label={productLinkLabel} className="product-card-media-link product-media-frame relative block min-w-0">
           {primaryImage ? (
             <Image
               src={primaryImage}
@@ -159,7 +159,7 @@ export function ProductCard({
 export function ProductCardSkeleton() {
   return (
     <div className="product-card">
-      <div className="aspect-[4/3] skeleton rounded-t-xl" />
+      <div className="product-media-frame skeleton rounded-t-xl" />
       <div className="p-3 space-y-2">
         <div className="h-3 skeleton rounded w-1/3" />
         <div className="h-4 skeleton rounded w-5/6" />

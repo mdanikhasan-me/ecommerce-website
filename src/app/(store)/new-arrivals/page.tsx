@@ -198,7 +198,7 @@ export default async function NewArrivalsPage({ searchParams }: Props) {
           </div>
 
           {products.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center sm:px-8 sm:py-16">
+            <div className="rounded-2xl border border-border bg-card px-5 py-14 text-center sm:px-8 sm:py-16">
               <h2 className="font-display text-xl font-semibold">No new arrivals found</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try adjusting your filters.</p>
             </div>

@@ -314,16 +314,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 return (
                   <article key={item.id} className="rounded-xl border border-border p-3 sm:p-4">
                     <div className="grid gap-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
-                      <div className="h-32 overflow-hidden rounded-lg bg-secondary sm:h-36">
+                      <div className="product-media-frame w-full max-w-40 overflow-hidden rounded-lg bg-secondary sm:max-w-none">
                         {imageUrl ? (
                           <img
                             src={imageUrl}
                             alt={displayName}
                             width={160}
-                            height={144}
+                            height={128}
                             loading="lazy"
                             decoding="async"
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-contain p-1"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-muted-foreground">

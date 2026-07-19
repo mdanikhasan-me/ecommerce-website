@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from '@/frontend/lib/toast'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback
@@ -66,11 +67,25 @@ export function NotificationRowActions({
 
   return (
     <div className="flex items-center justify-start gap-2 md:justify-end">
-      <button type="button" onClick={toggleRead} disabled={loading !== null} className="min-h-10 rounded-md bg-secondary px-3 text-xs text-primary disabled:opacity-50">
-        {isRead ? 'Mark unread' : 'Mark read'}
+      <button
+        type="button"
+        onClick={toggleRead}
+        disabled={loading !== null}
+        className="admin-table-action px-3 disabled:opacity-50"
+        aria-label={isRead ? 'Mark notification unread' : 'Mark notification read'}
+        title={isRead ? 'Mark unread' : 'Mark read'}
+      >
+        <LocalIcon name="mail" className="h-4 w-4" />
       </button>
-      <button type="button" onClick={remove} disabled={loading !== null} className="min-h-10 rounded-md bg-red-50 px-3 text-xs text-red-600 disabled:opacity-50">
-        Delete
+      <button
+        type="button"
+        onClick={remove}
+        disabled={loading !== null}
+        className="admin-table-action px-3 text-red-600 disabled:opacity-50"
+        aria-label="Delete notification"
+        title="Delete"
+      >
+        <LocalIcon name="trash-2" className="h-4 w-4" />
       </button>
     </div>
   )

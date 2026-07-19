@@ -156,7 +156,7 @@ function RelatedProductsFallback() {
       <div className="product-list-grid">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="overflow-hidden rounded-2xl border border-border">
-            <div className="skeleton aspect-[4/3] w-full" />
+            <div className="product-media-frame skeleton w-full" />
             <div className="space-y-3 p-4">
               <div className="skeleton h-3 w-16 rounded" />
               <div className="skeleton h-4 w-5/6 rounded" />

@@ -1,144 +1,234 @@
-import type { Prisma } from '@prisma/client'
-import { db } from '@/backend/database'
+import { OrderStatus, PaymentMethod, type Prisma } from '@prisma/client'
 import Link from 'next/link'
-import { formatPrice, formatDate } from '@/backend/utils'
-import { parseAdminListPage, parseOrderStatusFilter } from '@/backend/admin/list-filters'
-import { Search, ShoppingBag } from 'lucide-react'
+
+import { db } from '@/backend/database'
+import { parseAdminListPage } from '@/backend/admin/list-filters'
+import { formatDate, formatPrice } from '@/backend/utils'
+import {
+  AdminFiltersButton,
+  AdminListAction,
+  AdminListHeader,
+  AdminListPagination,
+  AdminListSummary,
+  AdminListTabs,
+  AdminSearchField,
+  AdminSelectField,
+} from '@/frontend/components/admin/AdminListPrimitives'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 interface Props {
-  searchParams: Promise<{ page?: string; status?: string; q?: string }>
+  searchParams: Promise<{
+    page?: string
+    status?: string
+    q?: string
+    payment?: string
+    range?: string
+    sort?: string
+  }>
 }
 
 export const metadata = { title: 'Admin Orders' }
 
-const STATUS_COLORS: Record<string, string> = {
-  PENDING: 'bg-amber-50 text-amber-700',
-  CONFIRMED: 'bg-blue-50 text-blue-700',
-  PACKED: 'bg-indigo-50 text-indigo-700',
-  SHIPPED: 'bg-purple-50 text-purple-700',
-  DELIVERED: 'bg-green-50 text-green-700',
-  CANCELLED: 'bg-red-50 text-red-700',
-  RETURNED: 'bg-gray-50 text-gray-700',
-  REFUNDED: 'bg-warning/10 text-warning',
+const TAB_STATUSES = ['DELIVERED', 'RETURNED', 'CANCELLED'] as const
+const RANGE_VALUES = new Set(['7d', '30d', '90d', 'all'])
+const SORT_VALUES = new Set(['newest', 'oldest', 'highest', 'lowest'])
+
+function orderStatusTone(status: OrderStatus) {
+  if (status === 'DELIVERED') return 'success'
+  if (status === 'CANCELLED') return 'danger'
+  if (status === 'RETURNED' || status === 'REFUNDED') return 'neutral'
+  if (status === 'SHIPPED' || status === 'CONFIRMED') return 'info'
+  return 'warning'
+}
+
+function paymentLabel(method: PaymentMethod) {
+  if (method === 'CASH_ON_DELIVERY') return 'Cash on delivery'
+  if (method === 'BKASH') return 'bKash'
+  if (method === 'NAGAD') return 'Nagad'
+  return 'Card payment'
+}
+
+function startDateForRange(range: string) {
+  if (range === 'all') return null
+  const days = range === '7d' ? 7 : range === '90d' ? 90 : 30
+  const date = new Date()
+  date.setHours(0, 0, 0, 0)
+  date.setDate(date.getDate() - days)
+  return date
 }
 
 export default async function AdminOrdersPage({ searchParams }: Props) {
-  const filters = await searchParams
-  const page = parseAdminListPage(filters.page)
+  const rawFilters = await searchParams
+  const page = parseAdminListPage(rawFilters.page)
   const limit = 20
   const skip = (page - 1) * limit
+  const q = rawFilters.q?.trim().slice(0, 120) ?? ''
+  const status = TAB_STATUSES.includes(rawFilters.status as (typeof TAB_STATUSES)[number])
+    ? (rawFilters.status as (typeof TAB_STATUSES)[number])
+    : ''
+  const payment = Object.values(PaymentMethod).includes(rawFilters.payment as PaymentMethod)
+    ? (rawFilters.payment as PaymentMethod)
+    : ''
+  const range = RANGE_VALUES.has(rawFilters.range ?? '') ? rawFilters.range! : '30d'
+  const sort = SORT_VALUES.has(rawFilters.sort ?? '') ? rawFilters.sort! : 'newest'
 
-  const where: Prisma.OrderWhereInput = {}
-  const statusFilter = parseOrderStatusFilter(filters.status)
-  if (statusFilter) where.status = statusFilter
-  if (filters.q) {
-    const q = filters.q.trim().slice(0, 120)
+  const where: Prisma.OrderWhereInput = {
+    ...(status ? { status } : {}),
+    ...(payment ? { paymentMethod: payment } : {}),
+  }
+  const startDate = startDateForRange(range)
+  if (startDate) where.createdAt = { gte: startDate }
+  if (q) {
     where.OR = [
       { orderNumber: { contains: q, mode: 'insensitive' } },
+      { user: { name: { contains: q, mode: 'insensitive' } } },
       { user: { email: { contains: q, mode: 'insensitive' } } },
       { guestEmail: { contains: q, mode: 'insensitive' } },
     ]
   }
 
-  const [orders, total] = await Promise.all([
+  const orderBy: Prisma.OrderOrderByWithRelationInput =
+    sort === 'oldest'
+      ? { createdAt: 'asc' }
+      : sort === 'highest'
+        ? { total: 'desc' }
+        : sort === 'lowest'
+          ? { total: 'asc' }
+          : { createdAt: 'desc' }
+
+  const [orders, total, allCount, groupedStatuses] = await Promise.all([
     db.order.findMany({
-      where, skip, take: limit,
-      orderBy: { createdAt: 'desc' },
+      where,
+      skip,
+      take: limit,
+      orderBy,
       include: {
         user: { select: { name: true, email: true } },
-        items: { select: { productName: true }, take: 1 },
+        items: { select: { productName: true }, orderBy: { id: 'asc' }, take: 1 },
         _count: { select: { items: true } },
       },
     }),
     db.order.count({ where }),
+    db.order.count(),
+    db.order.groupBy({ by: ['status'], _count: { _all: true } }),
   ])
 
-  const totalPages = Math.ceil(total / limit)
-  const ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURN_REQUESTED', 'RETURNED', 'REFUND_REQUESTED', 'REFUNDED']
+  const counts = new Map(groupedStatuses.map((item) => [item.status, item._count._all]))
+  const totalPages = Math.max(1, Math.ceil(total / limit))
+  const filterQuery = (targetPage: number) => {
+    const params = new URLSearchParams()
+    if (targetPage > 1) params.set('page', String(targetPage))
+    if (status) params.set('status', status)
+    if (q) params.set('q', q)
+    if (payment) params.set('payment', payment)
+    if (range !== '30d') params.set('range', range)
+    if (sort !== 'newest') params.set('sort', sort)
+    const suffix = params.toString()
+    return suffix ? `/admin/orders?${suffix}` : '/admin/orders'
+  }
 
   return (
-    <div className="space-y-5">
-      <div className="admin-page-header">
-        <div>
-          <h1 className="admin-page-title">Orders</h1>
-          <p className="text-sm text-muted-foreground">{total} total orders</p>
-        </div>
-      </div>
+    <div className="admin-list-page">
+      <AdminListHeader
+        title="Orders"
+        description="Manage, filter and review customer orders."
+        actions={
+          <>
+            <AdminListAction href="/api/admin/reports/export?type=orders" icon="download" download>
+              Export orders
+            </AdminListAction>
+            <AdminListAction href="/admin/orders/new" icon="plus" primary>
+              Create order
+            </AdminListAction>
+          </>
+        }
+      />
 
-      {/* Filters */}
-      <div className="admin-card p-3 sm:p-4">
-        <form className="grid grid-cols-2 gap-3 sm:grid-cols-[minmax(0,1fr)_11rem_auto_auto]">
-          <input
-            aria-label="Search by order number or email"
-            title="Search by order number or email"
-            name="q"
-            type="search"
-            enterKeyHint="search"
-            defaultValue={filters.q}
-            placeholder="Order ID or email"
-            className="input-base col-span-2 w-full sm:col-span-1"
-          />
-          <select aria-label="Status" title="Status" name="status" defaultValue={filters.status} className="input-base col-span-2 w-full sm:col-span-1">
-            <option value="">All Status</option>
-            {ORDER_STATUSES.map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
-          </select>
-          <button type="submit" className="btn-primary justify-center px-4">
-            <Search className="h-4 w-4" />
-            Search
-          </button>
-          <Link href="/admin/orders" className="btn-outline justify-center px-4">Clear</Link>
-        </form>
-      </div>
+      <AdminListTabs
+        label="Order status"
+        tabs={[
+          { label: 'All orders', count: allCount, href: '/admin/orders', active: !status },
+          { label: 'Delivered', count: counts.get('DELIVERED') ?? 0, href: '/admin/orders?status=DELIVERED', active: status === 'DELIVERED' },
+          { label: 'Returned', count: counts.get('RETURNED') ?? 0, href: '/admin/orders?status=RETURNED', active: status === 'RETURNED' },
+          { label: 'Cancelled', count: counts.get('CANCELLED') ?? 0, href: '/admin/orders?status=CANCELLED', active: status === 'CANCELLED' },
+        ]}
+      />
 
-      {/* Table */}
-      <div className="admin-card overflow-hidden">
-        <div className="admin-responsive-table-wrap overflow-x-auto">
-          <table className="admin-responsive-table w-full text-sm">
+      <form className="admin-list-toolbar" action="/admin/orders">
+        {status ? <input type="hidden" name="status" value={status} /> : null}
+        <AdminSearchField defaultValue={q} placeholder="Search by order ID, customer or email" />
+        <AdminSelectField label="Date range" name="range" defaultValue={range}>
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="90d">Last 90 days</option>
+          <option value="all">All time</option>
+        </AdminSelectField>
+        <AdminSelectField label="Payment" name="payment" defaultValue={payment}>
+          <option value="">All methods</option>
+          {Object.values(PaymentMethod).map((method) => (
+            <option key={method} value={method}>{paymentLabel(method)}</option>
+          ))}
+        </AdminSelectField>
+        <AdminFiltersButton />
+        <AdminSelectField label="Sort" name="sort" defaultValue={sort} className="admin-list-sort">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="highest">Highest total</option>
+          <option value="lowest">Lowest total</option>
+        </AdminSelectField>
+      </form>
+
+      <AdminListSummary strong={`${total} ${total === 1 ? 'order' : 'orders'}`} detail="Live order data" />
+
+      <section className="admin-list-card" aria-label="Orders">
+        <div className="admin-list-table-wrap">
+          <table className="admin-list-table">
             <thead>
-              <tr className="border-b border-border bg-secondary">
-                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Order</th>
-                <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden md:table-cell">Customer</th>
-                <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden lg:table-cell">Items</th>
-                <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Total</th>
-                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
-                <th className="text-right px-4 py-3 font-semibold text-muted-foreground hidden sm:table-cell">Date</th>
-                <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Action</th>
+              <tr>
+                <th className="w-12"><input className="admin-row-checkbox" type="checkbox" aria-label="Select all orders" /></th>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody>
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="admin-empty-cell px-4 py-12 text-center text-muted-foreground">
-                    <ShoppingBag className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                    No orders found
+                  <td colSpan={9} className="admin-empty-cell text-center text-muted-foreground">
+                    No orders match these filters.
                   </td>
                 </tr>
               ) : orders.map((order) => (
                 <tr key={order.id}>
-                  <td data-mobile data-primary className="px-4 py-3">
-                    <span className="font-mono text-xs font-semibold tracking-[0.04em]">{order.orderNumber}</span>
-                    <p className="text-xs text-muted-foreground capitalize">{order.paymentMethod.replace('_', ' ')}</p>
+                  <td><input className="admin-row-checkbox" type="checkbox" aria-label={`Select order ${order.orderNumber}`} /></td>
+                  <td data-primary>
+                    <p className="admin-table-primary">{order.orderNumber}</p>
+                    <p className="admin-table-secondary">{paymentLabel(order.paymentMethod)}</p>
                   </td>
-                  <td data-mobile data-full data-label="Customer" className="px-4 py-3 hidden md:table-cell">
-                    <p className="font-medium">{order.user?.name ?? 'Guest'}</p>
-                    <p className="text-xs text-muted-foreground">{order.user?.email ?? order.guestEmail}</p>
+                  <td data-label="Customer">
+                    <p className="admin-table-primary">{order.user?.name ?? 'Guest customer'}</p>
+                    <p className="admin-table-secondary">{order.user?.email ?? order.guestEmail ?? 'No email'}</p>
                   </td>
-                  <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
-                    {order.items[0]?.productName}
-                    {order._count.items > 1 && <span className="ml-1 text-primary">+{order._count.items - 1}</span>}
+                  <td data-label="Items">
+                    <p className="max-w-[17rem] truncate">{order.items[0]?.productName ?? 'No line items'}</p>
+                    {order._count.items > 1 ? <p className="admin-table-secondary">+{order._count.items - 1} more</p> : null}
                   </td>
-                  <td data-mobile data-label="Total" className="px-4 py-3 text-right font-bold">{formatPrice(order.total)}</td>
-                  <td data-mobile data-label="Status" className="px-4 py-3 text-center">
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLORS[order.status] ?? 'bg-secondary text-foreground'}`}>
-                      {order.status.replace('_', ' ')}
+                  <td data-label="Payment" className="text-muted-foreground">{paymentLabel(order.paymentMethod)}</td>
+                  <td data-label="Total"><span className="admin-table-primary">{formatPrice(order.total)}</span></td>
+                  <td data-label="Status">
+                    <span className="admin-table-status" data-tone={orderStatusTone(order.status)}>
+                      {order.status.replaceAll('_', ' ').toLowerCase().replace(/^./, (value) => value.toUpperCase())}
                     </span>
                   </td>
-                  <td data-mobile data-label="Placed" className="px-4 py-3 text-right text-muted-foreground text-xs hidden sm:table-cell">
-                    {formatDate(order.createdAt)}
-                  </td>
-                  <td data-mobile data-action className="px-4 py-3 text-right">
-                    <Link href={`/admin/orders/${order.id}`} className="admin-mobile-action text-xs text-primary font-medium sm:border-0 sm:bg-transparent sm:p-0">
-                      View
+                  <td data-label="Date" className="text-muted-foreground">{formatDate(order.createdAt)}</td>
+                  <td data-action>
+                    <Link href={`/admin/orders/${order.id}`} className="admin-table-action">
+                      View order <LocalIcon name="chevron-right" className="h-4 w-4" />
                     </Link>
                   </td>
                 </tr>
@@ -146,26 +236,14 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
             </tbody>
           </table>
         </div>
+      </section>
 
-        {totalPages > 1 && (() => {
-          const queryString = (targetPage: number) => {
-            const params = new URLSearchParams()
-            params.set('page', String(targetPage))
-            if (filters.q) params.set('q', filters.q)
-            if (filters.status) params.set('status', filters.status)
-            return params.toString()
-          }
-          return (
-            <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
-              <p className="text-muted-foreground">Showing {skip + 1} to {Math.min(skip + limit, total)} of {total}</p>
-              <div className="flex gap-2">
-                {page > 1 && <Link href={`/admin/orders?${queryString(page - 1)}`} className="btn-outline py-1.5 px-3 text-xs">Prev</Link>}
-                {page < totalPages && <Link href={`/admin/orders?${queryString(page + 1)}`} className="btn-outline py-1.5 px-3 text-xs">Next</Link>}
-              </div>
-            </div>
-          )
-        })()}
-      </div>
+      <AdminListPagination
+        page={page}
+        totalPages={totalPages}
+        summary={total === 0 ? 'No orders shown' : `Showing ${skip + 1}–${Math.min(skip + limit, total)} of ${total} orders`}
+        pageHref={filterQuery}
+      />
     </div>
   )
 }

@@ -112,7 +112,7 @@ export function MobileSearchFilters({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="absolute inset-x-2 bottom-2 max-h-[90dvh] overflow-hidden rounded-[1.45rem] bg-white shadow-[0_-14px_34px_rgba(23,18,15,0.18)]"
+            className="absolute inset-x-2 bottom-2 max-h-[90dvh] overflow-hidden rounded-2xl bg-white shadow-[0_-14px_34px_rgba(23,18,15,0.18)]"
           >
             <div className="mx-auto mt-2 h-1 w-11 rounded-full bg-black/12" aria-hidden="true" />
 

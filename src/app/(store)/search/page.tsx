@@ -234,7 +234,7 @@ export default async function SearchPage({ searchParams }: Props) {
           </div>
 
           {products.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-border bg-card px-5 py-14 text-center shadow-[0_16px_36px_rgba(23,18,15,0.05)] sm:px-8 sm:py-16">
+            <div className="rounded-2xl border border-border bg-card px-5 py-14 text-center shadow-[0_16px_36px_rgba(23,18,15,0.05)] sm:px-8 sm:py-16">
               <h2 className="font-display text-xl font-semibold">No products found</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">Try a different search term or remove some filters.</p>
             </div>

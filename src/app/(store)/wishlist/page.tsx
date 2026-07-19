@@ -47,7 +47,7 @@ export default function WishlistPage() {
       ) : loading ? (
         <div className="product-list-grid">
           {visibleItems.map((_, i) => (
-            <div key={i} className="aspect-square bg-secondary animate-pulse rounded-2xl" />
+            <div key={i} className="product-media-frame animate-pulse rounded-2xl bg-secondary" />
           ))}
         </div>
       ) : (

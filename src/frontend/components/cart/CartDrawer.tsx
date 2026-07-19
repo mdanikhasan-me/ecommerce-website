@@ -135,9 +135,9 @@ export function CartDrawer() {
                 <div key={`${item.productId}-${item.variantId}`} className="flex gap-3 py-4 sm:gap-4">
                   {/* Image */}
                   <Link href={`/products/${item.slug}`} onClick={closeCart} className="shrink-0">
-                    <div className="relative h-[5.25rem] w-[5.25rem] overflow-hidden rounded-md bg-secondary sm:h-24 sm:w-24">
+                    <div className="product-media-frame relative w-[5.25rem] overflow-hidden rounded-md bg-secondary sm:w-24">
                       {item.image && (
-                        <Image src={item.image} alt={item.name} fill className="object-cover" sizes="96px" />
+                        <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="96px" />
                       )}
                     </div>
                   </Link>

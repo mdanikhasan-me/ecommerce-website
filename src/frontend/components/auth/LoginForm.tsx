@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
@@ -21,7 +21,12 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
   const [form, setForm] = useState({ email: '', password: '' })
+
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +80,7 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
           <h1 className="font-display text-lg font-bold mb-1">Welcome back</h1>
           <p className="text-sm text-muted-foreground mb-6">Sign in to your account to continue</p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action="/auth/login" method="post" onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="login-email" className="text-sm font-medium mb-1.5 block">Email</label>
               <input
@@ -124,7 +129,7 @@ export function LoginForm({ callbackUrl, reason, googleOAuthAvailable }: LoginFo
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full h-11 gap-2">
+            <button type="submit" disabled={!isHydrated || loading} className="btn-primary w-full h-11 gap-2">
               {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</> : 'Sign In'}
             </button>
           </form>

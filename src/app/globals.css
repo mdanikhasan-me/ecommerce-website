@@ -154,6 +154,10 @@
     box-shadow: none;
   }
 
+  .product-media-frame {
+    aspect-ratio: 5 / 4;
+  }
+
   .product-card-new-ribbon {
     pointer-events: none;
     position: absolute;
@@ -277,19 +281,19 @@
 
   .btn-primary {
     @apply bg-primary text-primary-foreground
-    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
     transition-colors duration-150
     disabled:pointer-events-none disabled:opacity-50;
     box-shadow: none;
   }
   .btn-secondary {
     @apply bg-secondary text-secondary-foreground
-    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
     transition-colors duration-150;
   }
   .btn-outline {
     @apply border border-border bg-transparent
-    inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold
+    inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold
     transition-colors duration-150;
   }
 
@@ -1671,7 +1675,7 @@
   .section-shell {
     border: 1px solid hsl(var(--border) / 0.72);
     background: hsl(var(--card));
-    border-radius: 1.65rem;
+    border-radius: 0.75rem;
     box-shadow: none;
   }
 
@@ -1807,7 +1811,7 @@
   }
 
   .home-product-card {
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     border-color: hsl(var(--border) / 0.58);
   }
 
@@ -1816,7 +1820,7 @@
   }
 
   .home-product-card .product-card-media-link {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 5 / 4;
   }
 
   .home-product-card .product-card-media-image {
@@ -1978,6 +1982,12 @@
     padding-inline: 1.25rem;
   }
 
+  .checkout-frame {
+    width: 100%;
+    max-width: none;
+    padding-inline: 1rem;
+  }
+
   .home-category-frame {
     width: 100%;
     max-width: none;
@@ -1993,6 +2003,10 @@
     .home-category-frame {
       padding-inline: clamp(2.5rem, 5vw, 3.5rem);
     }
+
+    .checkout-frame {
+      padding-inline: 1.5rem;
+    }
   }
 
   @media (min-width: 1024px) {
@@ -2002,6 +2016,24 @@
 
     .home-category-frame {
       padding-inline: clamp(8rem, 9vw, 12rem);
+    }
+
+    .checkout-frame {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .checkout-frame {
+      padding-inline: clamp(4rem, 5vw, 7.5rem);
+    }
+
+    .checkout-layout-grid {
+      grid-template-columns: minmax(0, 1fr) clamp(24rem, 29vw, 34rem);
+    }
+
+    .checkout-order-summary-card {
+      max-height: clamp(40rem, calc(100dvh - 16rem), 52rem);
     }
   }
 

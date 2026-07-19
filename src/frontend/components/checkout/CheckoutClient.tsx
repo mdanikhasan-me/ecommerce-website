@@ -11,7 +11,6 @@ import { z } from 'zod'
 import { useCartStore, type CartCoupon, type CartItem } from '@/frontend/stores/cart'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { formatPrice, calculateShipping, cn } from '@/backend/utils'
-import type { StorefrontIconName } from '@/shared/storefront-icons'
 import toast from '@/frontend/lib/toast'
 
 const CheckoutPaymentStep = dynamic(
@@ -38,7 +37,7 @@ const addressSchema = z.object({
 
 type AddressForm = z.infer<typeof addressSchema>
 
-type SavedAddress = {
+export type SavedAddress = {
   id: string
   fullName: string
   phone: string
@@ -52,10 +51,36 @@ type SavedAddress = {
 }
 
 type DeliveryMode = 'saved' | 'new'
+type DeliveryHandoff = 'hand-to-me' | 'call-first' | 'reception'
 
 const DIVISIONS = ['Dhaka', 'Chittagong', 'Rajshahi', 'Khulna', 'Sylhet', 'Barisal', 'Rangpur', 'Mymensingh']
-const STEPS = ['Delivery', 'Payment', 'Review']
 const DELIVERY_FORM_ID = 'checkout-delivery-form'
+const CHECKOUT_STEPS = [
+  {
+    title: 'Where should we deliver?',
+    description: 'Choose an address and delivery speed before moving to payment.',
+    nextTitle: 'Next: Payment',
+    nextDescription: 'Review follows after payment details',
+  },
+  {
+    title: 'How would you like to pay?',
+    description: 'Choose a secure payment method before reviewing your order.',
+    nextTitle: 'Next: Review',
+    nextDescription: 'Confirm every detail before placing the order',
+  },
+  {
+    title: 'Review and place your order',
+    description: 'Check the delivery, payment and item details one final time.',
+    nextTitle: 'Final step',
+    nextDescription: 'Place the order when everything looks right',
+  },
+] as const
+
+const HANDOFF_LABELS: Record<DeliveryHandoff, string> = {
+  'hand-to-me': 'Hand it to me',
+  'call-first': 'Call before arrival',
+  reception: 'Leave with reception',
+}
 
 function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error && error.message ? error.message : fallback
@@ -75,54 +100,6 @@ function addressFormFromSavedAddress(address: SavedAddress): AddressForm {
   }
 }
 
-function CheckoutSteps({ step }: { step: number }) {
-  return (
-    <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 sm:gap-3">
-      {STEPS.map((label, index) => (
-        <div key={label} className="contents">
-          <div
-            className={cn(
-              'flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border px-3 text-xs font-medium transition-colors sm:h-10 sm:justify-start sm:px-4 sm:text-sm',
-              index === step
-                ? 'border-primary bg-primary text-primary-foreground'
-                : index < step
-                  ? 'border-primary/30 bg-primary/5 text-primary'
-                  : 'border-border bg-card text-muted-foreground',
-            )}
-          >
-            <span
-              className={cn(
-                'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold sm:h-6 sm:w-6 sm:text-xs',
-                index === step ? 'bg-background text-primary' : 'bg-muted text-foreground',
-              )}
-            >
-              {index < step ? <LocalIcon name="check" className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : index + 1}
-            </span>
-            <span className="hidden truncate sm:inline">{label}</span>
-          </div>
-          {index < STEPS.length - 1 ? (
-            <span className={cn('h-px w-4 bg-border sm:w-10', index < step && 'bg-primary/50')} />
-          ) : null}
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function SectionHeader({ icon, title }: { icon: StorefrontIconName; title: string }) {
-  return (
-    <div className="mb-4 flex items-center justify-between gap-3">
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground sm:h-10 sm:w-10">
-          <LocalIcon name={icon} className="h-4 w-4 sm:h-5 sm:w-5" />
-        </span>
-        <h2 className="text-base font-semibold tracking-[-0.01em] text-foreground sm:text-lg">{title}</h2>
-      </div>
-      <LocalIcon name="chevron-up" className="h-4 w-4 text-muted-foreground" />
-    </div>
-  )
-}
-
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
   return <p className="mt-1 text-xs text-destructive">{message}</p>
@@ -140,24 +117,25 @@ function SummaryRows({
   total: number
 }) {
   return (
-    <div className="space-y-2.5 text-xs sm:text-sm">
+    <div className="space-y-3 text-sm">
       <div className="flex justify-between gap-4">
         <span className="text-muted-foreground">Subtotal</span>
-        <span>{formatPrice(subtotal)}</span>
+        <span className="font-semibold">{formatPrice(subtotal)}</span>
       </div>
       <div className="flex justify-between gap-4">
-        <span className="text-muted-foreground">Shipping</span>
-        {shippingFee === 0 ? <span className="font-medium text-green-600">Free</span> : <span>{formatPrice(shippingFee)}</span>}
+        <span className="text-muted-foreground">Standard delivery</span>
+        {shippingFee === 0 ? <span className="font-semibold">Free</span> : <span className="font-semibold">{formatPrice(shippingFee)}</span>}
       </div>
-      {discount > 0 ? (
-        <div className="flex justify-between gap-4 text-green-600">
-          <span>Coupon Discount</span>
-          <span>-{formatPrice(discount)}</span>
-        </div>
-      ) : null}
-      <div className="flex justify-between gap-4 border-t border-border pt-3 text-base font-semibold sm:text-lg">
-        <span>Total</span>
-        <span>{formatPrice(total)}</span>
+      <div className={cn('flex justify-between gap-4', discount > 0 && 'text-green-700')}>
+        <span className={discount > 0 ? undefined : 'text-muted-foreground'}>Coupon discount</span>
+        <span className="font-semibold">{discount > 0 ? `-${formatPrice(discount)}` : '—'}</span>
+      </div>
+      <div className="flex items-end justify-between gap-4 border-t border-border pt-4">
+        <span>
+          <span className="block text-base font-semibold">Total</span>
+          <span className="block text-xs text-muted-foreground">Taxes included where applicable</span>
+        </span>
+        <span className="text-2xl font-bold tracking-[-0.025em]">{formatPrice(total)}</span>
       </div>
     </div>
   )
@@ -181,36 +159,36 @@ function CouponCodeField({
   onRemoveCoupon: () => void
 }) {
   return (
-    <div className="border-t border-border pt-4">
-      <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold sm:text-sm">
-        <LocalIcon name="tag" className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
-        Have coupon code?
-      </p>
+    <div>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-semibold">Coupon</p>
+        <p className="text-xs text-muted-foreground">Enter your code before payment</p>
+      </div>
       <div className="flex gap-2">
         <input
           aria-label="Coupon code"
           type="text"
-          placeholder="Optional"
+          placeholder="Enter coupon code"
           value={couponCode}
           onChange={(event) => onCouponCodeChange(event.target.value.toUpperCase())}
-          className="input-base h-10 text-xs sm:text-sm"
+          className="input-base h-11 text-sm"
         />
         <button
           type="button"
           onClick={onApplyCoupon}
           disabled={applyingCoupon || !couponCode.trim()}
-          className="btn-outline min-h-10 shrink-0 px-4 py-2 text-xs sm:text-sm"
+          className="min-h-11 shrink-0 rounded-lg border border-foreground bg-background px-5 py-2 text-sm font-semibold text-foreground focus-visible:bg-secondary/70 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {applyingCoupon ? '...' : 'Apply'}
         </button>
       </div>
       {appliedCoupon ? (
-        <div className="mt-2 flex items-center justify-between gap-3 text-xs text-green-600">
+        <div className="mt-2 flex items-center justify-between gap-3 text-xs text-green-700">
           <p className="flex min-w-0 items-center gap-1 font-medium">
             <LocalIcon name="check" className="h-3.5 w-3.5" />
             <span className="truncate">{appliedCoupon.name} applied, {formatPrice(discount)} off</span>
           </p>
-          <button type="button" onClick={onRemoveCoupon} className="font-semibold">
+          <button type="button" onClick={onRemoveCoupon} className="min-h-8 rounded-md px-2 font-semibold focus-visible:bg-green-100">
             Remove
           </button>
         </div>
@@ -226,15 +204,12 @@ function OrderSummaryCard({
   discount,
   total,
   compact = false,
-  title,
-  showEditCart,
   showCheckoutCta = false,
-  showBenefits = false,
-  showSecureLine = false,
   couponCode,
   appliedCoupon,
   applyingCoupon = false,
   onContinue,
+  onUpdateQuantity,
   onCouponCodeChange,
   onApplyCoupon,
   onRemoveCoupon,
@@ -245,63 +220,75 @@ function OrderSummaryCard({
   discount: number
   total: number
   compact?: boolean
-  title?: string
-  showEditCart?: boolean
   showCheckoutCta?: boolean
-  showBenefits?: boolean
-  showSecureLine?: boolean
   couponCode?: string
   appliedCoupon?: CartCoupon | null
   applyingCoupon?: boolean
   onContinue?: () => void
+  onUpdateQuantity?: (item: CartItem, quantity: number) => void
   onCouponCodeChange?: (value: string) => void
   onApplyCoupon?: () => void
   onRemoveCoupon?: () => void
 }) {
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const visibleItems = compact ? items.slice(0, 2) : items
-  const summaryTitle = title ?? (compact ? 'Order Summary' : 'Your Order')
-  const shouldShowEditCart = showEditCart ?? !compact
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+
   return (
-    <section className="rounded-xl border border-border bg-card p-4 shadow-[0_10px_24px_rgba(23,18,15,0.04)] sm:rounded-2xl sm:p-5">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold sm:text-lg">{summaryTitle}</h2>
-        {shouldShowEditCart ? (
-          <Link href="/cart" className="inline-flex items-center gap-1 text-xs font-medium text-primary sm:text-sm">
-            Edit Cart <LocalIcon name="pencil" className="h-3.5 w-3.5" />
-          </Link>
-        ) : null}
+    <section data-checkout-summary-card className="checkout-order-summary-card flex flex-col overflow-hidden rounded-[1.25rem] border border-black/10 bg-card shadow-[0_18px_42px_rgba(24,24,22,0.06)]">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-black/10 px-4 py-4 sm:px-5">
+        <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Order summary</h2>
+        <span className="text-xs text-muted-foreground sm:text-sm">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
       </div>
 
-      <div className="mb-3 flex items-center justify-between border-b border-border pb-3 text-xs sm:text-sm">
-        <span>Items ({itemCount})</span>
-        {compact && items.length > visibleItems.length ? (
-          <span className="text-muted-foreground">+{items.length - visibleItems.length} more</span>
-        ) : null}
-      </div>
-
-      <div className="divide-y divide-border">
+      <div data-checkout-summary-items className="min-h-0 divide-y divide-black/10 px-4 sm:px-5 min-[1280px]:flex-1 min-[1280px]:overflow-y-auto min-[1280px]:overscroll-contain">
         {visibleItems.map((item) => (
-          <div key={`${item.productId}-${item.variantId ?? 'base'}`} className="flex items-center gap-3 py-2.5 first:pt-0">
-            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-secondary sm:h-14 sm:w-14">
+          <div key={`${item.productId}-${item.variantId ?? 'base'}`} className="flex items-center gap-3 py-4">
+            <div className="relative aspect-[5/4] w-16 shrink-0 overflow-hidden rounded-[0.875rem] border border-black/10 bg-[#f5f5f3] sm:w-[5.25rem]">
               {item.image ? (
-                <Image src={item.image} alt={item.name} fill className="object-cover" sizes="56px" />
+                <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="84px" />
               ) : (
                 <LocalIcon name="package" className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-1 text-xs font-medium sm:text-sm">{item.name}</p>
-              {item.variantName ? <p className="line-clamp-1 text-xs text-muted-foreground">{item.variantName}</p> : null}
-              <p className="mt-1 text-xs sm:text-sm">Qty: {item.quantity}</p>
+              <p className="line-clamp-2 text-sm font-semibold leading-5">{item.name}</p>
+              {item.variantName ? <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{item.variantName}</p> : null}
+              {onUpdateQuantity ? (
+                <div className="mt-2 inline-flex h-11 items-center overflow-hidden rounded-lg border border-black/10 bg-background sm:h-8">
+                  <button
+                    type="button"
+                    aria-label={`Decrease quantity for ${item.name}`}
+                    disabled={item.quantity <= 1}
+                    onClick={() => onUpdateQuantity(item, item.quantity - 1)}
+                    className="flex h-full w-11 items-center justify-center text-sm focus-visible:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-35 sm:w-8"
+                  >
+                    <LocalIcon name="minus" className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="flex h-full min-w-11 items-center justify-center border-x border-black/10 px-2 text-xs font-semibold sm:min-w-8">{item.quantity}</span>
+                  <button
+                    type="button"
+                    aria-label={`Increase quantity for ${item.name}`}
+                    disabled={item.quantity >= item.stockQuantity}
+                    onClick={() => onUpdateQuantity(item, item.quantity + 1)}
+                    className="flex h-full w-11 items-center justify-center text-sm focus-visible:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-35 sm:w-8"
+                  >
+                    <LocalIcon name="plus" className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <p className="mt-1 text-xs text-muted-foreground">Quantity {item.quantity}</p>
+              )}
             </div>
-            <p className="shrink-0 text-xs font-medium sm:text-sm">{formatPrice(item.price * item.quantity)}</p>
+            <p className="shrink-0 self-start pt-0.5 text-sm font-semibold">{formatPrice(item.price * item.quantity)}</p>
           </div>
         ))}
+        {compact && items.length > visibleItems.length ? (
+          <p className="py-3 text-center text-xs text-muted-foreground">+{items.length - visibleItems.length} more items</p>
+        ) : null}
       </div>
 
       {onCouponCodeChange && onApplyCoupon && onRemoveCoupon ? (
-        <div className="mt-4">
+        <div data-checkout-summary-coupon className="shrink-0 border-t border-black/10 px-4 py-4 sm:px-5">
           <CouponCodeField
             couponCode={couponCode ?? ''}
             appliedCoupon={appliedCoupon ?? null}
@@ -314,31 +301,33 @@ function OrderSummaryCard({
         </div>
       ) : null}
 
-      <div className="mt-4 border-t border-border pt-4">
+      <div data-checkout-summary-totals className="shrink-0 border-t border-black/10 px-4 py-5 sm:px-5">
         <SummaryRows subtotal={subtotal} shippingFee={shippingFee} discount={discount} total={total} />
-      </div>
-
-      {!showBenefits ? (
-        <div className="mt-4 flex items-center gap-3 rounded-xl bg-primary/5 p-3 text-xs text-primary sm:text-sm">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <LocalIcon name="truck" className="h-4 w-4" />
+        <div className="mt-4 flex items-center gap-3 rounded-[0.875rem] border border-black/10 bg-[#f5f5f3] p-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-background">
+            <LocalIcon name="package" className="h-4 w-4" />
           </span>
-          <span>Delivery timing depends on address and availability.</span>
+          <span className="min-w-0">
+            <span className="block text-xs font-semibold sm:text-sm">Return-ready packaging</span>
+            <span className="block text-[11px] leading-4 text-muted-foreground sm:text-xs">Keep the original bag or box for a simpler return process.</span>
+          </span>
         </div>
-      ) : null}
 
-      {showCheckoutCta ? (
-        <button type="button" onClick={onContinue} className="btn-primary mt-4 min-h-10 w-full gap-2 px-4 py-2 text-xs sm:text-sm">
-          Continue to Payment <LocalIcon name="arrow-right" className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </button>
-      ) : null}
+        {showCheckoutCta ? (
+          <button
+            type="button"
+            onClick={onContinue}
+            className="mt-4 flex min-h-[3.375rem] w-full items-center justify-center gap-3 rounded-[0.875rem] bg-[#121212] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(18,18,18,0.14)] focus-visible:bg-black/80"
+          >
+            Continue to payment <LocalIcon name="arrow-right" className="h-4 w-4" />
+          </button>
+        ) : null}
 
-      {showSecureLine ? (
         <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <LocalIcon name="shield" className="h-3.5 w-3.5" />
-          Your data is secure and encrypted
+          Encrypted checkout
         </div>
-      ) : null}
+      </div>
     </section>
   )
 }
@@ -348,111 +337,180 @@ function SavedAddressSelectionCard({
   selectedAddressId,
   onSelectAddress,
   onAddNewAddress,
-  onContinue,
 }: {
   addresses: SavedAddress[]
   selectedAddressId: string | null
   onSelectAddress: (id: string) => void
   onAddNewAddress: () => void
-  onContinue: () => void
 }) {
-  return (
-    <section className="rounded-xl border border-border bg-card p-4 shadow-[0_10px_24px_rgba(23,18,15,0.04)] sm:rounded-2xl sm:p-5 lg:p-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground sm:h-11 sm:w-11">
-            <LocalIcon name="map-pin" className="h-4 w-4 sm:h-5 sm:w-5" />
-          </span>
-          <span className="min-w-0">
-            <h2 className="text-base font-semibold tracking-[-0.01em] text-foreground sm:text-lg">Delivery Address</h2>
-            <span className="mt-1 block text-xs text-muted-foreground sm:text-sm">Choose or add a delivery address</span>
-          </span>
-        </div>
+  const [isChoosingAddress, setIsChoosingAddress] = useState(false)
+  const selectedAddress = addresses.find((address) => address.id === selectedAddressId) ?? addresses[0]
 
-        <button type="button" onClick={onAddNewAddress} className="btn-outline min-h-9 gap-2 px-3 py-2 text-xs sm:w-auto sm:text-sm">
-          <LocalIcon name="plus" className="h-3.5 w-3.5" />
-          Add new address
-        </button>
+  return (
+    <section data-checkout-address className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <span>
+          <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Delivery address</h2>
+          <span className="mt-1 block text-xs leading-5 text-muted-foreground sm:text-sm">
+            Your selected address stays compact, even when it is your only saved address.
+          </span>
+        </span>
+          <Link href="/account/addresses" className="min-h-11 rounded-lg px-1 py-2 text-sm font-semibold underline underline-offset-4 focus-visible:bg-secondary/70 sm:min-h-9">
+          Manage addresses
+        </Link>
       </div>
 
-      <div className="space-y-3">
-        {addresses.map((address) => {
-          const isSelected = address.id === selectedAddressId
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-[1rem] border border-black/10 bg-[#f7f7f5] p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:p-5">
+        <span className="flex h-11 w-11 items-center justify-center rounded-[0.875rem] border border-black/10 bg-background">
+          <LocalIcon name="map-pin" className="h-5 w-5" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">{selectedAddress.fullName}</span>
+          <span className="mt-1 block text-xs leading-5 text-muted-foreground sm:text-sm">
+            {selectedAddress.addressLine1}
+            {selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ''}
+          </span>
+          <span className="block text-xs leading-5 text-muted-foreground sm:text-sm">
+            {selectedAddress.city}, {selectedAddress.district}, {selectedAddress.division}
+            {selectedAddress.postalCode ? ` ${selectedAddress.postalCode}` : ''} · {selectedAddress.phone}
+          </span>
+        </span>
+        <span className="col-span-2 grid grid-cols-2 gap-2 sm:col-span-1 sm:flex">
+          <Link href="/account/addresses" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-black/15 bg-background px-4 text-sm font-semibold focus-visible:bg-secondary/70">
+            Edit
+          </Link>
+          <button
+            type="button"
+            onClick={() => setIsChoosingAddress((current) => !current)}
+            aria-expanded={isChoosingAddress}
+            className="min-h-11 rounded-lg border border-black/15 bg-background px-4 text-sm font-semibold focus-visible:bg-secondary/70"
+          >
+            Change
+          </button>
+        </span>
+      </div>
 
-          return (
-            <button
-              key={address.id}
-              type="button"
-              onClick={() => onSelectAddress(address.id)}
-              className={cn(
-                'grid w-full grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-xl border p-3 text-left transition-colors sm:p-4',
-                isSelected
-                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                  : 'border-border bg-background/70',
-              )}
-            >
-              <span
+      {isChoosingAddress ? (
+        <div className="mt-4 grid gap-2 border-t border-black/10 pt-4" aria-label="Choose a delivery address">
+          {addresses.map((address) => {
+            const isSelected = address.id === selectedAddress.id
+            return (
+              <button
+                key={address.id}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => {
+                  onSelectAddress(address.id)
+                  setIsChoosingAddress(false)
+                }}
                 className={cn(
-                  'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
-                  isSelected ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card',
+                  'flex min-h-12 w-full items-center justify-between gap-4 rounded-[0.875rem] px-4 py-3 text-left text-sm focus-visible:bg-secondary/80',
+                  isSelected ? 'bg-secondary/80 font-semibold' : 'bg-[#f7f7f5]',
                 )}
               >
-                {isSelected ? <LocalIcon name="check" className="h-3 w-3" /> : null}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold">{address.fullName}</span>
-                <span className="mt-1.5 block text-xs leading-5 text-muted-foreground sm:text-sm">{address.addressLine1}</span>
-                {address.addressLine2 ? (
-                  <span className="block text-xs leading-5 text-muted-foreground sm:text-sm">{address.addressLine2}</span>
-                ) : null}
-                <span className="block text-xs leading-5 text-muted-foreground sm:text-sm">
-                  {address.city}, {address.district}, {address.division}
-                  {address.postalCode ? ` ${address.postalCode}` : ''}
+                <span className="min-w-0">
+                  <span className="block truncate">{address.fullName}</span>
+                  <span className="block truncate text-xs font-normal text-muted-foreground">{address.addressLine1}, {address.city}</span>
                 </span>
-                <span className="block text-xs leading-5 text-muted-foreground sm:text-sm">{address.phone}</span>
-              </span>
-            </button>
-          )
-        })}
+                {isSelected ? <LocalIcon name="check" className="h-4 w-4 shrink-0" /> : null}
+              </button>
+            )
+          })}
+          <button
+            type="button"
+            onClick={onAddNewAddress}
+            className="mt-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.875rem] bg-secondary/60 px-4 text-sm font-semibold focus-visible:bg-secondary"
+          >
+            <LocalIcon name="plus" className="h-4 w-4" />
+            Use a new address
+          </button>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function DeliveryMethodCard({ shippingFee }: { shippingFee: number }) {
+  return (
+    <fieldset data-checkout-delivery-method className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+      <legend className="sr-only">Delivery method</legend>
+      <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Delivery method</h2>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">Choose the available delivery service for this order.</p>
+
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <label className="grid min-h-[8.75rem] cursor-default grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-[1rem] border-2 border-foreground bg-[#f7f7f5] p-4 focus-within:bg-[#ececea]">
+          <input type="radio" name="delivery-method" checked readOnly className="sr-only" />
+          <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-foreground">
+            <span className="h-2.5 w-2.5 rounded-full bg-foreground" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold">Standard delivery</span>
+            <span className="mt-1 block text-xs leading-5 text-muted-foreground sm:text-sm">Estimated arrival: 2–4 business days</span>
+            <span className="block text-xs leading-5 text-muted-foreground sm:text-sm">Tracked delivery to your door</span>
+          </span>
+          <span className="text-sm font-semibold">{shippingFee === 0 ? 'Free' : formatPrice(shippingFee)}</span>
+        </label>
+
+        <div aria-disabled="true" className="grid min-h-[8.75rem] grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-[1rem] border border-black/15 bg-[#fafafa] p-4 text-muted-foreground">
+          <span className="mt-0.5 h-5 w-5 rounded-full border border-black/25" />
+          <span className="min-w-0">
+            <span className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold">Express delivery</span>
+              <span className="rounded-full border border-black/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Eligible areas</span>
+            </span>
+              <span className="mt-1 block text-xs leading-5 sm:text-sm">Faster delivery is not available for this order yet.</span>
+          </span>
+          <span className="text-right text-xs font-semibold leading-4">Currently<br />unavailable</span>
+        </div>
       </div>
+    </fieldset>
+  )
+}
 
-      <button type="button" onClick={onContinue} className="btn-primary mt-5 hidden min-h-10 w-full gap-2 px-4 py-2 text-sm lg:flex">
-        Continue to Payment <LocalIcon name="arrow-right" className="h-4 w-4" />
-      </button>
-
-      <div className="mt-4 hidden items-center justify-center gap-2 text-xs text-muted-foreground lg:flex">
-        <LocalIcon name="shield" className="h-3.5 w-3.5" />
-        Your data is secure and encrypted
+function DeliveryInstructionsCard({
+  orderNote,
+  handoff,
+  onOrderNoteChange,
+  onHandoffChange,
+}: {
+  orderNote: string
+  handoff: DeliveryHandoff
+  onOrderNoteChange: (note: string) => void
+  onHandoffChange: (handoff: DeliveryHandoff) => void
+}) {
+  return (
+    <section data-checkout-delivery-instructions className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+      <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">
+        Delivery instructions <span className="text-xs font-normal text-muted-foreground sm:text-sm">(optional)</span>
+      </h2>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">Add a note for the courier or choose how the order should be handed over.</p>
+      <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_15.5rem]">
+        <label className="sr-only" htmlFor="checkout-delivery-note">Delivery note</label>
+        <input
+          id="checkout-delivery-note"
+          value={orderNote}
+          onChange={(event) => onOrderNoteChange(event.target.value)}
+          maxLength={440}
+          placeholder="Example: Call before arrival or leave with reception"
+          className="input-base h-12"
+        />
+        <label className="sr-only" htmlFor="checkout-handoff">Delivery handoff</label>
+        <select
+          id="checkout-handoff"
+          value={handoff}
+          onChange={(event) => onHandoffChange(event.target.value as DeliveryHandoff)}
+          className="input-base h-12 font-semibold"
+        >
+          <option value="hand-to-me">Hand it to me</option>
+          <option value="call-first">Call before arrival</option>
+          <option value="reception">Leave with reception</option>
+        </select>
       </div>
     </section>
   )
 }
 
-function TrustRow() {
-  const items: { icon: StorefrontIconName; title: string; text: string }[] = [
-    { icon: 'shield', title: 'Secure Checkout', text: 'Your data is protected' },
-    { icon: 'truck', title: 'Fast & Reliable Delivery', text: 'Quick delivery to your doorstep' },
-    { icon: 'refresh-ccw', title: 'Easy Returns', text: 'Hassle-free returns' },
-  ]
-
-  return (
-    <div className="hidden rounded-xl border border-border bg-card p-4 shadow-[0_10px_22px_rgba(23,18,15,0.035)] lg:grid lg:grid-cols-3">
-      {items.map((item, index) => (
-        <div key={item.title} className={cn('flex items-center gap-3 px-4', index > 0 && 'border-l border-border')}>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <LocalIcon name={item.icon} className="h-4 w-4" />
-          </span>
-          <span>
-            <span className="block text-xs font-semibold">{item.title}</span>
-            <span className="block text-xs text-muted-foreground">{item.text}</span>
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-export function CheckoutClient() {
+export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: SavedAddress[] }) {
   const router = useRouter()
   const items = useCartStore((state) => state.items)
   const appliedCoupon = useCartStore((state) => state.appliedCoupon)
@@ -460,17 +518,20 @@ export function CheckoutClient() {
   const setAppliedCoupon = useCartStore((state) => state.setAppliedCoupon)
   const clearAppliedCoupon = useCartStore((state) => state.clearAppliedCoupon)
   const clearCart = useCartStore((state) => state.clearCart)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
   const [step, setStep] = useState(0)
   const [selectedPayment, setSelectedPayment] = useState('CASH_ON_DELIVERY')
   const [submitting, setSubmitting] = useState(false)
   const [orderNote, setOrderNote] = useState('')
+  const [deliveryHandoff, setDeliveryHandoff] = useState<DeliveryHandoff>('hand-to-me')
   const [couponCode, setCouponCode] = useState(appliedCoupon?.code ?? '')
   const [applyingCoupon, setApplyingCoupon] = useState(false)
-  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([])
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
-  const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>('new')
-  const [addressesLoading, setAddressesLoading] = useState(true)
-  const [saveNewAddress, setSaveNewAddress] = useState(true)
+  const [cartHydrated, setCartHydrated] = useState(false)
+  const preferredInitialAddress = initialAddresses.find((address) => address.isDefault) ?? initialAddresses[0] ?? null
+  const [savedAddresses] = useState<SavedAddress[]>(initialAddresses)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(preferredInitialAddress?.id ?? null)
+  const [deliveryMode, setDeliveryMode] = useState<DeliveryMode>(preferredInitialAddress ? 'saved' : 'new')
+  const [saveNewAddress, setSaveNewAddress] = useState(!preferredInitialAddress)
 
   const { register, handleSubmit, getValues, formState: { errors } } = useForm<AddressForm>({
     resolver: zodResolver(addressSchema),
@@ -483,13 +544,19 @@ export function CheckoutClient() {
   const selectedSavedAddress = deliveryMode === 'saved'
     ? savedAddresses.find((address) => address.id === selectedAddressId) ?? null
     : null
-  const isSavedAddressStep = step === 0 && !addressesLoading && savedAddresses.length > 0 && deliveryMode === 'saved'
+  const stepContent = CHECKOUT_STEPS[step]
 
   useEffect(() => {
-    if (items.length === 0) {
+    const unsubscribe = useCartStore.persist.onFinishHydration(() => setCartHydrated(true))
+    if (useCartStore.persist.hasHydrated()) setCartHydrated(true)
+    return unsubscribe
+  }, [])
+
+  useEffect(() => {
+    if (cartHydrated && items.length === 0) {
       router.replace('/cart')
     }
-  }, [items.length, router])
+  }, [cartHydrated, items.length, router])
 
   useEffect(() => {
     if (appliedCoupon?.code) {
@@ -497,49 +564,7 @@ export function CheckoutClient() {
     }
   }, [appliedCoupon?.code])
 
-  useEffect(() => {
-    let active = true
-
-    async function loadSavedAddresses() {
-      setAddressesLoading(true)
-      try {
-        const response = await fetch('/api/account/addresses', { credentials: 'same-origin' })
-        if (!response.ok) throw new Error('Could not load saved addresses')
-        const data = await response.json()
-        const addresses = Array.isArray(data.addresses) ? data.addresses as SavedAddress[] : []
-
-        if (!active) return
-        setSavedAddresses(addresses)
-
-        if (addresses.length > 0) {
-          const preferredAddress = addresses.find((address) => address.isDefault) ?? addresses[0]
-          setSelectedAddressId(preferredAddress.id)
-          setDeliveryMode('saved')
-          setSaveNewAddress(false)
-        } else {
-          setSelectedAddressId(null)
-          setDeliveryMode('new')
-          setSaveNewAddress(true)
-        }
-      } catch {
-        if (!active) return
-        setSavedAddresses([])
-        setSelectedAddressId(null)
-        setDeliveryMode('new')
-        setSaveNewAddress(true)
-      } finally {
-        if (active) setAddressesLoading(false)
-      }
-    }
-
-    loadSavedAddresses()
-
-    return () => {
-      active = false
-    }
-  }, [])
-
-  if (items.length === 0) return null
+  if (!cartHydrated || items.length === 0) return null
 
   const onAddressSubmit = () => {
     setStep(1)
@@ -639,7 +664,7 @@ export function CheckoutClient() {
           shippingFee,
           couponCode: appliedCoupon?.code,
           total,
-          notes: orderNote,
+          notes: [orderNote.trim(), `Delivery handoff: ${HANDOFF_LABELS[deliveryHandoff]}`].filter(Boolean).join('\n'),
           isGuestOrder: false,
         }),
       })
@@ -658,129 +683,151 @@ export function CheckoutClient() {
   }
 
   return (
-    <div className="container-site py-5 pb-24 sm:py-6 lg:py-8 lg:pb-10">
-      <div className="mx-auto max-w-6xl space-y-5">
-        <h1 className="text-2xl font-semibold tracking-[-0.01em] text-foreground sm:text-3xl">
-          Checkout
-        </h1>
+    <div data-checkout-page className="checkout-frame pb-12 pt-8 sm:pb-16 sm:pt-10">
+      <div>
+        <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[2.65rem] lg:text-[3rem]">
+              {stepContent.title}
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">{stepContent.description}</p>
+          </div>
+          <div className="shrink-0 border-t border-black/10 pt-3 text-left sm:border-0 sm:pt-0 sm:text-right">
+            <p className="text-sm font-semibold">{stepContent.nextTitle}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">{stepContent.nextDescription}</p>
+          </div>
+        </div>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,21rem)] lg:items-start">
-          <div className="space-y-4">
-            <CheckoutSteps step={step} />
-
+        <div data-checkout-layout className="checkout-layout-grid grid gap-5 min-[1280px]:items-start min-[1280px]:gap-10">
+          <div data-checkout-main className="min-w-0 space-y-5">
             {step === 0 ? (
-              addressesLoading ? (
-                <section className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground shadow-[0_10px_24px_rgba(23,18,15,0.04)]">
-                  Loading saved addresses...
-                </section>
-              ) : savedAddresses.length > 0 && deliveryMode === 'saved' ? (
-                <SavedAddressSelectionCard
-                  addresses={savedAddresses}
-                  selectedAddressId={selectedAddressId}
-                  onSelectAddress={setSelectedAddressId}
-                  onAddNewAddress={() => {
-                    setDeliveryMode('new')
-                    setSaveNewAddress(false)
-                  }}
-                  onContinue={continueWithSavedAddress}
-                />
-              ) : (
-                <form id={DELIVERY_FORM_ID} onSubmit={handleSubmit(onAddressSubmit)} className="space-y-4">
-                  {savedAddresses.length > 0 ? (
-                    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-3 shadow-[0_8px_20px_rgba(23,18,15,0.035)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
-                      <p className="text-xs text-muted-foreground sm:text-sm">Enter a different delivery address for this order.</p>
-                      <button
-                        type="button"
-                        onClick={() => setDeliveryMode('saved')}
-                        className="btn-outline min-h-9 px-4 py-2 text-xs sm:w-auto sm:text-sm"
-                      >
-                        Use saved address
-                      </button>
+              <>
+                {savedAddresses.length > 0 && deliveryMode === 'saved' ? (
+                  <SavedAddressSelectionCard
+                    addresses={savedAddresses}
+                    selectedAddressId={selectedAddressId}
+                    onSelectAddress={setSelectedAddressId}
+                    onAddNewAddress={() => {
+                      setDeliveryMode('new')
+                      setSaveNewAddress(false)
+                    }}
+                  />
+                ) : (
+                  <form
+                    id={DELIVERY_FORM_ID}
+                    onSubmit={handleSubmit(onAddressSubmit)}
+                    className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6"
+                  >
+                    <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+                      <span>
+                        <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Delivery address</h2>
+                        <span className="mt-1 block text-xs leading-5 text-muted-foreground sm:text-sm">Enter the contact and location details for this order.</span>
+                      </span>
+                      {savedAddresses.length > 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMode('saved')}
+                          className="min-h-10 rounded-lg border border-black/15 bg-background px-4 text-sm font-semibold focus-visible:bg-secondary/70"
+                        >
+                          Use saved address
+                        </button>
+                      ) : null}
                     </div>
-                  ) : null}
 
-                  <section className="rounded-xl border border-border bg-card p-4 shadow-[0_10px_24px_rgba(23,18,15,0.04)] sm:rounded-2xl sm:p-5">
-                    <SectionHeader icon="user" title="Contact Details" />
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="checkout-full-name" className="mb-1.5 block text-xs font-medium sm:text-sm">Full Name *</label>
-                        <input id="checkout-full-name" {...register('fullName')} placeholder="Arif Rahman" className="input-base h-10 sm:h-11" />
+                        <label htmlFor="checkout-full-name" className="mb-1.5 block text-sm font-medium">Full name *</label>
+                        <input
+                          id="checkout-full-name"
+                          {...register('fullName')}
+                          autoComplete="name"
+                          placeholder="Arif Rahman"
+                          className="input-base h-11"
+                        />
                         <FieldError message={errors.fullName?.message} />
                       </div>
                       <div>
-                        <label htmlFor="checkout-phone" className="mb-1.5 block text-xs font-medium sm:text-sm">Phone *</label>
-                        <input id="checkout-phone" {...register('phone')} placeholder="01712345678" className="input-base h-10 sm:h-11" />
+                        <label htmlFor="checkout-phone" className="mb-1.5 block text-sm font-medium">Phone *</label>
+                        <input
+                          id="checkout-phone"
+                          {...register('phone')}
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
+                          placeholder="01712345678"
+                          className="input-base h-11"
+                        />
                         <FieldError message={errors.phone?.message} />
                       </div>
-                    </div>
-                  </section>
-
-                  <section className="rounded-xl border border-border bg-card p-4 shadow-[0_10px_24px_rgba(23,18,15,0.04)] sm:rounded-2xl sm:p-5">
-                    <SectionHeader icon="map-pin" title="Delivery Address" />
-                    <div className="space-y-3.5">
-                      <div>
-                        <label htmlFor="checkout-address-line-1" className="mb-1.5 block text-xs font-medium sm:text-sm">Address Line 1 *</label>
-                        <input id="checkout-address-line-1" {...register('addressLine1')} placeholder="House/Flat number, Road, Area" className="input-base h-10 sm:h-11" />
+                      <div className="sm:col-span-2">
+                        <label htmlFor="checkout-address-line-1" className="mb-1.5 block text-sm font-medium">Address line 1 *</label>
+                        <input
+                          id="checkout-address-line-1"
+                          {...register('addressLine1')}
+                          autoComplete="street-address"
+                          placeholder="House/Flat number, Road, Area"
+                          className="input-base h-11"
+                        />
                         <FieldError message={errors.addressLine1?.message} />
                       </div>
-
+                      <div className="sm:col-span-2">
+                        <label htmlFor="checkout-address-line-2" className="mb-1.5 block text-sm font-medium">Address line 2 (optional)</label>
+                        <input id="checkout-address-line-2" {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base h-11" />
+                      </div>
                       <div>
-                        <label htmlFor="checkout-address-line-2" className="mb-1.5 block text-xs font-medium sm:text-sm">Address Line 2 (optional)</label>
-                        <input id="checkout-address-line-2" {...register('addressLine2')} placeholder="Landmark (optional)" className="input-base h-10 sm:h-11" />
+                        <label htmlFor="checkout-division" className="mb-1.5 block text-sm font-medium">Division *</label>
+                        <select id="checkout-division" {...register('division')} autoComplete="address-level1" className="input-base h-11">
+                          <option value="">Select division</option>
+                          {DIVISIONS.map((division) => <option key={division} value={division}>{division}</option>)}
+                        </select>
+                        <FieldError message={errors.division?.message} />
                       </div>
-
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                        <div>
-                          <label htmlFor="checkout-division" className="mb-1.5 block text-xs font-medium sm:text-sm">Division *</label>
-                          <select id="checkout-division" {...register('division')} className="input-base h-10 sm:h-11">
-                            <option value="">Select Division</option>
-                            {DIVISIONS.map((division) => <option key={division} value={division}>{division}</option>)}
-                          </select>
-                          <FieldError message={errors.division?.message} />
-                        </div>
-                        <div>
-                          <label htmlFor="checkout-district" className="mb-1.5 block text-xs font-medium sm:text-sm">District *</label>
-                          <input id="checkout-district" {...register('district')} placeholder="e.g. Dhaka" className="input-base h-10 sm:h-11" />
-                          <FieldError message={errors.district?.message} />
-                        </div>
-                        <div>
-                          <label htmlFor="checkout-city" className="mb-1.5 block text-xs font-medium sm:text-sm">City *</label>
-                          <input id="checkout-city" {...register('city')} placeholder="e.g. Dhaka City" className="input-base h-10 sm:h-11" />
-                          <FieldError message={errors.city?.message} />
-                        </div>
+                      <div>
+                        <label htmlFor="checkout-district" className="mb-1.5 block text-sm font-medium">District *</label>
+                        <input id="checkout-district" {...register('district')} autoComplete="address-level2" placeholder="e.g. Dhaka" className="input-base h-11" />
+                        <FieldError message={errors.district?.message} />
                       </div>
-
-                      <label htmlFor="checkout-save-address" className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-background/70 p-3">
-                        <input
-                          id="checkout-save-address"
-                          type="checkbox"
-                          checked={saveNewAddress}
-                          onChange={(event) => setSaveNewAddress(event.target.checked)}
-                          className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                        />
-                        <span>
-                          <span className="block text-xs font-medium sm:text-sm">Save this address for next time</span>
-                          <span className="block text-xs leading-5 text-muted-foreground">
-                            Keep it in My Account so checkout can use it automatically later.
-                          </span>
-                        </span>
-                      </label>
-
-                      <button type="submit" className="btn-primary mt-1 hidden min-h-10 w-full px-4 py-2 text-sm lg:flex">
-                        Continue to Payment
-                      </button>
+                      <div>
+                        <label htmlFor="checkout-city" className="mb-1.5 block text-sm font-medium">City *</label>
+                        <input id="checkout-city" {...register('city')} autoComplete="address-level2" placeholder="e.g. Dhaka City" className="input-base h-11" />
+                        <FieldError message={errors.city?.message} />
+                      </div>
+                      <div>
+                        <label htmlFor="checkout-postal-code" className="mb-1.5 block text-sm font-medium">Postal code (optional)</label>
+                        <input id="checkout-postal-code" {...register('postalCode')} inputMode="numeric" autoComplete="postal-code" placeholder="1207" className="input-base h-11" />
+                      </div>
                     </div>
-                  </section>
-                </form>
-              )
+
+                    <label htmlFor="checkout-save-address" className="mt-4 flex cursor-pointer items-start gap-3 rounded-[0.875rem] bg-[#f7f7f5] p-3">
+                      <input
+                        id="checkout-save-address"
+                        type="checkbox"
+                        checked={saveNewAddress}
+                        onChange={(event) => setSaveNewAddress(event.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-input accent-foreground"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium">Save this address for next time</span>
+                        <span className="block text-xs leading-5 text-muted-foreground">Keep it in My Account so checkout can use it automatically later.</span>
+                      </span>
+                    </label>
+                  </form>
+                )}
+
+                <DeliveryMethodCard shippingFee={shippingFee} />
+                <DeliveryInstructionsCard
+                  orderNote={orderNote}
+                  handoff={deliveryHandoff}
+                  onOrderNoteChange={setOrderNote}
+                  onHandoffChange={setDeliveryHandoff}
+                />
+              </>
             ) : null}
 
             {step === 1 ? (
               <CheckoutPaymentStep
                 selectedPayment={selectedPayment}
-                orderNote={orderNote}
                 onSelectedPaymentChange={setSelectedPayment}
-                onOrderNoteChange={setOrderNote}
                 onBack={() => setStep(0)}
                 onReview={() => setStep(2)}
               />
@@ -789,45 +836,28 @@ export function CheckoutClient() {
             {step === 2 ? (
               <CheckoutReviewStep
                 items={items}
+                deliveryAddress={selectedSavedAddress ? addressFormFromSavedAddress(selectedSavedAddress) : getValues()}
+                paymentMethod={selectedPayment}
+                deliveryHandoff={HANDOFF_LABELS[deliveryHandoff]}
+                shippingFee={shippingFee}
                 submitting={submitting}
                 onBack={() => setStep(1)}
                 onPlaceOrder={placeOrder}
               />
             ) : null}
 
-            {step === 0 ? (
-              <div className="lg:hidden">
-                <OrderSummaryCard
-                  items={items}
-                  subtotal={subtotal}
-                  shippingFee={shippingFee}
-                  discount={discount}
-                  total={total}
-                  compact
-                  showCheckoutCta={isSavedAddressStep}
-                  showSecureLine={isSavedAddressStep}
-                  onContinue={continueWithSavedAddress}
-                  couponCode={couponCode}
-                  appliedCoupon={appliedCoupon}
-                  applyingCoupon={applyingCoupon}
-                  onCouponCodeChange={updateCouponCode}
-                  onApplyCoupon={handleApplyCoupon}
-                  onRemoveCoupon={removeCheckoutCoupon}
-                />
-              </div>
-            ) : null}
           </div>
 
-          <aside className="hidden lg:block">
+          <aside data-checkout-summary className="min-w-0 min-[1280px]:sticky min-[1280px]:top-6">
             <OrderSummaryCard
               items={items}
               subtotal={subtotal}
               shippingFee={shippingFee}
               discount={discount}
               total={total}
-              title="Order Summary"
-              showEditCart={false}
-              showBenefits={isSavedAddressStep}
+              showCheckoutCta={step === 0}
+              onContinue={continueDelivery}
+              onUpdateQuantity={(item, quantity) => updateQuantity(item.productId, quantity, item.variantId)}
               couponCode={couponCode}
               appliedCoupon={appliedCoupon}
               applyingCoupon={applyingCoupon}
@@ -837,23 +867,7 @@ export function CheckoutClient() {
             />
           </aside>
         </div>
-
-        <TrustRow />
       </div>
-
-      {step === 0 && !isSavedAddressStep ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 shadow-[0_-10px_30px_rgba(23,18,15,0.08)] lg:hidden">
-          <div className="mx-auto flex max-w-6xl items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted-foreground">Total</p>
-              <p className="text-xl font-semibold tracking-[-0.02em]">{formatPrice(total)}</p>
-            </div>
-            <button type="button" onClick={continueDelivery} className="btn-primary min-h-11 flex-[1.7] px-4 py-2 text-sm">
-              Continue to Payment
-            </button>
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

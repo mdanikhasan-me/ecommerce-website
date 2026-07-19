@@ -102,13 +102,13 @@ export default async function AccountOrdersPage({
                       {order.items.map((item, index) => (
                         <div
                           key={`${item.productName}-${index}`}
-                          className="relative h-10 w-10 overflow-hidden rounded-xl border-2 border-card bg-background"
+                          className="product-media-frame relative w-10 overflow-hidden rounded-xl border-2 border-card bg-background"
                         >
                           {item.imageUrl ? (
                             <img
                               src={item.imageUrl}
                               alt=""
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-contain p-0.5"
                               loading="lazy"
                               decoding="async"
                             />

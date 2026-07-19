@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from '@/frontend/lib/toast'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 interface InventoryAdjustmentPanelProps {
   product: {
@@ -88,8 +89,8 @@ export function InventoryAdjustmentPanel({ product }: InventoryAdjustmentPanelPr
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="admin-mobile-action">
-        Adjust
+      <button type="button" onClick={() => setOpen(true)} className="admin-table-action admin-table-action-primary">
+        Adjust stock <LocalIcon name="sliders-horizontal" className="h-4 w-4" />
       </button>
 
       {open && (

@@ -1,235 +1,222 @@
+import type { Prisma } from '@prisma/client'
+
 import { db } from '@/backend/database'
-import Link from 'next/link'
+import { parseAdminListPage } from '@/backend/admin/list-filters'
 import { formatPrice } from '@/backend/utils'
+import {
+  AdminFiltersButton,
+  AdminListHeader,
+  AdminListPagination,
+  AdminListSummary,
+  AdminListTabs,
+  AdminSearchField,
+  AdminSelectField,
+} from '@/frontend/components/admin/AdminListPrimitives'
 import { InventoryAdjustmentPanel } from '@/frontend/components/admin/InventoryAdjustmentPanel'
+import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 export const metadata = { title: 'Admin Inventory' }
 
-const STOCK_FILTERS = [
-  { value: 'all', label: 'All products' },
-  { value: 'out', label: 'Out of stock' },
-  { value: 'low', label: 'Low stock' },
-  { value: 'healthy', label: 'Healthy' },
-] as const
+const STOCK_VALUES = new Set(['out', 'low', 'healthy'])
+const VARIANT_VALUES = new Set(['with', 'without'])
+const SORT_VALUES = new Set(['lowest', 'highest', 'name', 'recent'])
 
 export default async function AdminInventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; stock?: string }>
+  searchParams: Promise<{
+    page?: string
+    q?: string
+    stock?: string
+    category?: string
+    variants?: string
+    sort?: string
+  }>
 }) {
   const params = await searchParams
-  const query = params.q?.trim() ?? ''
-  const stockFilter = STOCK_FILTERS.some((item) => item.value === params.stock)
-    ? params.stock
-    : 'all'
-  const products = await db.product.findMany({
-    where: {
-      isActive: true,
-      ...(query
-        ? {
-            OR: [
-              { name: { contains: query, mode: 'insensitive' as const } },
-              { sku: { contains: query, mode: 'insensitive' as const } },
-              { category: { name: { contains: query, mode: 'insensitive' as const } } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { stockQuantity: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      sku: true,
-      basePrice: true,
-      salePrice: true,
-      stockQuantity: true,
-      lowStockThreshold: true,
-      viewCount: true,
-      soldCount: true,
-      category: { select: { name: true } },
-      variants: {
-        orderBy: { sortOrder: 'asc' },
-        select: {
-          id: true,
-          name: true,
-          sku: true,
-          stockQuantity: true,
-          isActive: true,
+  const page = parseAdminListPage(params.page)
+  const limit = 20
+  const skip = (page - 1) * limit
+  const query = params.q?.trim().slice(0, 120) ?? ''
+  const stock = STOCK_VALUES.has(params.stock ?? '') ? params.stock! : ''
+  const category = params.category?.trim() ?? ''
+  const variants = VARIANT_VALUES.has(params.variants ?? '') ? params.variants! : ''
+  const sort = SORT_VALUES.has(params.sort ?? '') ? params.sort! : 'lowest'
+
+  const where: Prisma.ProductWhereInput = { isActive: true }
+  if (query) {
+    where.OR = [
+      { name: { contains: query, mode: 'insensitive' } },
+      { sku: { contains: query, mode: 'insensitive' } },
+      { category: { name: { contains: query, mode: 'insensitive' } } },
+    ]
+  }
+  if (category) where.categoryId = category
+  if (stock === 'out') where.stockQuantity = 0
+  if (stock === 'low') where.stockQuantity = { gt: 0, lte: 5 }
+  if (stock === 'healthy') where.stockQuantity = { gt: 5 }
+  if (variants === 'with') where.variants = { some: {} }
+  if (variants === 'without') where.variants = { none: {} }
+
+  const orderBy: Prisma.ProductOrderByWithRelationInput =
+    sort === 'highest'
+      ? { stockQuantity: 'desc' }
+      : sort === 'name'
+        ? { name: 'asc' }
+        : sort === 'recent'
+          ? { updatedAt: 'desc' }
+          : { stockQuantity: 'asc' }
+
+  const [products, total, categories, trackedCount, outCount, lowCount, healthyCount] = await Promise.all([
+    db.product.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        basePrice: true,
+        salePrice: true,
+        stockQuantity: true,
+        lowStockThreshold: true,
+        viewCount: true,
+        soldCount: true,
+        category: { select: { name: true } },
+        variants: {
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true, name: true, sku: true, stockQuantity: true, isActive: true },
         },
       },
-    },
-    take: 100,
-  })
+    }),
+    db.product.count({ where }),
+    db.category.findMany({ where: { isActive: true }, select: { id: true, name: true }, orderBy: { name: 'asc' } }),
+    db.product.count({ where: { isActive: true } }),
+    db.product.count({ where: { isActive: true, stockQuantity: 0 } }),
+    db.product.count({ where: { isActive: true, stockQuantity: { gt: 0, lte: 5 } } }),
+    db.product.count({ where: { isActive: true, stockQuantity: { gt: 5 } } }),
+  ])
 
-  const outOfStock = products.filter((product) => product.stockQuantity === 0)
-  const lowStock = products.filter(
-    (product) => product.stockQuantity > 0 && product.stockQuantity <= product.lowStockThreshold,
-  )
-  const inStock = products.filter((product) => product.stockQuantity > product.lowStockThreshold)
-  const visibleProducts = products.filter((product) => {
-    if (stockFilter === 'out') return product.stockQuantity === 0
-    if (stockFilter === 'low') return product.stockQuantity > 0 && product.stockQuantity <= product.lowStockThreshold
-    if (stockFilter === 'healthy') return product.stockQuantity > product.lowStockThreshold
-    return true
-  })
-
-  const filterHref = (value: string) => {
+  const totalPages = Math.max(1, Math.ceil(total / limit))
+  const queryHref = (targetPage: number) => {
     const search = new URLSearchParams()
-    if (value !== 'all') search.set('stock', value)
+    if (targetPage > 1) search.set('page', String(targetPage))
     if (query) search.set('q', query)
+    if (stock) search.set('stock', stock)
+    if (category) search.set('category', category)
+    if (variants) search.set('variants', variants)
+    if (sort !== 'lowest') search.set('sort', sort)
     const suffix = search.toString()
     return suffix ? `/admin/inventory?${suffix}` : '/admin/inventory'
   }
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="admin-page-title">Inventory Management</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Adjust base stock, low stock thresholds, and variant inventory from one place.
-        </p>
-      </div>
+    <div className="admin-list-page">
+      <AdminListHeader title="Inventory" description="Monitor stock levels, alert thresholds and product variants." />
 
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="critical">
-          <p className="text-xl font-bold text-red-600 sm:text-2xl">{outOfStock.length}</p>
-          <p className="mt-0.5 text-xs text-red-700 sm:text-sm">Out of stock</p>
-        </div>
-        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="warning">
-          <p className="text-xl font-bold text-amber-600 sm:text-2xl">{lowStock.length}</p>
-          <p className="mt-0.5 text-xs text-amber-700 sm:text-sm">Low stock</p>
-        </div>
-        <div className="admin-card admin-stat-card p-3 sm:p-4" data-tone="healthy">
-          <p className="text-xl font-bold text-green-600 sm:text-2xl">{inStock.length}</p>
-          <p className="mt-0.5 text-xs text-green-700 sm:text-sm">Healthy stock</p>
-        </div>
-      </div>
+      <AdminListTabs
+        label="Inventory state"
+        tabs={[
+          { label: 'All inventory', count: trackedCount, href: '/admin/inventory', active: !stock },
+          { label: 'Out of stock', count: outCount, href: '/admin/inventory?stock=out', active: stock === 'out' },
+          { label: 'Low stock', count: lowCount, href: '/admin/inventory?stock=low', active: stock === 'low' },
+          { label: 'Healthy', count: healthyCount, href: '/admin/inventory?stock=healthy', active: stock === 'healthy' },
+        ]}
+      />
 
-      <section className="admin-card p-3 sm:p-4">
-        <form className="flex flex-col gap-3 sm:flex-row" action="/admin/inventory">
-          {stockFilter !== 'all' && <input type="hidden" name="stock" value={stockFilter} />}
-          <input
-            name="q"
-            defaultValue={query}
-            className="input-base flex-1"
-            placeholder="Search product, SKU or category"
-            aria-label="Search inventory"
-          />
-          <button type="submit" className="btn-primary sm:min-w-28">Search</button>
-        </form>
-        <div className="admin-report-tabs mt-3" aria-label="Inventory status">
-          {STOCK_FILTERS.map((item) => (
-            <Link
-              key={item.value}
-              href={filterHref(item.value)}
-              aria-current={stockFilter === item.value ? 'page' : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <form className="admin-list-toolbar" action="/admin/inventory">
+        <AdminSearchField defaultValue={query} placeholder="Search product, SKU or category" />
+        <AdminSelectField label="Category" name="category" defaultValue={category}>
+          <option value="">All categories</option>
+          {categories.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </AdminSelectField>
+        <AdminSelectField label="Stock state" name="stock" defaultValue={stock}>
+          <option value="">Any stock level</option>
+          <option value="out">Out of stock</option>
+          <option value="low">Low stock</option>
+          <option value="healthy">Healthy</option>
+        </AdminSelectField>
+        <AdminSelectField label="Variants" name="variants" defaultValue={variants}>
+          <option value="">All products</option>
+          <option value="with">With variants</option>
+          <option value="without">Without variants</option>
+        </AdminSelectField>
+        <AdminFiltersButton />
+        <AdminSelectField label="Sort" name="sort" defaultValue={sort} className="admin-list-sort">
+          <option value="lowest">Lowest stock first</option>
+          <option value="highest">Highest stock first</option>
+          <option value="name">Name A–Z</option>
+          <option value="recent">Recently updated</option>
+        </AdminSelectField>
+      </form>
 
-      <div className="admin-card overflow-hidden">
-        <div className="admin-responsive-table-wrap overflow-x-auto">
-          <table className="admin-responsive-table w-full text-sm">
+      <AdminListSummary strong={`${total} tracked ${total === 1 ? 'product' : 'products'}`} detail={`${outCount} out of stock · ${lowCount} low stock · threshold alerts enabled`} />
+
+      <section className="admin-list-card" aria-label="Inventory">
+        <div className="admin-list-table-wrap">
+          <table className="admin-list-table">
             <thead>
-              <tr className="border-b border-border bg-secondary">
-                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Product</th>
-                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">
-                  SKU
-                </th>
-                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">
-                  Category
-                </th>
-                <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Price</th>
-                <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Stock</th>
-                <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground lg:table-cell">
-                  Variants
-                </th>
-                <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground xl:table-cell">
-                  Views
-                </th>
-                <th className="hidden px-4 py-3 text-right font-semibold text-muted-foreground lg:table-cell">Sold</th>
-                <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
+              <tr>
+                <th className="w-12"><input className="admin-row-checkbox" type="checkbox" aria-label="Select all inventory records" /></th>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Inventory</th>
+                <th>Variants</th>
+                <th>Performance</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
-              {visibleProducts.map((product) => (
-                <tr key={product.id}>
-                  <td data-mobile data-primary className="max-w-[260px] px-4 py-3">
-                    <div className="space-y-0.5">
-                      <p className="truncate font-medium">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">{product.category.name}</p>
-                    </div>
-                  </td>
-                  <td className="hidden px-4 py-3 font-mono text-xs text-muted-foreground xl:table-cell">
-                    {product.sku}
-                  </td>
-                  <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
-                    {product.category.name}
-                  </td>
-                  <td data-mobile data-label="Price" className="px-4 py-3 text-right">
-                    {formatPrice(product.salePrice ?? product.basePrice)}
-                  </td>
-                  <td data-mobile data-label="Stock" className="px-4 py-3 text-right">
-                    <div className="space-y-1">
-                      <p
-                        className={`font-bold ${
-                          product.stockQuantity === 0
-                            ? 'text-red-500'
-                            : product.stockQuantity <= product.lowStockThreshold
-                              ? 'text-amber-500'
-                              : 'text-green-600'
-                        }`}
-                      >
-                        {product.stockQuantity}
-                      </p>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                        Alert at {product.lowStockThreshold}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="hidden px-4 py-3 text-right text-muted-foreground lg:table-cell">
-                    {product.variants.length}
-                  </td>
-                  <td className="hidden px-4 py-3 text-right text-muted-foreground xl:table-cell">
-                    {product.viewCount}
-                  </td>
-                  <td className="hidden px-4 py-3 text-right text-muted-foreground lg:table-cell">{product.soldCount}</td>
-                  <td data-mobile data-full data-action className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      <InventoryAdjustmentPanel
-                        product={{
-                          id: product.id,
-                          name: product.name,
-                          sku: product.sku,
-                          stockQuantity: product.stockQuantity,
-                          lowStockThreshold: product.lowStockThreshold,
-                          variants: product.variants,
-                        }}
-                      />
-                      <Link
-                        href={`/admin/products/${product.id}`}
-                        className="admin-mobile-action"
-                      >
-                        Edit
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {visibleProducts.length === 0 && (
-                <tr>
-                  <td colSpan={9} className="admin-empty-cell px-4 py-12 text-center text-sm text-muted-foreground">
-                    No inventory records match these filters.
-                  </td>
-                </tr>
-              )}
+            <tbody>
+              {products.length === 0 ? (
+                <tr><td colSpan={9} className="admin-empty-cell text-center text-muted-foreground">No inventory records match these filters.</td></tr>
+              ) : products.map((product) => {
+                const stockTone = product.stockQuantity === 0 ? 'danger' : product.stockQuantity <= product.lowStockThreshold ? 'warning' : 'success'
+                return (
+                  <tr key={product.id}>
+                    <td><input className="admin-row-checkbox" type="checkbox" aria-label={`Select ${product.name}`} /></td>
+                    <td data-primary>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="admin-product-thumb"><LocalIcon name="package" className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" /></div>
+                        <div className="min-w-0">
+                          <p className="admin-table-primary max-w-[18rem] truncate">{product.name}</p>
+                          <p className="admin-table-secondary">{product.category.name}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td data-label="SKU" className="font-mono text-xs text-muted-foreground">{product.sku}</td>
+                    <td data-label="Category" className="text-muted-foreground">{product.category.name}</td>
+                    <td data-label="Price"><span className="admin-table-primary">{formatPrice(product.salePrice ?? product.basePrice)}</span></td>
+                    <td data-label="Inventory">
+                      <span className="admin-table-status" data-tone={stockTone}>
+                        {product.stockQuantity === 0 ? 'Out of stock' : `${product.stockQuantity} in stock`}
+                      </span>
+                      <p className="admin-table-secondary">Alert at {product.lowStockThreshold}</p>
+                    </td>
+                    <td data-label="Variants">{product.variants.length}</td>
+                    <td data-label="Performance">
+                      <p className="admin-table-primary">{product.soldCount} sold</p>
+                      <p className="admin-table-secondary">{product.viewCount} views</p>
+                    </td>
+                    <td data-action>
+                      <InventoryAdjustmentPanel product={product} />
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
+
+      <AdminListPagination
+        page={page}
+        totalPages={totalPages}
+        summary={total === 0 ? 'No inventory records shown' : `Showing ${skip + 1}–${Math.min(skip + limit, total)} of ${total} products`}
+        pageHref={queryHref}
+      />
     </div>
   )
 }

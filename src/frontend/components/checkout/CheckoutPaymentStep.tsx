@@ -16,16 +16,12 @@ const PAYMENT_LOGO_CLASSES: Record<string, string> = {
 
 export function CheckoutPaymentStep({
   selectedPayment,
-  orderNote,
   onSelectedPaymentChange,
-  onOrderNoteChange,
   onBack,
   onReview,
 }: {
   selectedPayment: string
-  orderNote: string
   onSelectedPaymentChange: (paymentId: string) => void
-  onOrderNoteChange: (note: string) => void
   onBack: () => void
   onReview: () => void
 }) {
@@ -33,22 +29,22 @@ export function CheckoutPaymentStep({
   const hasAvailablePaymentGateway = PAYMENT_GATEWAYS.some((gateway) => gateway.isAvailable)
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-[0_10px_24px_rgba(23,18,15,0.04)] sm:rounded-2xl sm:p-5">
-      <h2 className="mb-4 flex items-center gap-2 text-base font-semibold sm:text-lg">
-        <LocalIcon name="credit-card" className="h-4 w-4 text-primary sm:h-5 sm:w-5" /> Payment Method
-      </h2>
+    <fieldset className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+      <legend className="sr-only">Payment method</legend>
+      <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Payment method</h2>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">Choose one available way to pay for this order.</p>
 
-      <div className="space-y-3">
+      <div className="mt-5 space-y-3">
         {PAYMENT_GATEWAYS.map((gateway) => (
           <label
             key={gateway.id}
             className={cn(
-              'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl border-2 p-3 transition-colors sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:p-4',
+              'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-[1rem] border p-3 focus-within:border-foreground focus-within:bg-[#ececea] sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:p-4',
               gateway.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
               selectedPayment === gateway.id && gateway.isAvailable
-                ? 'border-primary bg-primary/5'
-                : 'border-border',
-              !gateway.isAvailable && 'bg-muted/25',
+                ? 'border-foreground bg-[#f7f7f5]'
+                : 'border-black/10',
+              !gateway.isAvailable && 'bg-[#f7f7f5]',
             )}
           >
             <input
@@ -65,21 +61,21 @@ export function CheckoutPaymentStep({
             />
             <div
               className={cn(
-                'flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors',
+                'flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border',
                 selectedPayment === gateway.id && gateway.isAvailable
-                  ? 'border-primary'
-                  : 'border-muted-foreground/60',
+                  ? 'border-foreground'
+                  : 'border-muted-foreground/50',
               )}
             >
               {selectedPayment === gateway.id && gateway.isAvailable ? (
-                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                <div className="h-2.5 w-2.5 rounded-full bg-foreground" />
               ) : null}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-sm font-semibold">{gateway.name}</p>
                 {gateway.badge ? (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-800">
                     {gateway.badge}
                   </span>
                 ) : null}
@@ -95,8 +91,8 @@ export function CheckoutPaymentStep({
               {gateway.logos?.length ? (
                 <div
                   className={cn(
-                    'flex h-10 w-16 flex-shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border/70 bg-background/80 px-2 shadow-sm sm:w-20',
-                    !gateway.isAvailable && 'grayscale',
+                    'flex h-10 w-16 flex-shrink-0 items-center justify-center gap-1.5 rounded-lg border border-black/10 bg-background px-2 sm:w-20',
+                    !gateway.isAvailable && 'opacity-60',
                   )}
                 >
                   {gateway.logos.map((logo) => (
@@ -116,27 +112,15 @@ export function CheckoutPaymentStep({
                 </div>
               ) : null}
               {selectedPayment === gateway.id && gateway.isAvailable ? (
-                <LocalIcon name="check" className="h-4 w-4 flex-shrink-0 text-primary" />
+                <LocalIcon name="check" className="h-4 w-4 flex-shrink-0 text-foreground" />
               ) : null}
             </div>
           </label>
         ))}
       </div>
 
-      <div className="mt-4">
-        <label htmlFor="checkout-order-note" className="mb-1 block text-xs font-medium sm:text-sm">Order Note (optional)</label>
-        <textarea
-          id="checkout-order-note"
-          value={orderNote}
-          onChange={(event) => onOrderNoteChange(event.target.value)}
-          placeholder="Any special instructions..."
-          rows={3}
-          className="input-base resize-none"
-        />
-      </div>
-
-      <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row">
-        <button type="button" onClick={onBack} className="btn-outline min-h-10 flex-1 px-4 py-2 text-sm">Back</button>
+      <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row">
+        <button type="button" onClick={onBack} className="min-h-12 flex-1 rounded-[0.875rem] border border-black/15 bg-background px-4 py-2 text-sm font-semibold focus-visible:bg-secondary/70">Back</button>
         <button
           type="button"
           onClick={() => {
@@ -147,11 +131,11 @@ export function CheckoutPaymentStep({
             onReview()
           }}
           disabled={!hasAvailablePaymentGateway}
-          className="btn-primary min-h-10 flex-1 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-12 flex-1 rounded-[0.875rem] bg-[#121212] px-4 py-2 text-sm font-semibold text-white focus-visible:bg-black/80 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Review Order
+          Continue to review
         </button>
       </div>
-    </div>
+    </fieldset>
   )
 }
