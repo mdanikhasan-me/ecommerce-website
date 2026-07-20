@@ -160,9 +160,9 @@ function CouponCodeField({
 }) {
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-semibold">Coupon</p>
-        <p className="text-xs text-muted-foreground">Enter your code before payment</p>
+      <div className="mb-3 flex items-center justify-center gap-2">
+        <p className="text-sm font-semibold">Have a coupon?</p>
+        <p className="text-xs text-muted-foreground">(optional)</p>
       </div>
       <div className="flex gap-2">
         <input
@@ -281,7 +281,7 @@ function OrderSummaryCard({
           <button
             type="button"
             onClick={onContinue}
-            className="mt-3 flex min-h-[3.25rem] w-full items-center justify-center gap-3 rounded-lg bg-[#121212] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(18,18,18,0.12)] focus-visible:bg-black/80"
+            className="mt-3 hidden min-h-[3.25rem] w-full items-center justify-center gap-3 rounded-lg bg-[#121212] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(18,18,18,0.12)] focus-visible:bg-black/80 min-[1280px]:flex"
           >
             Continue to payment <LocalIcon name="arrow-right" className="h-4 w-4" />
           </button>
@@ -643,7 +643,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
   }
 
   return (
-    <div data-checkout-page className="checkout-frame pb-12 pt-8 sm:pb-16 sm:pt-10">
+    <div data-checkout-page className="checkout-frame pb-[7.5rem] pt-8 sm:pt-10 min-[1280px]:pb-16">
       <div>
         <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
@@ -806,17 +806,19 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
               />
             ) : null}
 
-            <section data-checkout-coupon-card className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5">
-              <CouponCodeField
-                couponCode={couponCode}
-                appliedCoupon={appliedCoupon}
-                discount={discount}
-                applyingCoupon={applyingCoupon}
-                onCouponCodeChange={updateCouponCode}
-                onApplyCoupon={handleApplyCoupon}
-                onRemoveCoupon={removeCheckoutCoupon}
-              />
-            </section>
+            <div data-checkout-coupon-area>
+              <div data-checkout-coupon-card className="mx-auto max-w-2xl rounded-lg border border-black/10 bg-card p-3 shadow-[0_8px_20px_rgba(15,23,42,0.035)] sm:p-4">
+                <CouponCodeField
+                  couponCode={couponCode}
+                  appliedCoupon={appliedCoupon}
+                  discount={discount}
+                  applyingCoupon={applyingCoupon}
+                  onCouponCodeChange={updateCouponCode}
+                  onApplyCoupon={handleApplyCoupon}
+                  onRemoveCoupon={removeCheckoutCoupon}
+                />
+              </div>
+            </div>
 
           </div>
 
@@ -833,6 +835,24 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
             />
           </aside>
         </div>
+
+        {step === 0 ? (
+          <div data-checkout-sticky-payment className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-card/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6 min-[1280px]:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+            <div className="mx-auto flex max-w-3xl items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Total</span>
+                <span className="block truncate text-base font-bold tracking-[-0.02em]">{formatPrice(total)}</span>
+              </div>
+              <button
+                type="button"
+                onClick={continueDelivery}
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#121212] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(18,18,18,0.14)] focus-visible:bg-black/80"
+              >
+                Payment <LocalIcon name="arrow-right" className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )
