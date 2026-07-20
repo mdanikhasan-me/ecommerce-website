@@ -205,14 +205,8 @@ function OrderSummaryCard({
   total,
   compact = false,
   showCheckoutCta = false,
-  couponCode,
-  appliedCoupon,
-  applyingCoupon = false,
   onContinue,
   onUpdateQuantity,
-  onCouponCodeChange,
-  onApplyCoupon,
-  onRemoveCoupon,
 }: {
   items: CartItem[]
   subtotal: number
@@ -221,29 +215,23 @@ function OrderSummaryCard({
   total: number
   compact?: boolean
   showCheckoutCta?: boolean
-  couponCode?: string
-  appliedCoupon?: CartCoupon | null
-  applyingCoupon?: boolean
   onContinue?: () => void
   onUpdateQuantity?: (item: CartItem, quantity: number) => void
-  onCouponCodeChange?: (value: string) => void
-  onApplyCoupon?: () => void
-  onRemoveCoupon?: () => void
 }) {
   const visibleItems = compact ? items.slice(0, 2) : items
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <section data-checkout-summary-card className="checkout-order-summary-card flex flex-col overflow-hidden rounded-[1.25rem] border border-black/10 bg-card shadow-[0_18px_42px_rgba(24,24,22,0.06)]">
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-black/10 px-4 py-4 sm:px-5">
+    <section data-checkout-summary-card className="checkout-order-summary-card flex flex-col overflow-hidden rounded-xl border border-black/10 bg-card shadow-[0_12px_30px_rgba(15,23,42,0.045)]">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-black/10 px-4 py-3.5 sm:px-5">
         <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Order summary</h2>
         <span className="text-xs text-muted-foreground sm:text-sm">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
       </div>
 
-      <div data-checkout-summary-items className="min-h-0 divide-y divide-black/10 px-4 sm:px-5 min-[1280px]:flex-1 min-[1280px]:overflow-y-auto min-[1280px]:overscroll-contain">
+      <div data-checkout-summary-items className="min-h-0 divide-y divide-black/10 px-4 sm:px-5 min-[1280px]:max-h-[22rem] min-[1280px]:overflow-y-auto min-[1280px]:overscroll-contain">
         {visibleItems.map((item) => (
-          <div key={`${item.productId}-${item.variantId ?? 'base'}`} className="flex items-center gap-3 py-4">
-            <div className="relative aspect-[5/4] w-16 shrink-0 overflow-hidden rounded-[0.875rem] border border-black/10 bg-[#f5f5f3] sm:w-[5.25rem]">
+          <div key={`${item.productId}-${item.variantId ?? 'base'}`} className="flex items-center gap-3 py-3.5">
+            <div className="relative aspect-[5/4] w-16 shrink-0 overflow-hidden rounded-md border border-black/10 bg-black/[0.025] sm:w-[4.5rem]">
               {item.image ? (
                 <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="84px" />
               ) : (
@@ -287,46 +275,18 @@ function OrderSummaryCard({
         ) : null}
       </div>
 
-      {onCouponCodeChange && onApplyCoupon && onRemoveCoupon ? (
-        <div data-checkout-summary-coupon className="shrink-0 border-t border-black/10 px-4 py-4 sm:px-5">
-          <CouponCodeField
-            couponCode={couponCode ?? ''}
-            appliedCoupon={appliedCoupon ?? null}
-            discount={discount}
-            applyingCoupon={applyingCoupon}
-            onCouponCodeChange={onCouponCodeChange}
-            onApplyCoupon={onApplyCoupon}
-            onRemoveCoupon={onRemoveCoupon}
-          />
-        </div>
-      ) : null}
-
-      <div data-checkout-summary-totals className="shrink-0 border-t border-black/10 px-4 py-5 sm:px-5">
+      <div data-checkout-summary-totals className="shrink-0 border-t border-black/10 px-4 py-4 sm:px-5">
         <SummaryRows subtotal={subtotal} shippingFee={shippingFee} discount={discount} total={total} />
-        <div className="mt-4 flex items-center gap-3 rounded-[0.875rem] border border-black/10 bg-[#f5f5f3] p-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-black/10 bg-background">
-            <LocalIcon name="package" className="h-4 w-4" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-xs font-semibold sm:text-sm">Return-ready packaging</span>
-            <span className="block text-[11px] leading-4 text-muted-foreground sm:text-xs">Keep the original bag or box for a simpler return process.</span>
-          </span>
-        </div>
-
         {showCheckoutCta ? (
           <button
             type="button"
             onClick={onContinue}
-            className="mt-4 flex min-h-[3.375rem] w-full items-center justify-center gap-3 rounded-[0.875rem] bg-[#121212] px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(18,18,18,0.14)] focus-visible:bg-black/80"
+            className="mt-3 flex min-h-[3.25rem] w-full items-center justify-center gap-3 rounded-lg bg-[#121212] px-5 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(18,18,18,0.12)] focus-visible:bg-black/80"
           >
             Continue to payment <LocalIcon name="arrow-right" className="h-4 w-4" />
           </button>
         ) : null}
 
-        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <LocalIcon name="shield" className="h-3.5 w-3.5" />
-          Encrypted checkout
-        </div>
       </div>
     </section>
   )
@@ -347,7 +307,7 @@ function SavedAddressSelectionCard({
   const selectedAddress = addresses.find((address) => address.id === selectedAddressId) ?? addresses[0]
 
   return (
-    <section data-checkout-address className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+    <section data-checkout-address className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <span>
           <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Delivery address</h2>
@@ -360,8 +320,8 @@ function SavedAddressSelectionCard({
         </Link>
       </div>
 
-      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-[1rem] border border-black/10 bg-[#f7f7f5] p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:p-5">
-        <span className="flex h-11 w-11 items-center justify-center rounded-[0.875rem] border border-black/10 bg-background">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 rounded-lg border border-black/10 bg-black/[0.025] p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:p-5">
+        <span className="flex h-11 w-11 items-center justify-center rounded-md border border-black/10 bg-background">
           <LocalIcon name="map-pin" className="h-5 w-5" />
         </span>
         <span className="min-w-0">
@@ -404,8 +364,8 @@ function SavedAddressSelectionCard({
                   setIsChoosingAddress(false)
                 }}
                 className={cn(
-                  'flex min-h-12 w-full items-center justify-between gap-4 rounded-[0.875rem] px-4 py-3 text-left text-sm focus-visible:bg-secondary/80',
-                  isSelected ? 'bg-secondary/80 font-semibold' : 'bg-[#f7f7f5]',
+                  'flex min-h-12 w-full items-center justify-between gap-4 rounded-lg px-4 py-3 text-left text-sm focus-visible:bg-black/[0.04]',
+                  isSelected ? 'bg-black/[0.045] font-semibold' : 'bg-black/[0.025]',
                 )}
               >
                 <span className="min-w-0">
@@ -419,7 +379,7 @@ function SavedAddressSelectionCard({
           <button
             type="button"
             onClick={onAddNewAddress}
-            className="mt-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.875rem] bg-secondary/60 px-4 text-sm font-semibold focus-visible:bg-secondary"
+            className="mt-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-black/[0.035] px-4 text-sm font-semibold focus-visible:bg-black/[0.06]"
           >
             <LocalIcon name="plus" className="h-4 w-4" />
             Use a new address
@@ -432,13 +392,13 @@ function SavedAddressSelectionCard({
 
 function DeliveryMethodCard({ shippingFee }: { shippingFee: number }) {
   return (
-    <fieldset data-checkout-delivery-method className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+    <fieldset data-checkout-delivery-method className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5">
       <legend className="sr-only">Delivery method</legend>
       <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">Delivery method</h2>
       <p className="mt-1 text-xs leading-5 text-muted-foreground sm:text-sm">Choose the available delivery service for this order.</p>
 
       <div className="mt-5 grid gap-3 md:grid-cols-2">
-        <label className="grid min-h-[8.75rem] cursor-default grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-[1rem] border-2 border-foreground bg-[#f7f7f5] p-4 focus-within:bg-[#ececea]">
+        <label className="grid min-h-[8.25rem] cursor-default grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-lg border-2 border-foreground bg-black/[0.025] p-4 focus-within:bg-black/[0.045]">
           <input type="radio" name="delivery-method" checked readOnly className="sr-only" />
           <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-foreground">
             <span className="h-2.5 w-2.5 rounded-full bg-foreground" />
@@ -451,7 +411,7 @@ function DeliveryMethodCard({ shippingFee }: { shippingFee: number }) {
           <span className="text-sm font-semibold">{shippingFee === 0 ? 'Free' : formatPrice(shippingFee)}</span>
         </label>
 
-        <div aria-disabled="true" className="grid min-h-[8.75rem] grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-[1rem] border border-black/15 bg-[#fafafa] p-4 text-muted-foreground">
+        <div aria-disabled="true" className="grid min-h-[8.25rem] grid-cols-[auto_minmax(0,1fr)_auto] gap-3 rounded-lg border border-black/15 bg-black/[0.015] p-4 text-muted-foreground">
           <span className="mt-0.5 h-5 w-5 rounded-full border border-black/25" />
           <span className="min-w-0">
             <span className="flex flex-wrap items-center gap-2">
@@ -479,7 +439,7 @@ function DeliveryInstructionsCard({
   onHandoffChange: (handoff: DeliveryHandoff) => void
 }) {
   return (
-    <section data-checkout-delivery-instructions className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6">
+    <section data-checkout-delivery-instructions className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5">
       <h2 className="text-lg font-semibold tracking-[-0.015em] sm:text-xl">
         Delivery instructions <span className="text-xs font-normal text-muted-foreground sm:text-sm">(optional)</span>
       </h2>
@@ -687,7 +647,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
       <div>
         <div className="mb-6 flex flex-col gap-4 sm:mb-7 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <h1 className="text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[2.65rem] lg:text-[3rem]">
+            <h1 className="text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[2.35rem] lg:text-[2.5rem]">
               {stepContent.title}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">{stepContent.description}</p>
@@ -698,7 +658,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
           </div>
         </div>
 
-        <div data-checkout-layout className="checkout-layout-grid grid gap-5 min-[1280px]:items-start min-[1280px]:gap-10">
+        <div data-checkout-layout className="checkout-layout-grid grid gap-5 min-[1280px]:items-start min-[1280px]:gap-8">
           <div data-checkout-main className="min-w-0 space-y-5">
             {step === 0 ? (
               <>
@@ -716,7 +676,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
                   <form
                     id={DELIVERY_FORM_ID}
                     onSubmit={handleSubmit(onAddressSubmit)}
-                    className="rounded-[1.25rem] border border-black/10 bg-card p-4 shadow-[0_18px_42px_rgba(24,24,22,0.06)] sm:p-6"
+                    className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5"
                   >
                     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                       <span>
@@ -798,7 +758,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
                       </div>
                     </div>
 
-                    <label htmlFor="checkout-save-address" className="mt-4 flex cursor-pointer items-start gap-3 rounded-[0.875rem] bg-[#f7f7f5] p-3">
+                    <label htmlFor="checkout-save-address" className="mt-4 flex cursor-pointer items-start gap-3 rounded-lg bg-black/[0.025] p-3">
                       <input
                         id="checkout-save-address"
                         type="checkbox"
@@ -846,6 +806,18 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
               />
             ) : null}
 
+            <section data-checkout-coupon-card className="rounded-xl border border-black/10 bg-card p-4 shadow-[0_12px_30px_rgba(15,23,42,0.045)] sm:p-5">
+              <CouponCodeField
+                couponCode={couponCode}
+                appliedCoupon={appliedCoupon}
+                discount={discount}
+                applyingCoupon={applyingCoupon}
+                onCouponCodeChange={updateCouponCode}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={removeCheckoutCoupon}
+              />
+            </section>
+
           </div>
 
           <aside data-checkout-summary className="min-w-0 min-[1280px]:sticky min-[1280px]:top-6">
@@ -858,12 +830,6 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
               showCheckoutCta={step === 0}
               onContinue={continueDelivery}
               onUpdateQuantity={(item, quantity) => updateQuantity(item.productId, quantity, item.variantId)}
-              couponCode={couponCode}
-              appliedCoupon={appliedCoupon}
-              applyingCoupon={applyingCoupon}
-              onCouponCodeChange={updateCouponCode}
-              onApplyCoupon={handleApplyCoupon}
-              onRemoveCoupon={removeCheckoutCoupon}
             />
           </aside>
         </div>

@@ -2029,11 +2029,7 @@
     }
 
     .checkout-layout-grid {
-      grid-template-columns: minmax(0, 1fr) clamp(24rem, 29vw, 34rem);
-    }
-
-    .checkout-order-summary-card {
-      max-height: clamp(40rem, calc(100dvh - 16rem), 52rem);
+      grid-template-columns: minmax(0, 1fr) clamp(22rem, 26vw, 29rem);
     }
   }
 
