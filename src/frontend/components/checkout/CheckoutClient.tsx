@@ -806,20 +806,20 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
               />
             ) : null}
 
-            <div data-checkout-coupon-area>
-              <div data-checkout-coupon-card className="mx-auto max-w-2xl rounded-lg border border-black/10 bg-card p-3 shadow-[0_8px_20px_rgba(15,23,42,0.035)] sm:p-4">
-                <CouponCodeField
-                  couponCode={couponCode}
-                  appliedCoupon={appliedCoupon}
-                  discount={discount}
-                  applyingCoupon={applyingCoupon}
-                  onCouponCodeChange={updateCouponCode}
-                  onApplyCoupon={handleApplyCoupon}
-                  onRemoveCoupon={removeCheckoutCoupon}
-                />
-              </div>
-            </div>
+          </div>
 
+          <div data-checkout-coupon-area>
+            <div data-checkout-coupon-card className="mx-auto max-w-2xl rounded-lg border border-black/10 bg-card p-3 shadow-[0_8px_20px_rgba(15,23,42,0.035)] sm:p-4">
+              <CouponCodeField
+                couponCode={couponCode}
+                appliedCoupon={appliedCoupon}
+                discount={discount}
+                applyingCoupon={applyingCoupon}
+                onCouponCodeChange={updateCouponCode}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={removeCheckoutCoupon}
+              />
+            </div>
           </div>
 
           <aside data-checkout-summary className="min-w-0 min-[1280px]:sticky min-[1280px]:top-6">
