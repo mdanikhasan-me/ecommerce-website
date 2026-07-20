@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { auth } from '@/backend/auth'
 import { db } from '@/backend/database'
+import { buildInvoiceDownloadFilename, getInvoicePdfDownloadPath } from '@/backend/orders/order-invoice'
 import { generateNoIndexPageMetadata } from '@/backend/seo'
 import { formatPrice } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
@@ -42,20 +43,35 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
   if (!order) notFound()
 
+  const placedOn = new Intl.DateTimeFormat('en-BD', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(order.createdAt)
+  const receiptPath = getInvoicePdfDownloadPath(order.id)
+  const receiptFilename = buildInvoiceDownloadFilename(order.orderNumber)
+  const formatEnumLabel = (value: string) => value
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
   return (
     <div className="container-site py-12">
-      <div className="max-w-2xl">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-10 text-center">
           <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
             <LocalIcon name="check-circle" className="h-10 w-10 text-green-600" />
           </div>
-          <h1 className="font-display text-3xl font-bold">Order Confirmed!</h1>
+          <h1 className="font-display text-3xl font-bold">Order placed successfully</h1>
           <p className="mt-2 text-muted-foreground">
-            Thank you for your order. We&apos;ll send you updates as it progresses.
+            We&apos;ll send updates as your order progresses.
           </p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-secondary px-5 py-2.5">
-            <span className="text-sm text-muted-foreground">Order Number:</span>
+          <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg border border-border bg-card px-5 py-2.5">
+            <span className="text-sm text-muted-foreground">Order ID:</span>
             <span className="font-mono text-lg font-bold">{order.orderNumber}</span>
+            <span className="text-sm text-muted-foreground">· Placed on {placedOn}</span>
           </div>
         </div>
 
@@ -78,7 +94,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
                 </div>
               ))}
             </div>
-            <div className="space-y-1 border-t border-border bg-secondary px-5 py-3 text-sm">
+            <div className="space-y-1 border-t border-border bg-black/[0.025] px-5 py-3 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span>{formatPrice(order.subtotal)}</span>
@@ -119,30 +135,41 @@ export default async function OrderConfirmationPage({ params }: Props) {
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Method</span>
-                  <span className="font-medium">{order.paymentMethod.replace('_', ' ')}</span>
+                  <span className="font-medium">{formatEnumLabel(order.paymentMethod)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status</span>
                   <span className={`font-medium ${order.paymentStatus === 'PAID' ? 'text-green-600' : 'text-amber-500'}`}>
-                    {order.paymentStatus}
+                    {formatEnumLabel(order.paymentStatus)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Delivery</span>
-                  <span className="font-medium">Varies by address</span>
+                  <span className="font-medium">Standard delivery {order.shippingFee === 0 ? '· Free' : `· ${formatPrice(order.shippingFee)}`}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link href="/account/orders" className="btn-primary flex flex-1 items-center justify-center gap-2">
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <Link href={`/account/orders/${order.id}`} className="flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#121212] px-4 text-sm font-semibold text-white focus-visible:bg-black/80">
             Track Order <LocalIcon name="arrow-right" className="h-4 w-4" />
           </Link>
-          <Link href="/" className="btn-outline flex flex-1 items-center justify-center">
+          <a href={receiptPath} download={receiptFilename} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold focus-visible:bg-black/[0.04]">
+            <LocalIcon name="download" className="h-4 w-4" /> Download receipt
+          </a>
+          <Link href="/" className="flex min-h-11 items-center justify-center rounded-lg border border-border bg-card px-4 text-sm font-semibold focus-visible:bg-black/[0.04]">
             Continue Shopping
           </Link>
+        </div>
+
+        <div className="mt-8 border-t border-border pt-5 text-center text-sm text-muted-foreground">
+          <p>Need help with this order?</p>
+          <div className="mt-2 flex justify-center gap-4 font-semibold text-foreground">
+            <Link href="/help" className="min-[1025px]:hover:underline">Help Center</Link>
+            <Link href="/contact" className="min-[1025px]:hover:underline">Contact support</Link>
+          </div>
         </div>
       </div>
     </div>

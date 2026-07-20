@@ -18,11 +18,6 @@ const CheckoutPaymentStep = dynamic(
   { loading: () => null, ssr: false },
 )
 
-const CheckoutReviewStep = dynamic(
-  () => import('@/frontend/components/checkout/CheckoutReviewStep').then((mod) => mod.CheckoutReviewStep),
-  { loading: () => null, ssr: false },
-)
-
 const addressSchema = z.object({
   fullName: z.string().min(3, 'Full name required'),
   phone: z.string().min(11, 'Valid phone number required'),
@@ -60,19 +55,13 @@ const CHECKOUT_STEPS = [
     title: 'Where should we deliver?',
     description: 'Choose an address and delivery speed before moving to payment.',
     nextTitle: 'Next: Payment',
-    nextDescription: 'Review follows after payment details',
+    nextDescription: 'Choose a payment method to place your order',
   },
   {
-    title: 'How would you like to pay?',
-    description: 'Choose a secure payment method before reviewing your order.',
-    nextTitle: 'Next: Review',
-    nextDescription: 'Confirm every detail before placing the order',
-  },
-  {
-    title: 'Review and place your order',
-    description: 'Check the delivery, payment and item details one final time.',
-    nextTitle: 'Final step',
-    nextDescription: 'Place the order when everything looks right',
+    title: 'Choose payment method',
+    description: 'Select an available payment method to place your order.',
+    nextTitle: 'Next: Order confirmation',
+    nextDescription: 'Your order will be placed after payment selection',
   },
 ] as const
 
@@ -482,6 +471,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
   const [step, setStep] = useState(0)
   const [selectedPayment, setSelectedPayment] = useState('CASH_ON_DELIVERY')
   const [submitting, setSubmitting] = useState(false)
+  const [isCompletingOrder, setIsCompletingOrder] = useState(false)
   const [orderNote, setOrderNote] = useState('')
   const [deliveryHandoff, setDeliveryHandoff] = useState<DeliveryHandoff>('hand-to-me')
   const [couponCode, setCouponCode] = useState(appliedCoupon?.code ?? '')
@@ -513,10 +503,10 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
   }, [])
 
   useEffect(() => {
-    if (cartHydrated && items.length === 0) {
+    if (cartHydrated && items.length === 0 && !isCompletingOrder) {
       router.replace('/cart')
     }
-  }, [cartHydrated, items.length, router])
+  }, [cartHydrated, isCompletingOrder, items.length, router])
 
   useEffect(() => {
     if (appliedCoupon?.code) {
@@ -632,10 +622,12 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to place order')
 
+      setIsCompletingOrder(true)
       clearCart()
-      router.push(`/order/${data.orderNumber}/confirmation`)
+      router.replace(`/order/${data.orderNumber}/confirmation`)
       toast.success('Order placed successfully!')
     } catch (err) {
+      setIsCompletingOrder(false)
       toast.error(getErrorMessage(err, 'Failed to place order'))
     } finally {
       setSubmitting(false)
@@ -789,40 +781,30 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
                 selectedPayment={selectedPayment}
                 onSelectedPaymentChange={setSelectedPayment}
                 onBack={() => setStep(0)}
-                onReview={() => setStep(2)}
-              />
-            ) : null}
-
-            {step === 2 ? (
-              <CheckoutReviewStep
-                items={items}
-                deliveryAddress={selectedSavedAddress ? addressFormFromSavedAddress(selectedSavedAddress) : getValues()}
-                paymentMethod={selectedPayment}
-                deliveryHandoff={HANDOFF_LABELS[deliveryHandoff]}
-                shippingFee={shippingFee}
-                submitting={submitting}
-                onBack={() => setStep(1)}
                 onPlaceOrder={placeOrder}
+                submitting={submitting}
               />
             ) : null}
 
           </div>
 
-          <div data-checkout-coupon-area>
-            <div data-checkout-coupon-card className="mx-auto max-w-2xl">
-              <CouponCodeField
-                couponCode={couponCode}
-                appliedCoupon={appliedCoupon}
-                discount={discount}
-                applyingCoupon={applyingCoupon}
-                onCouponCodeChange={updateCouponCode}
-                onApplyCoupon={handleApplyCoupon}
-                onRemoveCoupon={removeCheckoutCoupon}
-              />
+          {step === 0 ? (
+            <div data-checkout-coupon-area>
+              <div data-checkout-coupon-card className="mx-auto max-w-2xl">
+                <CouponCodeField
+                  couponCode={couponCode}
+                  appliedCoupon={appliedCoupon}
+                  discount={discount}
+                  applyingCoupon={applyingCoupon}
+                  onCouponCodeChange={updateCouponCode}
+                  onApplyCoupon={handleApplyCoupon}
+                  onRemoveCoupon={removeCheckoutCoupon}
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          <aside data-checkout-summary className="min-w-0 min-[1280px]:sticky min-[1280px]:top-6">
+          <aside data-checkout-summary className="min-w-0 self-start">
             <OrderSummaryCard
               items={items}
               subtotal={subtotal}
@@ -837,7 +819,7 @@ export function CheckoutClient({ initialAddresses = [] }: { initialAddresses?: S
         </div>
 
         {step === 0 ? (
-          <div data-checkout-sticky-payment className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-card/95 px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur sm:px-6 min-[1280px]:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
+          <div data-checkout-sticky-payment className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-card px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] sm:px-6 min-[1280px]:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
             <div className="mx-auto flex max-w-3xl items-center gap-3">
               <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Total</span>

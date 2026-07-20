@@ -18,12 +18,14 @@ export function CheckoutPaymentStep({
   selectedPayment,
   onSelectedPaymentChange,
   onBack,
-  onReview,
+  onPlaceOrder,
+  submitting,
 }: {
   selectedPayment: string
   onSelectedPaymentChange: (paymentId: string) => void
   onBack: () => void
-  onReview: () => void
+  onPlaceOrder: () => void
+  submitting: boolean
 }) {
   const selectedGateway = PAYMENT_GATEWAYS.find((gateway) => gateway.id === selectedPayment)
   const hasAvailablePaymentGateway = PAYMENT_GATEWAYS.some((gateway) => gateway.isAvailable)
@@ -128,12 +130,12 @@ export function CheckoutPaymentStep({
               toast.error(selectedGateway?.disabledReason || 'This payment method is not ready yet')
               return
             }
-            onReview()
+            onPlaceOrder()
           }}
-          disabled={!hasAvailablePaymentGateway}
+          disabled={!hasAvailablePaymentGateway || submitting}
           className="min-h-12 flex-1 rounded-[0.875rem] bg-[#121212] px-4 py-2 text-sm font-semibold text-white focus-visible:bg-black/80 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Continue to review
+          {submitting ? 'Placing order…' : 'Place cash on delivery order'}
         </button>
       </div>
     </fieldset>
