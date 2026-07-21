@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 
 const ORDER_ID_PATTERN = /^BLB-\d{6}$/
@@ -12,7 +13,7 @@ const questions = [
   ['Where can I find my Order ID?', 'Your Order ID is in your order confirmation email and in My Account after you sign in.'],
   ["What should I do if my order shows delivered but I haven't received it?", 'Contact support with your Order ID so we can review the delivery update with you.'],
   ['How often is the order status updated?', 'Your order status updates whenever the order moves through the next delivery stage.'],
-]
+] as const satisfies ReadonlyArray<readonly [string, string]>
 
 export function TrackOrderLookup({ initialError = null }: { initialError?: string | null }) {
   const [orderNumber, setOrderNumber] = useState('')
@@ -42,7 +43,7 @@ export function TrackOrderLookup({ initialError = null }: { initialError?: strin
         <p className="mt-2 text-center text-sm text-muted-foreground">You can find your Order ID in the confirmation email we sent you.</p>{lookupError ? <p role="alert" className="mt-3 text-center text-sm text-red-600">{lookupError}</p> : null}
       </form>
 
-      <section className="pt-8"><h2 className="text-xl font-semibold">FAQ</h2><div className="mt-3 divide-y divide-border">{questions.map(([question, answer]) => <details key={question} className="group"><summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{question}</span><LocalIcon name="chevron-down" className="h-4 w-4 group-open:rotate-180" /></summary><p className="max-w-3xl pb-4 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>
+      <div className="pt-8"><SupportFaqList questions={questions} /></div>
       <div className="mt-7"><SupportContactBar title="Need help tracking an order?" description="Contact us with your Order ID and we will help check the latest update." /></div>
     </section>
   )

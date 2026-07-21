@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 
 import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
 import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -23,7 +24,7 @@ const questions = [
   ['What should I do if my order is delayed or missing?', 'Check the latest status first, then contact support so we can review the delivery update.'],
   ['What is your return policy?', 'Report damaged, defective, or wrong items quickly with clear proof. Return requests are reviewed against the return policy.'],
   ['How do I add or change my delivery address?', 'Update the saved address in My Account, or contact support before the order is packed.'],
-]
+] as const satisfies ReadonlyArray<readonly [string, string]>
 
 export default function HelpPage() {
   return (
@@ -40,7 +41,7 @@ export default function HelpPage() {
           </form>
         </section>
         <section className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-center gap-4 rounded-lg bg-[#eef4ff] p-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center text-primary"><LocalIcon name={icon} className="h-6 w-6" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-primary" /></Link>)}</section>
-        <section className="mt-10"><div className="flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">FAQ</h2><Link href="/articles" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold">More FAQ <LocalIcon name="arrow-right" className="h-4 w-4" /></Link></div><div className="mt-3 divide-y divide-border">{questions.map(([question, answer]) => <details key={question} className="group"><summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{question}</span><LocalIcon name="chevron-down" className="h-4 w-4 group-open:rotate-180" /></summary><p className="max-w-3xl pb-4 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>
+        <div className="mt-10"><SupportFaqList questions={questions} /></div>
         <div className="mt-7"><SupportContactBar /></div>
       </div>
     </main>
