@@ -52,11 +52,11 @@ export default function PaymentsPage() {
         <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">Boilabin offers secure, clear checkout options. Available methods are always shown before you place an order.</p>
       </header>
 
-      <section className="mt-8 border-y border-border py-5 sm:mt-10 sm:py-6">
+      <section className="mt-8 py-5 sm:mt-10 sm:py-6">
         <h2 className="font-display text-xl font-semibold tracking-[-0.025em]">Payment methods</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-0">
           {PAYMENT_METHODS.map(([title, copy, asset, status]) => (
-            <article key={title} className="min-w-0 text-center lg:border-r lg:border-border lg:px-5 last:lg:border-r-0">
+            <article key={title} className="min-w-0 text-center lg:px-5">
               <div className="flex h-10 items-center justify-center sm:h-11">
                 {/* Supplied payment marks stay direct to avoid a second lossy encode. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
