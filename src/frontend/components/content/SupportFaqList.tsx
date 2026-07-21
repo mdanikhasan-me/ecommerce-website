@@ -12,7 +12,7 @@ type SupportFaqListProps = {
 
 export function SupportFaqList({ questions, heading = 'FAQ', description, showMoreLink = true }: SupportFaqListProps) {
   return (
-    <section>
+    <section className="mx-auto w-full max-w-6xl">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">{heading}</h2>
