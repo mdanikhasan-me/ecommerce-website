@@ -102,7 +102,7 @@ export function ProductCard({
               alt={product.name}
               fill
               priority={priority}
-              className="product-card-media-image object-contain p-2.5"
+              className="product-card-media-image object-contain p-1.5"
               quality={75}
               sizes={imageSizes}
             />
