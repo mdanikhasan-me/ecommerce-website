@@ -56,7 +56,7 @@ export default function PaymentsPage() {
         <h2 className="font-display text-xl font-semibold tracking-[-0.025em]">Payment methods</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-0">
           {PAYMENT_METHODS.map(([title, asset]) => (
-            <article key={title} className="min-w-0 text-center lg:px-5">
+            <article key={title} className="min-w-0 text-center last:col-span-2 sm:last:col-span-1 lg:px-5">
               <div className="flex h-12 items-center justify-center sm:h-14">
                 {/* Supplied payment marks stay direct to avoid a second lossy encode. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
