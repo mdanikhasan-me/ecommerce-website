@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
 import { siteConfig } from '@/backend/config/site'
-import { CONTACT_EMAIL } from '@/shared/contact'
+import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -54,11 +54,9 @@ export default function ShippingPage() {
         </div>
       </section>
 
-      <section aria-label="Delivery support" className="mt-7 grid gap-4 rounded-md border border-border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,0.9fr)] sm:items-center sm:p-5">
-        <div className="flex items-start gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50"><LocalIcon name="headset" className="h-5 w-5" /></span><span><strong className="block text-sm sm:text-base">Need help with delivery?</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">Our support team is here to help with delivery questions or special requests.</span></span></div>
-        <Link href="/contact" className="inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-[#121212] px-4 text-sm font-semibold text-white">Contact support <LocalIcon name="arrow-right" className="h-4 w-4" /></Link>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-start gap-3 border-t border-border pt-4 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50"><LocalIcon name="mail" className="h-5 w-5" /></span><span><strong className="block text-sm">Email us</strong><span className="mt-1 block text-sm text-muted-foreground">We typically respond within 24 hours.</span><span className="mt-1 block text-sm font-semibold">{CONTACT_EMAIL}</span></span></a>
-      </section>
+      <div className="mt-7">
+        <SupportContactBar title="Need help with delivery?" description="Our support team is here to help with delivery questions or special requests." />
+      </div>
     </main>
   )
 }
