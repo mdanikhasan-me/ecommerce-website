@@ -17,12 +17,6 @@ export const metadata: Metadata = generatePageMetadata(
   '/returns',
 )
 
-const summary = [
-  ['calendar-days', 'Return window', '7 days from delivery'],
-  ['shield', 'What is covered', 'Defective items and delivery damage'],
-  ['refresh-ccw', 'Resolution', 'Refund or replacement'],
-] as const satisfies ReadonlyArray<readonly [StorefrontIconName, string, string]>
-
 const returnable = [
   'Items that are defective or do not work as intended',
   'Items that arrived damaged due to delivery',
@@ -69,11 +63,8 @@ export default function ReturnsPage() {
       <JsonLd data={[generateWebPageJsonLd({ name: 'Boilabin Returns Made Simple', description: 'Seven-day returns for defective or damaged items.', path: '/returns' }), generateBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Returns', url: '/returns' }])]} />
       <div className="container-site py-7 sm:py-9 lg:py-10">
         <p className="text-sm text-muted-foreground">Help Center <span className="mx-2">/</span> <span className="font-medium text-foreground">Returns</span></p>
-        <section className="mt-4 grid gap-7 border-b border-border pb-7 lg:grid-cols-[minmax(0,1fr)_minmax(32rem,1.25fr)] lg:items-center">
-          <div><h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Returns</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">We want you to be happy with your order. If something is wrong, we offer a 7-day return window for defective items or items damaged during delivery.</p></div>
-          <div className="grid divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {summary.map(([icon, title, copy]) => <div key={title} className="flex gap-3 py-4 sm:px-4 sm:py-2"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary"><LocalIcon name={icon} className="h-5 w-5" /></span><span><strong className="block text-sm">{title}</strong><span className="mt-1 block text-xs leading-5 text-muted-foreground">{copy}</span></span></div>)}
-          </div>
+        <section className="mt-4">
+          <h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Returns</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">We want you to be happy with your order. If something is wrong, we offer a 7-day return window for defective items or items damaged during delivery.</p>
         </section>
         <section className="grid gap-10 py-8 lg:grid-cols-2 lg:gap-16"><PolicyList title="What you can return" items={returnable} positive /><PolicyList title="What is not covered" items={excluded} positive={false} /></section>
         <section className="py-8"><h2 className="text-xl font-semibold">How it works</h2><ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">{steps.map(([icon, title, copy], index) => <li key={title} className="relative text-center"><span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-primary">{index + 1}</span><span className="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><LocalIcon name={icon} className="h-6 w-6" /></span><h3 className="mt-3 text-sm font-semibold">{title}</h3><p className="mx-auto mt-2 max-w-48 text-xs leading-5 text-muted-foreground">{copy}</p></li>)}</ol></section>
