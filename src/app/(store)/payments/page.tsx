@@ -14,11 +14,11 @@ export const metadata: Metadata = generatePageMetadata(
 )
 
 const PAYMENT_METHODS = [
-  ['Cash on Delivery', 'Pay when your order is delivered.', '05-cash-on-delivery.webp', 'Available at checkout'],
-  ['bKash', 'Mobile payment when it becomes available.', '06-bkash.webp', 'Not active yet'],
-  ['Nagad', 'Mobile payment when it becomes available.', '07-nagad.webp', 'Not active yet'],
-  ['Bank Transfer', 'Transfer directly when it becomes available.', '08-bank-transfer.webp', 'Not active yet'],
-  ['Cards', 'Debit and credit cards when available.', '09-cards.webp', 'Not active yet'],
+  ['Cash on Delivery', '05-cash-on-delivery.webp'],
+  ['bKash', '06-bkash.webp'],
+  ['Nagad', '07-nagad.webp'],
+  ['Bank Transfer', '08-bank-transfer.webp'],
+  ['Cards', '09-cards.webp'],
 ] as const
 
 const PAYMENT_STEPS: ReadonlyArray<{ icon: StorefrontIconName; title: string; copy: string; tone: string }> = [
@@ -55,16 +55,14 @@ export default function PaymentsPage() {
       <section className="mt-8 py-5 sm:mt-10 sm:py-6">
         <h2 className="font-display text-xl font-semibold tracking-[-0.025em]">Payment methods</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-0">
-          {PAYMENT_METHODS.map(([title, copy, asset, status]) => (
+          {PAYMENT_METHODS.map(([title, asset]) => (
             <article key={title} className="min-w-0 text-center lg:px-5">
-              <div className="flex h-10 items-center justify-center sm:h-11">
+              <div className="flex h-12 items-center justify-center sm:h-14">
                 {/* Supplied payment marks stay direct to avoid a second lossy encode. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/content/help/payment-delivery/${asset}`} alt="" className="h-10 w-auto object-contain sm:h-11" />
+                <img src={`/assets/content/help/payment-delivery/${asset}`} alt="" className="h-12 w-auto object-contain sm:h-14" />
               </div>
-              <h3 className="mt-3 text-sm font-semibold">{title}</h3>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">{copy}</p>
-              <p className={`mt-2 text-[11px] font-semibold ${status === 'Available at checkout' ? 'text-emerald-700' : 'text-muted-foreground'}`}>{status}</p>
+              <h3 className="mt-3 text-sm font-semibold sm:text-base">{title}</h3>
             </article>
           ))}
         </div>
