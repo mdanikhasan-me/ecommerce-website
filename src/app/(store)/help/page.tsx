@@ -1,233 +1,40 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import {
-  JsonLd,
-  generateBreadcrumbJsonLd,
-  generatePageMetadata,
-  generateWebPageJsonLd,
-} from '@/backend/seo'
+
+import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { CONTACT_EMAIL } from '@/shared/contact'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
-export const metadata: Metadata = generatePageMetadata(
-  'Boilabin Help Center',
-  'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.',
-  '/help',
-)
+export const metadata: Metadata = generatePageMetadata('Boilabin Help Center', 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', '/help')
 
-type HelpTopic = {
-  title: string
-  description: string
-  href: string
-  icon: StorefrontIconName
-}
+const topics = [
+  ['Track order', 'Track your order status in real time', '/track-order', 'package', 'bg-blue-50'],
+  ['Delivery', 'Learn about delivery options and timelines', '/shipping', 'truck', 'bg-green-50'],
+  ['Returns', 'Start a return or exchange quickly and easily', '/returns', 'refresh-ccw', 'bg-purple-50'],
+  ['Payment', 'Accepted methods and payment FAQ', '/payments', 'credit-card', 'bg-amber-50'],
+  ['Account', 'Manage your account and preferences', '/account', 'user', 'bg-rose-50'],
+] as const satisfies ReadonlyArray<readonly [string, string, string, StorefrontIconName, string]>
 
-type PopularQuestion = {
-  question: string
-  answer: string
-}
-
-const HELP_TOPICS: HelpTopic[] = [
-  {
-    title: 'Track order',
-    description: 'Track order status',
-    href: '/track-order',
-    icon: 'package',
-  },
-  {
-    title: 'Delivery',
-    description: 'Fees, timing and coverage',
-    href: '/shipping',
-    icon: 'truck',
-  },
-  {
-    title: 'Returns',
-    description: 'Return and refund policy',
-    href: '/returns',
-    icon: 'refresh-ccw',
-  },
-  {
-    title: 'Payment',
-    description: 'COD and payment help',
-    href: '/payments',
-    icon: 'credit-card',
-  },
-  {
-    title: 'Account',
-    description: 'Profile and address',
-    href: '/account',
-    icon: 'user',
-  },
-  {
-    title: 'Products',
-    description: 'Catalog and stock',
-    href: '/category',
-    icon: 'shopping-bag',
-  },
+const questions = [
+  ['How do I track my order?', 'Use your Order ID on the Track order page, or sign in and open My Account, then Orders.'],
+  ['What payment methods do you accept?', 'Cash on delivery is currently available. Any new method will appear during checkout.'],
+  ['Can I change or cancel my order?', 'Contact support as soon as possible with your Order ID. We can help before the order is packed.'],
+  ['What should I do if my order is delayed or missing?', 'Check the latest status first, then contact support so we can review the delivery update.'],
+  ['What is your return policy?', 'Report damaged, defective, or wrong items quickly with clear proof. Return requests are reviewed against the return policy.'],
+  ['How do I add or change my delivery address?', 'Update the saved address in My Account, or contact support before the order is packed.'],
 ]
-
-const POPULAR_QUESTIONS: PopularQuestion[] = [
-  {
-    question: 'How do I track my order?',
-    answer: 'Open Track Order with your order number, or sign in and go to My Account, then Orders, to see the latest status.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer: 'Boilabin currently supports cash on delivery. If online payment becomes available, it will appear during checkout.',
-  },
-  {
-    question: 'Can I change or cancel my order?',
-    answer: 'Contact support as soon as possible with your order number. We can usually help before the order is packed for delivery.',
-  },
-  {
-    question: 'What should I do if my order is delayed or missing?',
-    answer: 'Check your order status first. If the delivery looks delayed, contact support so we can review the order and delivery update.',
-  },
-  {
-    question: 'What is your return policy?',
-    answer: 'Return requests are reviewed against the return policy. Report damaged, defective, or wrong items quickly with clear proof.',
-  },
-  {
-    question: 'How do I add or change my delivery address?',
-    answer: 'Go to My Account and update your address details, or contact support before the order is packed if the address needs correction.',
-  },
-]
-
-function TopicCard({ topic }: { topic: HelpTopic }) {
-  return (
-    <Link
-      href={topic.href}
-      className="inline-flex h-11 min-w-28 items-center justify-center gap-2 rounded-full border border-[#dce5f0] bg-white/95 px-4 text-xs font-medium text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-    >
-      <LocalIcon name={topic.icon} className="h-4 w-4" />
-      <span className="truncate">{topic.title}</span>
-    </Link>
-  )
-}
-
-function PopularQuestionItem({ item, defaultOpen }: { item: PopularQuestion; defaultOpen?: boolean }) {
-  return (
-    <details
-      open={defaultOpen}
-      className="group border-b border-border last:border-b-0"
-    >
-      <summary className="grid min-h-[3.75rem] cursor-pointer list-none grid-cols-[minmax(0,1fr)_1.25rem] items-center gap-4 px-5 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring [&::-webkit-details-marker]:hidden sm:px-6">
-        <span className="min-w-0">{item.question}</span>
-        <span className="text-center text-lg leading-none text-foreground/70 group-open:hidden">+</span>
-        <span className="hidden text-center text-lg leading-none text-foreground/70 group-open:block">-</span>
-      </summary>
-      <p className="px-5 pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:px-6 sm:pr-14">
-        {item.answer}
-      </p>
-    </details>
-  )
-}
 
 export default function HelpPage() {
   return (
-    <div className="bg-white text-foreground">
-      <JsonLd
-        data={[
-          generateWebPageJsonLd({
-            name: 'Boilabin Help Center',
-            description: 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.',
-            path: '/help',
-          }),
-          generateBreadcrumbJsonLd([
-            { name: 'Home', url: '/' },
-            { name: 'Help Center', url: '/help' },
-          ]),
-        ]}
-      />
-
-      <section className="bg-[linear-gradient(135deg,#f9fbff_0%,#edf5ff_50%,#f8fbff_100%)]">
-        <div className="container-site flex min-h-[22rem] flex-col items-center justify-center py-10 text-center sm:min-h-[25rem] sm:py-12 lg:min-h-[26rem]">
-          <h1 className="font-display text-3xl font-bold leading-tight tracking-[-0.025em] sm:text-[2rem]">
-            How can we help you?
-          </h1>
-          <p className="mt-4 text-xs leading-5 text-muted-foreground sm:text-sm">
-            Find helpful answers and resources for a smooth shopping experience.
-          </p>
-
-          <form action="/help" className="mt-8 grid h-12 w-full max-w-2xl grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-[#d7e1ed] bg-white text-foreground focus-within:border-[#9ebdf1]">
-            <label className="grid min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] items-center gap-3 px-4" htmlFor="help-search">
-              <LocalIcon name="search" className="h-[1.125rem] w-[1.125rem] text-muted-foreground" />
-              <input
-                id="help-search"
-                name="q"
-                type="search"
-                placeholder="Search for help articles..."
-                className="h-full min-w-0 appearance-none border-0 bg-transparent text-xs outline-none shadow-none ring-0 ring-offset-0 placeholder:text-muted-foreground focus:border-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 sm:text-sm"
-              />
-            </label>
-            <button
-              type="submit"
-              className="m-1.5 min-w-[5.5rem] rounded-md bg-[#075df7] px-4 text-xs font-semibold text-white outline-none ring-0 ring-offset-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#075df7] sm:min-w-24"
-            >
-              Search
-            </button>
-          </form>
-
-          <nav aria-label="Help shortcuts" className="mt-8 flex w-full flex-wrap justify-center gap-2.5 sm:gap-3">
-            {HELP_TOPICS.map((topic) => (
-              <TopicCard key={topic.title} topic={topic} />
-            ))}
-          </nav>
-        </div>
-      </section>
-
-      <main className="container-site py-10 sm:py-12 lg:py-16">
-        <section>
-          <h2 className="font-display text-2xl font-semibold leading-8">Popular articles</h2>
-          <div className="mt-6 overflow-hidden rounded-lg border border-border bg-white">
-            {POPULAR_QUESTIONS.map((item, index) => (
-              <PopularQuestionItem key={item.question} item={item} defaultOpen={index === 0} />
-            ))}
-          </div>
-
-          <div className="mt-7 flex justify-center">
-            <Link
-              href="/articles"
-              className="inline-flex h-11 items-center justify-center gap-3 rounded-lg border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-            >
-              View all articles
-              <LocalIcon name="arrow-right" className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-
-        <section className="mt-12 rounded-lg bg-[#f5f5f2] p-6 sm:p-7 lg:p-8">
-          <div className="grid gap-7 md:grid-cols-2 md:divide-x md:divide-border/70">
-            <div className="flex min-h-[9.5rem] flex-col items-start md:pr-8">
-              <h2 className="text-lg font-semibold leading-6">Need more help?</h2>
-              <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
-                Can&rsquo;t find what you&rsquo;re looking for? We&rsquo;re here for you.
-              </p>
-              <Link
-                href="/contact"
-                className="mt-auto inline-flex h-11 items-center justify-center rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                Contact Support
-              </Link>
-            </div>
-
-            <div className="flex min-h-[9.5rem] flex-col items-start border-t border-border/70 pt-7 md:border-t-0 md:pl-8 md:pt-0">
-              <h2 className="text-lg font-semibold leading-6">Email us</h2>
-              <p className="mt-2 max-w-[18rem] text-sm leading-6 text-muted-foreground">
-                Send us an email and we&rsquo;ll get back to you soon.
-              </p>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                <LocalIcon name="mail" className="h-4 w-4" />
-                {CONTACT_EMAIL}
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+    <main className="bg-white text-foreground">
+      <JsonLd data={[generateWebPageJsonLd({ name: 'Boilabin Help Center', description: 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', path: '/help' }), generateBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Help Center', url: '/help' }])]} />
+      <div className="container-site py-7 sm:py-9 lg:py-10">
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(28rem,0.95fr)] lg:items-center"><div><p className="text-sm font-medium text-primary">Help Center</p><h1 className="mt-3 font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">How can we help?</h1><p className="mt-3 text-sm text-muted-foreground sm:text-base">Find answers, track your orders, and get the support you need.</p></div><form action="/help" className="grid h-12 grid-cols-[minmax(0,1fr)_6rem] rounded-lg border border-border bg-card p-1"><label className="flex min-w-0 items-center gap-3 px-3" htmlFor="help-search"><LocalIcon name="search" className="h-4 w-4 text-muted-foreground" /><input id="help-search" name="q" type="search" placeholder="Search for help articles, topics, or keywords" className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label><button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button></form></section>
+        <section className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon, tone]) => <Link key={title} href={href} className="flex min-w-0 gap-4"><span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${tone}`}><LocalIcon name={icon} className="h-7 w-7" /></span><span><strong className="block text-sm">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span></Link>)}</section>
+        <section className="mt-10"><div className="flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">FAQ</h2><Link href="/articles" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold">More FAQ <LocalIcon name="arrow-right" className="h-4 w-4" /></Link></div><div className="mt-3 divide-y divide-border">{questions.map(([question, answer]) => <details key={question} className="group"><summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{question}</span><LocalIcon name="chevron-down" className="h-4 w-4 group-open:rotate-180" /></summary><p className="max-w-3xl pb-4 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>
+        <section className="mt-7 grid gap-5 rounded-xl border border-border bg-card p-5 sm:grid-cols-2 sm:divide-x sm:divide-border sm:p-6"><div className="flex items-center gap-4"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50"><LocalIcon name="headset" className="h-6 w-6" /></span><span><strong className="block text-sm">Need more help?</strong><span className="mt-1 block text-sm text-muted-foreground">Our support team is here to help with any questions.</span><Link href="/contact" className="mt-3 inline-flex h-9 items-center gap-2 rounded-md bg-[#121212] px-4 text-sm font-semibold text-white">Contact support <LocalIcon name="arrow-right" className="h-4 w-4" /></Link></span></div><div className="flex items-center gap-4 sm:pl-6"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50"><LocalIcon name="mail" className="h-6 w-6" /></span><span><strong className="block text-sm">Email us</strong><span className="mt-1 block text-sm text-muted-foreground">We typically respond within 24 hours.</span><a href={`mailto:${CONTACT_EMAIL}`} className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-foreground"><LocalIcon name="mail" className="h-4 w-4" />{CONTACT_EMAIL}</a></span></div></section>
+      </div>
+    </main>
   )
 }

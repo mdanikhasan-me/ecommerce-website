@@ -19,7 +19,7 @@ export default async function TrackOrderPage({
     : null
 
   return (
-    <div className="bg-white px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-8 lg:pb-24 lg:pt-[6.5rem] min-[1200px]:min-h-[calc(100dvh-4.75rem)]">
+    <div className="container-site bg-white py-7 sm:py-9 lg:py-10">
       <TrackOrderLookup initialError={lookupError} />
     </div>
   )
