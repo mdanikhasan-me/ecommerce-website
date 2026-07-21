@@ -2,8 +2,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
+import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { CONTACT_EMAIL } from '@/shared/contact'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 export const metadata: Metadata = generatePageMetadata('Boilabin Help Center', 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', '/help')
@@ -39,9 +39,9 @@ export default function HelpPage() {
             <button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button>
           </form>
         </section>
-        <section className="mt-9 grid gap-3 rounded-lg bg-[#1466d9] p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-center gap-4 px-1 py-2 text-white"><span className="flex h-14 w-14 shrink-0 items-center justify-center"><LocalIcon name={icon} className="h-7 w-7" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{title}</strong><span className="mt-1 block text-sm leading-6 text-white/85">{description}</span></span><LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-white/85" /></Link>)}</section>
+        <section className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-center gap-4 rounded-lg bg-[#eef4ff] p-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center text-primary"><LocalIcon name={icon} className="h-6 w-6" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-primary" /></Link>)}</section>
         <section className="mt-10"><div className="flex items-center justify-between gap-4"><h2 className="text-xl font-semibold">FAQ</h2><Link href="/articles" className="inline-flex h-10 items-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold">More FAQ <LocalIcon name="arrow-right" className="h-4 w-4" /></Link></div><div className="mt-3 divide-y divide-border">{questions.map(([question, answer]) => <details key={question} className="group"><summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{question}</span><LocalIcon name="chevron-down" className="h-4 w-4 group-open:rotate-180" /></summary><p className="max-w-3xl pb-4 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>
-        <section className="mt-7 grid gap-5 rounded-xl border border-border bg-card p-5 sm:grid-cols-2 sm:p-6"><div className="flex items-center gap-4"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50"><LocalIcon name="headset" className="h-6 w-6" /></span><span><strong className="block text-sm">Need more help?</strong><span className="mt-1 block text-sm text-muted-foreground">Our support team is here to help with any questions.</span><Link href="/contact" className="mt-3 inline-flex h-9 items-center gap-2 rounded-md bg-[#121212] px-4 text-sm font-semibold text-white">Contact support <LocalIcon name="arrow-right" className="h-4 w-4" /></Link></span></div><div className="flex items-center gap-4"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50"><LocalIcon name="mail" className="h-6 w-6" /></span><span><strong className="block text-sm">Email us</strong><span className="mt-1 block text-sm text-muted-foreground">We typically respond within 24 hours.</span><a href={`mailto:${CONTACT_EMAIL}`} className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-foreground"><LocalIcon name="mail" className="h-4 w-4" />{CONTACT_EMAIL}</a></span></div></section>
+        <div className="mt-7"><SupportContactBar /></div>
       </div>
     </main>
   )

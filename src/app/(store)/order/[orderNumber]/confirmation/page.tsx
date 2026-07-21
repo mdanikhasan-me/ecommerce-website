@@ -6,6 +6,7 @@ import { db } from '@/backend/database'
 import { buildInvoiceDownloadFilename, getInvoicePdfDownloadPath } from '@/backend/orders/order-invoice'
 import { generateNoIndexPageMetadata } from '@/backend/seo'
 import { formatPrice } from '@/backend/utils'
+import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { Metadata } from 'next'
 
@@ -115,10 +116,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
         </div>
 
         <div className="mt-5 grid gap-3 lg:hidden">{actions}</div>
-        <section className="mt-5 flex flex-col gap-4 rounded-xl border border-border bg-card px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex items-center gap-3"><LocalIcon name="headset" className="h-6 w-6" /><span><strong className="block text-foreground">Need help with your order?</strong><span className="text-muted-foreground">Our support team is here for you.</span></span></div>
-          <div className="flex divide-x divide-border font-semibold"><Link href="/help" className="flex items-center gap-2 pr-4"><LocalIcon name="message-circle" className="h-4 w-4" /> Help Center</Link><Link href="/contact" className="flex items-center gap-2 pl-4"><LocalIcon name="mail" className="h-4 w-4" /> Contact support</Link></div>
-        </section>
+        <div className="mt-5"><SupportContactBar title="Need help with your order?" description="Our support team is here to help with your order." /></div>
       </div>
     </div>
   )
