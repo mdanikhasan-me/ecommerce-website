@@ -33,7 +33,7 @@ export default function ContactPage() {
         ]}
       />
       <div className="container-site py-7 sm:py-9 lg:py-10">
-        <div className="mx-auto w-full max-w-5xl">
+        <div className="w-full">
           <header className="mx-auto max-w-3xl text-center">
             <h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">
               Get In Touch

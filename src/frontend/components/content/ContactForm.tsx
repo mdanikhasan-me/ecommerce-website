@@ -13,7 +13,6 @@ const CONTACT_ACTIONS = [
     detail: 'Fast help for orders, products, and returns.',
     href: WHATSAPP_URL,
     actionLabel: 'Chat on WhatsApp',
-    tone: 'bg-blue-50',
   },
   {
     icon: 'phone',
@@ -22,7 +21,6 @@ const CONTACT_ACTIONS = [
     detail: 'Saturday to Thursday\n9:00 AM \u2013 9:00 PM',
     href: CONTACT_PHONE_HREF,
     actionLabel: 'Call Now',
-    tone: 'bg-amber-50',
   },
   {
     icon: 'mail',
@@ -31,7 +29,6 @@ const CONTACT_ACTIONS = [
     detail: 'Send your order details or question.',
     href: `mailto:${CONTACT_EMAIL}`,
     actionLabel: 'Send Email',
-    tone: 'bg-green-50',
   },
 ] as const satisfies ReadonlyArray<{
   icon: StorefrontIconName
@@ -40,7 +37,6 @@ const CONTACT_ACTIONS = [
   detail: string
   href: string
   actionLabel: string
-  tone: string
 }>
 
 const SUPPORT_DETAILS = [
@@ -97,7 +93,6 @@ function ContactActionCard({
   detail,
   href,
   actionLabel,
-  tone,
 }: {
   icon: StorefrontIconName
   title: string
@@ -105,11 +100,10 @@ function ContactActionCard({
   detail: string
   href: string
   actionLabel: string
-  tone: string
 }) {
   return (
     <article className="flex items-start gap-4 rounded-xl border border-border bg-card px-4 py-5 text-left sm:min-h-[16rem] sm:flex-col sm:items-center sm:gap-0 sm:px-6 sm:py-7 sm:text-center lg:min-h-[17rem]">
-      <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${tone} sm:h-16 sm:w-16`}>
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center sm:h-16 sm:w-16">
         <LocalIcon name={icon} className="h-6 w-6 sm:h-7 sm:w-7" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col sm:w-full sm:items-center">
@@ -143,7 +137,7 @@ function SupportDetail({
 }) {
   return (
     <article className="flex items-start gap-4 py-4 md:px-6 md:py-1">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center">
         <LocalIcon name={icon} className="h-5 w-5" />
       </span>
       <div className="min-w-0">
