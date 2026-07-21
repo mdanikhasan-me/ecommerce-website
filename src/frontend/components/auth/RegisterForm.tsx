@@ -7,6 +7,7 @@ import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
 import toast from '@/frontend/lib/toast'
 import { BrandWordmark } from '@/frontend/components/layout/BrandWordmark'
+import { BoilabinLogo } from '@/frontend/components/layout/BoilabinLogo'
 import { GoogleSignInButton } from '@/frontend/components/auth/GoogleSignInButton'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { getSafeCallbackUrl } from '@/frontend/utils/safe-callback-url'
@@ -66,11 +67,8 @@ export function RegisterForm({ googleOAuthAvailable }: RegisterFormProps) {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-display font-bold text-lg">B</span>
-            </div>
-            <BrandWordmark className="text-xl text-foreground">Boilabin</BrandWordmark>
+          <Link href="/" className="inline-flex leading-none">
+            <BoilabinLogo variant="full" size={36} priority className="h-9 w-auto" />
           </Link>
         </div>
 

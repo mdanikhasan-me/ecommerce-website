@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   manifest: BRAND_ASSETS.icons.manifest,
   icons: {
     icon: [
+      { url: BRAND_ASSETS.icons.faviconLight, type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: BRAND_ASSETS.icons.faviconDark, type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
       { url: BRAND_ASSETS.icons.faviconIco, sizes: 'any' },
       { url: BRAND_ASSETS.icons.favicon32, sizes: '32x32', type: 'image/png' },
       { url: BRAND_ASSETS.icons.favicon16, sizes: '16x16', type: 'image/png' },
