@@ -13,7 +13,7 @@ export function SupportContactBar({
   description = 'Our support team is here to help with any questions.',
 }: SupportContactBarProps) {
   return (
-    <section aria-label="Support options" className="mx-auto flex w-full max-w-6xl flex-col gap-4 rounded-lg bg-[#edf8f0] p-4 sm:gap-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+    <section aria-label="Support options" className="mx-auto flex w-full max-w-[80rem] flex-col gap-4 rounded-lg bg-[#edf8f0] p-4 sm:gap-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-start gap-3">
         <LocalIcon name="shopping-bag" className="mt-0.5 h-5 w-5 shrink-0 text-[#19703b] sm:h-6 sm:w-6" />
         <span>
