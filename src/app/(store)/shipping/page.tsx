@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -41,7 +40,7 @@ export default function ShippingPage() {
       <section className="mt-7 grid gap-3 sm:grid-cols-2 lg:mt-9 lg:grid-cols-4 lg:gap-4">
         {OPTIONS.map(([title, price, note, asset, tone]) => (
           <article key={title} className="rounded-lg bg-[#fafafa] px-4 pb-5 pt-4 text-center sm:px-5">
-            <Image src={`/assets/content/help/payment-delivery/${asset}`} alt="" width={230} height={150} className="mx-auto h-28 w-full object-contain sm:h-32" />
+            <img src={`/assets/content/help/payment-delivery/${asset}`} alt="" width="230" height="150" decoding="async" className="mx-auto h-28 w-full object-contain sm:h-32" />
             <h2 className="mt-2 text-base font-semibold">{title}</h2><p className={`mt-2 text-sm font-bold ${tone}`}>{price}</p><p className="mt-1 text-sm text-muted-foreground">{note}</p>
           </article>
         ))}
