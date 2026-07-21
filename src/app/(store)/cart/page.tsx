@@ -58,13 +58,26 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container-site flex flex-col items-center justify-center py-12 text-center sm:py-16 lg:py-20">
-        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-secondary sm:h-24 sm:w-24">
-          <LocalIcon name="shopping-bag" className="h-10 w-10 text-muted-foreground sm:h-12 sm:w-12" />
-        </div>
-        <h1 className="font-display text-2xl font-bold">Your cart is empty</h1>
-        <p className="mb-5 mt-2 max-w-sm text-muted-foreground">Looks like you haven&apos;t added anything yet.</p>
-        <Link href="/" className="btn-primary">Start Shopping</Link>
+      <div className="container-site py-5 sm:py-6 lg:py-8">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+          <Link href="/" className="min-[1025px]:hover:text-foreground">Home</Link>
+          <LocalIcon name="chevron-right" className="h-3.5 w-3.5" />
+          <span className="text-foreground">Shopping Cart</span>
+        </nav>
+
+        <section className="flex min-h-[360px] flex-col items-center justify-center pb-12 pt-10 text-center sm:min-h-[430px] sm:pb-16 sm:pt-12 lg:min-h-[480px]">
+          <Image
+            src="/assets/commerce/empty-states/empty-cart-true-vector.svg"
+            alt=""
+            width={160}
+            height={160}
+            priority
+            className="mb-5 h-36 w-36 sm:mb-6 sm:h-40 sm:w-40"
+          />
+          <h1 className="font-display text-[clamp(1.75rem,2.2vw,2.25rem)] font-bold tracking-[-0.04em]">Your cart is empty</h1>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground sm:text-base">Looks like you haven&apos;t added anything yet.</p>
+          <Link href="/" className="mt-7 inline-flex h-12 min-w-52 items-center justify-center rounded-sm bg-[#121212] px-7 text-sm font-semibold text-white">Start Shopping</Link>
+        </section>
       </div>
     )
   }
