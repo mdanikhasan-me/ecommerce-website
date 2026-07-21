@@ -31,16 +31,12 @@ export default function HelpPage() {
     <main className="bg-white text-foreground">
       <JsonLd data={[generateWebPageJsonLd({ name: 'Boilabin Help Center', description: 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', path: '/help' }), generateBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Help Center', url: '/help' }])]} />
       <div className="container-site py-7 sm:py-9 lg:py-10">
-        <section className="relative mx-auto max-w-5xl overflow-hidden rounded-xl bg-[linear-gradient(118deg,#0a4bb2_0%,#1269dd_56%,#0b56bd_100%)] px-5 py-10 text-center text-white shadow-[0_18px_36px_rgba(20,83,175,0.18)] sm:px-10 sm:py-14">
-          <span aria-hidden="true" className="absolute -left-12 -top-16 h-44 w-44 rounded-full bg-white/10" />
-          <span aria-hidden="true" className="absolute -bottom-24 -right-10 h-52 w-52 rounded-full border-[18px] border-white/10" />
-          <div className="relative">
-            <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/15"><LocalIcon name="headset" className="h-5 w-5 text-white" /></span>
-            <h1 className="mt-4 font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Help Center</h1>
-          </div>
-          <p className="relative mt-3 text-lg font-semibold sm:text-xl">How can we help?</p>
-          <p className="relative mt-2 text-sm text-blue-100 sm:text-base">Find answers, track your orders, and get the support you need.</p>
-          <form action="/help" className="relative mx-auto mt-7 grid h-12 max-w-2xl grid-cols-[minmax(0,1fr)_6rem] rounded-lg bg-white p-1 text-left shadow-lg">
+        <section className="mx-auto max-w-5xl rounded-lg bg-[#f2f7ff] px-5 py-9 text-center sm:px-10 sm:py-12">
+          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#dceaff]"><LocalIcon name="headset" className="h-5 w-5 text-[#0b5dcc]" /></span>
+          <h1 className="mt-4 font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Help Center</h1>
+          <p className="mt-3 text-lg font-semibold sm:text-xl">How can we help?</p>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Find answers, track your orders, and get the support you need.</p>
+          <form action="/help" className="mx-auto mt-7 grid h-12 max-w-2xl grid-cols-[minmax(0,1fr)_6rem] rounded-md bg-white p-1 text-left shadow-[0_8px_20px_rgba(37,99,235,0.10)]">
             <label className="flex min-w-0 items-center gap-3 px-3" htmlFor="help-search"><LocalIcon name="search" className="h-4 w-4 text-muted-foreground" /><input id="help-search" name="q" type="search" placeholder="Search for help articles, topics, or keywords" className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label>
             <button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button>
           </form>
