@@ -14,6 +14,7 @@ type ProductRecord = {
   salePrice: number | null
   isActive: boolean
   stockQuantity: number
+  images?: Array<{ url: string }>
 }
 
 type VariantRecord = {
@@ -137,7 +138,21 @@ export async function createBuyerOrder({
   const [products, variants] = await Promise.all([
     database.product.findMany({
       where: getBuyerVisibleProductWhere({ id: { in: productIds } }),
-      select: { id: true, categoryId: true, name: true, sku: true, basePrice: true, salePrice: true, isActive: true, stockQuantity: true },
+      select: {
+        id: true,
+        categoryId: true,
+        name: true,
+        sku: true,
+        basePrice: true,
+        salePrice: true,
+        isActive: true,
+        stockQuantity: true,
+        images: {
+          orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+          take: 1,
+          select: { url: true },
+        },
+      },
     }),
     variantIds.length
       ? database.productVariant.findMany({
@@ -191,7 +206,8 @@ export async function createBuyerOrder({
       price: unitPrice,
       quantity: qty,
       total: lineTotal,
-      imageUrl: raw.imageUrl,
+      // The product record is the trusted source; old client cart snapshots can be blank or stale.
+      imageUrl: product.images?.[0]?.url ?? raw.imageUrl,
     })
   }
 

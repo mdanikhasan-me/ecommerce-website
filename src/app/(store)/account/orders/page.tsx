@@ -4,6 +4,7 @@ import { db } from '@/backend/database'
 import Link from 'next/link'
 import { formatPrice, formatDate } from '@/backend/utils'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
+import { OrderProductThumbnail } from '@/frontend/components/account/OrderProductThumbnail'
 
 export const metadata = { title: 'Boilabin Orders' }
 
@@ -37,7 +38,21 @@ export default async function AccountOrdersPage({
     include: {
       items: {
         take: 3,
-        select: { productName: true, imageUrl: true, quantity: true, total: true },
+        select: {
+          productName: true,
+          imageUrl: true,
+          quantity: true,
+          total: true,
+          product: {
+            select: {
+              images: {
+                orderBy: [{ isPrimary: 'desc' }, { sortOrder: 'asc' }],
+                take: 1,
+                select: { url: true },
+              },
+            },
+          },
+        },
       },
       _count: { select: { items: true } },
     },
@@ -104,15 +119,11 @@ export default async function AccountOrdersPage({
                           key={`${item.productName}-${index}`}
                           className="product-media-frame relative w-12 overflow-hidden rounded-lg border border-border bg-muted/30 sm:w-[3.5rem]"
                         >
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt=""
-                              className="h-full w-full object-contain p-1"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          ) : null}
+                          <OrderProductThumbnail
+                            imageUrl={item.product.images[0]?.url ?? item.imageUrl}
+                            fallbackImageUrl={item.imageUrl}
+                            alt={item.productName}
+                          />
                         </div>
                       ))}
                     </div>
