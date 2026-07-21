@@ -46,7 +46,7 @@ export default function ShippingPage() {
         ))}
       </section>
 
-      <section className="mt-8 border-t border-border pt-7 sm:mt-10 sm:pt-8">
+      <section className="mt-8 pt-7 sm:mt-10 sm:pt-8">
         <h2 className="font-display text-xl font-semibold tracking-[-0.025em]">What to know</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-3 md:gap-8">
           {NOTES.map((note) => <article key={note.title} className="flex gap-3"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${note.tone}`}><LocalIcon name={note.icon} className="h-5 w-5" /></span><div><h3 className="text-sm font-semibold">{note.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{note.copy}</p></div></article>)}
