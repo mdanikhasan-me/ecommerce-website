@@ -7,12 +7,12 @@ import {
   generatePageMetadata,
   generateWebPageJsonLd,
 } from '@/backend/seo'
-import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
-import { CONTACT_EMAIL } from '@/shared/contact'
+import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 
 export const metadata: Metadata = generatePageMetadata(
-  'Boilabin Help Articles',
-  'Browse detailed Boilabin help articles for orders, checkout, delivery, returns, payments, account support, products, stock, wishlist, and support safety.',
+  'Boilabin Articles',
+  'Read Boilabin shopping guides, store updates, and useful customer information.',
   '/articles',
 )
 
@@ -575,18 +575,43 @@ function ArticleTextLink({ href, children }: { href: string; children: ReactNode
   )
 }
 
-function QuestionItem({ item }: { item: ArticleQuestion }) {
+export function FAQPageContent() {
   return (
-    <details className="group border-b border-border last:border-b-0">
-      <summary className="grid min-h-[3.9rem] cursor-pointer list-none grid-cols-[minmax(0,1fr)_1.25rem] items-center gap-4 px-5 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring [&::-webkit-details-marker]:hidden sm:px-6">
-        <span className="min-w-0">{item.question}</span>
-        <span className="text-center text-lg leading-none text-foreground/70 group-open:hidden">+</span>
-        <span className="hidden text-center text-lg leading-none text-foreground/70 group-open:block">-</span>
-      </summary>
-      <p className="px-5 pb-5 pr-10 text-sm leading-6 text-muted-foreground sm:px-6 sm:pr-14">
-        {item.answer}
-      </p>
-    </details>
+    <main className="bg-white text-foreground">
+      <JsonLd
+        data={[
+          generateWebPageJsonLd({
+            name: 'Boilabin FAQ',
+            description: 'Browse Boilabin frequently asked questions about orders, checkout, delivery, returns, payments, account support, products, stock, wishlist, and support safety.',
+            path: '/faq',
+          }),
+          generateBreadcrumbJsonLd([
+            { name: 'Home', url: '/' },
+            { name: 'Help Center', url: '/help' },
+            { name: 'FAQ', url: '/faq' },
+          ]),
+        ]}
+      />
+
+      <div className="container-site py-7 sm:py-9 lg:py-10">
+        <header className="mx-auto max-w-3xl text-center">
+          <h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">FAQ</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+            Detailed answers to common questions before and after ordering.
+          </p>
+        </header>
+
+        <div className="mt-10 space-y-10">
+          {ARTICLE_CATEGORIES.map((category) => (
+            <div key={category.id} id={category.id} className="scroll-mt-24">
+              <SupportFaqList heading={category.title} description={category.description} showMoreLink={false} questions={category.questions.map(({ question, answer }) => [question, answer] as const)} />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10"><SupportContactBar title="Need a direct answer?" description="Contact us with your order number when your question is order-specific." /></div>
+      </div>
+    </main>
   )
 }
 
@@ -596,73 +621,23 @@ export default function ArticlesPage() {
       <JsonLd
         data={[
           generateWebPageJsonLd({
-            name: 'Boilabin Help Articles',
-            description: 'Browse detailed Boilabin help articles for orders, checkout, delivery, returns, payments, account support, products, stock, wishlist, and support safety.',
+            name: 'Boilabin Articles',
+            description: 'Read Boilabin shopping guides, store updates, and useful customer information.',
             path: '/articles',
           }),
           generateBreadcrumbJsonLd([
             { name: 'Home', url: '/' },
-            { name: 'Help Center', url: '/help' },
             { name: 'Articles', url: '/articles' },
           ]),
         ]}
       />
-
       <div className="container-site py-10 sm:py-12 lg:py-16">
-        <header className="max-w-3xl">
-          <h1 className="mt-3 font-display text-[2.4rem] font-bold leading-none tracking-normal sm:text-5xl">
-            Support articles
-          </h1>
-          <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-[17px] sm:leading-8">
-            Detailed answers grouped by the common questions customers ask before and after ordering.
+        <header className="mx-auto max-w-3xl text-center">
+          <h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Articles</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+            Shopping guides, store updates, and useful ideas will appear here.
           </p>
         </header>
-
-        <div className="mt-10 space-y-12">
-          {ARTICLE_CATEGORIES.map((category) => (
-            <section key={category.id} id={category.id} className="scroll-mt-24">
-              <div className="max-w-3xl">
-                <h2 className="font-display text-2xl font-semibold leading-8">{category.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{category.description}</p>
-              </div>
-
-              <div className="mt-5 overflow-hidden rounded-lg border border-border bg-white">
-                {category.questions.map((question) => (
-                  <QuestionItem
-                    key={question.question}
-                    item={question}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        <section className="mt-12 rounded-lg bg-[#f5f5f2] p-6 sm:p-7 lg:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold leading-6">Need a direct answer?</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Contact support and include your order number if your question is order-specific.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/contact"
-                className="inline-flex h-11 items-center justify-center rounded-md bg-foreground px-6 text-sm font-semibold text-background focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                Contact support
-              </Link>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-white px-6 text-sm font-semibold text-foreground focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-              >
-                <LocalIcon name="mail" className="h-4 w-4" />
-                Email us
-              </a>
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   )
