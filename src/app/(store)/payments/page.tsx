@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -50,8 +49,10 @@ export default function PaymentsPage() {
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-5 lg:gap-0">
           {PAYMENT_METHODS.map(([title, copy, asset, status]) => (
             <article key={title} className="min-w-0 text-center lg:border-r lg:border-border lg:px-5 last:lg:border-r-0">
-              <div className="flex h-14 items-center justify-center">
-                <Image src={`/assets/content/help/payment-delivery/${asset}`} alt="" width={96} height={56} className="h-14 w-auto object-contain" />
+              <div className="flex h-10 items-center justify-center sm:h-11">
+                {/* Supplied payment marks stay direct to avoid a second lossy encode. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/assets/content/help/payment-delivery/${asset}`} alt="" className="h-10 w-auto object-contain sm:h-11" />
               </div>
               <h3 className="mt-3 text-sm font-semibold">{title}</h3>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">{copy}</p>
