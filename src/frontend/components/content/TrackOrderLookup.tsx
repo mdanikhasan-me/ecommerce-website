@@ -31,12 +31,15 @@ export function TrackOrderLookup({ initialError = null }: { initialError?: strin
 
   return (
     <section aria-labelledby="track-order-heading" className="w-full">
-      <h1 id="track-order-heading" className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Track your order</h1>
-      <p className="mt-3 text-sm text-muted-foreground sm:text-base">Enter your Order ID to see the latest status and delivery progress.</p>
+      <header className="mx-auto max-w-2xl text-center">
+        <h1 id="track-order-heading" className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Track your order</h1>
+        <p className="mt-3 text-sm text-muted-foreground sm:text-base">Enter your Order ID to see the latest status and delivery progress.</p>
+      </header>
 
-      <form onSubmit={handleSubmit} className="mt-8 grid gap-5 border-b border-border pb-8 lg:grid-cols-[7.5rem_minmax(0,1fr)] lg:items-center">
-        <span className="flex h-24 w-24 items-center justify-center rounded-2xl bg-blue-50 text-primary"><LocalIcon name="package" className="h-12 w-12" /></span>
-        <div><label htmlFor="track-order-id" className="mb-2 block text-sm font-semibold">Order ID</label><div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem]"><input id="track-order-id" aria-label="Order number" type="text" placeholder="e.g. BLB-482913" value={orderNumber} onChange={(event) => { setOrderNumber(event.target.value); if (lookupError) setLookupError(null) }} required maxLength={80} autoComplete="off" autoCapitalize="characters" spellCheck={false} className="h-12 min-w-0 rounded-lg border border-border bg-card px-4 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground" /><button type="submit" className="h-12 rounded-lg bg-[#121212] px-5 text-sm font-semibold text-white">Track order</button></div><p className="mt-2 text-sm text-muted-foreground">You can find your Order ID in the confirmation email we sent you.</p>{lookupError ? <p role="alert" className="mt-3 text-sm text-red-600">{lookupError}</p> : null}</div>
+      <form onSubmit={handleSubmit} className="mx-auto mt-8 max-w-2xl pb-8">
+        <label htmlFor="track-order-id" className="mb-2 flex items-center justify-center gap-2 text-sm font-semibold"><LocalIcon name="package" className="h-4 w-4 text-primary" /> Order ID</label>
+        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_9rem]"><input id="track-order-id" aria-label="Order number" type="text" placeholder="e.g. BLB-482913" value={orderNumber} onChange={(event) => { setOrderNumber(event.target.value); if (lookupError) setLookupError(null) }} required maxLength={80} autoComplete="off" autoCapitalize="characters" spellCheck={false} className="h-12 min-w-0 rounded-lg border border-border bg-card px-4 text-sm outline-none placeholder:text-muted-foreground focus:border-foreground" /><button type="submit" className="h-12 rounded-lg bg-[#121212] px-5 text-sm font-semibold text-white">Track order</button></div>
+        <p className="mt-2 text-center text-sm text-muted-foreground">You can find your Order ID in the confirmation email we sent you.</p>{lookupError ? <p role="alert" className="mt-3 text-center text-sm text-red-600">{lookupError}</p> : null}
       </form>
 
       <section className="pt-8"><h2 className="text-xl font-semibold">FAQ</h2><div className="mt-3 divide-y divide-border">{questions.map(([question, answer]) => <details key={question} className="group"><summary className="flex min-h-12 cursor-pointer items-center justify-between gap-4 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span>{question}</span><LocalIcon name="chevron-down" className="h-4 w-4 group-open:rotate-180" /></summary><p className="max-w-3xl pb-4 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>
