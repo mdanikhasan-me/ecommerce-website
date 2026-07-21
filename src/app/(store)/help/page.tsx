@@ -40,7 +40,7 @@ export default function HelpPage() {
             <button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button>
           </form>
         </section>
-        <section className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-center gap-4 rounded-lg bg-[#eef4ff] p-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center text-primary"><LocalIcon name={icon} className="h-6 w-6" /></span><span className="min-w-0 flex-1"><strong className="block text-sm">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="chevron-right" className="h-4 w-4 shrink-0 text-primary" /></Link>)}</section>
+        <section className="mt-9 grid gap-x-7 gap-y-1 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-start gap-3 py-4"><LocalIcon name={icon} className="mt-0.5 h-5 w-5 shrink-0 text-[#205fc2]" /><span className="min-w-0 flex-1"><strong className="block text-sm font-semibold text-[#172033]">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="arrow-right" className="mt-1 h-4 w-4 shrink-0 text-[#536176]" /></Link>)}</section>
         <div className="mt-10"><SupportFaqList questions={questions} /></div>
         <div className="mt-7"><SupportContactBar /></div>
       </div>

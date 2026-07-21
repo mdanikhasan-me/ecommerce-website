@@ -18,7 +18,7 @@ export function SupportFaqList({ questions, heading = 'FAQ', description, showMo
           <h2 className="text-xl font-semibold">{heading}</h2>
           {description ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p> : null}
         </div>
-        {showMoreLink ? <Link href="/faq" className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md bg-[#d7efdf] px-3 text-xs font-semibold text-[#173d28] sm:h-10 sm:px-4 sm:text-sm">
+        {showMoreLink ? <Link href="/faq" className="inline-flex h-9 shrink-0 items-center gap-2 rounded-sm px-2 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-[#324052] sm:h-10 sm:px-3 sm:text-xs">
             More FAQ <LocalIcon name="arrow-right" className="h-4 w-4" />
           </Link> : null}
       </div>
