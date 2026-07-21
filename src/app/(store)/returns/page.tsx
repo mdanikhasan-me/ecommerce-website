@@ -8,6 +8,7 @@ import {
 } from '@/backend/seo'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
 export const metadata: Metadata = generatePageMetadata(
@@ -43,6 +44,13 @@ const steps = [
   ['refresh-ccw', 'Resolution', 'We issue a refund or send a replacement once inspection is complete.'],
 ] as const satisfies ReadonlyArray<readonly [StorefrontIconName, string, string]>
 
+const RETURN_QUESTIONS = [
+  ['Which items can I return?', 'You can request a return for defective items, items damaged during delivery, or items with missing parts or accessories.'],
+  ['How long do I have to request a return?', 'Please contact support within 7 days of delivery.'],
+  ['What proof do I need for a return?', 'Send your order number, a clear description of the issue, and photos when they help show the damage or defect.'],
+  ['Will I receive a refund or replacement?', 'After the return is reviewed and inspected, we will arrange the applicable refund or replacement.'],
+] as const
+
 function PolicyList({ title, items, positive }: { title: string; items: readonly string[]; positive: boolean }) {
   const icon = positive ? 'check-circle' : 'x'
   return (
@@ -68,7 +76,8 @@ export default function ReturnsPage() {
           </div>
         </section>
         <section className="grid gap-10 py-8 lg:grid-cols-2 lg:gap-16"><PolicyList title="What you can return" items={returnable} positive /><PolicyList title="What is not covered" items={excluded} positive={false} /></section>
-        <section className="border-t border-border py-8"><h2 className="text-xl font-semibold">How it works</h2><ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">{steps.map(([icon, title, copy], index) => <li key={title} className="relative text-center"><span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-primary">{index + 1}</span><span className="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><LocalIcon name={icon} className="h-6 w-6" /></span><h3 className="mt-3 text-sm font-semibold">{title}</h3><p className="mx-auto mt-2 max-w-48 text-xs leading-5 text-muted-foreground">{copy}</p></li>)}</ol></section>
+        <section className="py-8"><h2 className="text-xl font-semibold">How it works</h2><ol className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">{steps.map(([icon, title, copy], index) => <li key={title} className="relative text-center"><span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-primary">{index + 1}</span><span className="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-full bg-secondary"><LocalIcon name={icon} className="h-6 w-6" /></span><h3 className="mt-3 text-sm font-semibold">{title}</h3><p className="mx-auto mt-2 max-w-48 text-xs leading-5 text-muted-foreground">{copy}</p></li>)}</ol></section>
+        <div className="mt-2"><SupportFaqList questions={RETURN_QUESTIONS} heading="Returns FAQ" /></div>
         <div className="mt-7"><SupportContactBar title="Need help with a return?" description="Our support team can help with your return request." /></div>
       </div>
     </main>
