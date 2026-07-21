@@ -2,7 +2,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
-import { CONTACT_EMAIL } from '@/shared/contact'
+import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -25,6 +26,13 @@ const PAYMENT_STEPS: ReadonlyArray<{ icon: StorefrontIconName; title: string; co
   { icon: 'check-circle', title: 'Order confirmation', copy: 'You receive confirmation as soon as your order is placed.', tone: 'bg-emerald-50' },
   { icon: 'shield', title: 'Payment safety', copy: 'Review the final total before paying at delivery.', tone: 'bg-blue-50' },
 ]
+
+const PAYMENT_QUESTIONS = [
+  ['Which payment methods are available?', 'Cash on Delivery is currently available. Any newly available method appears in checkout before you place an order.'],
+  ['When do I pay for a Cash on Delivery order?', 'Pay the final confirmed order amount when your order is delivered.'],
+  ['Where can I check my order total?', 'Checkout shows your item total, delivery fee, coupon discount, and final total before you place the order.'],
+  ['What should I do if my total looks incorrect?', 'Do not complete payment. Contact support with your order number so we can review it.'],
+] as const
 
 export default function PaymentsPage() {
   return (
@@ -75,11 +83,8 @@ export default function PaymentsPage() {
         <p className="mt-6 flex gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground"><LocalIcon name="help-circle" className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />Available payment options may vary by order, location, and verification requirements.</p>
       </section>
 
-      <section aria-label="Payment support" className="mt-6 grid divide-y divide-border rounded-md border border-border bg-card md:grid-cols-3 md:divide-x md:divide-y-0">
-        <Link href="/faq" className="flex items-center gap-3 p-4"><LocalIcon name="receipt-text" className="h-6 w-6 text-indigo-700" /><span className="min-w-0 flex-1"><strong className="block text-sm">Payment FAQ</strong><span className="mt-1 block text-xs text-muted-foreground">Common payment questions.</span></span><LocalIcon name="arrow-right" className="h-4 w-4" /></Link>
-        <Link href="/contact" className="flex items-center gap-3 p-4"><LocalIcon name="message-circle" className="h-6 w-6 text-emerald-700" /><span className="min-w-0 flex-1"><strong className="block text-sm">Chat with support</strong><span className="mt-1 block text-xs text-muted-foreground">Get help from our team.</span></span><LocalIcon name="arrow-right" className="h-4 w-4" /></Link>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-3 p-4"><LocalIcon name="mail" className="h-6 w-6 text-amber-700" /><span className="min-w-0 flex-1"><strong className="block text-sm">Email us</strong><span className="mt-1 block text-xs text-muted-foreground">{CONTACT_EMAIL}</span></span><LocalIcon name="arrow-right" className="h-4 w-4" /></a>
-      </section>
+      <div className="mt-8 sm:mt-10"><SupportFaqList questions={PAYMENT_QUESTIONS} heading="Payment FAQ" /></div>
+      <div className="mt-7"><SupportContactBar title="Need help with payment?" description="If your order total, delivery fee, or confirmation looks incorrect, contact support with your order number." /></div>
     </main>
   )
 }
