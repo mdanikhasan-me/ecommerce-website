@@ -587,7 +587,7 @@ export function ProductEditorForm({
 
           <section className="admin-card p-5">
             <h2 className="font-display text-lg font-semibold">Images</h2>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">Recommended master: 5:4 • 1500 x 1200 px • WebP preferred • stored as WebP q88 • aim under 350 KB. Keep 6–10% clear space around the product; the storefront creates delivery variants automatically.</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">Recommended master: 1:1 • 1600 x 1600 px • WebP preferred • stored as WebP q88 • aim under 350 KB. Keep 6–10% clear space around the product; the storefront creates delivery variants automatically.</p>
 
             <div className="mt-4 flex flex-wrap gap-3">
               <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-foreground">

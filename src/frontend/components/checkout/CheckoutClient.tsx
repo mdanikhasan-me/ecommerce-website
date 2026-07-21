@@ -220,7 +220,7 @@ function OrderSummaryCard({
       <div data-checkout-summary-items className="min-h-0 divide-y divide-black/10 px-4 sm:px-5 min-[1280px]:max-h-[22rem] min-[1280px]:overflow-y-auto min-[1280px]:overscroll-contain">
         {visibleItems.map((item) => (
           <div key={`${item.productId}-${item.variantId ?? 'base'}`} className="flex items-center gap-3 py-3.5">
-            <div className="relative aspect-[5/4] w-16 shrink-0 overflow-hidden rounded-md border border-black/10 bg-black/[0.025] sm:w-[4.5rem]">
+            <div className="relative aspect-square w-16 shrink-0 overflow-hidden rounded-md border border-black/10 bg-black/[0.025] sm:w-[4.5rem]">
               {item.image ? (
                 <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="84px" />
               ) : (

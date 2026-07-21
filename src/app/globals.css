@@ -155,7 +155,7 @@
   }
 
   .product-media-frame {
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 1 / 1;
   }
 
   .product-card-new-ribbon {
@@ -1820,7 +1820,7 @@
   }
 
   .home-product-card .product-card-media-link {
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 1 / 1;
   }
 
   .home-product-card .product-card-media-image {
