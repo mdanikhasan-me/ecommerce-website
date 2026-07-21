@@ -77,160 +77,61 @@ export default function CartPage() {
         <span className="text-foreground">Shopping Cart</span>
       </nav>
 
-      <h1 className="mb-5 font-display text-2xl font-bold sm:mb-6">
-        Shopping Cart <span className="text-muted-foreground font-normal">({items.length} items)</span>
+      <h1 className="mb-6 font-display text-2xl font-bold sm:mb-7 sm:text-3xl">
+        Shopping Cart <span className="font-normal text-muted-foreground">({items.reduce((count, item) => count + item.quantity, 0)} items)</span>
       </h1>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] md:items-start lg:grid-cols-3 lg:gap-8">
-        <div className="space-y-3 lg:col-span-2 lg:space-y-4">
-          {items.map((item) => (
-            <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 rounded-2xl border border-border bg-card p-3 sm:grid-cols-[6rem_minmax(0,1fr)_auto] sm:items-center sm:p-4">
-              <Link href={`/products/${item.slug}`} className="flex-shrink-0">
-                <div className="product-media-frame relative w-[5.5rem] overflow-hidden rounded-xl bg-secondary sm:w-24">
-                  {item.image && <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="96px" />}
-                </div>
-              </Link>
-
-              <div className="flex-1 min-w-0">
-                <Link href={`/products/${item.slug}`} className="font-medium min-[1025px]:hover:text-primary transition-colors line-clamp-2 text-sm">
-                  {item.name}
-                </Link>
-                {item.variantName && <p className="text-xs text-muted-foreground mt-0.5">{item.variantName}</p>}
-                <p className="text-xs text-muted-foreground font-mono mt-0.5">{item.sku}</p>
-
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center border border-border rounded-xl overflow-hidden">
-                    <button
-                      type="button"
-                      aria-label={`Decrease quantity for ${item.name}`}
-                      title={`Decrease quantity for ${item.name}`}
-                      onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
-                      className="p-2 min-[1025px]:hover:bg-secondary transition-colors"
-                    >
-                      <LocalIcon name="minus" className="h-3.5 w-3.5" />
-                    </button>
-                    <span className="px-4 text-sm font-semibold">{item.quantity}</span>
-                    <button
-                      type="button"
-                      aria-label={`Increase quantity for ${item.name}`}
-                      title={`Increase quantity for ${item.name}`}
-                      onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
-                      disabled={item.quantity >= item.stockQuantity}
-                      className="p-2 min-[1025px]:hover:bg-secondary transition-colors disabled:opacity-40"
-                    >
-                      <LocalIcon name="plus" className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-3 sm:hidden">
-                    <div className="text-left">
-                      <p className="font-bold">{formatPrice(item.price * item.quantity)}</p>
-                      {item.price !== item.originalPrice && (
-                        <p className="text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      aria-label={`Remove ${item.name} from cart`}
-                      title={`Remove ${item.name} from cart`}
-                      onClick={() => removeItem(item.productId, item.variantId)}
-                      className="rounded-lg p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-destructive/10 min-[1025px]:hover:text-destructive"
-                    >
-                      <LocalIcon name="trash-2" className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="hidden items-center gap-4 sm:flex">
-                <div className="text-right">
-                  <p className="font-bold">{formatPrice(item.price * item.quantity)}</p>
-                  {item.price !== item.originalPrice && (
-                    <p className="text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice * item.quantity)}</p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  aria-label={`Remove ${item.name} from cart`}
-                  title={`Remove ${item.name} from cart`}
-                  onClick={() => removeItem(item.productId, item.variantId)}
-                  className="rounded-lg p-2 text-muted-foreground transition-colors min-[1025px]:hover:bg-destructive/10 min-[1025px]:hover:text-destructive"
-                >
-                  <LocalIcon name="trash-2" className="h-4 w-4" />
-                </button>
-              </div>
+      <div className="grid gap-9 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.47fr)] xl:gap-10">
+        <section>
+          <div className="hidden overflow-hidden border border-border lg:block">
+            <div className="grid grid-cols-[minmax(16rem,1fr)_8rem_7rem_7rem_3rem] items-center bg-[#fafafa] px-4 py-4 text-xs font-semibold uppercase tracking-[0.045em] text-[#3f4753]">
+              <span>Product</span><span className="text-center">Quantity</span><span className="text-right">Unit price</span><span className="text-right">Total</span><span className="text-right">Action</span>
             </div>
-          ))}
-        </div>
-
-        <div>
-          <div className="sticky top-24 rounded-2xl border border-border bg-card p-4 sm:p-5">
-            <h2 className="font-display font-semibold text-lg mb-4">Order Summary</h2>
-
-            <div className="mb-5">
-              <p className="text-sm font-medium mb-2 flex items-center gap-1.5">
-                <LocalIcon name="tag" className="h-4 w-4 text-primary" /> Coupon Code
-              </p>
-              <div className="flex gap-2">
-                <input
-                  aria-label="Enter code"
-                  title="Enter code"
-                  type="text"
-                  placeholder="Enter code"
-                  value={couponCode}
-                  onChange={(e) => {
-                    setCouponCode(e.target.value.toUpperCase())
-                    if (appliedCoupon) clearAppliedCoupon()
-                  }}
-                  className="input-base"
-                />
-                <button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode} className="btn-outline px-3 flex-shrink-0 text-sm">
-                  {applyingCoupon ? '...' : 'Apply'}
-                </button>
-              </div>
-              {appliedCoupon && (
-                <div className="mt-2 flex items-center justify-between gap-3 text-xs text-green-600">
-                  <p className="flex items-center gap-1 font-medium">
-                    <LocalIcon name="check" className="h-3.5 w-3.5" />
-                    {appliedCoupon.name} applied, {formatPrice(discount)} off
-                  </p>
-                  <button type="button" onClick={clearAppliedCoupon} className="font-semibold min-[1025px]:hover:underline">
-                    Remove
-                  </button>
+            {items.map((item) => (
+              <div key={`${item.productId}-${item.variantId}`} className="grid grid-cols-[minmax(16rem,1fr)_8rem_7rem_7rem_3rem] items-center border-t border-border px-4 py-5">
+                <div className="flex min-w-0 items-center gap-4">
+                  <Link href={`/products/${item.slug}`} className="shrink-0"><div className="relative h-24 w-24 overflow-hidden bg-secondary">{item.image ? <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="96px" /> : null}</div></Link>
+                  <div className="min-w-0"><Link href={`/products/${item.slug}`} className="line-clamp-2 text-sm font-semibold text-foreground">{item.name}</Link>{item.variantName ? <p className="mt-1 text-xs text-muted-foreground">{item.variantName}</p> : null}<p className="mt-1 text-xs text-muted-foreground">{item.sku}</p></div>
                 </div>
-              )}
-            </div>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal ({items.reduce((a, i) => a + i.quantity, 0)} items)</span>
-                <span className="font-medium">{formatPrice(subtotal)}</span>
+                <div className="flex justify-center"><QuantityControl item={item} updateQuantity={updateQuantity} /></div>
+                <div className="text-right text-sm font-medium tabular-nums">{formatPrice(item.price)}{item.price !== item.originalPrice ? <p className="mt-1 text-xs text-muted-foreground line-through">{formatPrice(item.originalPrice)}</p> : null}</div>
+                <div className="text-right text-sm font-semibold tabular-nums">{formatPrice(item.price * item.quantity)}</div>
+                <div className="flex justify-end"><RemoveButton item={item} removeItem={removeItem} /></div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                {shippingFee === 0 ? <span className="text-green-600 font-medium">Free</span> : <span>{formatPrice(shippingFee)}</span>}
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Coupon Discount</span>
-                  <span>-{formatPrice(discount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between font-bold text-base pt-3 border-t border-border">
-                <span>Total</span>
-                <span>{formatPrice(total)}</span>
-              </div>
-            </div>
-
-            <Link href="/checkout" className="btn-primary w-full mt-5 flex items-center justify-center gap-2">
-              Proceed to Checkout <LocalIcon name="arrow-right" className="h-4 w-4" />
-            </Link>
-
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Cash on delivery is available at checkout
-            </p>
+            ))}
           </div>
-        </div>
+
+          <div className="lg:hidden">{items.map((item) => (
+            <div key={`${item.productId}-${item.variantId}`} className="border-t border-border py-4 first:border-t-0">
+              <div className="flex min-w-0 gap-3"><Link href={`/products/${item.slug}`} className="shrink-0"><div className="relative h-20 w-20 overflow-hidden bg-secondary">{item.image ? <Image src={item.image} alt={item.name} fill className="object-contain p-1" sizes="80px" /> : null}</div></Link><div className="min-w-0 flex-1"><Link href={`/products/${item.slug}`} className="line-clamp-2 text-sm font-semibold text-foreground">{item.name}</Link>{item.variantName ? <p className="mt-1 text-xs text-muted-foreground">{item.variantName}</p> : null}<p className="mt-1 text-xs text-muted-foreground">{item.sku}</p><p className="mt-2 text-sm font-semibold tabular-nums">{formatPrice(item.price * item.quantity)}</p></div><RemoveButton item={item} removeItem={removeItem} /></div>
+              <div className="mt-4 flex items-center justify-between"><QuantityControl item={item} updateQuantity={updateQuantity} /><span className="text-xs text-muted-foreground">Unit price {formatPrice(item.price)}</span></div>
+            </div>
+          ))}</div>
+
+          <Link href="/" className="mt-8 inline-flex h-11 items-center gap-2 rounded-sm border border-border bg-white px-4 text-sm font-semibold text-foreground"><LocalIcon name="arrow-left" className="h-4 w-4" /> Continue Shopping</Link>
+        </section>
+
+        <aside className="border-t border-border pt-7 xl:border-l xl:border-t-0 xl:pl-10 xl:pt-0">
+          <h2 className="font-display text-xl font-semibold">Order Summary</h2>
+          <div className="mt-5 border-b border-border pb-5">
+            <p className="flex items-center gap-2 text-sm font-semibold"><LocalIcon name="tag" className="h-4 w-4" /> Coupon Code</p>
+            <div className="mt-3 flex gap-2"><input aria-label="Enter code" title="Enter code" type="text" placeholder="Enter code" value={couponCode} onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); if (appliedCoupon) clearAppliedCoupon() }} className="h-11 min-w-0 flex-1 rounded-sm border border-border bg-white px-3 text-sm outline-none placeholder:text-muted-foreground" /><button type="button" onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode} className="h-11 rounded-sm border border-border bg-white px-4 text-sm font-semibold text-foreground disabled:opacity-45">{applyingCoupon ? '...' : 'Apply'}</button></div>
+            {appliedCoupon ? <div className="mt-3 flex items-center justify-between gap-3 text-xs text-green-700"><p className="flex min-w-0 items-center gap-1 font-medium"><LocalIcon name="check" className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{appliedCoupon.name} applied, {formatPrice(discount)} off</span></p><button type="button" onClick={clearAppliedCoupon} className="shrink-0 font-semibold">Remove</button></div> : null}
+          </div>
+          <div className="space-y-3 border-b border-border py-5 text-sm"><div className="flex justify-between gap-4"><span className="text-muted-foreground">Subtotal ({items.reduce((count, item) => count + item.quantity, 0)} items)</span><span className="font-medium tabular-nums">{formatPrice(subtotal)}</span></div><div className="flex justify-between gap-4"><span className="text-muted-foreground">Shipping</span>{shippingFee === 0 ? <span className="font-medium text-green-700">Free</span> : <span className="font-medium tabular-nums">{formatPrice(shippingFee)}</span>}</div>{discount > 0 ? <div className="flex justify-between gap-4 text-green-700"><span>Coupon discount</span><span className="tabular-nums">-{formatPrice(discount)}</span></div> : null}</div>
+          <div className="flex items-center justify-between gap-4 py-4 text-lg font-bold"><span>Total</span><span className="tabular-nums">{formatPrice(total)}</span></div>
+          <Link href="/checkout" className="flex h-12 w-full items-center justify-center gap-3 rounded-sm bg-[#121212] px-4 text-sm font-semibold text-white">Proceed to Checkout <LocalIcon name="arrow-right" className="h-4 w-4" /></Link>
+          <p className="mt-3 text-center text-xs text-muted-foreground">Cash on delivery is available at checkout</p>
+        </aside>
       </div>
     </div>
   )
+}
+
+function QuantityControl({ item, updateQuantity }: { item: { productId: string; variantId?: string; name: string; quantity: number; stockQuantity: number }; updateQuantity: (productId: string, quantity: number, variantId?: string) => void }) {
+  return <div className="flex h-11 items-center overflow-hidden rounded-sm border border-border"><button type="button" aria-label={`Decrease quantity for ${item.name}`} title={`Decrease quantity for ${item.name}`} onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)} className="flex h-full w-10 items-center justify-center"><LocalIcon name="minus" className="h-3.5 w-3.5" /></button><span className="flex h-full min-w-10 items-center justify-center border-x border-border px-2 text-sm font-semibold">{item.quantity}</span><button type="button" aria-label={`Increase quantity for ${item.name}`} title={`Increase quantity for ${item.name}`} onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)} disabled={item.quantity >= item.stockQuantity} className="flex h-full w-10 items-center justify-center disabled:opacity-40"><LocalIcon name="plus" className="h-3.5 w-3.5" /></button></div>
+}
+
+function RemoveButton({ item, removeItem }: { item: { productId: string; variantId?: string; name: string }; removeItem: (productId: string, variantId?: string) => void }) {
+  return <button type="button" aria-label={`Remove ${item.name} from cart`} title={`Remove ${item.name} from cart`} onClick={() => removeItem(item.productId, item.variantId)} className="flex h-10 w-10 items-center justify-center text-muted-foreground"><LocalIcon name="trash-2" className="h-4 w-4" /></button>
 }
