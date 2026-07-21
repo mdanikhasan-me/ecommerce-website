@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { JsonLd, generateBreadcrumbJsonLd, generatePageMetadata, generateWebPageJsonLd } from '@/backend/seo'
 import { siteConfig } from '@/backend/config/site'
 import { SupportContactBar } from '@/frontend/components/content/SupportContactBar'
+import { SupportFaqList } from '@/frontend/components/content/SupportFaqList'
 import { LocalIcon } from '@/frontend/components/ui/LocalIcon'
 import type { StorefrontIconName } from '@/shared/storefront-icons'
 
@@ -26,6 +27,13 @@ const NOTES: ReadonlyArray<{ icon: StorefrontIconName; title: string; copy: stri
   { icon: 'map-pin', title: 'Delivery coverage', copy: 'We deliver to all districts across Bangladesh.', tone: 'bg-emerald-50' },
   { icon: 'credit-card', title: 'Final fees at checkout', copy: 'Delivery fees are calculated from your location and order details.', tone: 'bg-amber-50' },
 ]
+
+const DELIVERY_QUESTIONS = [
+  ['How much does delivery cost?', `Standard delivery is ${dhakaFee} inside Dhaka and ${outsideFee} outside Dhaka. Orders over ${freeOver} receive free standard delivery.`],
+  ['How long will delivery take?', 'Most orders arrive within 2–5 business days. Delivery timing can vary by location and order details.'],
+  ['Do you deliver outside Dhaka?', 'Yes. Standard delivery is available across Bangladesh.'],
+  ['Can I choose express delivery?', 'Express delivery is available only where shown during checkout for your selected address.'],
+] as const
 
 export default function ShippingPage() {
   return (
@@ -52,6 +60,10 @@ export default function ShippingPage() {
           {NOTES.map((note) => <article key={note.title} className="flex gap-3"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${note.tone}`}><LocalIcon name={note.icon} className="h-5 w-5" /></span><div><h3 className="text-sm font-semibold">{note.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{note.copy}</p></div></article>)}
         </div>
       </section>
+
+      <div className="mt-8 sm:mt-10">
+        <SupportFaqList questions={DELIVERY_QUESTIONS} heading="Delivery FAQ" />
+      </div>
 
       <div className="mt-7">
         <SupportContactBar title="Need help with delivery?" description="Our support team is here to help with delivery questions or special requests." />

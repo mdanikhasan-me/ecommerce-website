@@ -31,11 +31,11 @@ export default function HelpPage() {
     <main className="bg-white text-foreground">
       <JsonLd data={[generateWebPageJsonLd({ name: 'Boilabin Help Center', description: 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', path: '/help' }), generateBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Help Center', url: '/help' }])]} />
       <div className="container-site py-7 sm:py-9 lg:py-10">
-        <section className="mx-auto max-w-3xl text-center">
+        <section className="mx-auto max-w-4xl rounded-lg bg-[linear-gradient(120deg,#edf5ff_0%,#f7fbff_52%,#eef9f2_100%)] px-5 py-9 text-center sm:px-10 sm:py-12">
           <h1 className="font-display text-4xl font-bold tracking-[-0.045em] sm:text-5xl">Help Center</h1>
           <p className="mt-3 text-lg font-semibold sm:text-xl">How can we help?</p>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">Find answers, track your orders, and get the support you need.</p>
-          <form action="/help" className="mt-6 grid h-12 grid-cols-[minmax(0,1fr)_6rem] rounded-lg border border-border bg-card p-1 text-left">
+          <form action="/help" className="mx-auto mt-6 grid h-12 max-w-2xl grid-cols-[minmax(0,1fr)_6rem] rounded-lg border border-border bg-white p-1 text-left shadow-sm">
             <label className="flex min-w-0 items-center gap-3 px-3" htmlFor="help-search"><LocalIcon name="search" className="h-4 w-4 text-muted-foreground" /><input id="help-search" name="q" type="search" placeholder="Search for help articles, topics, or keywords" className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label>
             <button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button>
           </form>
