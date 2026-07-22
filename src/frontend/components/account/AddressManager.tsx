@@ -118,10 +118,10 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const formIdPrefix = editing ? `address-form-${editing.id}` : 'address-form-new'
 
   return (
-    <section className="grid border-y border-border lg:grid-cols-[minmax(19rem,0.62fr)_minmax(0,1.38fr)]">
+    <section className="grid border-t border-border lg:grid-cols-[minmax(19rem,0.62fr)_minmax(0,1.38fr)]">
       <aside className="py-5 lg:py-6 lg:pr-6">
         <h2 className="px-1 text-xs font-semibold uppercase tracking-[0.07em] text-muted-foreground">Saved addresses ({initial.length})</h2>
-        <div className="mt-3 divide-y divide-border">
+        <div className="mt-3">
           {initial.map((addr) => (
             <article key={addr.id} className={`relative py-5 pl-4 pr-3 ${editing?.id === addr.id ? 'before:absolute before:inset-y-4 before:left-0 before:w-1 before:bg-foreground' : ''}`}>
               <div className="flex gap-3">
@@ -132,7 +132,6 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
                 </button>
                 <div className="flex shrink-0 items-start gap-1 pt-1">
                   <button type="button" onClick={() => startEdit(addr)} className="px-1.5 py-1 text-sm font-medium" aria-label={`Edit address for ${addr.fullName}`}>Edit</button>
-                  <span className="mt-1.5 h-4 border-l border-border" />
                   <button type="button" onClick={() => handleDelete(addr.id)} disabled={deletingId === addr.id} className="px-1.5 py-1 text-sm font-medium text-destructive" aria-label={`Delete address for ${addr.fullName}`}>{deletingId === addr.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}</button>
                 </div>
               </div>
@@ -140,10 +139,10 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
           ))}
           {initial.length === 0 ? <div className="px-4 py-8 text-center text-sm text-muted-foreground">No addresses saved yet.</div> : null}
         </div>
-        <button type="button" onClick={() => { setForm(emptyAddressForm); setEditing(null); setShowForm(true) }} className="mt-4 inline-flex min-h-11 items-center gap-2 px-1 text-sm font-semibold"><LocalIcon name="plus" className="h-5 w-5" /> Add new address</button>
+        <button type="button" onClick={() => { setForm(emptyAddressForm); setEditing(null); setShowForm(true) }} className="mt-4 inline-flex min-h-11 items-center gap-2 border-t border-dashed border-border px-1 pt-4 text-sm font-semibold"><LocalIcon name="plus" className="h-5 w-5" /> Add new address</button>
       </aside>
 
-      <div className="border-t border-border py-5 lg:border-l lg:border-t-0 lg:py-6 lg:pl-6">
+      <div className="py-5 lg:border-l lg:border-border lg:py-6 lg:pl-6">
         {showForm ? (
           <div>
             <div className="mb-5 flex items-center justify-between gap-4">
