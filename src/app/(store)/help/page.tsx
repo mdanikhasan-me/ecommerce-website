@@ -26,7 +26,20 @@ const questions = [
   ['How do I add or change my delivery address?', 'Update the saved address in My Account, or contact support before the order is packed.'],
 ] as const satisfies ReadonlyArray<readonly [string, string]>
 
-export default function HelpPage() {
+type HelpPageProps = {
+  searchParams: Promise<{ q?: string | string[] }>
+}
+
+export default async function HelpPage({ searchParams }: HelpPageProps) {
+  const params = await searchParams
+  const rawQuery = Array.isArray(params.q) ? params.q[0] : params.q
+  const query = rawQuery?.trim() ?? ''
+  const normalizedQuery = query.toLocaleLowerCase()
+  const matches = (value: string) => value.toLocaleLowerCase().includes(normalizedQuery)
+  const matchingTopics = query ? topics.filter(([title, description]) => matches(`${title} ${description}`)) : topics
+  const matchingQuestions = query ? questions.filter(([question, answer]) => matches(`${question} ${answer}`)) : questions
+  const hasResults = matchingTopics.length > 0 || matchingQuestions.length > 0
+
   return (
     <main className="bg-white text-foreground">
       <JsonLd data={[generateWebPageJsonLd({ name: 'Boilabin Help Center', description: 'Get help with Boilabin orders, returns, shipping, payments, account support, and contact options.', path: '/help' }), generateBreadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Help Center', url: '/help' }])]} />
@@ -37,12 +50,18 @@ export default function HelpPage() {
           <p className="mt-3 text-lg font-semibold sm:text-xl">How can we help?</p>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Find answers, track your orders, and get the support you need.</p>
           <form action="/help" className="mx-auto mt-7 grid h-12 max-w-2xl grid-cols-[minmax(0,1fr)_6rem] rounded-md bg-white p-1 text-left shadow-[0_8px_20px_rgba(37,99,235,0.10)]">
-            <label className="flex min-w-0 items-center gap-3 px-3" htmlFor="help-search"><LocalIcon name="search" className="h-4 w-4 text-muted-foreground" /><input id="help-search" name="q" type="search" placeholder="Search for help articles, topics, or keywords" className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label>
+            <label className="flex min-w-0 items-center gap-3 px-3" htmlFor="help-search"><LocalIcon name="search" className="h-4 w-4 text-muted-foreground" /><input id="help-search" name="q" type="search" defaultValue={query} placeholder="Search for help articles, topics, or keywords" className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" /></label>
             <button type="submit" className="rounded-md bg-[#121212] text-sm font-semibold text-white">Search</button>
           </form>
         </section>
-        <section className="mt-9 grid gap-x-7 gap-y-1 sm:grid-cols-2 lg:grid-cols-5">{topics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-start gap-3 py-4"><LocalIcon name={icon} className="mt-0.5 h-5 w-5 shrink-0 text-[#205fc2]" /><span className="min-w-0 flex-1"><strong className="block text-sm font-semibold text-[#172033]">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="arrow-right" className="mt-1 h-4 w-4 shrink-0 text-[#536176]" /></Link>)}</section>
-        <div className="mt-10"><SupportFaqList questions={questions} /></div>
+        {query ? (
+          <section className="mt-9" aria-live="polite">
+            <div className="flex items-baseline justify-between gap-4"><h2 className="text-xl font-semibold tracking-[-0.02em]">Results for “{query}”</h2><Link href="/help" className="text-sm font-medium text-[#205fc2]">Clear search</Link></div>
+            {hasResults ? <p className="mt-2 text-sm text-muted-foreground">{matchingTopics.length + matchingQuestions.length} result{matchingTopics.length + matchingQuestions.length === 1 ? '' : 's'} found.</p> : <p className="mt-2 text-sm text-muted-foreground">No help topics or answers matched that search. <Link href="/contact" className="font-medium text-[#205fc2]">Contact support</Link> and we’ll help.</p>}
+          </section>
+        ) : null}
+        {matchingTopics.length > 0 ? <section className="mt-9 grid gap-x-7 gap-y-1 sm:grid-cols-2 lg:grid-cols-5">{matchingTopics.map(([title, description, href, icon]) => <Link key={title} href={href} className="flex min-w-0 items-start gap-3 py-4"><LocalIcon name={icon} className="mt-0.5 h-5 w-5 shrink-0 text-[#205fc2]" /><span className="min-w-0 flex-1"><strong className="block text-sm font-semibold text-[#172033]">{title}</strong><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span><LocalIcon name="arrow-right" className="mt-1 h-4 w-4 shrink-0 text-[#536176]" /></Link>)}</section> : null}
+        {matchingQuestions.length > 0 ? <div className="mt-10"><SupportFaqList questions={matchingQuestions} heading={query ? 'Matching answers' : undefined} showMoreLink={!query} /></div> : null}
         <div className="mt-7"><SupportContactBar /></div>
       </div>
     </main>
