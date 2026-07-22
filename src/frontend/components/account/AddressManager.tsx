@@ -31,29 +31,41 @@ type AddressForm = {
   isDefault: boolean
 }
 
+const emptyAddressForm: AddressForm = {
+  fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false,
+}
+
+function addressToForm(address: Address): AddressForm {
+  return {
+    fullName: address.fullName,
+    phone: address.phone,
+    addressLine1: address.addressLine1,
+    addressLine2: address.addressLine2 ?? '',
+    city: address.city,
+    district: address.district,
+    division: address.division,
+    postalCode: address.postalCode ?? '',
+    isDefault: address.isDefault,
+  }
+}
+
 export function AddressManager({ addresses: initial }: { addresses: Address[] }) {
   const router = useRouter()
-  const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<Address | null>(null)
+  const [showForm, setShowForm] = useState(true)
+  const [editing, setEditing] = useState<Address | null>(initial[0] ?? null)
   const [loading, setLoading] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const [form, setForm] = useState<AddressForm>({
-    fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false,
-  })
+  const [form, setForm] = useState<AddressForm>(() => initial[0] ? addressToForm(initial[0]) : emptyAddressForm)
 
   const resetForm = () => {
-    setForm({ fullName: '', phone: '', addressLine1: '', addressLine2: '', city: '', district: '', division: '', postalCode: '', isDefault: false })
+    setForm(emptyAddressForm)
     setEditing(null)
     setShowForm(false)
   }
 
   const startEdit = (addr: Address) => {
-    setForm({
-      fullName: addr.fullName, phone: addr.phone, addressLine1: addr.addressLine1,
-      addressLine2: addr.addressLine2 ?? '', city: addr.city, district: addr.district, division: addr.division,
-      postalCode: addr.postalCode ?? '', isDefault: addr.isDefault,
-    })
+    setForm(addressToForm(addr))
     setEditing(addr)
     setShowForm(true)
   }
@@ -106,71 +118,40 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
   const formIdPrefix = editing ? `address-form-${editing.id}` : 'address-form-new'
 
   return (
-    <div>
-      {/* Address List */}
-      {initial.length === 0 && !showForm ? (
-        <div className="text-center py-16 bg-card rounded-xl border border-border">
-          <LocalIcon name="map-pin" className="size-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="font-display font-semibold text-lg mb-2">No addresses saved</h2>
-          <p className="text-muted-foreground text-sm mb-6">Add a shipping address to speed up checkout</p>
-          <button type="button" onClick={() => setShowForm(true)} className="btn-primary gap-2"><LocalIcon name="plus" className="size-4" /> Add Address</button>
-        </div>
-      ) : (
-        <>
-          <div className="space-y-3 mb-4">
-            {initial.map((addr) => (
-              <div key={addr.id} className="bg-card rounded-xl border border-border p-4 flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-sm">{addr.fullName}</p>
-                    {addr.isDefault && (
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">Default</span>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">{addr.addressLine1}</p>
-                  {addr.addressLine2 && <p className="text-sm text-muted-foreground">{addr.addressLine2}</p>}
-                  <p className="text-sm text-muted-foreground">{addr.city}, {addr.district}, {addr.division} {addr.postalCode}</p>
-                  <p className="text-sm text-muted-foreground">{addr.phone}</p>
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => startEdit(addr)}
-                    className="p-1.5 rounded-lg min-[1025px]:hover:bg-secondary transition-colors"
-                    aria-label={`Edit address for ${addr.fullName}`}
-                    title={`Edit address for ${addr.fullName}`}
-                  >
-                    <LocalIcon name="pencil" className="size-3.5 text-muted-foreground" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(addr.id)}
-                    disabled={deletingId === addr.id}
-                    className="p-1.5 rounded-lg min-[1025px]:hover:bg-red-50 transition-colors"
-                    aria-label={`Delete address for ${addr.fullName}`}
-                    title={`Delete address for ${addr.fullName}`}
-                  >
-                    {deletingId === addr.id ? <Loader2 className="size-3.5 animate-spin" /> : <LocalIcon name="trash-2" className="size-3.5 text-red-400" />}
-                  </button>
+    <section className="grid border-y border-border lg:grid-cols-[minmax(19rem,0.62fr)_minmax(0,1.38fr)]">
+      <aside className="py-5 lg:py-6 lg:pr-6">
+        <h2 className="px-1 text-xs font-semibold uppercase tracking-[0.07em] text-muted-foreground">Saved addresses ({initial.length})</h2>
+        <div className="mt-3 divide-y divide-border">
+          {initial.map((addr) => (
+            <article key={addr.id} className={`relative py-5 pl-4 pr-3 ${editing?.id === addr.id ? 'before:absolute before:inset-y-4 before:left-0 before:w-1 before:bg-foreground' : ''}`}>
+              <div className="flex gap-3">
+                <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-secondary/55"><LocalIcon name="map-pin" className="h-5 w-5" /></span>
+                <button type="button" onClick={() => startEdit(addr)} className="min-w-0 flex-1 text-left" aria-label={`Edit address for ${addr.fullName}`}>
+                  <span className="flex flex-wrap items-center gap-2"><strong className="text-sm font-semibold">{addr.fullName}</strong>{addr.isDefault ? <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">Default</span> : null}</span>
+                  <span className="mt-1 block text-sm leading-6 text-muted-foreground">{addr.addressLine1}{addr.addressLine2 ? `, ${addr.addressLine2}` : ''}<br />{addr.city}, {addr.district}{addr.postalCode ? ` ${addr.postalCode}` : ''}<br />{addr.phone}</span>
+                </button>
+                <div className="flex shrink-0 items-start gap-1 pt-1">
+                  <button type="button" onClick={() => startEdit(addr)} className="px-1.5 py-1 text-sm font-medium" aria-label={`Edit address for ${addr.fullName}`}>Edit</button>
+                  <span className="mt-1.5 h-4 border-l border-border" />
+                  <button type="button" onClick={() => handleDelete(addr.id)} disabled={deletingId === addr.id} className="px-1.5 py-1 text-sm font-medium text-destructive" aria-label={`Delete address for ${addr.fullName}`}>{deletingId === addr.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}</button>
                 </div>
               </div>
-            ))}
-          </div>
-          {!showForm && (
-            <button type="button" onClick={() => setShowForm(true)} className="btn-outline gap-2 w-full"><LocalIcon name="plus" className="size-4" /> Add New Address</button>
-          )}
-        </>
-      )}
+            </article>
+          ))}
+          {initial.length === 0 ? <div className="px-4 py-8 text-center text-sm text-muted-foreground">No addresses saved yet.</div> : null}
+        </div>
+        <button type="button" onClick={() => { setForm(emptyAddressForm); setEditing(null); setShowForm(true) }} className="mt-4 inline-flex min-h-11 items-center gap-2 px-1 text-sm font-semibold"><LocalIcon name="plus" className="h-5 w-5" /> Add new address</button>
+      </aside>
 
-      {/* Form */}
-      {showForm && (
-        <div className="bg-card rounded-xl border border-border p-5 mt-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-semibold">{editing ? 'Edit Address' : 'New Address'}</h2>
+      <div className="border-t border-border py-5 lg:border-l lg:border-t-0 lg:py-6 lg:pl-6">
+        {showForm ? (
+          <div>
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3"><h2 className="font-display text-xl font-semibold tracking-[-0.02em]">{editing ? 'Edit Address' : 'Add Address'}</h2>{editing?.isDefault ? <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Default address</span> : null}</div>
             <button
               type="button"
               onClick={resetForm}
-              className="p-1.5 rounded-lg min-[1025px]:hover:bg-secondary"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground"
               aria-label="Close address form"
               title="Close address form"
             >
@@ -218,16 +199,17 @@ export function AddressManager({ addresses: initial }: { addresses: Address[] })
               <input id={`${formIdPrefix}-isDefault`} type="checkbox" checked={form.isDefault} onChange={(e) => update('isDefault', e.target.checked)} className="rounded border-input text-primary focus:ring-primary size-4" />
               <span className="text-sm">Set as default address</span>
             </label>
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-wrap justify-end gap-3 pt-2">
               <button type="button" onClick={resetForm} className="btn-outline">Cancel</button>
               <button type="submit" disabled={loading} className="btn-primary gap-2">
                 {loading ? <Loader2 className="size-4 animate-spin" /> : <LocalIcon name="check" className="size-4" />}
-                {editing ? 'Update' : 'Save Address'}
+                {editing ? 'Save changes' : 'Save address'}
               </button>
             </div>
           </form>
-        </div>
-      )}
-    </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
   )
 }
