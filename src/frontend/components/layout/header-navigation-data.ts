@@ -85,10 +85,10 @@ export type MobileAccountLink = MobileMenuLink & {
 }
 
 export const MOBILE_ACCOUNT_LINKS: MobileAccountLink[] = [
-  { label: 'My Account', href: '/account', icon: 'user', description: 'Profile, phone number and addresses' },
+  { label: 'My Account', href: '/account/profile', icon: 'user', description: 'Update your name and phone number' },
+  { label: 'Addresses', href: '/account/addresses', icon: 'map-pin', description: 'Manage saved delivery addresses' },
   { label: 'My Orders', href: '/account/orders', icon: 'package', description: 'Track and manage your orders' },
   { label: 'Wishlist', href: '/wishlist', icon: 'bookmark-plus', description: 'Saved items' },
-  { label: 'New Arrivals', href: '/new-arrivals', icon: 'sparkles', description: 'Fresh products just landed' },
   { label: 'Compare', href: '/compare', icon: 'compare', description: 'Review products side by side' },
   { label: 'Admin Panel', href: '/admin', icon: 'layout-dashboard', description: 'Manage store, orders and content', adminOnly: true },
 ]

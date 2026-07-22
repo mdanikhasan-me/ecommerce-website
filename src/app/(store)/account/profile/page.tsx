@@ -4,7 +4,7 @@ import { db } from '@/backend/database'
 import { ProfileForm } from '@/frontend/components/account/ProfileForm'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Boilabin Profile' }
+export const metadata: Metadata = { title: 'Boilabin My Account' }
 
 export default async function ProfilePage() {
   const session = await getActiveUserSession()
@@ -20,7 +20,8 @@ export default async function ProfilePage() {
   return (
     <div className="container-site py-8">
       <div className="max-w-2xl">
-        <h1 className="font-display text-2xl font-bold mb-6">My Profile</h1>
+        <h1 className="font-display text-2xl font-bold mb-2">My Account</h1>
+        <p className="mb-6 text-sm text-muted-foreground">Update your name and delivery phone number.</p>
         <ProfileForm user={user} />
       </div>
     </div>

@@ -28,12 +28,20 @@ export function DesktopAccountMenu({ session }: { session: Session }) {
           </Link>
         ) : null}
         <Link
-          href="/account"
+          href="/account/profile"
           role="menuitem"
           className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
         >
           <LocalIcon name="user" className="h-4 w-4" />
           My Account
+        </Link>
+        <Link
+          href="/account/addresses"
+          role="menuitem"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-[1025px]:hover:bg-secondary"
+        >
+          <LocalIcon name="map-pin" className="h-4 w-4" />
+          Addresses
         </Link>
         <Link
           href="/account/orders"

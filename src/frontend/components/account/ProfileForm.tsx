@@ -123,7 +123,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="flex justify-end">
         <button type="submit" disabled={loading} className="btn-primary gap-2">
           {loading ? <Loader2 className="size-4 animate-spin" /> : <LocalIcon name="save" className="size-4" />}
-          Save Profile
+          Save changes
         </button>
       </div>
     </form>
