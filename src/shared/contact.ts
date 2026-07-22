@@ -1,6 +1,6 @@
 export const CONTACT_EMAIL = 'hello@boilabin.com'
 export const CONTACT_PHONE = '+8801570208986'
-export const CONTACT_ADDRESS = 'Bashundhara R/A, J Block, Road 20'
+export const CONTACT_ADDRESS = 'Hospital Road, House No. 05, Ward No. 07, Kalkini Municipality, Madaripur, Dhaka, Bangladesh'
 export const INSTAGRAM_URL = 'https://www.instagram.com/boilabin/'
 export const FACEBOOK_URL = 'https://www.facebook.com/Boilabin'
 export const YOUTUBE_URL = 'https://www.youtube.com/@Boilabin'
