@@ -39,7 +39,7 @@ export default function PrivacyPage() {
       <div className="container-site py-8 sm:py-10 lg:py-14">
         <article className="w-full max-w-none">
           <h1 className="font-display text-[2.4rem] font-semibold leading-tight tracking-normal sm:text-[3rem]">Privacy Policy</h1>
-          <p className="mt-3 text-sm text-muted-foreground">Last updated: January 2025</p>
+          <p className="mt-3 text-sm text-muted-foreground">Last updated: July 2026</p>
           <p className="mt-6 text-[1.03rem] leading-8 text-[#374151]">This policy explains what information Boilabin collects when you shop, why it is needed, and how it is handled.</p>
 
           <h2 className="mt-10 text-xl font-semibold leading-7">Information we collect</h2>

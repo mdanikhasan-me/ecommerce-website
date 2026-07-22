@@ -39,7 +39,7 @@ export default function TermsPage() {
       <div className="container-site py-8 sm:py-10 lg:py-14">
         <article className="w-full max-w-none">
           <h1 className="font-display text-[2.4rem] font-semibold leading-tight tracking-normal sm:text-[3rem]">Terms of Use</h1>
-          <p className="mt-3 text-sm text-muted-foreground">Last updated: January 2025</p>
+          <p className="mt-3 text-sm text-muted-foreground">Last updated: July 2026</p>
           <p className="mt-6 text-[1.03rem] leading-8 text-[#374151]">These terms explain the rules that apply when you use Boilabin, create an account, or place an order. By using the site, you agree to them and to our Privacy Policy.</p>
 
           <h2 className="mt-10 text-xl font-semibold leading-7">Accounts</h2>
