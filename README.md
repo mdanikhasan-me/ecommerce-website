@@ -1,7 +1,7 @@
 <a id="boilabin"></a>
 
 <div align="center">
-  <a href="https://github.com/mdanikhasan-dev/ecommerce-website">
+  <a href="https://github.com/mdanikhasan-me/ecommerce-website">
     <img src="./public/assets/brand/identity/v20260722/svg/boilabin-logo-dark-transparent.svg" alt="Boilabin" width="240" />
   </a>
 
@@ -24,7 +24,7 @@
   </p>
 
   <p>
-    <a href="https://github.com/mdanikhasan-dev/ecommerce-website/actions/workflows/quality.yml"><img src="https://github.com/mdanikhasan-dev/ecommerce-website/actions/workflows/quality.yml/badge.svg" alt="Quality and security workflow" /></a>
+    <a href="https://github.com/mdanikhasan-me/ecommerce-website/actions/workflows/quality.yml"><img src="https://github.com/mdanikhasan-me/ecommerce-website/actions/workflows/quality.yml/badge.svg" alt="Quality and security workflow" /></a>
     <img src="https://img.shields.io/badge/Next.js-15-111827?logo=nextdotjs&logoColor=white" alt="Next.js 15" />
     <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript 5" />
     <img src="https://img.shields.io/badge/PostgreSQL-ready-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
@@ -59,16 +59,16 @@ The app is built with the Next.js App Router, TypeScript, Prisma, and PostgreSQL
 
 Follow a few useful paths straight into the repository:
 
-- [Storefront routes](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/src/app/%28store%29) · [admin workspace](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/src/app/%28admin%29) · [checkout flow](https://github.com/mdanikhasan-dev/ecommerce-website/blob/main/src/app/%28checkout%29/checkout/page.tsx)
-- [Frontend components](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/src/frontend) · [backend modules](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/src/backend) · [shared contracts](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/src/shared)
-- [Prisma schema](https://github.com/mdanikhasan-dev/ecommerce-website/blob/main/prisma/schema.prisma) · [database migrations](https://github.com/mdanikhasan-dev/ecommerce-website/tree/main/prisma/migrations) · [quality workflow](https://github.com/mdanikhasan-dev/ecommerce-website/blob/main/.github/workflows/quality.yml)
+- [Storefront routes](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/app/%28store%29) · [admin workspace](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/app/%28admin%29) · [checkout flow](https://github.com/mdanikhasan-me/ecommerce-website/blob/main/src/app/%28checkout%29/checkout/page.tsx)
+- [Frontend components](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/frontend) · [backend modules](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/backend) · [shared contracts](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/shared)
+- [Prisma schema](https://github.com/mdanikhasan-me/ecommerce-website/blob/main/prisma/schema.prisma) · [database migrations](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/prisma/migrations) · [quality workflow](https://github.com/mdanikhasan-me/ecommerce-website/blob/main/.github/workflows/quality.yml)
 
 ## ⚡ Run it locally
 
 You’ll need Node.js 22+, PostgreSQL, and environment values for the database and authentication layers.
 
 ```bash
-git clone https://github.com/mdanikhasan-dev/ecommerce-website.git
+git clone https://github.com/mdanikhasan-me/ecommerce-website.git
 cd ecommerce-website
 npm ci
 ```
@@ -107,7 +107,7 @@ npm run build
 
 ## 🌱 Contributing
 
-Have an idea, found a sharp edge, or want to improve the shopping flow? Open an [issue](https://github.com/mdanikhasan-dev/ecommerce-website/issues) or send a focused pull request. Small, deliberate improvements are welcome.
+Have an idea, found a sharp edge, or want to improve the shopping flow? Open an [issue](https://github.com/mdanikhasan-me/ecommerce-website/issues) or send a focused pull request. Small, deliberate improvements are welcome.
 
 <details>
   <summary><strong>Project notes</strong></summary>
