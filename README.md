@@ -6,10 +6,12 @@
     <img src="./public/assets/brand/identity/v20260722/svg/boilabin-logo-dark-transparent.svg" alt="Boilabin" width="260" />
   </picture>
 
-  <p><strong>A marketplace built to stay useful after checkout.</strong></p>
+  <p><strong>Find it. Think it over. Order it. Know what happens next.</strong></p>
+
+  <p>One Bangladesh-first marketplace for discovery, checkout, delivery, returns, and the work behind the counter.</p>
 
   <p>
-    <a href="#three-surfaces-one-shop">The product</a>
+    <a href="#the-whole-shopping-trip">The product</a>
     &nbsp;·&nbsp;
     <a href="#follow-the-build">Follow the build</a>
     &nbsp;·&nbsp;
@@ -23,22 +25,33 @@
 
 <div align="center">
   <img src="./.github/assets/boilabin-preview.webp" alt="Boilabin across mobile and desktop storefront screens" width="100%" />
-  <p><sub>Browse on a phone, shop on a larger screen, and keep the store moving behind the scenes.</sub></p>
+  <p><sub>The same marketplace on the screen in your hand and the desk behind the shop.</sub></p>
 </div>
 
-## Three surfaces, one shop
+<br />
 
-Boilabin is an e-commerce product for Bangladesh. It is built around the moments that usually become loose ends online: checking a product twice, changing your mind, finding an order again, and keeping the shop itself in shape.
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,prisma,postgres,docker,githubactions&theme=dark" />
+    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,tailwind,prisma,postgres,docker,githubactions&theme=light" alt="Next.js, React, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Docker, and GitHub Actions" />
+  </picture>
+</div>
 
-**On the phone.** Categories, search, products, wishlist, cart, and account are designed for the screen most shoppers actually have in their hand.
+## The whole shopping trip
 
-**In the storefront.** Product discovery, comparison, checkout, delivery choices, receipts, reviews, and order progress stay connected instead of becoming separate dead ends.
+Boilabin is being built for a familiar kind of shopping: you find something on your phone, compare it a few times, place the order, and then want one simple place to see what happens next.
 
-**Behind the counter.** The admin workspace keeps products, inventory, promotions, customers, orders, returns, reviews, content, and reports in one working place.
+**Find a direction.** Categories, search, new arrivals, best sellers, and product pages help people move from “I need something” to a useful shortlist.
+
+**Take your time.** Comparison, wishlist, reviews, filters, and a persistent cart keep the decision open until it feels right.
+
+**Finish without losing the thread.** Addresses, delivery choices, coupons, checkout, invoices, order progress, and returns stay connected.
+
+**Run the shop.** The admin workspace brings products, inventory, promotions, customers, orders, reviews, content, and reports into the same operating view.
 
 ## Follow the build
 
-Start with the pieces that tell the story clearly:
+Open the parts that tell the product story most clearly:
 
 - [Storefront routes](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/app/%28store%29) · [frontend components](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/frontend) · [checkout](https://github.com/mdanikhasan-me/ecommerce-website/blob/main/src/app/%28checkout%29/checkout/page.tsx)
 - [Admin workspace](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/app/%28admin%29) · [catalog and order modules](https://github.com/mdanikhasan-me/ecommerce-website/tree/main/src/backend) · [Prisma schema](https://github.com/mdanikhasan-me/ecommerce-website/blob/main/prisma/schema.prisma)
@@ -81,7 +94,7 @@ This repository is public to view. Reuse, copying, modification, redistribution,
 <br />
 
 <div align="center">
-  <sub>Built for the shopping trip, not just the cart.</sub>
+  <sub>The shop window, the checkout counter, and the back office—connected.</sub>
   <br />
   <a href="#boilabin">Back to top ↑</a>
 </div>
