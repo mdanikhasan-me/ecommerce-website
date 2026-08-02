@@ -29,7 +29,6 @@ tests/
 scripts/
 docker/
 docker-compose.local.yml
-README.md
 .vscode/
 .env.example
 .env.local.example
